@@ -2034,6 +2034,8 @@
             gap: 12px;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .dashboard-card:hover {
@@ -2041,15 +2043,31 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
+        .dashboard-card-bg {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            right: -60px;
+            bottom: -60px;
+            opacity: 0.04;
+            color: #1d1d1f;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .dashboard-card-icon {
             font-size: 32px;
             line-height: 1;
             color: #86868b;
             opacity: 0.7;
+            z-index: 1;
+            position: relative;
         }
 
         .dashboard-card-content {
             flex: 1;
+            z-index: 1;
+            position: relative;
         }
 
         .dashboard-card-value {
@@ -2152,6 +2170,12 @@
         <div class="dashboard-overview">
             <div class="dashboard-grid">
                 <div class="dashboard-card">
+                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="9" y1="9" x2="15" y2="9"/>
+                        <line x1="9" y1="13" x2="15" y2="13"/>
+                        <line x1="9" y1="17" x2="13" y2="17"/>
+                    </svg>
                     <div class="dashboard-card-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -2167,6 +2191,11 @@
                 </div>
 
                 <div class="dashboard-card">
+                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
                     <div class="dashboard-card-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -2183,6 +2212,10 @@
                 </div>
 
                 <div class="dashboard-card">
+                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <polyline points="19 12 12 19 5 12"/>
+                    </svg>
                     <div class="dashboard-card-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"/>
@@ -2196,6 +2229,9 @@
                 </div>
 
                 <div class="dashboard-card">
+                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
                     <div class="dashboard-card-icon">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="20 6 9 17 4 12"/>
