@@ -3547,13 +3547,15 @@
                 probUnlikely: "Improbable (5-25%)",
                 probPossible: "Possible (25-50%)",
                 probLikely: "Probable (50-75%)",
+                probAlmostCertain: "Quasi-certain (> 75%)",
 
                 // Impacts
                 impactNotEval: "Non évalué",
                 impactMinor: "Mineur (< 1M€)",
                 impactModerate: "Modéré (1-5M€)",
                 impactSignificant: "Significatif (5-20M€)",
-                impactMajor: "Majeur (> 20M€)",
+                impactMajor: "Majeur (20-50M€)",
+                impactCatastrophic: "Catastrophique (> 50M€)",
 
                 // Statuts
                 statusNotTreated: "Non traité",
@@ -3621,12 +3623,14 @@
                 probUnlikely: "Unlikely (5-25%)",
                 probPossible: "Possible (25-50%)",
                 probLikely: "Likely (50-75%)",
+                probAlmostCertain: "Almost certain (> 75%)",
 
                 impactNotEval: "Not evaluated",
                 impactMinor: "Minor (< $1M)",
                 impactModerate: "Moderate ($1-5M)",
                 impactSignificant: "Significant ($5-20M)",
-                impactMajor: "Major (> $20M)",
+                impactMajor: "Major ($20-50M)",
+                impactCatastrophic: "Catastrophic (> $50M)",
 
                 statusNotTreated: "Not treated",
                 statusInProgress: "In progress",
@@ -3691,12 +3695,14 @@
                 probUnlikely: "Improbable (5-25%)",
                 probPossible: "Posible (25-50%)",
                 probLikely: "Probable (50-75%)",
+                probAlmostCertain: "Casi seguro (> 75%)",
 
                 impactNotEval: "No evaluado",
                 impactMinor: "Menor (< 1M€)",
                 impactModerate: "Moderado (1-5M€)",
                 impactSignificant: "Significativo (5-20M€)",
-                impactMajor: "Mayor (> 20M€)",
+                impactMajor: "Mayor (20-50M€)",
+                impactCatastrophic: "Catastrófico (> 50M€)",
 
                 statusNotTreated: "No tratado",
                 statusInProgress: "En curso",
@@ -3761,12 +3767,14 @@
                 probUnlikely: "不太可能 (5-25%)",
                 probPossible: "可能 (25-50%)",
                 probLikely: "很可能 (50-75%)",
+                probAlmostCertain: "几乎确定 (> 75%)",
 
                 impactNotEval: "未评估",
                 impactMinor: "轻微 (< 1M€)",
                 impactModerate: "中等 (1-5M€)",
                 impactSignificant: "显著 (5-20M€)",
-                impactMajor: "重大 (> 20M€)",
+                impactMajor: "重大 (20-50M€)",
+                impactCatastrophic: "灾难性 (> 50M€)",
 
                 statusNotTreated: "未处理",
                 statusInProgress: "进行中",
@@ -3831,12 +3839,14 @@
                 probUnlikely: "مستبعد (5-25%)",
                 probPossible: "ممكن (25-50%)",
                 probLikely: "محتمل (50-75%)",
+                probAlmostCertain: "شبه مؤكد (> 75%)",
 
                 impactNotEval: "غير مقيم",
                 impactMinor: "طفيف (< 1M€)",
                 impactModerate: "متوسط (1-5M€)",
                 impactSignificant: "كبير (5-20M€)",
-                impactMajor: "رئيسي (> 20M€)",
+                impactMajor: "رئيسي (20-50M€)",
+                impactCatastrophic: "كارثي (> 50M€)",
 
                 statusNotTreated: "غير معالج",
                 statusInProgress: "قيد المعالجة",
@@ -3873,7 +3883,8 @@
                 {value: 1, label: t('probVeryUnlikely'), color: "#C5E0B3", emoji: "🟩"},
                 {value: 2, label: t('probUnlikely'), color: "#FFE699", emoji: "🟨"},
                 {value: 3, label: t('probPossible'), color: "#F4B183", emoji: "🟧"},
-                {value: 4, label: t('probLikely'), color: "#FFC7CE", emoji: "🟥"}
+                {value: 4, label: t('probLikely'), color: "#FFC7CE", emoji: "🟥"},
+                {value: 5, label: t('probAlmostCertain'), color: "#FFC7CE", emoji: "🟥"}
             ];
         }
 
@@ -3883,7 +3894,8 @@
                 {value: 1, label: t('impactMinor'), color: "#C5E0B3", emoji: "🟩"},
                 {value: 2, label: t('impactModerate'), color: "#FFE699", emoji: "🟨"},
                 {value: 3, label: t('impactSignificant'), color: "#F4B183", emoji: "🟧"},
-                {value: 4, label: t('impactMajor'), color: "#FFC7CE", emoji: "🟥"}
+                {value: 4, label: t('impactMajor'), color: "#FFC7CE", emoji: "🟥"},
+                {value: 5, label: t('impactCatastrophic'), color: "#FFC7CE", emoji: "🟥"}
             ];
         }
 
@@ -3928,9 +3940,9 @@
         // Détermine le niveau de risque selon le score
         function getCriticalityLevel(score) {
             if (score === null) return null;
-            if (score >= 10) return 'high';      // Rouge: 10-16 (critique)
-            if (score >= 5) return 'medium';     // Orange: 5-9 (à surveiller)
-            return 'low';                        // Vert: 1-4 (acceptable)
+            if (score >= 15) return 'high';      // Rouge: 15-25 (critique)
+            if (score >= 10) return 'medium';    // Orange: 10-14 (à surveiller)
+            return 'low';                        // Vert/Jaune: 1-9 (acceptable)
         }
 
         // Génère le badge HTML de criticité
@@ -5213,7 +5225,7 @@
                                         `${point.groupName}`,
                                         `Probabilité: ${realX.toFixed(2)}`,
                                         `Impact: ${realY.toFixed(2)}`,
-                                        `Criticité: ${criticality.toFixed(1)}/16`
+                                        `Criticité: ${criticality.toFixed(1)}/25`
                                     ];
                                 }
                             }
@@ -5300,7 +5312,7 @@
                     function getCritClass(crit) {
                         if (crit <= 4) return 'criticality-low';
                         if (crit <= 9) return 'criticality-medium';
-                        if (crit <= 11) return 'criticality-high';
+                        if (crit <= 14) return 'criticality-high';
                         return 'criticality-critical';
                     }
                     
@@ -5371,20 +5383,20 @@
                 const realXAfter = afterData.baseX || afterData.x;
                 const realYAfter = afterData.baseY || afterData.y;
                 
-                // Calculer la criticité brute (P×I peut aller jusqu'à 16)
+                // Calculer la criticité brute (P×I peut aller jusqu'à 25)
                 const critBeforeRaw = realXBefore * realYBefore;
                 const critAfterRaw = realXAfter * realYAfter;
-                
-                // Normaliser sur 5 : (criticité / 16) × 5
-                const critBefore = (critBeforeRaw / 16) * 5;
-                const critAfter = (critAfterRaw / 16) * 5;
+
+                // Normaliser sur 5 : (criticité / 25) × 5
+                const critBefore = (critBeforeRaw / 25) * 5;
+                const critAfter = (critAfterRaw / 25) * 5;
                 
                 function getCritClass(crit) {
                     if (crit === 0) return 'criticality-low';
-                    if (crit <= 1.25) return 'criticality-low';      // 0-4 sur 16 = 0-1.25 sur 5
-                    if (crit <= 2.81) return 'criticality-medium';   // 5-9 sur 16 = 1.25-2.81 sur 5
-                    if (crit <= 3.44) return 'criticality-high';     // 10-11 sur 16 = 3.12-3.44 sur 5
-                    return 'criticality-critical';                    // 12-16 sur 16 = 3.75-5 sur 5
+                    if (crit <= 0.8) return 'criticality-low';       // 1-4 sur 25 = 0.2-0.8 sur 5
+                    if (crit <= 1.8) return 'criticality-medium';    // 5-9 sur 25 = 1.0-1.8 sur 5
+                    if (crit <= 2.8) return 'criticality-high';      // 10-14 sur 25 = 2.0-2.8 sur 5
+                    return 'criticality-critical';                    // 15-25 sur 25 = 3.0-5 sur 5
                 }
                 
                 const row = document.createElement('tr');
@@ -5774,7 +5786,7 @@
                                         `${point.groupName}`,
                                         `Probabilité: ${realX.toFixed(2)}`,
                                         `Impact: ${realY.toFixed(2)}`,
-                                        `Criticité: ${criticality.toFixed(1)}/16`
+                                        `Criticité: ${criticality.toFixed(1)}/25`
                                     ];
                                 }
                             }
