@@ -41,20 +41,10 @@ Application web d'analyse et de cartographie des risques avec matrices Before/Af
 
 **Riskr est une application one-page** - un seul fichier HTML autonome.
 
-### Option 1 : Utilisation directe
 1. Télécharger \`riskr.html\`
 2. Ouvrir le fichier dans votre navigateur
 3. C'est tout ! Aucune installation requise
 
-### Option 2 : Via un serveur web
-\`\`\`bash
-# Python 3
-python3 -m http.server 8000
-
-# Ou simplement ouvrir riskr.html avec votre navigateur
-\`\`\`
-
-Puis ouvrir http://localhost:8000/riskr.html
 
 ## 🛠️ Stack Technique
 
