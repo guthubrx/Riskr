@@ -2044,6 +2044,8 @@
         .dashboard-card-icon {
             font-size: 32px;
             line-height: 1;
+            color: #86868b;
+            opacity: 0.7;
         }
 
         .dashboard-card-content {
@@ -2150,7 +2152,14 @@
         <div class="dashboard-overview">
             <div class="dashboard-grid">
                 <div class="dashboard-card">
-                    <div class="dashboard-card-icon">📋</div>
+                    <div class="dashboard-card-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="9" x2="15" y2="9"/>
+                            <line x1="9" y1="13" x2="15" y2="13"/>
+                            <line x1="9" y1="17" x2="13" y2="17"/>
+                        </svg>
+                    </div>
                     <div class="dashboard-card-content">
                         <div class="dashboard-card-value" id="dashboard-total-risks">-</div>
                         <div class="dashboard-card-label" data-i18n="dashboardRisksEvaluated">Risques évalués</div>
@@ -2158,7 +2167,13 @@
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="dashboard-card-icon">🟥</div>
+                    <div class="dashboard-card-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
                     <div class="dashboard-card-content">
                         <div class="dashboard-card-value">
                             <span id="dashboard-critical-before">-</span> → <span id="dashboard-critical-after">-</span>
@@ -2168,7 +2183,12 @@
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="dashboard-card-icon">📉</div>
+                    <div class="dashboard-card-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <polyline points="19 12 12 19 5 12"/>
+                        </svg>
+                    </div>
                     <div class="dashboard-card-content">
                         <div class="dashboard-card-value" id="dashboard-avg-reduction">-</div>
                         <div class="dashboard-card-label" data-i18n="dashboardAvgReduction">Réduction moyenne</div>
@@ -2176,7 +2196,11 @@
                 </div>
 
                 <div class="dashboard-card">
-                    <div class="dashboard-card-icon">✅</div>
+                    <div class="dashboard-card-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
                     <div class="dashboard-card-content">
                         <div class="dashboard-card-value" id="dashboard-treated">-</div>
                         <div class="dashboard-card-label" data-i18n="dashboardTreated">Risques traités</div>
