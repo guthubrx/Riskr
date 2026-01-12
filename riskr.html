@@ -2133,12 +2133,21 @@
             </div>
 
             <div class="app-controls">
+                <!-- Input caché pour l'import -->
+                <input type="file" id="import-file" style="display: none" accept=".json" onchange="importFromJSON(this)">
+                
+                <!-- Bouton Import -->
+                <button onclick="document.getElementById('import-file').click()" style="padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 6px; font-weight: 500; color: #1d1d1f; transition: background 0.2s;">
+                    <span>📥</span> Import
+                </button>
+
                 <select id="export-format-selector" onchange="handleExport(this.value)" style="padding: 8px 12px 8px 36px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2386868b%22 stroke-width=%222%22><path d=%22M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4%22/><polyline points=%227 10 12 15 17 10%22/><line x1=%2212%22 y1=%2215%22 x2=%2212%22 y2=%223%22/></svg>') no-repeat 10px center; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); appearance: none; padding-right: 30px; background-size: 16px;">
                     <option value="" disabled selected>Exporter...</option>
                     <option value="pdf">📄 PDF</option>
                     <option value="excel">📊 Excel (XLSX)</option>
                     <option value="csv">📋 CSV</option>
-                    <option value="json">{ } JSON</option>
+                    <option value="html">🌐 HTML (Web)</option>
+                    <option value="json">💾 JSON (Données)</option>
                 </select>
                 <select id="language-selector" onchange="setLanguage(this.value)" style="padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
                     <option value="fr">🇫🇷 Français</option>
@@ -2205,8 +2214,22 @@
 
         <!-- Toggle sticky discret au-dessus -->
         <div class="sticky-toggle-container">
-            <span class="sticky-toggle-label">Épingler la vue d'ensemble</span>
-            <button onclick="toggleSticky()" class="sticky-toggle-btn" id="sticky-toggle-btn" title="Activer/Désactiver le mode collant"></button>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="sticky-toggle-label">Épingler la vue d'ensemble</span>
+                <button onclick="toggleSticky()" class="sticky-toggle-btn" id="sticky-toggle-btn" title="Activer/Désactiver le mode collant"></button>
+            </div>
+            
+            <!-- Séparateur -->
+            <div style="width: 1px; height: 16px; background: #d2d2d7; margin: 0 12px;"></div>
+
+            <!-- Toggle Vue Groupes/Risques -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="sticky-toggle-label">Vue :</span>
+                <div class="view-toggle-wrapper" style="background: #e5e5e7; padding: 2px; border-radius: 8px; display: flex;">
+                    <button onclick="setMatrixView('groups')" id="view-btn-groups" class="view-toggle-btn active" style="border: none; background: white; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #1d1d1f; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s;">Groupes</button>
+                    <button onclick="setMatrixView('risks')" id="view-btn-risks" class="view-toggle-btn" style="border: none; background: transparent; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.2s;">Risques</button>
+                </div>
+            </div>
         </div>
 
         <!-- Matrices sticky en haut -->
@@ -3223,13 +3246,123 @@
                 case 'csv':
                     exportToCSV();
                     break;
+                case 'html':
+                    exportToHTML(); // Export HTML autonome
+                    break;
                 case 'json':
-                    exportToHTML(); // Export JSON (HTML avec données)
+                    exportDataToJSON(); // Export Données JSON
                     break;
             }
 
             // Réinitialiser le sélecteur
             document.getElementById('export-format-selector').value = '';
+        }
+        
+        // ========================================
+        // Export Données JSON (Complet)
+        // ========================================
+        function exportDataToJSON() {
+            const data = {
+                version: "2.0",
+                timestamp: new Date().toISOString(),
+                appState: {
+                    title: document.getElementById('main-title').textContent,
+                    subtitle: document.getElementById('main-subtitle').textContent,
+                    language: currentLanguage
+                },
+                // On exporte la structure hiérarchique complète
+                // riskGroups contient les risques, c'est la source de vérité pour la structure
+                riskGroups: riskGroups
+            };
+
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            const dateStr = new Date().toISOString().slice(0, 10);
+            link.download = `riskr_data_${dateStr}.json`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            console.log('✅ Export JSON des données réussi !');
+        }
+
+        // ========================================
+        // Import Données JSON
+        // ========================================
+        function importFromJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    // Validation basique
+                    if (!data.riskGroups || !Array.isArray(data.riskGroups)) {
+                        throw new Error("Format JSON invalide : 'riskGroups' manquant ou incorrect");
+                    }
+
+                    // 1. Restaurer l'état de l'application
+                    if (data.appState) {
+                        if (data.appState.title) {
+                            document.getElementById('main-title').textContent = data.appState.title;
+                            localStorage.setItem('analysis-main-title', data.appState.title);
+                        }
+                        if (data.appState.subtitle) {
+                            document.getElementById('main-subtitle').textContent = data.appState.subtitle;
+                            localStorage.setItem('analysis-main-subtitle', data.appState.subtitle);
+                        }
+                        if (data.appState.language) {
+                            setLanguage(data.appState.language);
+                        }
+                    }
+
+                    // 2. Restaurer les groupes
+                    // On vide le tableau existant et on remplit avec les nouvelles données
+                    riskGroups.length = 0;
+                    riskGroups.push(...data.riskGroups);
+
+                    // 3. Reconstruire le tableau global 'risks' à partir des groupes
+                    // C'est CRUCIAL pour que risks et riskGroups soient synchronisés (mêmes références d'objets)
+                    risks.length = 0;
+                    riskGroups.forEach(group => {
+                        if (group.risks && Array.isArray(group.risks)) {
+                            group.risks.forEach(risk => {
+                                risks.push(risk);
+                            });
+                        }
+                    });
+
+                    // 4. Sauvegarder l'état pour undo/redo
+                    saveState();
+                    
+                    // 5. Mettre à jour le mapping dans localStorage
+                    saveGroupMapping();
+
+                    // 6. Rafraîchir l'interface
+                    renderRisks();
+                    updateCharts();
+
+                    showToast('✅ Données importées avec succès !');
+                    
+                } catch (error) {
+                    console.error('Erreur lors de l\'import:', error);
+                    alert('Erreur lors de l\'import du fichier JSON :\n' + error.message);
+                } finally {
+                    // Reset l'input pour permettre de réimporter le même fichier si besoin
+                    input.value = '';
+                }
+            };
+
+            reader.readAsText(file);
         }
 
         // ========================================
@@ -4774,10 +4907,13 @@
 
             // Initialiser le drag & drop et l'édition inline après le rendu
             initDragAndDrop();
+            initGroupNameEditing(); // Indispensable pour éditer les nouveaux groupes
+            initGroupDescriptionEditing(); // Indispensable pour éditer les descriptions
             initRiskTitleEditing();
             initRemediationEditing();
             initStatusDropdowns();
-                initResponsableEditing();
+            initResponsableEditing();
+            initSectionTitleEditing();
         }
 
         // ========================================
@@ -5173,14 +5309,15 @@
             }
         };
         
-        // Plugin pour afficher les numéros de groupes sur les points
+        // Plugin pour afficher les numéros de groupes ou ID risques sur les points
         const riskLabelsPlugin = {
             id: 'riskLabels',
             afterDatasetsDraw: (chart) => {
                 const { ctx, data, scales: { x, y } } = chart;
 
                 ctx.save();
-                ctx.font = 'bold 13px Arial';
+                // Police encore plus grande pour une visibilité maximale
+                ctx.font = 'bold 16px Arial'; 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
@@ -5188,11 +5325,15 @@
                     const xPos = x.getPixelForValue(point.x);
                     const yPos = y.getPixelForValue(point.y);
 
-                    // Afficher le numéro du groupe
-                    const num = index + 1; // Numéros de groupe 1 à 5
+                    // Utiliser le label court défini dans les données, sinon le numéro de groupe
+                    const label = point.shortLabel || (index + 1);
 
+                    // Ombre portée pour lisibilité sur toutes couleurs
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 4;
+                    
                     ctx.fillStyle = 'white';
-                    ctx.fillText(num, xPos, yPos);
+                    ctx.fillText(label, xPos, yPos);
                 });
 
                 ctx.restore();
@@ -5210,8 +5351,8 @@
                         backgroundColor: '#1F4E78',
                         borderColor: 'white',
                         borderWidth: 1.5,
-                        pointRadius: 10,
-                        pointHoverRadius: 12,
+                        pointRadius: matrixViewMode === 'risks' ? 12 : 14, // Points un peu plus petits si beaucoup de risques
+                        pointHoverRadius: matrixViewMode === 'risks' ? 14 : 16,
                         pointStyle: 'circle'
                     }]
                 },
@@ -5225,13 +5366,17 @@
                             display: false
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            padding: 10,
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            padding: 12,
                             callbacks: {
                                 title: function(context) {
                                     const point = context[0].raw;
+                                    // Afficher l'ID complet et le titre
+                                    if (matrixViewMode === 'risks') {
+                                        return `${point.shortLabel} - ${point.riskTitle}`;
+                                    }
                                     return point.label;
                                 },
                                 label: function(context) {
@@ -5240,12 +5385,22 @@
                                     const realX = point.baseX || point.x;
                                     const realY = point.baseY || point.y;
                                     const criticality = realX * realY;
-                                    return [
-                                        `${point.groupName}`,
-                                        `Probabilité: ${realX.toFixed(2)}`,
-                                        `Impact: ${realY.toFixed(2)}`,
-                                        `Criticité: ${criticality.toFixed(1)}/25`
-                                    ];
+                                    
+                                    if (matrixViewMode === 'risks') {
+                                        return [
+                                            `Groupe: ${point.groupName}`,
+                                            `Probabilité: ${realX}`,
+                                            `Impact: ${realY}`,
+                                            `Criticité: ${criticality}`
+                                        ];
+                                    } else {
+                                        return [
+                                            `${point.groupName}`,
+                                            `Probabilité moyenne: ${realX.toFixed(2)}`,
+                                            `Impact moyen: ${realY.toFixed(2)}`,
+                                            `Criticité moyenne: ${criticality.toFixed(1)}/25`
+                                        ];
+                                    }
                                 }
                             }
                         }
@@ -5271,7 +5426,7 @@
                                 display: true,
                                 text: 'Probabilité →',
                                 font: {
-                                    size: 12,
+                                    size: 14,
                                     weight: 'bold'
                                 }
                             }
@@ -5296,7 +5451,7 @@
                                 display: true,
                                 text: 'Impact →',
                                 font: {
-                                    size: 12,
+                                    size: 14,
                                     weight: 'bold'
                                 }
                             }
@@ -5393,14 +5548,30 @@
             const groupTableBody = document.getElementById('group-table-body');
             
             riskGroups.forEach((group, index) => {
-                const beforeData = groupBeforeData[index];
-                const afterData = groupAfterData[index];
+                // Trouver les données correspondantes au groupe dans les tableaux (qui peuvent être filtrés)
+                const beforeData = groupBeforeData.find(d => d.groupIndex === index);
+                const afterData = groupAfterData.find(d => d.groupIndex === index);
                 
-                // Utiliser les valeurs de base (sans jitter)
-                const realXBefore = beforeData.baseX || beforeData.x;
-                const realYBefore = beforeData.baseY || beforeData.y;
-                const realXAfter = afterData.baseX || afterData.x;
-                const realYAfter = afterData.baseY || afterData.y;
+                if (!beforeData || !afterData) {
+                    // Si pas de données (ex: tous les risques à 0), afficher N/A ou vide
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${group.id}</td>
+                        <td>
+                            <div style="font-weight: 600; color: #1d1d1f; margin-bottom: 4px; line-height: 1.3;">${group.name}</div>
+                            <div style="font-weight: 400; color: #5a5a5f; line-height: 1.4;">${group.description}</div>
+                        </td>
+                        <td colspan="2" style="text-align: center; color: #999; font-style: italic;">Aucun risque évalué</td>
+                    `;
+                    groupTableBody.appendChild(row);
+                    return;
+                }
+                
+                // Utiliser les valeurs de base
+                const realXBefore = beforeData.baseX;
+                const realYBefore = beforeData.baseY;
+                const realXAfter = afterData.baseX;
+                const realYAfter = afterData.baseY;
                 
                 // Calculer la criticité brute (P×I peut aller jusqu'à 25)
                 const critBeforeRaw = realXBefore * realYBefore;
@@ -5451,104 +5622,246 @@
             }
         }
         
+        // ========================================
+        // Algorithme de répartition des points (Anti-collision)
+        // ========================================
+        function resolveCollisions(points) {
+            // Paramètres de la simulation
+            const iterations = 50;       // Nombre de passes pour stabiliser
+            const radius = 0.4;          // Rayon augmenté pour éviter le chevauchement des labels 16px
+            const strength = 0.2;        // Force de répulsion plus ferme
+            const attraction = 0.05;     // Force de rappel vers la position d'origine
+            const maxDisplacement = 0.48;// Déplacement max autorisé (reste dans la case +/- 0.5)
+
+            // Initialiser les positions actuelles si pas encore fait
+            points.forEach(p => {
+                if (typeof p.x === 'undefined') p.x = p.baseX;
+                if (typeof p.y === 'undefined') p.y = p.baseY;
+            });
+
+            for (let i = 0; i < iterations; i++) {
+                points.forEach(p1 => {
+                    // 1. Force de rappel vers l'origine (baseX, baseY)
+                    const distToOriginX = p1.baseX - p1.x;
+                    const distToOriginY = p1.baseY - p1.y;
+                    
+                    p1.x += distToOriginX * attraction;
+                    p1.y += distToOriginY * attraction;
+
+                    // 2. Forces de répulsion entre points
+                    points.forEach(p2 => {
+                        if (p1 === p2) return;
+
+                        const dx = p1.x - p2.x;
+                        const dy = p1.y - p2.y;
+                        const distSq = dx * dx + dy * dy;
+                        const dist = Math.sqrt(distSq);
+
+                        // Si les points sont trop proches (collision)
+                        if (dist < radius) {
+                            // Calculer la force de répulsion
+                            // Plus ils sont proches, plus la force est grande
+                            const force = (radius - dist) / radius; // 1.0 si superposés, 0.0 si à la limite
+                            
+                            // Vecteur de répulsion normalisé
+                            let rx = dx / dist;
+                            let ry = dy / dist;
+
+                            // Cas particulier : superposition parfaite
+                            if (dist === 0) {
+                                // Répulsion aléatoire déterministe basée sur l'index ou l'ID
+                                const angle = (Math.random() * Math.PI * 2); 
+                                rx = Math.cos(angle);
+                                ry = Math.sin(angle);
+                            }
+
+                            // Appliquer la force
+                            const moveX = rx * force * strength;
+                            const moveY = ry * force * strength;
+
+                            p1.x += moveX;
+                            p1.y += moveY;
+                            p2.x -= moveX; // Action-réaction
+                            p2.y -= moveY;
+                        }
+                    });
+
+                    // 3. Contraintes (limites de la case)
+                    // On s'assure que le point ne s'éloigne pas trop de sa valeur réelle
+                    // pour ne pas induire en erreur sur la "case" visuelle
+                    const currentDistX = p1.x - p1.baseX;
+                    const currentDistY = p1.y - p1.baseY;
+                    
+                    // Clamper le déplacement
+                    if (Math.abs(currentDistX) > maxDisplacement) {
+                        p1.x = p1.baseX + Math.sign(currentDistX) * maxDisplacement;
+                    }
+                    if (Math.abs(currentDistY) > maxDisplacement) {
+                        p1.y = p1.baseY + Math.sign(currentDistY) * maxDisplacement;
+                    }
+                });
+            }
+            
+            return points;
+        }
+
         // Mettre à jour les graphiques
         function updateCharts() {
             const currentRisks = getCurrentRisks();
             
-            // Fonction pour ajouter un décalage stratégique (pas aléatoire)
-            // Pattern fixe pour éviter tout chevauchement
-            function addStrategicOffset(value, groupIndex, isX) {
-                const offsetPatterns = [
-                    { x: -0.35, y: -0.35 },  // Pattern 1
-                    { x: 0.35, y: -0.35 },   // Pattern 2
-                    { x: -0.35, y: 0.35 },   // Pattern 3
-                    { x: 0.35, y: 0.35 },    // Pattern 4
-                    { x: 0, y: 0 }           // Pattern 5
-                ];
+            let beforeData = [];
+            let afterData = [];
+            let groupBeforeDataForTable = [];
+            let groupAfterDataForTable = [];
 
-                // Utiliser un pattern cyclique basé sur le modulo du nombre de patterns
-                // Si on a plus de 5 groupes, on réutilise les patterns
-                const patternIndex = groupIndex % offsetPatterns.length;
-                const offset = isX ? offsetPatterns[patternIndex].x : offsetPatterns[patternIndex].y;
-                return value + offset;
+            // --- MODE 1 : VUE PAR GROUPES (MOYENNES) ---
+            if (matrixViewMode === 'groups') {
+                riskGroups.forEach((group, groupIndex) => {
+                    let totalProbBefore = 0, totalImpactBefore = 0, countBefore = 0;
+                    let totalProbAfter = 0, totalImpactAfter = 0, countAfter = 0;
+
+                    group.risks.forEach(risk => {
+                        const currentRisk = currentRisks.find(r => r.id === risk.id);
+                        if (currentRisk) {
+                            // Before
+                            if (currentRisk.gcBefore[0] > 0 && currentRisk.gcBefore[1] > 0) {
+                                totalProbBefore += (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
+                                totalImpactBefore += (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
+                                countBefore++;
+                            }
+                            // After
+                            if (currentRisk.gcAfter[0] > 0 && currentRisk.gcAfter[1] > 0) {
+                                totalProbAfter += (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
+                                totalImpactAfter += (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
+                                countAfter++;
+                            }
+                        }
+                    });
+
+                    // Préparer données AVANT
+                    if (countBefore > 0) {
+                        const baseX = totalProbBefore / countBefore;
+                        const baseY = totalImpactBefore / countBefore;
+                        
+                        const point = {
+                            x: baseX, // Position initiale = position réelle
+                            y: baseY,
+                            baseX: baseX,
+                            baseY: baseY,
+                            label: `Groupe ${group.id}`,
+                            shortLabel: `${group.id}`,
+                            groupName: group.name,
+                            groupIndex: groupIndex
+                        };
+                        beforeData.push(point);
+                        groupBeforeDataForTable.push(point);
+                    } else {
+                         groupBeforeDataForTable.push({ groupIndex: groupIndex, baseX: 0, baseY: 0 });
+                    }
+
+                    // Préparer données APRÈS
+                    if (countAfter > 0) {
+                        const baseX = totalProbAfter / countAfter;
+                        const baseY = totalImpactAfter / countAfter;
+
+                        const point = {
+                            x: baseX,
+                            y: baseY,
+                            baseX: baseX,
+                            baseY: baseY,
+                            label: `Groupe ${group.id}`,
+                            shortLabel: `${group.id}`,
+                            groupName: group.name,
+                            groupIndex: groupIndex
+                        };
+                        afterData.push(point);
+                        groupAfterDataForTable.push(point);
+                    } else {
+                        groupAfterDataForTable.push({ groupIndex: groupIndex, baseX: 0, baseY: 0 });
+                    }
+                });
+            } 
+            // --- MODE 2 : VUE PAR RISQUES INDIVIDUELS ---
+            else {
+                // D'abord, calculer les moyennes de groupes pour le tableau (toujours nécessaire)
+                riskGroups.forEach((group, groupIndex) => {
+                     let totalProbBefore = 0, totalImpactBefore = 0, countBefore = 0;
+                     let totalProbAfter = 0, totalImpactAfter = 0, countAfter = 0;
+
+                     group.risks.forEach(risk => {
+                         const currentRisk = currentRisks.find(r => r.id === risk.id);
+                         if (currentRisk) {
+                             if (currentRisk.gcBefore[0] > 0 && currentRisk.gcBefore[1] > 0) {
+                                 totalProbBefore += (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
+                                 totalImpactBefore += (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
+                                 countBefore++;
+                             }
+                             if (currentRisk.gcAfter[0] > 0 && currentRisk.gcAfter[1] > 0) {
+                                 totalProbAfter += (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
+                                 totalImpactAfter += (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
+                                 countAfter++;
+                             }
+                         }
+                     });
+                     
+                     groupBeforeDataForTable.push({ 
+                         groupIndex: groupIndex, 
+                         baseX: countBefore > 0 ? totalProbBefore / countBefore : 0, 
+                         baseY: countBefore > 0 ? totalImpactBefore / countBefore : 0 
+                     });
+                     
+                     groupAfterDataForTable.push({ 
+                         groupIndex: groupIndex, 
+                         baseX: countAfter > 0 ? totalProbAfter / countAfter : 0, 
+                         baseY: countAfter > 0 ? totalImpactAfter / countAfter : 0 
+                     });
+                });
+
+                // Ensuite, générer les points pour chaque risque
+                currentRisks.forEach((risk) => {
+                    // Trouver le nom du groupe
+                    const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
+                    const groupName = group ? group.name : 'Inconnu';
+
+                    // Before
+                    if (risk.gcBefore[0] > 0 && risk.gcBefore[1] > 0) {
+                        const baseX = (risk.dtuBefore[0] + risk.gcBefore[0]) / 2;
+                        const baseY = (risk.dtuBefore[1] + risk.gcBefore[1]) / 2;
+                        
+                        beforeData.push({
+                            x: baseX, // Initialement à la vraie position
+                            y: baseY,
+                            baseX: baseX,
+                            baseY: baseY,
+                            label: `Risque ${risk.id}`,
+                            shortLabel: risk.id,
+                            riskTitle: risk.title,
+                            groupName: groupName
+                        });
+                    }
+
+                    // After
+                    if (risk.gcAfter[0] > 0 && risk.gcAfter[1] > 0) {
+                        const baseX = (risk.dtuAfter[0] + risk.gcAfter[0]) / 2;
+                        const baseY = (risk.dtuAfter[1] + risk.gcAfter[1]) / 2;
+                        
+                        afterData.push({
+                            x: baseX,
+                            y: baseY,
+                            baseX: baseX,
+                            baseY: baseY,
+                            label: `Risque ${risk.id}`,
+                            shortLabel: risk.id,
+                            riskTitle: risk.title,
+                            groupName: groupName
+                        });
+                    }
+                });
             }
-            
-            // Calculer les moyennes par groupe
-            const groupBeforeData = riskGroups.map((group, groupIndex) => {
-                let totalProbBefore = 0;
-                let totalImpactBefore = 0;
-                let count = 0;
 
-                group.risks.forEach(risk => {
-                    const currentRisk = currentRisks.find(r => r.id === risk.id);
-                    if (currentRisk) {
-                        // Ignorer les risques non évalués (valeur 0)
-                        if (currentRisk.gcBefore[0] === 0 || currentRisk.gcBefore[1] === 0) {
-                            return; // Skip ce risque
-                        }
-
-                        // Moyenne DTU et G&C
-                        const avgProb = (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
-                        const avgImpact = (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
-
-                        totalProbBefore += avgProb;
-                        totalImpactBefore += avgImpact;
-                        count++;
-                    }
-                });
-
-                const baseX = count > 0 ? totalProbBefore / count : 0;
-                const baseY = count > 0 ? totalImpactBefore / count : 0;
-
-                return {
-                    x: addStrategicOffset(baseX, groupIndex, true),
-                    y: addStrategicOffset(baseY, groupIndex, false),
-                    baseX: baseX,
-                    baseY: baseY,
-                    label: `Groupe ${group.id}`,
-                    groupName: group.name
-                };
-            });
-            
-            const groupAfterData = riskGroups.map((group, groupIndex) => {
-                let totalProbAfter = 0;
-                let totalImpactAfter = 0;
-                let count = 0;
-
-                group.risks.forEach(risk => {
-                    const currentRisk = currentRisks.find(r => r.id === risk.id);
-                    if (currentRisk) {
-                        // Ignorer les risques non évalués (valeur 0)
-                        if (currentRisk.gcAfter[0] === 0 || currentRisk.gcAfter[1] === 0) {
-                            return; // Skip ce risque
-                        }
-
-                        // Moyenne DTU et G&C
-                        const avgProb = (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
-                        const avgImpact = (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
-
-                        totalProbAfter += avgProb;
-                        totalImpactAfter += avgImpact;
-                        count++;
-                    }
-                });
-
-                const baseX = count > 0 ? totalProbAfter / count : 0;
-                const baseY = count > 0 ? totalImpactAfter / count : 0;
-
-                return {
-                    x: addStrategicOffset(baseX, groupIndex, true),
-                    y: addStrategicOffset(baseY, groupIndex, false),
-                    baseX: baseX,
-                    baseY: baseY,
-                    label: `Groupe ${group.id}`,
-                    groupName: group.name
-                };
-            });
-            
-            // Filtrer les groupes sans risques évalués (ne pas afficher les points à 0,0)
-            const filteredBeforeData = groupBeforeData.filter(group => group.baseX !== 0 || group.baseY !== 0);
-            const filteredAfterData = groupAfterData.filter(group => group.baseX !== 0 || group.baseY !== 0);
+            // APPLIQUER L'ANTI-COLLISION
+            resolveCollisions(beforeData);
+            resolveCollisions(afterData);
 
             // Détruire les anciens graphiques
             if (chartBefore) chartBefore.destroy();
@@ -5557,18 +5870,18 @@
             // Créer les nouveaux graphiques
             chartBefore = createRiskChart(
                 document.getElementById('chartBefore').getContext('2d'),
-                filteredBeforeData,
+                beforeData,
                 'Moyenne AVANT'
             );
 
             chartAfter = createRiskChart(
                 document.getElementById('chartAfter').getContext('2d'),
-                filteredAfterData,
+                afterData,
                 'Moyenne APRÈS'
             );
             
             updateRiskTable(currentRisks);
-            updateGroupTable(groupBeforeData, groupAfterData);
+            updateGroupTable(groupBeforeDataForTable, groupAfterDataForTable);
             updateDashboard(currentRisks);
         }
 
@@ -5717,65 +6030,86 @@
 
             // Récupérer les données actuelles
             const currentRisks = getCurrentRisks();
+            let chartData = [];
 
-            function addStrategicOffset(value, groupIndex, isX) {
-                const offsetPatterns = [
-                    { x: -0.35, y: -0.35 },
-                    { x: 0.35, y: -0.35 },
-                    { x: -0.35, y: 0.35 },
-                    { x: 0.35, y: 0.35 },
-                    { x: 0, y: 0 }
-                ];
-                const patternIndex = groupIndex % offsetPatterns.length;
-                const offset = isX ? offsetPatterns[patternIndex].x : offsetPatterns[patternIndex].y;
-                return value + offset;
+            // --- MODE 1 : VUE PAR GROUPES ---
+            if (matrixViewMode === 'groups') {
+                chartData = riskGroups.map((group, groupIndex) => {
+                    let totalProb = 0;
+                    let totalImpact = 0;
+                    let count = 0;
+
+                    group.risks.forEach(risk => {
+                        const riskData = currentRisks.find(r => r.id === risk.id);
+                        if (!riskData) return;
+
+                        const prob = type === 'before' ? riskData.gcBefore[0] : riskData.gcAfter[0];
+                        const impact = type === 'before' ? riskData.gcBefore[1] : riskData.gcAfter[1];
+
+                        if (prob === 0 || impact === 0) return;
+
+                        totalProb += (type === 'before' ? (riskData.dtuBefore[0] + prob)/2 : (riskData.dtuAfter[0] + prob)/2);
+                        totalImpact += (type === 'before' ? (riskData.dtuBefore[1] + impact)/2 : (riskData.dtuAfter[1] + impact)/2);
+                        count++;
+                    });
+
+                    if (count === 0) return null;
+
+                    const avgProb = totalProb / count;
+                    const avgImpact = totalImpact / count;
+
+                    return {
+                        x: avgProb, // Pas d'offset initial, l'algo s'en charge
+                        y: avgImpact,
+                        baseX: avgProb,
+                        baseY: avgImpact,
+                        label: `Groupe ${group.id}`,
+                        shortLabel: `${group.id}`,
+                        groupName: group.name
+                    };
+                }).filter(d => d !== null);
+            }
+            // --- MODE 2 : VUE PAR RISQUES ---
+            else {
+                currentRisks.forEach((risk) => {
+                    const prob = type === 'before' ? risk.gcBefore[0] : risk.gcAfter[0];
+                    const impact = type === 'before' ? risk.gcBefore[1] : risk.gcAfter[1];
+
+                    if (prob > 0 && impact > 0) {
+                        const baseX = type === 'before' ? (risk.dtuBefore[0] + prob)/2 : (risk.dtuAfter[0] + prob)/2;
+                        const baseY = type === 'before' ? (risk.dtuBefore[1] + impact)/2 : (risk.dtuAfter[1] + impact)/2;
+                        
+                        const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
+                        const groupName = group ? group.name : 'Inconnu';
+
+                        chartData.push({
+                            x: baseX,
+                            y: baseY,
+                            baseX: baseX,
+                            baseY: baseY,
+                            label: `Risque ${risk.id}`,
+                            shortLabel: risk.id,
+                            riskTitle: risk.title,
+                            groupName: groupName
+                        });
+                    }
+                });
             }
 
-            const groupData = riskGroups.map((group, groupIndex) => {
-                let totalProb = 0;
-                let totalImpact = 0;
-                let count = 0;
-
-                group.risks.forEach(risk => {
-                    const riskData = currentRisks.find(r => r.id === risk.id);
-                    if (!riskData) return;
-
-                    const prob = type === 'before' ? riskData.gcBefore[0] : riskData.gcAfter[0];
-                    const impact = type === 'before' ? riskData.gcBefore[1] : riskData.gcAfter[1];
-
-                    if (prob === 0 || impact === 0) return;
-
-                    totalProb += prob;
-                    totalImpact += impact;
-                    count++;
-                });
-
-                if (count === 0) return null;
-
-                const avgProb = totalProb / count;
-                const avgImpact = totalImpact / count;
-
-                return {
-                    x: addStrategicOffset(avgProb, groupIndex, true),
-                    y: addStrategicOffset(avgImpact, groupIndex, false),
-                    baseX: avgProb,
-                    baseY: avgImpact,
-                    label: `Groupe ${group.id}`,
-                    groupName: group.name
-                };
-            }).filter(d => d !== null);
+            // APPLIQUER L'ANTI-COLLISION
+            resolveCollisions(chartData);
 
             // Créer le graphique dans la modal
             modalChartInstance = new Chart(canvas, {
                 type: 'scatter',
                 data: {
                     datasets: [{
-                        data: groupData,
+                        data: chartData,
                         backgroundColor: 'rgba(0, 122, 255, 0.8)',
                         borderColor: 'white',
                         borderWidth: 1.5,
-                        pointRadius: 10,
-                        pointHoverRadius: 12,
+                        pointRadius: matrixViewMode === 'risks' ? 12 : 14,
+                        pointHoverRadius: matrixViewMode === 'risks' ? 14 : 16,
                         pointStyle: 'circle'
                     }]
                 },
@@ -5787,13 +6121,16 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 12 },
-                            padding: 10,
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 13 },
+                            padding: 12,
                             callbacks: {
                                 title: function(context) {
                                     const point = context[0].raw;
+                                    if (matrixViewMode === 'risks') {
+                                        return `${point.shortLabel} - ${point.riskTitle}`;
+                                    }
                                     return point.label;
                                 },
                                 label: function(context) {
@@ -5801,12 +6138,22 @@
                                     const realX = point.baseX || point.x;
                                     const realY = point.baseY || point.y;
                                     const criticality = realX * realY;
-                                    return [
-                                        `${point.groupName}`,
-                                        `Probabilité: ${realX.toFixed(2)}`,
-                                        `Impact: ${realY.toFixed(2)}`,
-                                        `Criticité: ${criticality.toFixed(1)}/25`
-                                    ];
+                                    
+                                    if (matrixViewMode === 'risks') {
+                                        return [
+                                            `Groupe: ${point.groupName}`,
+                                            `Probabilité: ${realX}`,
+                                            `Impact: ${realY}`,
+                                            `Criticité: ${criticality}`
+                                        ];
+                                    } else {
+                                        return [
+                                            `${point.groupName}`,
+                                            `Probabilité: ${realX.toFixed(2)}`,
+                                            `Impact: ${realY.toFixed(2)}`,
+                                            `Criticité: ${criticality.toFixed(1)}/25`
+                                        ];
+                                    }
                                 }
                             }
                         }
@@ -5819,7 +6166,6 @@
                                 stepSize: 1,
                                 font: { size: 12 },
                                 callback: function(value) {
-                                    // Afficher seulement les valeurs entières 1-5
                                     return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
                                 }
                             },
@@ -5827,7 +6173,7 @@
                             title: {
                                 display: true,
                                 text: 'Probabilité →',
-                                font: { size: 12, weight: 'bold' }
+                                font: { size: 14, weight: 'bold' }
                             }
                         },
                         y: {
@@ -5837,7 +6183,6 @@
                                 stepSize: 1,
                                 font: { size: 12 },
                                 callback: function(value) {
-                                    // Afficher seulement les valeurs entières 1-5
                                     return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
                                 }
                             },
@@ -5845,7 +6190,7 @@
                             title: {
                                 display: true,
                                 text: '↑ Impact',
-                                font: { size: 12, weight: 'bold' }
+                                font: { size: 14, weight: 'bold' }
                             }
                         }
                     }
@@ -5936,9 +6281,59 @@
             document.getElementById('language-selector').value = savedLang;
         }
 
+        let matrixViewMode = 'groups'; // 'groups' ou 'risks'
+
+        function setMatrixView(mode) {
+            matrixViewMode = mode;
+            // Sauvegarder la préférence de l'utilisateur
+            localStorage.setItem('riskr-matrix-view', mode);
+            
+            // Mettre à jour l'état visuel des boutons
+            const btnGroups = document.getElementById('view-btn-groups');
+            const btnRisks = document.getElementById('view-btn-risks');
+            
+            if (btnGroups && btnRisks) {
+                if (mode === 'groups') {
+                    btnGroups.classList.add('active');
+                    btnGroups.style.background = 'white';
+                    btnGroups.style.color = '#1d1d1f';
+                    btnGroups.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+                    
+                    btnRisks.classList.remove('active');
+                    btnRisks.style.background = 'transparent';
+                    btnRisks.style.color = '#666';
+                    btnRisks.style.boxShadow = 'none';
+                } else {
+                    btnRisks.classList.add('active');
+                    btnRisks.style.background = 'white';
+                    btnRisks.style.color = '#1d1d1f';
+                    btnRisks.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+                    
+                    btnGroups.classList.remove('active');
+                    btnGroups.style.background = 'transparent';
+                    btnGroups.style.color = '#666';
+                    btnGroups.style.boxShadow = 'none';
+                }
+            }
+            
+            updateCharts();
+        }
+
+        // Initialisation de la vue matricielle (Groupes ou Risques)
+        function initMatrixView() {
+            const savedView = localStorage.getItem('riskr-matrix-view');
+            // Si une préférence est sauvegardée, on l'applique
+            if (savedView === 'groups' || savedView === 'risks') {
+                setMatrixView(savedView);
+            } else {
+                // Sinon, valeur par défaut
+                setMatrixView('groups');
+            }
+        }
 
         // Initialisation
         initLanguage(); // Initialiser la langue sauvegardée
+        initMatrixView(); // Restaurer la vue matricielle sauvegardée
         restoreGroupMappingFromStorage(); // Restaurer le mapping depuis localStorage (une seule fois)
         renderRisks();
         initGroupNameEditing(); // Activer l'édition inline sur les noms de groupes
@@ -5946,7 +6341,7 @@
         initRiskTitleEditing(); // Activer l'édition inline sur les noms de risques
         initRemediationEditing(); // Activer l'édition inline sur les remédiations
         initStatusDropdowns();
-                initResponsableEditing(); // Activer les dropdowns de statut
+        initResponsableEditing(); // Activer les dropdowns de statut
         initSectionTitleEditing(); // Activer l'édition inline sur les sous-titres de sections
         updateCharts();
 
