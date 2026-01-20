@@ -745,110 +745,6 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .matrix-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-
-        .matrix-modal.active {
-            display: flex;
-        }
-
-        .matrix-modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 90vw;
-            max-height: 90vh;
-            position: relative;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        }
-
-        .matrix-modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 32px;
-            cursor: pointer;
-            color: #666;
-            line-height: 1;
-            padding: 0;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s;
-        }
-
-        .matrix-modal-close:hover {
-            color: #000;
-        }
-
-        /* Boutons de navigation dans la modal */
-        .matrix-nav-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e5e5e7;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 24px;
-            color: #1d1d1f;
-            transition: all 0.2s;
-            z-index: 10;
-            backdrop-filter: blur(10px);
-        }
-
-        .matrix-nav-btn:hover {
-            background: rgba(255, 255, 255, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateY(-50%) scale(1.05);
-        }
-
-        .matrix-nav-btn.prev {
-            left: 30px;
-        }
-
-        .matrix-nav-btn.next {
-            right: 30px;
-        }
-
-        .matrix-modal-canvas {
-            width: min(80vh, 70vw);
-            aspect-ratio: 1;
-            margin: 20px auto 0;
-        }
-
-        .matrix-modal-canvas canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        #matrix-modal-title {
-            text-align: center;
-            margin: 0;
-            font-size: 20px;
-            color: #1d1d1f;
-        }
-
         .chart-canvas {
             position: relative;
             width: 100%;
@@ -1723,8 +1619,11 @@
             right: 0;
             height: 20px;
             background: transparent;
-            cursor: pointer;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .risk-separator::before {
@@ -1738,6 +1637,7 @@
             opacity: 0;
             transition: opacity 0.2s ease;
             transform: translateY(-50%);
+            z-index: -1;
         }
 
         .risk-separator:hover::before {
@@ -1745,10 +1645,6 @@
         }
 
         .risk-separator-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background: white;
             padding: 4px 12px;
             color: #666666;
@@ -1761,13 +1657,17 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            z-index: 1;
-            pointer-events: none;
+            cursor: pointer;
+            pointer-events: auto;
         }
 
         .risk-separator:hover .risk-separator-label {
             opacity: 1;
             color: #0071e3;
+        }
+
+        .risk-separator-label:hover {
+            background: #f5f5f7;
         }
 
         .risk-separator-icon {
@@ -1786,7 +1686,7 @@
             opacity: 1;
             background: #0071e3;
             color: white;
-            transform: translate(-50%, -50%) scale(1.1);
+            transform: scale(1.05);
         }
 
         /* Toast Notifications pour feedback sauvegarde */
@@ -1887,38 +1787,27 @@
         }
 
         /* Croix de transformation en jalon */
-        .milestone-x {
-            position: absolute;
-            right: 50%;
-            top: 50%;
-            transform: translate(90px, -50%);
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: normal;
-            color: #ff3b30;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            width: 14px;
-            height: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #d2d2d7;
-            line-height: 1;
+        .milestone-cell {
+            position: relative;
         }
 
-        .date-cell:hover .milestone-x {
-            opacity: 1;
-            pointer-events: auto;
+        .milestone-x {
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff3b30;
+            transition: all 0.2s;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 26px;
+            text-align: center;
+            border-radius: 3px;
         }
 
         .milestone-x:hover {
             background: #ff3b30;
             color: white;
-            border-color: #ff3b30;
         }
 
         /* Badge de jalon */
@@ -2185,11 +2074,11 @@
     <div class="container">
         <!-- Header avec icône, titre et contrôles -->
         <div class="app-header">
-            <img src="riskr.png" alt="Riskr" class="app-icon">
+            <img src="icon.svg" alt="Plannr" class="app-icon">
 
             <div class="app-title-section">
-                <h1 id="main-title" class="editable-title"><span data-i18n="pageTitle">Riskr - Analyse de Risques Interactive</span></h1>
-                <p id="main-subtitle" class="editable-subtitle" style="color: #86868b; margin: 4px 0 0 0; font-size: 15px;">Évaluation des risques avant et après remédiation</p>
+                <h1 id="main-title" class="editable-title"><span data-i18n="pageTitle">Plannr - Planning de Projet</span></h1>
+                <p id="main-subtitle" class="editable-subtitle" style="color: #86868b; margin: 4px 0 0 0; font-size: 15px;" data-i18n="pageSubtitle">Gestion des phases et tâches du projet</p>
             </div>
 
             <div class="app-controls">
@@ -2233,7 +2122,7 @@
                         <line x1="9" y1="17" x2="13" y2="17"/>
                     </svg>
                     <div class="dashboard-card-content">
-                        <div class="dashboard-card-value" id="dashboard-total-risks">-</div>
+                        <div class="dashboard-card-value" id="dashboard-total-tasks">0</div>
                         <div class="dashboard-card-label" data-i18n="dashboardTotalTasks">Tâches totales</div>
                     </div>
                 </div>
@@ -2244,22 +2133,18 @@
                         <polyline points="12 6 12 12 16 14"/>
                     </svg>
                     <div class="dashboard-card-content">
-                        <div class="dashboard-card-value">
-                            <span id="dashboard-critical-before">-</span>
-                        </div>
+                        <div class="dashboard-card-value" id="dashboard-in-progress">0</div>
                         <div class="dashboard-card-label" data-i18n="dashboardTasksInProgress">En cours</div>
                     </div>
                 </div>
 
                 <div class="dashboard-card">
                     <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
                     </svg>
                     <div class="dashboard-card-content">
-                        <div class="dashboard-card-value">
-                            <span id="dashboard-critical-after">-</span>
-                        </div>
+                        <div class="dashboard-card-value" id="dashboard-completed">0</div>
                         <div class="dashboard-card-label" data-i18n="dashboardTasksCompleted">Terminées</div>
                     </div>
                 </div>
@@ -2270,7 +2155,7 @@
                         <polyline points="19 12 12 19 5 12"/>
                     </svg>
                     <div class="dashboard-card-content">
-                        <div class="dashboard-card-value" id="dashboard-avg-reduction">-</div>
+                        <div class="dashboard-card-value" id="dashboard-total-duration">-</div>
                         <div class="dashboard-card-label" data-i18n="dashboardTotalDuration">Durée totale</div>
                     </div>
                 </div>
@@ -2280,8 +2165,8 @@
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     <div class="dashboard-card-content">
-                        <div class="dashboard-card-value" id="dashboard-treated">-</div>
-                        <div class="dashboard-card-label" data-i18n="dashboardTreated">Progression</div>
+                        <div class="dashboard-card-value" id="dashboard-progression">-</div>
+                        <div class="dashboard-card-label" data-i18n="dashboardProgression">Progression</div>
                     </div>
                 </div>
             </div>
@@ -2303,7 +2188,6 @@
                 <div class="view-toggle-wrapper" style="background: #e5e5e7; padding: 2px; border-radius: 8px; display: flex;">
                     <button onclick="setGanttView('compact')" id="view-btn-compact" class="view-toggle-btn" style="border: none; background: transparent; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.2s;">Compact</button>
                     <button onclick="setGanttView('cascade')" id="view-btn-cascade" class="view-toggle-btn active" style="border: none; background: white; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #1d1d1f; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s;">Cascade</button>
-                    <button onclick="setGanttView('groupe')" id="view-btn-groupe" class="view-toggle-btn" style="border: none; background: transparent; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.2s;">Groupe</button>
                 </div>
             </div>
         </div>
@@ -2324,7 +2208,7 @@
                                 <div class="chart-header">
                                     <h3 data-i18n="ganttTitle">Diagramme de Gantt - Planning du projet</h3>
                                 </div>
-                                <div class="chart-canvas" style="height: 400px;">
+                                <div class="chart-canvas" style="height: 430px;">
                                     <canvas id="ganttChart"></canvas>
                                 </div>
                             </div>
@@ -2332,42 +2216,16 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Tableau des groupes (inséré dynamiquement) -->
-            <div id="group-table-wrapper">
-                <!-- Le tableau sera inséré ici par JavaScript -->
-            </div>
-
-            <!-- Tableau récapitulatif des risques -->
-            <div class="risk-table-container collapsible-section" style="margin-bottom: 0;">
-                <h3 class="collapsible-header" onclick="toggleCollapse('risk-recap-table')" style="margin-bottom: 8px;">
-                    <span class="collapse-icon">▼</span>
-                    <span data-i18n="riskTableTitle">Tableau Récapitulatif des Risques</span>
-                </h3>
-                <div id="risk-recap-table" class="collapsible-content">
-                    <table class="risk-table">
-                        <thead>
-                            <tr>
-                                <th data-i18n="colNumber">N°</th>
-                                <th data-i18n="colDescription">Description du Risque</th>
-                                <th data-i18n="colAvgBefore">Moyenne Avant</th>
-                                <th data-i18n="colAvgAfter">Moyenne Après</th>
-                            </tr>
-                        </thead>
-                        <tbody id="risk-table-body">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
 
-        <div id="risks-container"></div>
+        <!-- Conteneur principal pour la liste des tâches (Planning) -->
+        <div id="planning-container"></div>
     </div>
 
     <!-- Footer -->
     <footer class="app-footer">
         <div class="footer-links">
-            <a href="https://github.com/guthubrx/Riskr" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/guthubrx/plannr" target="_blank" rel="noopener noreferrer">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: text-bottom; margin-right: 4px;">
                     <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
                 </svg>
@@ -2377,7 +2235,7 @@
             <span>Licence AGPL-3.0</span>
         </div>
         <div class="footer-copyright">
-            © 2025 Riskr — Application d'analyse et de cartographie des risques
+            © 2026 Plannr — Application de gestion de planning et diagramme de Gantt
         </div>
     </footer>
 
@@ -2459,8 +2317,9 @@
             risks.push(...JSON.parse(JSON.stringify(state.risks)));
 
             // Re-rendre l'interface
-            renderRisks();
+            renderPlanning();
             updateGantt();
+            updateDashboard();
         }
 
         // Fonction Undo
@@ -2637,16 +2496,6 @@
 
         // Restaurer l'état des sections au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
-            // Restaurer l'état du tableau récapitulatif
-            const riskRecapTable = document.getElementById('risk-recap-table');
-            const isCollapsedRecap = localStorage.getItem('collapse-risk-recap-table') === 'true';
-
-            if (isCollapsedRecap && riskRecapTable) {
-                const header = riskRecapTable.previousElementSibling;
-                header.classList.add('collapsed');
-                riskRecapTable.classList.add('collapsed');
-            }
-
             // Restaurer l'état des matrices
             const matricesContent = document.getElementById('matrices-content');
             const isCollapsedMatrices = localStorage.getItem('collapse-matrices-content') === 'true';
@@ -3032,6 +2881,9 @@
                         risk.statut = newStatus;
                     }
 
+                    // Mettre à jour le dashboard
+                    updateDashboard();
+
                     showToast('✅ Statut mis à jour');
                 });
             });
@@ -3269,7 +3121,7 @@
             // Remplacer le titre par la valeur sauvegardée (si elle existe)
             if (savedTitle) {
                 const titleElement = document.getElementById('main-title');
-                const originalTitle = 'Riskr - Analyse de Risques Interactive';
+                const originalTitle = 'Plannr - Planning de Projet';
                 // Remplacer l'ancien titre par le nouveau dans le HTML
                 htmlContent = htmlContent.replace(
                     `<h1 id="main-title" class="editable-title">${originalTitle}</h1>`,
@@ -3441,7 +3293,7 @@
                     saveGroupMapping();
 
                     // 6. Rafraîchir l'interface
-                    renderRisks();
+                    renderPlanning();
                     updateGantt();
 
                     showToast('✅ Données importées avec succès !');
@@ -3477,39 +3329,28 @@
 
             let yPosition = 40;
 
-            // Ajouter les matrices (Before et After) sur la première page
+            // Ajouter le diagramme de Gantt sur la première page
             doc.setFontSize(14);
             doc.setFont(undefined, 'bold');
-            doc.text('Matrices de risques', 105, yPosition, { align: 'center' });
+            doc.text('Diagramme de Gantt', 105, yPosition, { align: 'center' });
             yPosition += 10;
 
-            // Capturer les canvas des matrices et les ajouter au PDF
-            const chartBefore = document.getElementById('chartBefore');
-            const chartAfter = document.getElementById('chartAfter');
+            // Capturer le canvas du Gantt et l'ajouter au PDF
+            const ganttCanvas = document.getElementById('ganttChart');
 
-            if (chartBefore) {
-                const imgBefore = chartBefore.toDataURL('image/png');
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Avant remédiation', 105, yPosition, { align: 'center' });
-                yPosition += 5;
-                doc.addImage(imgBefore, 'PNG', 15, yPosition, 85, 85);
-                yPosition -= 5;
-            }
-
-            if (chartAfter) {
-                const imgAfter = chartAfter.toDataURL('image/png');
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('Après remédiation', 195, yPosition, { align: 'center' });
-                yPosition += 5;
-                doc.addImage(imgAfter, 'PNG', 110, yPosition, 85, 85);
-                yPosition += 90;
+            if (ganttCanvas) {
+                try {
+                    const imgGantt = ganttCanvas.toDataURL('image/png');
+                    // Ajuster la taille de l'image pour qu'elle tienne dans la page (A4 fait environ 210mm de large)
+                    doc.addImage(imgGantt, 'PNG', 15, yPosition, 180, 100);
+                    yPosition += 110;
+                } catch (e) {
+                    console.error('Erreur lors de la capture du Gantt:', e);
+                    yPosition += 10;
+                }
             } else {
                 yPosition += 10;
             }
-
-            yPosition += 10;
 
             // Pour chaque groupe de risques
             riskGroups.forEach((group, groupIndex) => {
@@ -3525,49 +3366,35 @@
                 yPosition += 10;
 
                 if (group.tasks && group.tasks.length > 0) {
-                    // Préparer les données du tableau
+                    // Préparer les données pour le tableau
                     const tableData = group.tasks.map(risk => {
-                        const probBefore = risk.gcBefore[0] || '-';
-                        const impactBefore = risk.gcBefore[1] || '-';
-                        const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]) || '-';
-                        const probAfter = risk.gcAfter[0] || '-';
-                        const impactAfter = risk.gcAfter[1] || '-';
-                        const critAfter = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]) || '-';
-                        const reduction = critBefore !== '-' && critAfter !== '-'
-                            ? `${((1 - critAfter/critBefore) * 100).toFixed(0)}%`
-                            : '-';
-
                         return [
                             risk.id,
                             risk.title,
-                            probBefore,
-                            impactBefore,
-                            critBefore,
-                            probAfter,
-                            impactAfter,
-                            critAfter,
-                            reduction
+                            risk.startDate || '-',
+                            risk.endDate || '-',
+                            risk.duration ? risk.duration + 'j' : '-',
+                            risk.statut || '-',
+                            risk.responsable || '-'
                         ];
                     });
 
                     // Créer le tableau avec autoTable
                     doc.autoTable({
                         startY: yPosition,
-                        head: [['#', 'Risque', 'P.Av', 'I.Av', 'C.Av', 'P.Ap', 'I.Ap', 'C.Ap', 'Réd.']],
+                        head: [['#', 'Tâche', 'Début', 'Fin', 'Durée', 'Statut', 'Responsable']],
                         body: tableData,
                         theme: 'grid',
-                        styles: { fontSize: 8, cellPadding: 2 },
+                        styles: { fontSize: 9, cellPadding: 3 },
                         headStyles: { fillColor: [0, 113, 227], textColor: 255 },
                         columnStyles: {
                             0: { cellWidth: 10 },
-                            1: { cellWidth: 60 },
-                            2: { cellWidth: 12 },
-                            3: { cellWidth: 12 },
-                            4: { cellWidth: 12 },
-                            5: { cellWidth: 12 },
-                            6: { cellWidth: 12 },
-                            7: { cellWidth: 12 },
-                            8: { cellWidth: 15 }
+                            1: { cellWidth: 80 }, // Tâche plus large
+                            2: { cellWidth: 20 },
+                            3: { cellWidth: 20 },
+                            4: { cellWidth: 15 },
+                            5: { cellWidth: 20 },
+                            6: { cellWidth: 25 }
                         }
                     });
 
@@ -3575,7 +3402,7 @@
                 } else {
                     doc.setFont(undefined, 'normal');
                     doc.setFontSize(10);
-                    doc.text('Aucun risque', 20, yPosition);
+                    doc.text('Aucune tâche', 20, yPosition);
                     yPosition += 10;
                 }
             });
@@ -3583,7 +3410,7 @@
             // Télécharger le PDF
             const now = new Date();
             const dateStr = now.toISOString().slice(0, 10);
-            doc.save(`riskr_export_${dateStr}.pdf`);
+            doc.save(`plannr_export_${dateStr}.pdf`);
 
         }
 
@@ -3599,67 +3426,43 @@
                 const sheetData = [];
 
                 // En-têtes
-                sheetData.push(['#', 'Risque', 'Remédiations', 'Prob.Avant', 'Impact Avant', 'Crit.Avant', 'Prob.Après', 'Impact Après', 'Crit.Après', 'Réduction', 'Statut', 'Responsable']);
+                sheetData.push(['#', 'Tâche', 'Début', 'Fin', 'Durée (j)', 'Statut', 'Responsable']);
 
-                // Données des risques
+                // Données des tâches
                 group.tasks.forEach(risk => {
-                    const probBefore = risk.gcBefore[0] || '';
-                    const impactBefore = risk.gcBefore[1] || '';
-                    const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]) || '';
-                    const probAfter = risk.gcAfter[0] || '';
-                    const impactAfter = risk.gcAfter[1] || '';
-                    const critAfter = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]) || '';
-                    const reduction = critBefore && critAfter
-                        ? ((1 - critAfter/critBefore) * 100).toFixed(0) + '%'
-                        : '';
-                    const remediations = risk.mesures && risk.mesures.length > 0
-                        ? risk.mesures.join(' • ')
-                        : '';
-
                     sheetData.push([
                         risk.id,
                         risk.title,
-                        remediations,
-                        probBefore,
-                        impactBefore,
-                        critBefore,
-                        probAfter,
-                        impactAfter,
-                        critAfter,
-                        reduction,
+                        risk.startDate || '',
+                        risk.endDate || '',
+                        risk.duration || '',
                         risk.statut || '',
                         risk.responsable || ''
                     ]);
                 });
 
-                // Créer la feuille
                 const ws = XLSX.utils.aoa_to_sheet(sheetData);
 
-                // Définir les largeurs de colonnes
+                // Largeur des colonnes
                 ws['!cols'] = [
                     { wch: 5 },  // #
-                    { wch: 40 }, // Risque
-                    { wch: 50 }, // Remédiations
-                    { wch: 10 }, // Prob.Avant
-                    { wch: 12 }, // Impact Avant
-                    { wch: 10 }, // Crit.Avant
-                    { wch: 10 }, // Prob.Après
-                    { wch: 12 }, // Impact Après
-                    { wch: 10 }, // Crit.Après
-                    { wch: 10 }, // Réduction
+                    { wch: 50 }, // Tâche
+                    { wch: 12 }, // Début
+                    { wch: 12 }, // Fin
+                    { wch: 10 }, // Durée
                     { wch: 15 }, // Statut
                     { wch: 20 }  // Responsable
                 ];
 
-                // Nom de la feuille (max 31 caractères)
-                let sheetName = group.name.substring(0, 31);
+                // Nom de l'onglet nettoyé (max 31 chars)
+                let sheetName = (group.id + ". " + group.name).substring(0, 31).replace(/[/\\?*\[\]]/g, "");
                 XLSX.utils.book_append_sheet(wb, ws, sheetName);
             });
 
             // Télécharger le fichier Excel
             const now = new Date();
             const dateStr = now.toISOString().slice(0, 10);
-            XLSX.writeFile(wb, `riskr_export_${dateStr}.xlsx`);
+            XLSX.writeFile(wb, `plannr_export_${dateStr}.xlsx`);
 
         }
 
@@ -3667,69 +3470,38 @@
         // Export CSV
         // ========================================
 
-        function exportToCSV() {
-            let csvContent = '';
-
-            // En-têtes CSV
-            csvContent += '#,Groupe,Risque,Remédiations,Prob.Avant,Impact Avant,Crit.Avant,Prob.Après,Impact Après,Crit.Après,Réduction,Statut,Responsable\n';
-
-            // Données
-            riskGroups.forEach(group => {
-                group.tasks.forEach(risk => {
-                    const probBefore = risk.gcBefore[0] || '';
-                    const impactBefore = risk.gcBefore[1] || '';
-                    const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]) || '';
-                    const probAfter = risk.gcAfter[0] || '';
-                    const impactAfter = risk.gcAfter[1] || '';
-                    const critAfter = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]) || '';
-                    const reduction = critBefore && critAfter
-                        ? ((1 - critAfter/critBefore) * 100).toFixed(0) + '%'
-                        : '';
-                    const remediations = risk.mesures && risk.mesures.length > 0
-                        ? risk.mesures.join(' • ')
-                        : '';
-
-                    // Échapper les guillemets et entourer les champs avec des guillemets si nécessaire
-                    const escapeCSV = (str) => {
-                        str = String(str);
-                        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                            return '"' + str.replace(/"/g, '""') + '"';
-                        }
-                        return str;
-                    };
-
-                    csvContent += [
-                        risk.id,
-                        escapeCSV(group.name),
-                        escapeCSV(risk.title),
-                        escapeCSV(remediations),
-                        probBefore,
-                        impactBefore,
-                        critBefore,
-                        probAfter,
-                        impactAfter,
-                        critAfter,
-                        reduction,
-                        escapeCSV(risk.statut || ''),
-                        escapeCSV(risk.responsable || '')
-                    ].join(',') + '\n';
-                });
-            });
-
-            // Créer le Blob et télécharger
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            const now = new Date();
-            const dateStr = now.toISOString().slice(0, 10);
-            link.download = `riskr_export_${dateStr}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-
-        }
-
+                function exportToCSV() {
+                    let csvContent = "data:text/csv;charset=utf-8,";
+                    
+                    // En-tête CSV
+                    csvContent += '#,Groupe,Tâche,Début,Fin,Durée,Statut,Responsable\n';
+        
+                    riskGroups.forEach(group => {
+                        group.tasks.forEach(risk => {
+                            const row = [
+                                risk.id,
+                                `"${(group.name || '').replace(/"/g, '""')}"`,
+                                `"${(risk.title || '').replace(/"/g, '""')}"`,
+                                risk.startDate || '',
+                                risk.endDate || '',
+                                risk.duration || '',
+                                `"${(risk.statut || '').replace(/"/g, '""')}"`,
+                                `"${(risk.responsable || '').replace(/"/g, '""')}"`
+                            ];
+                            csvContent += row.join(',') + '\n';
+                        });
+                    });
+        
+                    const encodedUri = encodeURI(csvContent);
+                    const link = document.createElement("a");
+                    link.setAttribute("href", encodedUri);
+                    const now = new Date();
+                    const dateStr = now.toISOString().slice(0, 10);
+                    link.setAttribute("download", `plannr_export_${dateStr}.csv`);
+                    document.body.appendChild(link); // Requis pour Firefox
+                    link.click();
+                    document.body.removeChild(link);
+                }
         // ========================================
         // Système multilingue
         // ========================================
@@ -3795,7 +3567,8 @@
 
                 // Actions
                 addGroup: "Ajouter une phase",
-                addRisk: "Ajouter une tâche",
+                addRisk: "Tâche",
+                addMilestone: "Jalon",
                 deleteGroup: "Supprimer",
                 clickToAdd: "Cliquer pour ajouter",
                 clickToAddRemediation: "Cliquer pour ajouter une tâche",
@@ -3858,8 +3631,8 @@
                 zoomMatrix: "Enlarge Gantt"
             },
             es: {
-                pageTitle: "Riskr - Análisis de Riesgos Interactivo",
-                pageSubtitle: "Evaluación de riesgos antes y después de la remediación",
+                pageTitle: "Plannr - Planificación de Proyectos",
+                pageSubtitle: "Gestión de fases y tareas",
 
                 exportBtn: "Exportar",
                 exportTooltip: "Descargar una copia con sus modificaciones",
@@ -3869,69 +3642,45 @@
                 redoTooltip: "Rehacer acción deshecha (Cmd/Ctrl+Y)",
 
                 dashboardTitle: "Vista general",
-                dashboardRisksEvaluated: "Riesgos evaluados",
-                dashboardCriticalRisks: "Riesgos críticos (Antes → Después)",
-                dashboardAvgReduction: "Reducción promedio",
-                dashboardTreated: "Riesgos tratados",
+                dashboardTotalTasks: "Tareas totales",
+                dashboardTasksInProgress: "En curso",
+                dashboardTasksCompleted: "Completadas",
+                dashboardTotalDuration: "Duración total",
 
-                matricesTitle: "Matrices de Riesgos",
-                matrixBefore: "Matriz de riesgos no remediados",
-                matrixAfter: "Matriz de riesgos remediados",
-                riskTableTitle: "Tabla Resumen de Riesgos",
+                ganttTitle: "Diagrama de Gantt",
+                taskTableTitle: "Tabla de Tareas",
 
                 colNumber: "N°",
-                colDescription: "Descripción del Riesgo",
-                colAvgBefore: "Promedio Antes",
-                colAvgAfter: "Promedio Después",
+                colDescription: "Tarea",
+                colStartDate: "Fecha inicio",
+                colEndDate: "Fecha fin",
+                colDuration: "Duración (d)",
 
-                colRisk: "Riesgo",
-                colRemediations: "Remediaciones",
-                colBefore: "ANTES",
-                colAfter: "DESPUÉS",
-                colProb: "Prob.",
-                colImpact: "Impacto",
-                colCriticality: "Criticidad",
-                colReduction: "Reducción",
+                colTask: "Tarea",
                 colStatus: "Estado",
                 colResp: "Resp.",
 
-                axisProb: "Probabilidad →",
-                axisImpact: "↑ Impacto",
+                axisTime: "Tiempo →",
+                axisPhases: "↑ Fases",
 
-                probNotEval: "No evaluado",
-                probVeryUnlikely: "Muy improbable (< 5%)",
-                probUnlikely: "Improbable (5-25%)",
-                probPossible: "Posible (25-50%)",
-                probLikely: "Probable (50-75%)",
-                probAlmostCertain: "Casi seguro (> 75%)",
-
-                impactNotEval: "No evaluado",
-                impactMinor: "Menor (< 1M€)",
-                impactModerate: "Moderado (1-5M€)",
-                impactSignificant: "Significativo (5-20M€)",
-                impactMajor: "Mayor (20-50M€)",
-                impactCatastrophic: "Catastrófico (> 50M€)",
-
-                statusNotTreated: "No tratado",
+                statusTodo: "Por hacer",
                 statusInProgress: "En curso",
-                statusTreated: "Tratado",
-                statusAccepted: "Aceptado",
+                statusDone: "Hecho",
+                statusBlocked: "Bloqueado",
+                statusDelayed: "Retrasado",
 
-                critNotEval: "No evaluado",
-                critLow: "Aceptable",
-                critMedium: "Vigilar",
-                critHigh: "Crítico",
-
-                addGroup: "Agregar grupo",
-                addRisk: "Agregar riesgo",
+                addGroup: "Agregar fase",
+                addRisk: "Tarea",
+                addMilestone: "Hito",
                 deleteGroup: "Eliminar",
                 clickToAdd: "Clic para agregar",
-                clickToAddRemediation: "Clic para agregar remediaciones",
-                zoomMatrix: "Ampliar matriz"
+                clickToAddRemediation: "Clic para agregar tarea",
+                zoomMatrix: "Ampliar Gantt"
             },
+
             zh: {
-                pageTitle: "Riskr - 交互式风险分析",
-                pageSubtitle: "修复前后的风险评估",
+                pageTitle: "Plannr - 项目规划",
+                pageSubtitle: "管理阶段和任务",
 
                 exportBtn: "导出",
                 exportTooltip: "下载带有修改的副本",
@@ -3941,65 +3690,40 @@
                 redoTooltip: "重做已撤销的操作 (Cmd/Ctrl+Y)",
 
                 dashboardTitle: "概览",
-                dashboardRisksEvaluated: "已评估风险",
-                dashboardCriticalRisks: "关键风险 (前 → 后)",
-                dashboardAvgReduction: "平均降低",
-                dashboardTreated: "已处理风险",
+                dashboardTotalTasks: "总任务数",
+                dashboardTasksInProgress: "进行中",
+                dashboardTasksCompleted: "已完成",
+                dashboardTotalDuration: "总时长",
 
-                matricesTitle: "风险矩阵",
-                matrixBefore: "未缓解风险矩阵",
-                matrixAfter: "已缓解风险矩阵",
-                riskTableTitle: "风险汇总表",
+                ganttTitle: "甘特图",
+                taskTableTitle: "任务表",
 
                 colNumber: "编号",
-                colDescription: "风险描述",
-                colAvgBefore: "平均之前",
-                colAvgAfter: "平均之后",
+                colDescription: "任务",
+                colStartDate: "开始日期",
+                colEndDate: "结束日期",
+                colDuration: "时长 (天)",
 
-                colRisk: "风险",
-                colRemediations: "缓解措施",
-                colBefore: "之前",
-                colAfter: "之后",
-                colProb: "概率",
-                colImpact: "影响",
-                colCriticality: "严重性",
-                colReduction: "降低",
+                colTask: "任务",
                 colStatus: "状态",
                 colResp: "负责人",
 
-                axisProb: "概率 →",
-                axisImpact: "↑ 影响",
+                axisTime: "时间 →",
+                axisPhases: "↑ 阶段",
 
-                probNotEval: "未评估",
-                probVeryUnlikely: "非常不可能 (< 5%)",
-                probUnlikely: "不太可能 (5-25%)",
-                probPossible: "可能 (25-50%)",
-                probLikely: "很可能 (50-75%)",
-                probAlmostCertain: "几乎确定 (> 75%)",
-
-                impactNotEval: "未评估",
-                impactMinor: "轻微 (< 1M€)",
-                impactModerate: "中等 (1-5M€)",
-                impactSignificant: "显著 (5-20M€)",
-                impactMajor: "重大 (20-50M€)",
-                impactCatastrophic: "灾难性 (> 50M€)",
-
-                statusNotTreated: "未处理",
+                statusTodo: "待办",
                 statusInProgress: "进行中",
-                statusTreated: "已处理",
-                statusAccepted: "已接受",
+                statusDone: "已完成",
+                statusBlocked: "已锁定",
+                statusDelayed: "已延迟",
 
-                critNotEval: "未评估",
-                critLow: "可接受",
-                critMedium: "需监控",
-                critHigh: "关键",
-
-                addGroup: "添加组",
-                addRisk: "添加风险",
+                addGroup: "添加阶段",
+                addRisk: "任务",
+                addMilestone: "里程碑",
                 deleteGroup: "删除",
                 clickToAdd: "点击添加",
-                clickToAddRemediation: "点击添加缓解措施",
-                zoomMatrix: "放大矩阵"
+                clickToAddRemediation: "点击添加任务",
+                zoomMatrix: "放大甘特图"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -4135,113 +3859,7 @@
         // ========================================
         // Fonctions de calcul de criticité
         // ========================================
-
-        // Calcule le score de criticité (Probabilité × Impact)
-        // Retourne null si l'un des deux n'est pas évalué (valeur 0)
-        function calculateCriticality(probability, impact) {
-            if (probability === 0 || impact === 0) {
-                return null;
-            }
-            return probability * impact;
-        }
-
-        // Détermine le niveau de risque selon le score
-        function getCriticalityLevel(score) {
-            if (score === null) return null;
-            if (score >= 15) return 'high';      // Rouge: 15-25 (critique)
-            if (score >= 10) return 'medium';    // Orange: 10-14 (à surveiller)
-            return 'low';                        // Vert/Jaune: 1-9 (acceptable)
-        }
-
-        // Génère le badge HTML de criticité
-        function getCriticalityBadge(probability, impact) {
-            const score = calculateCriticality(probability, impact);
-
-            // Si non évalué, afficher un badge gris
-            if (score === null) {
-                return `<span class="criticality-badge criticality-unevaluated">
-                    ⚪ ${t('critNotEval')}
-                </span>`;
-            }
-
-            const level = getCriticalityLevel(score);
-
-            const labelKeys = {
-                low: 'critLow',
-                medium: 'critMedium',
-                high: 'critHigh'
-            };
-
-            const emojis = {
-                low: '🟩',
-                medium: '🟧',
-                high: '🟥'
-            };
-
-            return `<span class="criticality-badge criticality-${level}">
-                ${emojis[level]} <span class="criticality-score">${score}</span> ${t(labelKeys[level])}
-            </span>`;
-        }
-
-        // ========================================
-        // Calcul du % de réduction du risque
-        // ========================================
-
-        // Calcule le pourcentage de réduction du risque
-        // Formule : (criticité_avant - criticité_après) / criticité_avant × 100
-        function calculateRiskReduction(probBefore, impactBefore, probAfter, impactAfter) {
-            const criticalityBefore = calculateCriticality(probBefore, impactBefore);
-            const criticalityAfter = calculateCriticality(probAfter, impactAfter);
-
-            // Si l'une des deux criticités n'est pas évaluée, retourner null
-            if (criticalityBefore === null || criticalityAfter === null) {
-                return null;
-            }
-
-            // Si criticité avant = 0, pas de réduction possible (division par zéro)
-            if (criticalityBefore === 0) {
-                return null;
-            }
-
-            const reduction = ((criticalityBefore - criticalityAfter) / criticalityBefore) * 100;
-            return Math.round(reduction); // Arrondir à l'entier
-        }
-
-        // Génère le badge HTML de réduction du risque
-        function getRiskReductionBadge(probBefore, impactBefore, probAfter, impactAfter) {
-            const reductionPercent = calculateRiskReduction(probBefore, impactBefore, probAfter, impactAfter);
-
-            // Si non calculable (valeurs non évaluées)
-            if (reductionPercent === null) {
-                return `<span class="reduction-badge reduction-na">N/A</span>`;
-            }
-
-            // Déterminer la classe CSS selon le pourcentage
-            let badgeClass = '';
-            let emoji = '';
-            let label = '';
-
-            if (reductionPercent > 0) {
-                // Réduction positive = amélioration
-                badgeClass = 'reduction-positive';
-                emoji = '📉';
-                label = `${reductionPercent}%`;
-            } else if (reductionPercent < 0) {
-                // Réduction négative = dégradation
-                badgeClass = 'reduction-negative';
-                emoji = '📈';
-                label = `${Math.abs(reductionPercent)}%`;
-            } else {
-                // Aucun changement
-                badgeClass = 'reduction-neutral';
-                emoji = '➖';
-                label = '0%';
-            }
-
-            return `<span class="reduction-badge ${badgeClass}">
-                ${emoji} ${label}
-            </span>`;
-        }
+        // (Supprimées car non utilisées dans Plannr)
 
         // ========================================
         // DONNÉES - Tâches et Phases
@@ -4593,10 +4211,39 @@
             saveGroupMapping();
 
             // Re-rendre l'interface
-            renderRisks();
+            renderPlanning();
             updateGantt();
 
             showToast('✅ Groupe supprimé');
+        }
+
+        // Basculer entre Jalon et Tâche
+        function toggleMilestone(riskId, event) {
+            if (event) event.stopPropagation();
+            
+            const risk = risks.find(r => r.id === riskId);
+            if (!risk) return;
+
+            saveState();
+            
+            risk.isMilestone = !risk.isMilestone;
+            
+            // Si on repasse en tâche, on s'assure qu'il y a une date de fin (par défaut +7j)
+            if (!risk.isMilestone && risk.startDate && (!risk.endDate || risk.endDate === risk.startDate)) {
+                const start = new Date(risk.startDate);
+                const end = new Date(start.getTime() + (7 * 24 * 60 * 60 * 1000));
+                risk.endDate = end.toISOString().split('T')[0];
+                risk.duration = 7;
+            } else if (risk.isMilestone) {
+                // Si jalon, date fin = date début
+                risk.endDate = risk.startDate;
+                risk.duration = 0;
+            }
+
+            sanitizeData(); // Nettoyage immédiat pour éviter les incohérences
+            renderPlanning();
+            updateGantt();
+            updateDashboard();
         }
 
         // ========================================
@@ -4633,16 +4280,21 @@
             saveGroupMapping();
 
             // Re-rendre l'interface
-            renderRisks();
+            renderPlanning();
             updateGantt();
 
-            showToast('✅ Risque supprimé');
+            showToast('✅ Tâche supprimée');
         }
 
         // ========================================
         // Transformer une tâche en jalon (et inversement)
         // ========================================
-        function toggleMilestone(riskId) {
+        window.toggleMilestone = function(riskId, event) {
+            // Empêcher la propagation du clic pour éviter le drag & drop de la ligne
+            if (event) {
+                event.stopPropagation();
+            }
+
             const risk = risks.find(r => r.id === riskId);
             if (!risk) return;
 
@@ -4670,14 +4322,17 @@
             }
 
             // Re-rendre l'interface
-            renderRisks();
+            renderPlanning();
             updateGantt();
+            updateDashboard();
         }
 
         // ========================================
         // Ajouter un nouveau risque à une position spécifique
         // ========================================
-        function addNewRiskAtPosition(groupId, position) {
+        function addNewRiskAtPosition(groupId, position, isMilestone = false, customDate = null, chart = null) {
+            console.log('=== addNewRiskAtPosition ===', { groupId, position, isMilestone, customDate });
+
             // Sauvegarder l'état avant modification
             saveState();
 
@@ -4685,48 +4340,134 @@
             const group = riskGroups.find(g => g.id === groupId);
             if (!group) return;
 
-            // Calculer les dates par défaut
-            // Si on insère après une tâche existante (position > 0), on prend sa date de début
-            // Sinon, on utilise la date du jour
+            console.log('Groupe trouvé:', group.name, 'avec', group.tasks.length, 'tâches:', group.tasks.map(t => t.id));
+
+            // Calculer les dates
             let startDate, endDate;
-            if (position > 0 && group.tasks[position - 1]) {
-                // Prendre la date de début de la tâche précédente (celle au-dessus dans le tableau)
-                startDate = group.tasks[position - 1].startDate;
-                const endTime = new Date(startDate).getTime() + 7 * 24 * 60 * 60 * 1000;
-                endDate = new Date(endTime).toISOString().split('T')[0];
+
+            if (customDate) {
+                // Utiliser la date fournie (position de la souris dans le graphique)
+                startDate = customDate;
+
+                if (!isMilestone && chart) {
+                    // Calculer une durée adaptative pour les tâches
+                    // Durée = 5% de la largeur visible du graphique
+                    const xAxis = chart.scales.x;
+                    const minDate = xAxis.min;
+                    const maxDate = xAxis.max;
+                    const visibleRange = maxDate - minDate;
+                    const adaptiveDuration = visibleRange * 0.05; // 5% de la plage visible
+
+                    const endTime = new Date(startDate).getTime() + adaptiveDuration;
+                    endDate = new Date(endTime).toISOString().split('T')[0];
+                } else if (!isMilestone) {
+                    // Pas de chart mais tâche : durée par défaut de 7 jours
+                    const endTime = new Date(startDate).getTime() + 7 * 24 * 60 * 60 * 1000;
+                    endDate = new Date(endTime).toISOString().split('T')[0];
+                } else {
+                    // Jalon : pas de date de fin
+                    endDate = null;
+                }
             } else {
-                // Sinon utiliser la date du jour
-                const today = new Date();
-                startDate = today.toISOString().split('T')[0];
-                endDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                // Calculer les dates par défaut (logique existante)
+                // Si on insère après une tâche existante (position > 0), on prend sa date de début
+                // Sinon, on utilise la date du jour
+                if (position > 0 && group.tasks[position - 1]) {
+                    // Prendre la date de début de la tâche précédente (celle au-dessus dans le tableau)
+                    startDate = group.tasks[position - 1].startDate;
+                    const endTime = new Date(startDate).getTime() + 7 * 24 * 60 * 60 * 1000;
+                    endDate = new Date(endTime).toISOString().split('T')[0];
+                } else {
+                    // Sinon utiliser la date du jour
+                    const today = new Date();
+                    startDate = today.toISOString().split('T')[0];
+                    endDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+                }
+
+                // Pour les jalons, pas de date de fin
+                if (isMilestone) {
+                    endDate = null;
+                }
             }
 
-            // Créer un nouveau risque (tâche)
-            const newRiskNumber = group.tasks.length + 1;
+            // Créer un nouveau risque (tâche ou jalon)
+            // IMPORTANT: Créer avec l'ID final correct basé sur la position d'insertion
+            // pour éviter que le renumérotation change l'ID et cause un tri visuel incorrect
+            const finalId = position + 1;
             const newRisk = {
-                id: `${groupId}.${newRiskNumber}`,
-                title: "Nouvelle tâche",
+                id: `${groupId}.${finalId}`,
+                title: isMilestone ? "Nouveau jalon" : "Nouvelle tâche",
                 startDate: startDate,
-                endDate: endDate,
-                duration: 7,
+                endDate: isMilestone ? null : endDate,
+                duration: isMilestone ? 0 : calculateDuration(startDate, endDate),
                 statut: "À faire",
-                assignedTo: ""
+                assignedTo: "",
+                isMilestone: isMilestone
             };
 
-            // Ajouter le risque au tableau global
-            risks.push(newRisk);
+            // Trouver l'index du groupe dans riskGroups
+            const groupIndex = riskGroups.findIndex(g => g.id === groupId);
+            if (groupIndex === -1) return;
 
-            // Insérer le risque dans le groupe à la position spécifiée
-            group.tasks.splice(position, 0, newRisk);
+            // DEBUG AVANT: Afficher l'état AVANT l'insertion
+            console.log('=== DEBUG AVANT INSERTION ===');
+            console.log('Position demandée:', position);
+            console.log('ID final du jalon:', `${groupId}.${finalId}`);
+            console.log('groupIndex:', groupIndex);
+            console.log('État AVANT splice:', riskGroups[groupIndex].tasks.map((t, i) => `${i}:${t.id}(${t.isMilestone ? '★' : '○'})`).join(', '));
+            console.log('============================');
+
+            // Insérer directement dans riskGroups pour garantir la synchronisation
+            riskGroups[groupIndex].tasks.splice(position, 0, newRisk);
+
+            // DEBUG APRÈS: Afficher l'état APRÈS l'insertion
+            console.log('=== DEBUG APRÈS INSERTION ===');
+            console.log('État APRÈS splice:', riskGroups[groupIndex].tasks.map((t, i) => `${i}:${t.id}(${t.isMilestone ? '★' : '○'})`).join(', '));
+            console.log('=============================');
+
+            // IMPORTANT: Renuméroter TOUTES les tâches du groupe après insertion
+            // pour garantir des IDs uniques et éviter les collisions (ex: deux 2.2)
+            riskGroups[groupIndex].tasks.forEach((task, index) => {
+                task.id = `${groupId}.${index + 1}`;
+            });
+
+            // DEBUG FINAL: Afficher l'état APRÈS renumérotation
+            console.log('=== DEBUG APRÈS RENUMÉROTATION ===');
+            console.log('État FINAL:', riskGroups[groupIndex].tasks.map((t, i) => `${i}:${t.id}(${t.isMilestone ? '★' : '○'})`).join(', '));
+            console.log('================================');
+
+            // Synchroniser group.tasks aussi (pour le tableau HTML)
+            group.tasks = riskGroups[groupIndex].tasks;
+
+            // IMPORTANT: Mettre à jour chart.options.phasesData pour garantir la synchronisation
+            // sinon les calculs de position dans showSeparatorButtons seront basés sur des données obsolètes
+            if (ganttChart && ganttChart.options) {
+                ganttChart.options.phasesData = riskGroups.map(g => ({
+                    id: g.id,
+                    name: g.name,
+                    description: g.description,
+                    tasks: [...g.tasks],
+                    color: g.color
+                }));
+                console.log('=== chart.options.phasesData mis à jour ===');
+            }
+
+            // DEBUG: Afficher l'ordre des tâches dans la console
+            console.log('=== DEBUG INSERTION ===');
+            console.log('Position demandée:', position);
+            console.log('newRisk.isMilestone:', newRisk.isMilestone);
+            console.log('Ordre riskGroups:', riskGroups[groupIndex].tasks.map(t => ({id: t.id, isMilestone: t.isMilestone})));
+            console.log('====================');
 
             // Mettre à jour les dates de la phase
-            updatePhaseDates(group);
+            const phaseForUpdate = riskGroups[groupIndex];
+            updatePhaseDates(phaseForUpdate);
 
             // Sauvegarder le nouveau mapping AVANT de re-rendre
             saveGroupMapping();
 
             // Re-rendre l'interface
-            renderRisks();
+            renderPlanning();
             updateGantt();
 
             // Après le rendu, trouver la ligne du nouveau risque et ajouter le highlight
@@ -4818,7 +4559,7 @@
             saveGroupMapping();
 
             // Re-rendre l'interface
-            renderRisks();
+            renderPlanning();
             updateGantt();
 
             // Afficher un toast
@@ -4886,8 +4627,9 @@
             updateGantt();
         }
 
-        function renderRisks() {
-            const container = document.getElementById('risks-container');
+        function renderPlanning() {
+            const container = document.getElementById('planning-container');
+            if (!container) return; // Sécurité si le conteneur n'existe pas
             container.innerHTML = '';
 
             // Si aucun groupe, ajouter au moins un séparateur initial
@@ -5008,18 +4750,26 @@
                     const separatorTr = document.createElement('tr');
                     separatorTr.className = 'risk-separator-row';
                     separatorTr.innerHTML = `
-                        <td colspan="7">
-                            <div class="risk-separator" data-group-id="${group.id}" data-risk-position="0">
-                                <div class="risk-separator-label">
+                        <td colspan="8">
+                            <div class="risk-separator">
+                                <div class="risk-separator-label add-task-btn" data-group-id="${group.id}" data-risk-position="0" data-is-milestone="false">
                                     <span class="risk-separator-icon">+</span>
                                     <span>${t('addRisk')}</span>
+                                </div>
+                                <div class="risk-separator-label add-milestone-btn" data-group-id="${group.id}" data-risk-position="0" data-is-milestone="true">
+                                    <span class="risk-separator-icon">◆</span>
+                                    <span>${t('addMilestone')}</span>
                                 </div>
                             </div>
                         </td>
                     `;
-                    const separator = separatorTr.querySelector('.risk-separator');
-                    separator.addEventListener('click', () => {
-                        addNewRiskAtPosition(group.id, 0);
+                    const addTaskBtn = separatorTr.querySelector('.add-task-btn');
+                    addTaskBtn.addEventListener('click', () => {
+                        addNewRiskAtPosition(group.id, 0, false);
+                    });
+                    const addMilestoneBtn = separatorTr.querySelector('.add-milestone-btn');
+                    addMilestoneBtn.addEventListener('click', () => {
+                        addNewRiskAtPosition(group.id, 0, true);
                     });
                     tbody.appendChild(separatorTr);
                 } else {
@@ -5029,18 +4779,26 @@
                         const separatorTr = document.createElement('tr');
                         separatorTr.className = 'risk-separator-row';
                         separatorTr.innerHTML = `
-                            <td colspan="7">
-                                <div class="risk-separator" data-group-id="${group.id}" data-risk-position="${localIndex}">
-                                    <div class="risk-separator-label">
+                            <td colspan="8">
+                                <div class="risk-separator">
+                                    <div class="risk-separator-label add-task-btn" data-group-id="${group.id}" data-risk-position="${localIndex}" data-is-milestone="false">
                                         <span class="risk-separator-icon">+</span>
                                         <span>${t('addRisk')}</span>
+                                    </div>
+                                    <div class="risk-separator-label add-milestone-btn" data-group-id="${group.id}" data-risk-position="${localIndex}" data-is-milestone="true">
+                                        <span class="risk-separator-icon">◆</span>
+                                        <span>${t('addMilestone')}</span>
                                     </div>
                                 </div>
                             </td>
                         `;
-                        const separator = separatorTr.querySelector('.risk-separator');
-                        separator.addEventListener('click', () => {
-                            addNewRiskAtPosition(group.id, localIndex);
+                        const addTaskBtn = separatorTr.querySelector('.add-task-btn');
+                        addTaskBtn.addEventListener('click', () => {
+                            addNewRiskAtPosition(group.id, localIndex, false);
+                        });
+                        const addMilestoneBtn = separatorTr.querySelector('.add-milestone-btn');
+                        addMilestoneBtn.addEventListener('click', () => {
+                            addNewRiskAtPosition(group.id, localIndex, true);
                         });
                         tbody.appendChild(separatorTr);
 
@@ -5063,12 +4821,14 @@
                             <td class="risk-title-cell">
                                 <span class="editable-risk-title" data-risk-id="${risk.id}">${risk.id}. ${risk.title}</span>
                             </td>
+                            <td class="milestone-cell" style="text-align: center;">
+                                ${!risk.isMilestone ? `<span class="milestone-x" data-risk-id="${risk.id}" onclick="toggleMilestone('${risk.id}', event)" title="Transformer en jalon">×</span>` : '<span class="milestone-badge" onclick="toggleMilestone(\'' + risk.id + '\', event)" title="Clic pour retransformer en tâche">◆</span>'}
+                            </td>
                             <td class="date-cell">
                                 <input type="date" class="editable-date" data-risk-id="${risk.id}" data-date-type="startDate" value="${risk.startDate || ''}">
                             </td>
-                            <td class="date-cell" style="position: relative;">
+                            <td class="date-cell">
                                 <input type="date" class="editable-date" data-risk-id="${risk.id}" data-date-type="endDate" value="${risk.endDate || ''}" ${risk.isMilestone ? 'disabled' : ''}>
-                                ${!risk.isMilestone ? `<span class="milestone-x" data-risk-id="${risk.id}" onclick="toggleMilestone('${risk.id}')" title="Transformer en jalon">×</span>` : '<span class="milestone-badge" onclick="toggleMilestone(\'' + risk.id + '\')" title="Clic pour retransformer en tâche">◆</span>'}
                             </td>
                             <td class="duration-cell" id="duration-${index}">
                                 ${risk.duration || 0}
@@ -5093,18 +4853,26 @@
                     const finalSeparatorTr = document.createElement('tr');
                     finalSeparatorTr.className = 'risk-separator-row';
                     finalSeparatorTr.innerHTML = `
-                        <td colspan="7">
-                            <div class="risk-separator" data-group-id="${group.id}" data-risk-position="${group.tasks.length}">
-                                <div class="risk-separator-label">
+                        <td colspan="8">
+                            <div class="risk-separator">
+                                <div class="risk-separator-label add-task-btn" data-group-id="${group.id}" data-risk-position="${group.tasks.length}" data-is-milestone="false">
                                     <span class="risk-separator-icon">+</span>
                                     <span>${t('addRisk')}</span>
+                                </div>
+                                <div class="risk-separator-label add-milestone-btn" data-group-id="${group.id}" data-risk-position="${group.tasks.length}" data-is-milestone="true">
+                                    <span class="risk-separator-icon">◆</span>
+                                    <span>${t('addMilestone')}</span>
                                 </div>
                             </div>
                         </td>
                     `;
-                    const finalSeparator = finalSeparatorTr.querySelector('.risk-separator');
-                    finalSeparator.addEventListener('click', () => {
-                        addNewRiskAtPosition(group.id, group.tasks.length);
+                    const addTaskBtn = finalSeparatorTr.querySelector('.add-task-btn');
+                    addTaskBtn.addEventListener('click', () => {
+                        addNewRiskAtPosition(group.id, group.tasks.length, false);
+                    });
+                    const addMilestoneBtn = finalSeparatorTr.querySelector('.add-milestone-btn');
+                    addMilestoneBtn.addEventListener('click', () => {
+                        addNewRiskAtPosition(group.id, group.tasks.length, true);
                     });
                     tbody.appendChild(finalSeparatorTr);
                 }
@@ -5301,7 +5069,8 @@
                 moveRiskBetweenGroups(draggedRiskId, sourceGroupId, targetGroupId, targetRiskId);
 
                 // Re-render tout le tableau pour recréer les séparateurs et numérotation
-                renderRisks();
+                renderPlanning();
+                updateDashboard();
                 initGroupNameEditing();
                 initGroupDescriptionEditing();
                 initRiskTitleEditing();
@@ -5354,7 +5123,8 @@
                 moveRiskToPosition(draggedRiskId, sourceGroupId, targetGroupId, targetPosition);
 
                 // Re-render tout le tableau
-                renderRisks();
+                renderPlanning();
+                updateDashboard(); // Mettre à jour le dashboard
                 initGroupNameEditing();
                 initGroupDescriptionEditing();
                 initRiskTitleEditing();
@@ -5362,6 +5132,7 @@
                 initStatusDropdowns();
                 initResponsableEditing();
                 initSectionTitleEditing();
+                initDateEditing(); // Initialiser l'édition des dates
 
                 // Rafraîchir les graphiques
                 updateGantt();
@@ -5394,17 +5165,17 @@
             let adjustedPosition = targetPosition;
             if (sourceGroupId === targetGroupId) {
                 // Trouver la position actuelle du risque AVANT de le retirer
-                const originalIndex = sourceGroup.risks.findIndex(r => r.id === riskId);
+                const originalIndex = sourceGroup.tasks.findIndex(r => r.id === riskId);
                 if (originalIndex !== -1 && originalIndex < targetPosition) {
                     adjustedPosition = targetPosition - 1;
                 }
             }
 
             // Retirer le risque du groupe source
-            sourceGroup.risks = sourceGroup.risks.filter(r => r.id !== riskId);
+            sourceGroup.tasks = sourceGroup.tasks.filter(r => r.id !== riskId);
 
             // Insérer le risque à la position exacte dans le groupe cible
-            targetGroup.risks.splice(adjustedPosition, 0, risk);
+            targetGroup.tasks.splice(adjustedPosition, 0, risk);
 
             // Sauvegarder le mapping
             saveGroupMapping();
@@ -5422,23 +5193,23 @@
             if (!sourceGroup || !targetGroup) return;
 
             // Retirer le risque du groupe source
-            sourceGroup.risks = sourceGroup.risks.filter(r => r.id !== riskId);
+            sourceGroup.tasks = sourceGroup.tasks.filter(r => r.id !== riskId);
 
             // Ajouter le risque au groupe cible à la bonne position
-            if (!targetGroup.risks.find(r => r.id === riskId)) {
+            if (!targetGroup.tasks.find(r => r.id === riskId)) {
                 if (targetRiskId) {
                     // Insérer à la position du target
-                    const targetIndex = targetGroup.risks.findIndex(r => r.id === targetRiskId);
+                    const targetIndex = targetGroup.tasks.findIndex(r => r.id === targetRiskId);
                     if (targetIndex !== -1) {
                         // Insérer après le target si on descend, avant si on monte
-                        const currentTargetIndex = targetGroup.risks.findIndex(r => r.id === targetRiskId);
-                        targetGroup.risks.splice(currentTargetIndex + 1, 0, risk);
+                        const currentTargetIndex = targetGroup.tasks.findIndex(r => r.id === targetRiskId);
+                        targetGroup.tasks.splice(currentTargetIndex + 1, 0, risk);
                     } else {
-                        targetGroup.risks.push(risk);
+                        targetGroup.tasks.push(risk);
                     }
                 } else {
                     // Si pas de target spécifique, ajouter à la fin
-                    targetGroup.risks.push(risk);
+                    targetGroup.tasks.push(risk);
                 }
             }
 
@@ -5538,206 +5309,7 @@
             }
         };
         
-        // Plugin pour afficher les numéros de groupes ou ID risques sur les points
-        const riskLabelsPlugin = {
-            id: 'riskLabels',
-            afterDatasetsDraw: (chart) => {
-                const { ctx, data, scales: { x, y } } = chart;
-
-                ctx.save();
-                // Police encore plus grande pour une visibilité maximale
-                ctx.font = 'bold 16px Arial'; 
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                data.datasets[0].data.forEach((point, index) => {
-                    const xPos = x.getPixelForValue(point.x);
-                    const yPos = y.getPixelForValue(point.y);
-
-                    // Utiliser le label court défini dans les données, sinon le numéro de groupe
-                    const label = point.shortLabel || (index + 1);
-
-                    // Ombre portée pour lisibilité sur toutes couleurs
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                    ctx.shadowBlur = 4;
-                    
-                    ctx.fillStyle = 'white';
-                    ctx.fillText(label, xPos, yPos);
-                });
-
-                ctx.restore();
-            }
-        };
-        
-        // Créer un graphique de risque
-        function createRiskChart(ctx, data, title) {
-            return new Chart(ctx, {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        label: 'Risques',
-                        data: data,
-                        backgroundColor: '#1F4E78',
-                        borderColor: 'white',
-                        borderWidth: 1.5,
-                        pointRadius: matrixViewMode === 'risks' ? 12 : 14, // Points un peu plus petits si beaucoup de risques
-                        pointHoverRadius: matrixViewMode === 'risks' ? 14 : 16,
-                        pointStyle: 'circle'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1, // Force le graphique à être carré
-                    animation: false, // Désactiver toutes les animations
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            padding: 12,
-                            callbacks: {
-                                title: function(context) {
-                                    const point = context[0].raw;
-                                    // Afficher l'ID complet et le titre
-                                    if (matrixViewMode === 'risks') {
-                                        return `${point.shortLabel} - ${point.riskTitle}`;
-                                    }
-                                    return point.label;
-                                },
-                                label: function(context) {
-                                    const point = context.raw;
-                                    // Utiliser les valeurs de base (sans jitter) pour l'affichage
-                                    const realX = point.baseX || point.x;
-                                    const realY = point.baseY || point.y;
-                                    const criticality = realX * realY;
-                                    
-                                    if (matrixViewMode === 'risks') {
-                                        return [
-                                            `Groupe: ${point.groupName}`,
-                                            `Probabilité: ${realX}`,
-                                            `Impact: ${realY}`,
-                                            `Criticité: ${criticality}`
-                                        ];
-                                    } else {
-                                        return [
-                                            `${point.groupName}`,
-                                            `Probabilité moyenne: ${realX.toFixed(2)}`,
-                                            `Impact moyen: ${realY.toFixed(2)}`,
-                                            `Criticité moyenne: ${criticality.toFixed(1)}/25`
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                font: {
-                                    size: 12
-                                },
-                                callback: function(value) {
-                                    // Afficher seulement les valeurs entières 1-5
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: {
-                                display: false
-                            },
-                            title: {
-                                display: true,
-                                text: 'Probabilité →',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            }
-                        },
-                        y: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                font: {
-                                    size: 12
-                                },
-                                callback: function(value) {
-                                    // Afficher seulement les valeurs entières 1-5
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: {
-                                display: false
-                            },
-                            title: {
-                                display: true,
-                                text: 'Impact →',
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
-                    }
-                },
-                plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
-            });
-        }
-        
-        // Mettre à jour le tableau des risques individuels
-        function updateRiskTable(currentRisks) {
-            const tableBody = document.getElementById('risk-table-body');
-            tableBody.innerHTML = '';
-            
-            riskGroups.forEach(group => {
-                group.tasks.forEach(risk => {
-                    const currentRisk = currentRisks.find(r => r.id === risk.id);
-                    if (!currentRisk) return;
-                    
-                    const row = document.createElement('tr');
-                    
-                    // Calculer les moyennes DTU & G&C
-                    const avgProbBefore = (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
-                    const avgImpactBefore = (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
-                    const avgCritBefore = avgProbBefore * avgImpactBefore;
-                    
-                    const avgProbAfter = (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
-                    const avgImpactAfter = (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
-                    const avgCritAfter = avgProbAfter * avgImpactAfter;
-                    
-                    function getCritClass(crit) {
-                        if (crit <= 4) return 'criticality-low';
-                        if (crit <= 9) return 'criticality-medium';
-                        if (crit <= 14) return 'criticality-high';
-                        return 'criticality-critical';
-                    }
-                    
-                    row.innerHTML = `
-                        <td>${currentRisk.id}</td>
-                        <td>${currentRisk.title}</td>
-                        <td>
-                            <span class="criticality-badge ${getCritClass(avgCritBefore)}">
-                                P:${avgProbBefore.toFixed(1)} × I:${avgImpactBefore.toFixed(1)} = ${avgCritBefore.toFixed(1)}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="criticality-badge ${getCritClass(avgCritAfter)}">
-                                P:${avgProbAfter.toFixed(1)} × I:${avgImpactAfter.toFixed(1)} = ${avgCritAfter.toFixed(1)}
-                            </span>
-                        </td>
-                    `;
-                    
-                    tableBody.appendChild(row);
-                });
-            });
-        }
+        // Les fonctions de rendu des graphiques de risques ont été supprimées.
         
         // Ajouter un tableau pour les moyennes des groupes
         function updateGroupTable(groupBeforeData, groupAfterData) {
@@ -5945,109 +5517,118 @@
         // Changer le mode de vue du Gantt
         function setGanttView(mode) {
             ganttViewMode = mode;
+            
+            // Sauvegarder la préférence
+            localStorage.setItem('plannr-gantt-view', mode);
 
             // Mettre à jour les boutons
             const btnCompact = document.getElementById('view-btn-compact');
             const btnCascade = document.getElementById('view-btn-cascade');
-            const btnGroupe = document.getElementById('view-btn-groupe');
 
             // Reset tous les boutons
-            [btnCompact, btnCascade, btnGroupe].forEach(btn => {
-                btn.style.background = 'transparent';
-                btn.style.color = '#666';
-                btn.style.boxShadow = 'none';
+            [btnCompact, btnCascade].forEach(btn => {
+                if (btn) {
+                    btn.style.background = 'transparent';
+                    btn.style.color = '#666';
+                    btn.style.boxShadow = 'none';
+                    btn.classList.remove('active');
+                }
             });
 
             // Activer le bouton sélectionné
-            if (mode === 'compact') {
-                btnCompact.style.background = 'white';
-                btnCompact.style.color = '#1d1d1f';
-                btnCompact.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-            } else if (mode === 'cascade') {
-                btnCascade.style.background = 'white';
-                btnCascade.style.color = '#1d1d1f';
-                btnCascade.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-            } else if (mode === 'groupe') {
-                btnGroupe.style.background = 'white';
-                btnGroupe.style.color = '#1d1d1f';
-                btnGroupe.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+            let activeBtn = null;
+            if (mode === 'compact') activeBtn = btnCompact;
+            else if (mode === 'cascade') activeBtn = btnCascade;
+
+            if (activeBtn) {
+                activeBtn.style.background = 'white';
+                activeBtn.style.color = '#1d1d1f';
+                activeBtn.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
+                activeBtn.classList.add('active');
             }
 
             // Mettre à jour le Gantt
             updateGantt();
         }
 
-        // Algorithme de compactage pour les jalons : plusieurs jalons par lane si possible
-        function compactMilestones(milestones) {
-            const milestoneWidth = 3 * 86400000; // 3 jours : un jalon prend ~3 jours de large
-            const sortedMilestones = [...milestones].sort((a, b) =>
-                new Date(a.startDate) - new Date(b.startDate)
-            );
-
-            const lines = [];
-            for (const milestone of sortedMilestones) {
-                const mDate = new Date(milestone.startDate).getTime();
-
-                // Chercher la première lane de jalons disponible
-                let placed = false;
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i];
-                    // Vérifier si le jalon peut être placé sur cette ligne
-                    let canPlace = true;
-                    for (const existingM of line) {
-                        const existingDate = new Date(existingM.startDate).getTime();
-                        // Les jalons peuvent partager une ligne s'ils sont espacés d'au moins milestoneWidth
-                        if (Math.abs(mDate - existingDate) < milestoneWidth) {
-                            canPlace = false;
-                            break;
-                        }
-                    }
-                    if (canPlace) {
-                        line.push(milestone);
-                        placed = true;
-                        break;
-                    }
-                }
-
-                if (!placed) {
-                    lines.push([milestone]);
-                }
+        // Initialiser la vue au chargement
+        function initGanttView() {
+            const savedView = localStorage.getItem('plannr-gantt-view');
+            if (savedView && ['compact', 'cascade'].includes(savedView)) {
+                setGanttView(savedView);
+            } else {
+                setGanttView('cascade'); // Défaut
             }
-
-            return lines;
         }
 
-        // Compactage séparé jalons/tâches puis fusion chronologique
+
+
+        // Compactage : Tâches d'abord, puis insertion des jalons dans les espaces vides
         function compactTasksAndMilestones(allTasks) {
             // Séparer jalons et tâches
             const tasks = allTasks.filter(t => !t.isMilestone);
             const milestones = allTasks.filter(t => t.isMilestone);
 
-            // Compacter séparément
-            const taskLines = compactTasks(tasks);
-            const milestoneLines = compactMilestones(milestones);
+            // 1. Compacter les tâches pour créer la structure principale
+            const lines = compactTasks(tasks);
 
-            // Fusionner chronologiquement
-            const mergedLines = [];
+            // 2. Insérer les jalons sur les lignes existantes sans créer de conflit VISUEL entre jalons
+            // (Les jalons sont affichés sous les tâches, donc pas de conflit tâche/jalon)
+            milestones.forEach(milestone => {
+                const milestoneStart = new Date(milestone.startDate).getTime();
+                let bestLineIndex = -1;
+                
+                // Chercher une ligne où le jalon ne chevauche pas un autre jalon
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    let canPlace = true;
+                    
+                    for (const existingItem of line) {
+                        if (existingItem.isMilestone) {
+                             const existingStart = new Date(existingItem.startDate).getTime();
+                             // Marge de sécurité de 2 jours pour éviter la superposition des capsules
+                             if (Math.abs(existingStart - milestoneStart) < 2 * 86400000) {
+                                 canPlace = false;
+                                 break;
+                             }
+                        }
+                    }
+                    
+                    if (canPlace) {
+                        bestLineIndex = i;
+                        break;
+                    }
+                }
+                
+                if (bestLineIndex !== -1) {
+                    lines[bestLineIndex].push(milestone);
+                } else {
+                    // Si conflit partout avec d'autres jalons, on met sur la dernière ligne existante
+                    // (On accepte la superposition plutôt que de créer une nouvelle ligne)
+                    if (lines.length > 0) {
+                        lines[lines.length - 1].push(milestone);
+                    } else {
+                        // Cas extrême : aucun tâche, juste des jalons -> on est obligé de créer une ligne
+                        lines.push([milestone]);
+                    }
+                }
+            });
 
-            // Calculer la date de début de chaque lane (tâches et jalons)
-            const taskLinesWithDate = taskLines.map(line => ({
-                type: 'task',
-                line: line,
-                startDate: Math.min(...line.map(t => new Date(t.startDate).getTime()))
+            // Transformer pour updateGantt
+            // On trie les lignes par date de début de la première tâche pour garder une logique chronologique
+            const sortedLines = lines.sort((lineA, lineB) => {
+                const getStart = (line) => {
+                    const tasksOnly = line.filter(t => !t.isMilestone);
+                    if (tasksOnly.length === 0) return 0; // Ligne de jalons purs (rare)
+                    return Math.min(...tasksOnly.map(t => new Date(t.startDate).getTime()));
+                };
+                return getStart(lineA) - getStart(lineB);
+            });
+
+            return sortedLines.map(line => ({
+                type: 'mixed',
+                line: line
             }));
-
-            const milestoneLinesWithDate = milestoneLines.map(line => ({
-                type: 'milestone',
-                line: line,
-                startDate: Math.min(...line.map(m => new Date(m.startDate).getTime()))
-            }));
-
-            // Fusionner et trier par date
-            const allLines = [...taskLinesWithDate, ...milestoneLinesWithDate]
-                .sort((a, b) => a.startDate - b.startDate);
-
-            return allLines;
         }
 
         // Algorithme de compactage : minimiser le nombre de lignes en gérant les chevauchements
@@ -6077,8 +5658,10 @@
                         const existingEnd = (existingTask.isMilestone || !existingTask.endDate)
                             ? existingStart + 3600000
                             : new Date(existingTask.endDate).getTime();
-                        // Chevauchement si les intervalles se recoupent
-                        if (!(taskEnd <= existingStart || taskStart >= existingEnd)) {
+                        // Chevauchement si les intervalles se recoupent (avec marge de 1 jour)
+                        // On ajoute 1 jour (86400000ms) de buffer pour éviter que les barres ne se touchent
+                        const buffer = 86400000;
+                        if (!((taskEnd + buffer) <= existingStart || taskStart >= (existingEnd + buffer))) {
                             canPlace = false;
                             break;
                         }
@@ -6110,35 +5693,31 @@
 
                 if (!ganttData || ganttViewMode === 'phase') return;
 
-                // En mode cascade, les positions Y sont déjà recalculées dans updateGantt
-                // On utilise directement ces positions pour dessiner les lignes
-                if (ganttViewMode !== 'cascade') return;
+                // En mode cascade, dessiner des lignes uniformes entre les lanes de tâches
+                if (ganttViewMode === 'cascade') {
+                    ctx.save();
+                    ctx.strokeStyle = '#e0e0e0';
+                    ctx.lineWidth = 1;
 
-                ctx.save();
-                ctx.strokeStyle = '#e0e0e0';
-                ctx.lineWidth = 1;
+                    // En mode cascade, ganttData ne contient que des tâches (pas de jalons)
+                    // Dessiner une ligne après chaque lane de tâche (sauf la dernière)
+                    for (let i = 0; i < ganttData.length - 1; i++) {
+                        const currentTask = ganttData[i];
+                        const nextTask = ganttData[i + 1];
 
-                // Dessiner une ligne après chaque élément (sauf si le suivant est un jalon)
-                for (let i = 0; i < ganttData.length - 1; i++) {
-                    const currentItem = ganttData[i];
-                    const nextItem = ganttData[i + 1];
+                        // Calculer la position Y de la ligne de séparation (au milieu des deux tâches)
+                        const currentY = yAxis.getPixelForValue(currentTask.y);
+                        const nextY = yAxis.getPixelForValue(nextTask.y);
+                        const lineY = (currentY + nextY) / 2;
 
-                    // Pas de ligne si l'élément suivant est un jalon
-                    if (nextItem.isMilestone) continue;
+                        ctx.beginPath();
+                        ctx.moveTo(xAxis.left, lineY);
+                        ctx.lineTo(xAxis.right, lineY);
+                        ctx.stroke();
+                    }
 
-                    // Calculer la position Y de la ligne de séparation
-                    // C'est au milieu entre la position actuelle et la position suivante
-                    const currentY = yAxis.getPixelForValue(currentItem.y);
-                    const nextY = yAxis.getPixelForValue(nextItem.y);
-                    const lineY = (currentY + nextY) / 2;
-
-                    ctx.beginPath();
-                    ctx.moveTo(xAxis.left, lineY);
-                    ctx.lineTo(xAxis.right, lineY);
-                    ctx.stroke();
+                    ctx.restore();
                 }
-
-                ctx.restore();
             }
         });
 
@@ -6151,66 +5730,307 @@
 
                 // Récupérer les données depuis les options du chart
                 const ganttData = chart.options.ganttData;
+                const milestones = chart.options.milestonesData;
                 const phases = chart.options.phasesData;
-                const labels = chart.data.labels;
 
-                if (!ganttData || !phases) return;
+                if (!milestones || !phases) return;
 
+                // En mode cascade, les jalons sont ENTRE les lanes (Y non-entier)
+                if (ganttViewMode === 'cascade') {
+                    milestones.forEach(milestone => {
+                        const task = milestone.task;
+                        const phase = milestone.phase;
+                        const yPosition = milestone.yPosition;
 
-                // Calculer la hauteur d'une ligne
-                const lineHeight = (yAxis.bottom - yAxis.top) / Math.max(1, labels.length - 1);
-
-                ganttData.forEach((dataPoint, index) => {
-                    if (dataPoint.isMilestone) {
-                        const x = xAxis.getPixelForValue(dataPoint.x[0]);
-                        const originalY = yAxis.getPixelForValue(dataPoint.y);
-
-                        // Positionner le jalon plus haut dans sa lane (plus proche de la lane du dessus)
-                        // En mode cascade, les remonter de 40% de la hauteur de lane vers le haut
-                        const laneHeight = (yAxis.bottom - yAxis.top) / labels.length;
-                        const yOffset = -laneHeight * 0.25; // Remonter de 25% de la hauteur de lane
-                        const y = originalY + yOffset;
-
-
-                        // Récupérer la date du jalon
-                        const task = phases.flatMap(p => p.tasks).find((t, i) => i === index);
-                        if (!task) {
-                            return;
-                        }
+                        const x = xAxis.getPixelForValue(milestone.date);
+                        // IMPORTANT: yPosition est déjà non-entier (ex: 0.5, 1.5) pour être ENTRE les lanes
+                        const y = yAxis.getPixelForValue(yPosition);
 
                         const date = new Date(task.startDate);
                         const dateStr = `${date.getDate()}/${date.getMonth() + 1}`;
 
-
-                        // Récupérer la couleur de la phase
-                        const phase = phases.find(p => p.id === parseInt(task.id.split('.')[0]));
                         const phaseColor = phase ? phase.color : '#0071e3';
 
                         // Dessiner la gélule (rectangle avec coins arrondis)
-                        const capsuleWidth = 50;
-                        const capsuleHeight = 20;
-                        const radius = 10; // Rayon des coins
+                        const capsuleWidth = 42;
+                        const capsuleHeight = 16;
+                        const radius = 8;
 
                         ctx.save();
                         ctx.beginPath();
-                        // Rectangle avec coins arrondis (gélule)
                         ctx.roundRect(x - capsuleWidth / 2, y - capsuleHeight / 2, capsuleWidth, capsuleHeight, radius);
                         ctx.fillStyle = phaseColor;
                         ctx.fill();
                         ctx.strokeStyle = phaseColor;
-                        ctx.lineWidth = 2;
+                        ctx.lineWidth = 1;
                         ctx.stroke();
 
                         // Dessiner le texte (date)
                         ctx.fillStyle = 'white';
-                        ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+                        ctx.font = 'bold 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
                         ctx.fillText(dateStr, x, y);
                         ctx.restore();
+                    });
+                } else {
+                    // Modes groupe et compact : utiliser l'ancienne méthode (jalons dans ganttData)
+                    const labels = chart.data.labels;
+                    if (!ganttData) return;
 
+                    ganttData.forEach((dataPoint, index) => {
+                        if (dataPoint.isMilestone) {
+                            const x = xAxis.getPixelForValue(dataPoint.x[0]);
+                            let y = yAxis.getPixelForValue(dataPoint.y);
+
+                            // En mode compact, décaler le jalon vers le bas pour qu'il apparaisse sous la tâche
+                            if (dataPoint.compactMode) {
+                                y += 45; // Adapté aux barres de 60px
+                            }
+
+                            // Utiliser dataPoint.task si disponible, sinon chercher par index
+                            const task = dataPoint.task || phases.flatMap(p => p.tasks).find((t, i) => i === index);
+                            if (!task) return;
+
+                            const date = new Date(task.startDate);
+                            const dateStr = `${date.getDate()}/${date.getMonth() + 1}`;
+
+                            const phase = phases.find(p => p.id === parseInt(task.id.split('.')[0]));
+                            const phaseColor = phase ? phase.color : '#0071e3';
+
+                            const capsuleWidth = 42;
+                            const capsuleHeight = 16;
+                            const radius = 8;
+
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.roundRect(x - capsuleWidth / 2, y - capsuleHeight / 2, capsuleWidth, capsuleHeight, radius);
+                            ctx.fillStyle = phaseColor;
+                            ctx.fill();
+                            ctx.strokeStyle = phaseColor;
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+
+                            ctx.fillStyle = 'white';
+                            ctx.font = 'bold 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(dateStr, x, y);
+                            ctx.restore();
+                        }
+                    });
+                }
+            }
+        });
+
+        // Plugin pour afficher les titres des tâches avec gestion des recouvrements et multi-lignes
+        Chart.register({
+            id: 'taskLabelsPlugin',
+            afterDatasetsDraw: function(chart) {
+                // Actif uniquement en mode compact
+                if (ganttViewMode !== 'compact') return;
+
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                const ganttData = chart.options.ganttData;
+                
+                if (!ganttData) return;
+
+                ctx.save();
+                ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, "Segoe UI"';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Fonction utilitaire pour découper le texte en 2 lignes équilibrées
+                function getBalancedLines(ctx, text, maxWidth) {
+                    const totalWidth = ctx.measureText(text).width;
+                    
+                    // Cas 1 : Ça tient sur une seule ligne
+                    if (totalWidth <= maxWidth) {
+                        return [text];
                     }
+
+                    const words = text.split(" ");
+                    if (words.length <= 1) return [text]; // Impossible de couper un seul mot
+
+                    // Cas 2 : Trouver le point de coupure qui équilibre le mieux les largeurs
+                    let bestSplitIndex = 1;
+                    let minDifference = Infinity;
+
+                    // Tester toutes les positions de coupure possibles
+                    for (let i = 1; i < words.length; i++) {
+                        const line1 = words.slice(0, i).join(" ");
+                        const line2 = words.slice(i).join(" ");
+                        
+                        const w1 = ctx.measureText(line1).width;
+                        const w2 = ctx.measureText(line2).width;
+                        
+                        const diff = Math.abs(w1 - w2);
+                        
+                        if (diff < minDifference) {
+                            minDifference = diff;
+                            bestSplitIndex = i;
+                        }
+                    }
+
+                    // Retourner exactement 2 lignes équilibrées
+                    return [
+                        words.slice(0, bestSplitIndex).join(" "),
+                        words.slice(bestSplitIndex).join(" ")
+                    ];
+                }
+
+                // Organiser par ligne
+                const itemsByLine = {};
+                ganttData.forEach((d, i) => {
+                    if (!itemsByLine[d.y]) itemsByLine[d.y] = [];
+                    itemsByLine[d.y].push({ ...d, index: i });
                 });
+
+                // Altitudes ajustées pour barres de 60px (bords à +/- 30px)
+                // Niveau 0: Au-dessus (-65px)
+                // Niveau 1: En-dessous du jalon (+75px) -> Jalon est à +45px
+                // Niveau 2: Au-dessus loin (-85px)
+                // Niveau 3: En-dessous très loin (+95px)
+                const altitudes = [-65, 75, -85, 95];
+                const lineHeight = 12; // Hauteur de ligne
+                
+                Object.keys(itemsByLine).forEach(yIndex => {
+                    const lineItems = itemsByLine[yIndex];
+                    
+                    // Trier par position X
+                    lineItems.sort((a, b) => a.x[0] - b.x[0]);
+
+                    // Suivi de la fin du dernier texte pour chaque niveau d'altitude
+                    const lastTextEnd = [-9999, -9999, -9999, -9999];
+
+                    lineItems.forEach(itemData => {
+                        const task = itemData.task;
+                        if (!task) return;
+
+                        const xStart = xAxis.getPixelForValue(itemData.x[0]);
+                        const xEnd = xAxis.getPixelForValue(itemData.x[1]);
+                        
+                        // Centrage : sur la date exacte pour les jalons, au milieu de la barre pour les tâches
+                        const xCenter = itemData.isMilestone ? xStart : (xStart + xEnd) / 2;
+                        
+                        const yCenter = yAxis.getPixelForValue(itemData.y);
+
+                        // Calcul de la largeur max dynamique
+                        const boxWidth = xEnd - xStart;
+                        const dynamicMaxWidth = Math.max(boxWidth, 100);
+
+                        // Découpage du texte équilibré (max 2 lignes)
+                        const label = task.title;
+                        const lines = getBalancedLines(ctx, label, dynamicMaxWidth);
+                        
+                        // Calculer la largeur max pour la collision
+                        let maxLineWidth = 0;
+                        lines.forEach(l => {
+                            const w = ctx.measureText(l).width;
+                            if (w > maxLineWidth) maxLineWidth = w;
+                        });
+
+                        const textWidth = maxLineWidth;
+                        const textStart = xCenter - (textWidth / 2);
+                        const textEnd = xCenter + (textWidth / 2);
+                        const padding = 20;
+
+                        // Détecter si une tâche chevauche un jalon (pour éviter la collision en bas)
+                        let hasMilestoneOverlap = false;
+                        if (!itemData.isMilestone) {
+                            for (const otherItem of lineItems) {
+                                if (otherItem.isMilestone) {
+                                    const msX = xAxis.getPixelForValue(otherItem.x[0]);
+                                    // Si le centre de la tâche est proche du jalon (< 80px)
+                                    if (Math.abs(msX - xCenter) < 80) {
+                                        hasMilestoneOverlap = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Trouver la première altitude disponible
+                        let chosenLevel = 0;
+                        
+                        // Stratégie de positionnement :
+                        // - Jalons : Toujours en BAS (1 ou 3)
+                        // - Tâches sous jalon : Toujours en HAUT (0 ou 2) pour éviter collision
+                        // - Autres : Libre [0, 1, 2, 3]
+                        let possibleAltitudes = [0, 1, 2, 3];
+                        
+                        if (itemData.isMilestone) {
+                            possibleAltitudes = [1, 3];
+                        } else if (hasMilestoneOverlap) {
+                            possibleAltitudes = [0, 2];
+                        }
+                        
+                        for (const i of possibleAltitudes) {
+                            if (textStart > lastTextEnd[i] + padding) {
+                                chosenLevel = i;
+                                break;
+                            }
+                            // Fallback sur le dernier possible
+                            if (i === possibleAltitudes[possibleAltitudes.length - 1]) {
+                                chosenLevel = i;
+                            }
+                        }
+
+                        lastTextEnd[chosenLevel] = textEnd;
+                        const basePos = yCenter + altitudes[chosenLevel];
+                        const color = itemData.color || '#1d1d1f';
+
+                        // 1. Dessiner la tige de liaison
+                        ctx.beginPath();
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 1;
+                        ctx.setLineDash([2, 2]);
+                        
+                        if (itemData.isMilestone) {
+                            // JALON : La tige part du jalon (+45px + 8px de rayon)
+                            ctx.moveTo(xCenter, yCenter + 45 + 8);
+                            ctx.lineTo(xCenter, basePos - 8);
+                        } else if (altitudes[chosenLevel] < 0) {
+                            // Vers le haut (Tâche) : part du bord haut de la grosse barre (-30px)
+                            ctx.moveTo(xCenter, yCenter - 30);
+                            ctx.lineTo(xCenter, basePos + 8);
+                        } else {
+                            // Vers le bas (Tâche) : part du bord bas de la grosse barre (+30px)
+                            ctx.moveTo(xCenter, yCenter + 30);
+                            ctx.lineTo(xCenter, basePos - 8);
+                        }
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+
+                        // 2. Dessiner le texte
+                        ctx.lineJoin = 'round';
+                        ctx.lineWidth = 3;
+                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; 
+                        ctx.fillStyle = color;
+
+                        lines.forEach((lineText, lineIndex) => {
+                            let lineY;
+                            if (altitudes[chosenLevel] < 0) {
+                                // AU-DESSUS : Alignement "bas" du bloc de texte (empilement vers le haut)
+                                // La dernière ligne touche presque la tige
+                                lineY = basePos - (lines.length - 1 - lineIndex) * lineHeight;
+                            } else {
+                                // EN-DESSOUS : Alignement "haut" du bloc de texte (empilement vers le bas)
+                                // La première ligne touche presque la tige
+                                lineY = basePos + (lineIndex * lineHeight);
+                            }
+
+                            // Halo
+                            ctx.strokeText(lineText, xCenter, lineY);
+                            // Texte
+                            ctx.fillText(lineText, xCenter, lineY);
+                        });
+                    });
+                });
+
+                ctx.restore();
             }
         });
 
@@ -6220,6 +6040,15 @@
         let dragStartDate = null;
         let dragStartX = 0;
         let snapLines = []; // Lignes verticales de repère
+        let draggedMilestone = null; // Jalon en cours de drag
+        let draggedMilestoneData = null; // Données du jalon en cours de drag (yPosition, etc.)
+
+        // Variables pour le redimensionnement
+        let isResizing = false;
+        let resizeEdge = null; // 'left' ou 'right'
+        let resizeTaskIndex = null;
+        let resizeStartDate = null;
+        let resizeEndDate = null;
 
         // Enregistrer le plugin de drag & drop
         Chart.register({
@@ -6248,6 +6077,419 @@
             }
         });
 
+        // Créer le conteneur pour les boutons de séparation
+        const ganttChartCanvas = document.getElementById('ganttChart');
+        if (ganttChartCanvas) {
+            // Créer un conteneur overlay pour les boutons
+            let separatorOverlay = document.getElementById('gantt-separator-overlay');
+            if (!separatorOverlay) {
+                separatorOverlay = document.createElement('div');
+                separatorOverlay.id = 'gantt-separator-overlay';
+                separatorOverlay.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 1000;
+                    display: none;
+                `;
+                ganttChartCanvas.parentElement.style.position = 'relative';
+                ganttChartCanvas.parentElement.appendChild(separatorOverlay);
+            }
+        }
+
+        // Variables pour le suivi de la souris
+        let ganttMouseY = 0;
+        let ganttMouseX = 0;
+        let visibleSeparatorLane = null;
+        let visibleSeparatorPhaseId = null;
+        let isHoveringButtons = false; // Pour éviter de cacher quand on est sur les boutons
+        let hideSeparatorTimeout = null; // Pour ajouter un délai avant de cacher
+        let activeSeparatorY = null; // Mémoriser la ligne de séparation active
+        let activeInsertPosition = null; // Mémoriser la position d'insertion active
+        let activeDate = null; // Mémoriser la date correspondant à la position X de la souris
+
+        // Enregistrer le plugin de séparation pour le Gantt
+        Chart.register({
+            id: 'ganttSeparatorPlugin',
+
+            // Dessiner les lignes de séparation au survol
+            afterDraw: function(chart) {
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                const canvas = chart.canvas;
+
+                // Ne pas afficher pendant le drag ou le resize
+                if (isDragging || isResizing) {
+                    hideSeparatorButtons();
+                    return;
+                }
+
+                // Calculer la position de la souris dans le chart
+                const rect = canvas.getBoundingClientRect();
+                const mouseY = ganttMouseY - rect.top;
+                const mouseX = ganttMouseX - rect.left;
+
+                // Vérifier si la souris est dans la zone du chart
+                if (mouseY < yAxis.top || mouseY > yAxis.bottom ||
+                    mouseX < xAxis.left || mouseX > xAxis.right) {
+                    hideSeparatorButtons();
+                    return;
+                }
+
+                // IMPORTANT: En mode cascade, les lanes correspondent aux tâches normales seulement
+                // Les jalons sont ENTRE les lanes, donc ne comptent pas pour le nombre de lanes
+                let totalLanes = yAxis.ticks.length;
+                if (ganttViewMode === 'cascade') {
+                    // En mode cascade, le nombre de lanes est le nombre de tâches normales (ganttData.length)
+                    totalLanes = chart.options.ganttData.length;
+                }
+
+                // Trouver entre quelles lanes la souris se trouve
+                const laneHeight = (yAxis.bottom - yAxis.top) / totalLanes;
+
+                // Trouver la lane actuelle
+                const relativeY = mouseY - yAxis.top;
+                const laneIndex = Math.round(relativeY / laneHeight);
+
+                // Vérifier si on est près d'une ligne de séparation (bord de lane)
+                // Les lignes de séparation sont à : yAxis.top + (i * laneHeight)
+                const tolerance = 8; // pixels de tolérance de chaque côté de la ligne
+
+                let separatorY = null;
+                let insertPosition = null;
+
+                // Vérifier la ligne de séparation au-dessus de la lane actuelle
+                const topSeparatorY = yAxis.top + (laneIndex * laneHeight);
+                if (Math.abs(mouseY - topSeparatorY) < tolerance) {
+                    separatorY = topSeparatorY;
+                    insertPosition = laneIndex;
+                }
+
+                // Vérifier la ligne de séparation en-dessous de la lane actuelle
+                const bottomSeparatorY = yAxis.top + ((laneIndex + 1) * laneHeight);
+                if (Math.abs(mouseY - bottomSeparatorY) < tolerance) {
+                    separatorY = bottomSeparatorY;
+                    insertPosition = laneIndex + 1;
+                }
+
+                // Vérifier si on est près de la ligne de séparation active (avec tolérance élargie pour les boutons)
+                const buttonTolerance = 25; // Tolérance élargie pour inclure la zone des boutons
+                if (separatorY === null && activeSeparatorY !== null) {
+                    if (Math.abs(mouseY - activeSeparatorY) < buttonTolerance) {
+                        // On est encore dans la zone de la ligne de séparation active
+                        separatorY = activeSeparatorY;
+                        insertPosition = activeInsertPosition;
+                    }
+                }
+
+                if (separatorY !== null && insertPosition !== null) {
+                    // On est sur une ligne de séparation entre deux lanes
+                    // Mémoriser la ligne active
+                    activeSeparatorY = separatorY;
+                    activeInsertPosition = insertPosition;
+
+                    // Calculer la date correspondant à la position X de la souris
+                    const mouseXValue = xAxis.getValueForPixel(mouseX);
+                    activeDate = new Date(mouseXValue);
+
+                    // Vérifier si la souris est sur un jalon existant
+                    let isHoveringMilestone = false;
+                    const milestonesData = chart.options.milestonesData;
+                    if (milestonesData && milestonesData.length > 0) {
+                        const mouseTimestamp = mouseXValue;
+                        for (const milestone of milestonesData) {
+                            const milestoneTimestamp = milestone.date;
+                            const tolerance = 2 * 24 * 60 * 60 * 1000; // 2 jours de tolérance
+                            if (Math.abs(mouseTimestamp - milestoneTimestamp) < tolerance) {
+                                isHoveringMilestone = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Si on est sur un jalon, ne pas afficher les boutons
+                    if (isHoveringMilestone) {
+                        hideSeparatorButtons();
+                        return;
+                    }
+
+                    // Dessiner la ligne de séparation
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(xAxis.left, separatorY);
+                    ctx.lineTo(xAxis.right, separatorY);
+                    ctx.strokeStyle = 'rgba(0, 113, 227, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([8, 4]);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Afficher les boutons avec la position X de la souris
+                    showSeparatorButtons(insertPosition, xAxis.left, separatorY, mouseX, canvas, chart);
+                } else {
+                    // On s'éloigne de la ligne de séparation, réinitialiser après un délai
+                    scheduleHideSeparatorButtons();
+                }
+            }
+        });
+
+        // Fonction pour afficher les boutons de séparation
+        function showSeparatorButtons(insertPosition, chartLeft, separatorY, mouseX, canvas, chart) {
+            const separatorOverlay = document.getElementById('gantt-separator-overlay');
+            if (!separatorOverlay) return;
+
+            // IMPORTANT: Utiliser riskGroups directement pour garantir la synchronisation
+            // car phases peut ne pas être à jour après ajout/suppression de tâches
+            const currentGroups = riskGroups;
+
+            // Trouver la phase et la position d'insertion
+            let currentPhaseId = null;
+            let positionInPhase = 0;
+            let tasksSeen = 0;
+
+            console.log('=== DEBUG insertPosition ===', insertPosition);
+            console.log('=== riskGroups actuels ===', currentGroups.map(g => `${g.id}: ${g.tasks.length} tâches [${g.tasks.map(t => t.id + (t.isMilestone ? '★' : '')).join(', ')}]`));
+
+            for (const group of currentGroups) {
+                console.log(`Groupe ${group.id}: ${group.tasks.length} tâches totales`, group.tasks.map(t => `${t.id} (${t.isMilestone ? 'jalon' : 'tâche'})`));
+                // Compter TOUTES les tâches (y compris les jalons) pour la position d'insertion
+                if (tasksSeen + group.tasks.length >= insertPosition) {
+                    currentPhaseId = group.id;
+                    positionInPhase = insertPosition - tasksSeen;
+                    console.log(`--> Phase trouvée: ${currentPhaseId}, positionInPhase: ${positionInPhase}`);
+                    break;
+                }
+                tasksSeen += group.tasks.length;
+            }
+
+            // Si même position que précédent, ne pas redessiner
+            // Vérifier si la position a changé (incluant la date)
+            const dateChanged = activeDate && visibleSeparatorLane === insertPosition && visibleSeparatorPhaseId === currentPhaseId;
+            if (dateChanged && !activeDate) {
+                return;
+            }
+
+            visibleSeparatorLane = insertPosition;
+            visibleSeparatorPhaseId = currentPhaseId;
+
+            const rect = canvas.getBoundingClientRect();
+            const xAxis = chart.scales.x;
+
+            // separatorY est en pixels internes du canvas
+            // Il faut convertir en pixels CSS pour le positionnement
+            const pixelRatio = rect.height / canvas.height;
+            const pixelRatioX = rect.width / canvas.width;
+            const separatorYCSS = separatorY * pixelRatio;
+
+            // Position X des boutons (convertir de pixels internes à pixels CSS)
+            const mouseXCSS = mouseX * pixelRatioX;
+
+            // Formater la date pour le dataset
+            const dateStr = activeDate ? activeDate.toISOString().split('T')[0] : '';
+
+            // Créer le HTML des boutons
+            separatorOverlay.innerHTML = `
+                <div class="gantt-add-buttons-container" style="
+                    position: absolute;
+                    left: ${mouseXCSS}px;
+                    top: ${separatorYCSS}px;
+                    transform: translate(-50%, -50%);
+                    pointer-events: auto;
+                ">
+                    <!-- Petit bouton + principal -->
+                    <div class="gantt-add-trigger" style="
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        background: #E0E0E0;
+                        color: #666;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 14px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                        z-index: 10;
+                    ">+</div>
+
+                    <!-- Menu avec les options (caché par défaut) -->
+                    <div class="gantt-add-menu" style="
+                        display: none;
+                        position: absolute;
+                        left: 20px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background: white;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                        padding: 4px;
+                        z-index: 11;
+                    ">
+                        <button class="gantt-add-milestone-btn" data-phase-id="${currentPhaseId}" data-position="${positionInPhase}" data-date="${dateStr}"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                width: 100%;
+                                padding: 8px 12px;
+                                background: transparent;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 13px;
+                                font-weight: 500;
+                                color: #333;
+                                white-space: nowrap;
+                            " onmouseover="this.style.background='rgba(175, 82, 222, 0.1)';"
+                               onmouseout="this.style.background='transparent';">
+                            <span style="color: #AF52D6; font-size: 16px;">◆</span>
+                            <span>${t('addMilestone')}</span>
+                        </button>
+                        <button class="gantt-add-task-btn" data-phase-id="${currentPhaseId}" data-position="${positionInPhase}" data-date="${dateStr}"
+                            style="
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                                width: 100%;
+                                padding: 8px 12px;
+                                background: transparent;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-size: 13px;
+                                font-weight: 500;
+                                color: #333;
+                                white-space: nowrap;
+                            " onmouseover="this.style.background='rgba(0, 113, 227, 0.1)';"
+                               onmouseout="this.style.background='transparent';">
+                            <span style="color: #0071E3; font-size: 16px;">+</span>
+                            <span>${t('addRisk')}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            separatorOverlay.style.display = 'block';
+
+            // Attacher les événements sur le conteneur
+            const container = separatorOverlay.querySelector('.gantt-add-buttons-container');
+            const trigger = separatorOverlay.querySelector('.gantt-add-trigger');
+            const menu = separatorOverlay.querySelector('.gantt-add-menu');
+
+            if (container && trigger && menu) {
+                // Au clic sur le bouton +, afficher le menu
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    isHoveringButtons = true;
+                    if (hideSeparatorTimeout) {
+                        clearTimeout(hideSeparatorTimeout);
+                        hideSeparatorTimeout = null;
+                    }
+                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                });
+
+                // Au survol du conteneur, empêcher de cacher
+                container.addEventListener('mouseenter', () => {
+                    isHoveringButtons = true;
+                    if (hideSeparatorTimeout) {
+                        clearTimeout(hideSeparatorTimeout);
+                        hideSeparatorTimeout = null;
+                    }
+                });
+
+                // Au sortie du conteneur, cacher le menu et planifier le cache
+                container.addEventListener('mouseleave', () => {
+                    isHoveringButtons = false;
+                    menu.style.display = 'none';
+                    scheduleHideSeparatorButtons();
+                });
+            }
+
+            // Attacher les événements de clic
+            const taskBtn = separatorOverlay.querySelector('.gantt-add-task-btn');
+            const milestoneBtn = separatorOverlay.querySelector('.gantt-add-milestone-btn');
+
+            if (taskBtn) {
+                taskBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const phaseId = parseInt(taskBtn.dataset.phaseId);
+                    const position = parseInt(taskBtn.dataset.position);
+                    const date = taskBtn.dataset.date;
+                    addNewRiskAtPosition(phaseId, position, false, date, chart);
+                    hideSeparatorButtons();
+                });
+            }
+
+            if (milestoneBtn) {
+                milestoneBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const phaseId = parseInt(milestoneBtn.dataset.phaseId);
+                    const position = parseInt(milestoneBtn.dataset.position);
+                    const date = milestoneBtn.dataset.date;
+                    addNewRiskAtPosition(phaseId, position, true, date);
+                    hideSeparatorButtons();
+                });
+            }
+        }
+
+        // Fonction pour cacher les boutons de séparation
+        function hideSeparatorButtons() {
+            const separatorOverlay = document.getElementById('gantt-separator-overlay');
+            if (separatorOverlay) {
+                separatorOverlay.style.display = 'none';
+                separatorOverlay.innerHTML = '';
+            }
+            visibleSeparatorLane = null;
+            visibleSeparatorPhaseId = null;
+            isHoveringButtons = false;
+        }
+
+        // Fonction pour planifier le cache des boutons (avec délai)
+        function scheduleHideSeparatorButtons() {
+            // Annuler le timeout précédent s'il existe
+            if (hideSeparatorTimeout) {
+                clearTimeout(hideSeparatorTimeout);
+            }
+
+            // Si on est en hover sur les boutons, ne pas cacher
+            if (isHoveringButtons) {
+                return;
+            }
+
+            // Cacher après 100ms et réinitialiser la ligne active
+            hideSeparatorTimeout = setTimeout(() => {
+                if (!isHoveringButtons) {
+                    hideSeparatorButtons();
+                    activeSeparatorY = null;
+                    activeInsertPosition = null;
+                }
+            }, 100);
+        }
+
+        // Suivre le mouvement de la souris sur le canvas
+        if (ganttChartCanvas) {
+            ganttChartCanvas.addEventListener('mousemove', function(e) {
+                ganttMouseX = e.clientX;
+                ganttMouseY = e.clientY;
+                if (ganttChart) {
+                    ganttChart.draw('none'); // Redessiner pour mettre à jour les séparateurs
+                }
+            });
+
+            // Cacher les séparateurs quand la souris quitte le canvas
+            ganttChartCanvas.addEventListener('mouseleave', function() {
+                hideSeparatorButtons();
+                if (ganttChart) {
+                    ganttChart.draw('none');
+                }
+            });
+        }
+
         // Fonction pour calculer les dates de repère (snap targets)
         function getSnapTargets(excludeTaskIndex) {
             const targets = [];
@@ -6274,6 +6516,37 @@
                     }
                 });
             });
+
+            // Ajouter les dates remarquables (débuts de mois et années)
+            const allDates = phases.flatMap(p => p.tasks.map(t => new Date(t.startDate).getTime()));
+            if (allDates.length > 0) {
+                const minDate = new Date(Math.min(...allDates));
+                const maxDate = new Date(Math.max(...allDates));
+
+                // Ajouter le 1er de chaque mois dans la plage
+                let current = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+                const endDate = new Date(maxDate.getFullYear(), maxDate.getMonth() + 2, 1);
+
+                while (current <= endDate) {
+                    targets.push({
+                        date: current.getTime(),
+                        type: 'month',
+                        taskId: null
+                    });
+                    current.setMonth(current.getMonth() + 1);
+                }
+
+                // Ajouter le 1er janvier de chaque année dans la plage
+                current = new Date(minDate.getFullYear(), 0, 1);
+                while (current <= endDate) {
+                    targets.push({
+                        date: current.getTime(),
+                        type: 'year',
+                        taskId: null
+                    });
+                    current.setFullYear(current.getFullYear() + 1);
+                }
+            }
 
             // Trier par date
             return targets.sort((a, b) => a.date - b.date);
@@ -6304,7 +6577,39 @@
             // Détruire l'ancien chart s'il existe
             if (ganttChart) {
                 ganttChart.destroy();
+                ganttChart = null;
             }
+
+            // IMPORTANT: Reconstruire phases à partir de riskGroups
+            const phases = riskGroups.map(group => ({
+                id: group.id,
+                name: group.name,
+                description: group.description,
+                tasks: [...group.tasks],
+                color: group.color
+            }));
+
+            // --- CALCUL DE LA HAUTEUR DYNAMIQUE ---
+            let numLines = 0;
+            const allTasks = phases.flatMap(p => p.tasks);
+            let compactedLines = [];
+            
+            if (ganttViewMode === 'cascade') {
+                numLines = allTasks.length;
+            } else {
+                compactedLines = compactTasksAndMilestones(allTasks);
+                numLines = compactedLines.length;
+            }
+
+            // Hauteur aérée : 160px par ligne en compact (pour barres de 60px), 60px sinon
+            const minHeightPerLine = (ganttViewMode === 'compact') ? 160 : 60;
+            const targetHeight = Math.max(450, numLines * minHeightPerLine);
+            canvas.parentElement.style.height = targetHeight + 'px';
+
+            // Redimensionner le canvas
+            canvas.width = canvas.parentElement.offsetWidth;
+            canvas.height = canvas.parentElement.offsetHeight;
+
 
             // Calculer les dates min/max pour le projet (en ignorant les jalons sans endDate)
             const allDates = phases.flatMap(p => p.tasks.map(t => {
@@ -6325,104 +6630,84 @@
             const milestones = []; // Stocker les jalons séparément
 
             if (ganttViewMode === 'cascade') {
-                // Mode Cascade : une ligne par tâche
+                // Mode Cascade : les tâches ont leur lane, les jalons sont ENTRE les lanes
+                // IMPORTANT: Le Y de chaque élément est basé sur sa position réelle dans phase.tasks
+                // - Tâche normale : Y = index entier (0, 1, 2, ...)
+                // - Jalon : Y = index + offset pour être ENTRE les lanes (ex: 0.4, 0.6 pour deux jalons entre 0 et 1)
+
+                let currentY = 0; // Compteur global pour le Y (entier pour tâches)
+                let consecutiveMilestones = 0; // Compteur de jalons consécutifs
+
                 phases.forEach((phase, phaseIndex) => {
-                    phase.tasks.forEach(task => {
+                    // DEBUG: Afficher l'ordre des tâches pour chaque phase
+                    console.log(`Phase ${phase.id} (${phase.name}):`, phase.tasks.map(t => t.id + (t.isMilestone ? ' (jalon)' : '')));
+
+                    phase.tasks.forEach((task, taskIndex) => {
                         const start = new Date(task.startDate).getTime();
 
                         if (task.isMilestone || !task.endDate) {
-                            // Jalon : barre de largeur minimale (1 heure)
-                            const end = start + 3600000; // 1 heure
-                            ganttData.push({
-                                x: [start, end],
-                                y: labels.length,
-                                isMilestone: true
+                            // Jalon : positionner avec un offset négatif décalé par le nombre de jalons consécutifs
+                            // Premier jalon: currentY - 0.5 (entre currentY-1 et currentY)
+                            // Deuxième jalon: currentY - 0.4 (légèrement plus bas)
+                            // Troisième jalon: currentY - 0.3, etc.
+                            const yPosition = currentY - 0.5 + (consecutiveMilestones * 0.1);
+
+                            milestones.push({
+                                task: task,
+                                phase: phase,
+                                yPosition: yPosition, // Y non-entier pour être ENTRE les lanes
+                                date: start
                             });
-                            labels.push(`◆ ${task.id}. ${task.title}`);
-                            colors.push(phase.color);
+
+                            // Incrémenter le compteur de jalons consécutifs
+                            consecutiveMilestones++;
                         } else {
-                            // Tâche normale
+                            // Tâche normale : ajouter à ganttData avec Y entier
                             const end = new Date(task.endDate).getTime();
                             ganttData.push({
                                 x: [start, end],
-                                y: labels.length,
-                                isMilestone: false
+                                y: currentY, // Y entier pour la lane de la tâche
+                                isMilestone: false,
+                                task: task
                             });
                             labels.push(`${task.id}. ${task.title}`);
                             colors.push(phase.color);
+
+                            // Incrémenter currentY pour les tâches normales
+                            currentY++;
+                            // Réinitialiser le compteur de jalons consécutifs
+                            consecutiveMilestones = 0;
                         }
-                    });
-                });
-
-                // Recalculer les positions Y pour tenir compte des lanes de jalons plus petites
-                let adjustedY = 0;
-                ganttData.forEach((item, index) => {
-                    if (item.isMilestone) {
-                        // Les jalons prennent 35% de la hauteur normale
-                        item.y = adjustedY;
-                        adjustedY += 0.35;
-                    } else {
-                        // Les tâches normales prennent 100% de la hauteur
-                        item.y = adjustedY;
-                        adjustedY += 1.0;
-                    }
-                });
-            } else if (ganttViewMode === 'groupe') {
-                // Mode Groupe : une ligne par phase, toutes les tâches sur la même ligne
-                phases.forEach((phase, phaseIndex) => {
-                    // Créer le label de la phase UNE SEULE FOIS
-                    labels.push(phase.name);
-
-                    // Ajouter toutes les tâches de cette phase sur le même y
-                    phase.tasks.forEach(task => {
-                        const start = new Date(task.startDate).getTime();
-
-                        if (task.isMilestone || !task.endDate) {
-                            // Jalon : barre de largeur minimale
-                            const end = start + 3600000;
-                            ganttData.push({
-                                x: [start, end],
-                                y: phaseIndex,
-                                isMilestone: true
-                            });
-                        } else {
-                            // Tâche normale
-                            const end = new Date(task.endDate).getTime();
-                            ganttData.push({
-                                x: [start, end],
-                                y: phaseIndex,
-                                isMilestone: false
-                            });
-                        }
-                        colors.push(phase.color);
                     });
                 });
             } else {
-                // Mode Compact : minimiser les lignes en séparant jalons et tâches
+                // Mode Compact : minimiser les lignes, jalons intégrés aux lignes de tâches
                 const allTasks = phases.flatMap(p => p.tasks);
                 const compactedLines = compactTasksAndMilestones(allTasks);
 
                 compactedLines.forEach((lineData, lineIndex) => {
-                    const isMilestoneLine = lineData.type === 'milestone';
                     const line = lineData.line;
-
+                    
                     // Créer le label de la ligne
-                    labels.push(isMilestoneLine ? `Jalons ${Math.floor(lineIndex / 2) + 1}` : `Ligne ${Math.floor(lineIndex / 2) + 1}`);
+                    labels.push(`Ligne ${lineIndex + 1}`);
 
-                    // Ajouter toutes les tâches/jalons de cette ligne sur le même y
+                    // Ajouter toutes les tâches/jalons de cette ligne
                     line.forEach(task => {
                         const start = new Date(task.startDate).getTime();
                         const phase = phases.find(p => p.id === parseInt(task.id.split('.')[0]));
                         const phaseColor = phase ? phase.color : currentPalette[0];
 
-                        if (isMilestoneLine || task.isMilestone || !task.endDate) {
-                            // Jalon : barre de largeur suffisante pour être cliquable (2 jours)
-                            // La capsule visuelle reste dessinée par le plugin milestonePlugin
-                            const end = start + (2 * 24 * 60 * 60 * 1000); // 2 jours pour la zone de clic
+                        if (task.isMilestone || !task.endDate) {
+                            // Jalon
+                            // On ajoute compactMode: true pour informer le plugin qu'il faut un offset Y
+                            const end = start + (2 * 24 * 60 * 60 * 1000); 
                             ganttData.push({
                                 x: [start, end],
                                 y: lineIndex,
-                                isMilestone: true
+                                isMilestone: true,
+                                compactMode: true,
+                                task: task,
+                                color: phaseColor // Pour le titre
                             });
                         } else {
                             // Tâche normale
@@ -6430,7 +6715,9 @@
                             ganttData.push({
                                 x: [start, end],
                                 y: lineIndex,
-                                isMilestone: false
+                                isMilestone: false,
+                                task: task,
+                                color: phaseColor // Pour le titre
                             });
                         }
                         colors.push(phaseColor);
@@ -6440,8 +6727,9 @@
 
             // Préparer les couleurs avec transparence pour le fond
             const backgroundColors = colors.map((color, index) => {
-                if (ganttData[index].isMilestone) {
-                    return 'transparent'; // Jalons invisibles (détection manuelle via capsule)
+                // Vérifier si ganttData[index] existe et si c'est un jalon
+                if (ganttData[index] && ganttData[index].isMilestone) {
+                    return 'transparent'; // Jalons invisibles (rendu via plugin milestone uniquement)
                 }
                 // Convertir hex en rgba avec 30% d'opacité
                 const r = parseInt(color.slice(1, 3), 16);
@@ -6460,14 +6748,17 @@
                         data: ganttData,
                         backgroundColor: backgroundColors,
                         borderColor: colors.map((color, index) => ganttData[index].isMilestone ? 'transparent' : color),
-                        borderWidth: 2,
-                        borderSkipped: false
+                        borderWidth: 1,
+                        borderSkipped: false,
+                        barThickness: (ganttViewMode === 'compact') ? 60 : 35, // Doublé en compact
+                        categoryPercentage: (ganttViewMode === 'compact') ? 0.4 : 0.65 // Plus d'espace en compact
                     }]
                 },
                 options: {
                     // Passer les données au plugin
                     ganttData: ganttData,
                     phasesData: phases,
+                    milestonesData: milestones,
                     indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
@@ -6500,6 +6791,10 @@
                             title: {
                                 display: true,
                                 text: t('axisPhases')
+                            },
+                            // Réduire l'espacement entre les lanes
+                            ticks: {
+                                padding: 4 // Réduire le padding autour des labels (défaut = 10)
                             }
                         }
                     },
@@ -6558,42 +6853,139 @@
                 const xAxis = ganttChart.scales.x;
                 const yAxis = ganttChart.scales.y;
                 const labels = ganttChart.data.labels;
+                
+                let dataIndex; // Déclaration déplacée ici
 
                 // Calculer la hauteur d'une ligne
-                const lineHeight = (yAxis.bottom - yAxis.top) / Math.max(1, labels.length - 1);
+                let laneHeight;
+                if (ganttViewMode === 'cascade') {
+                    const maxY = Math.max(...ganttData.map(d => d.y));
+                    const numLanes = maxY + 1;
+                    laneHeight = (yAxis.bottom - yAxis.top) / Math.max(1, numLanes);
+                } else {
+                    laneHeight = (yAxis.bottom - yAxis.top) / Math.max(1, labels.length - 1);
+                }
 
                 // D'abord, vérifier si le clic est sur une capsule de jalon
-                let milestoneClicked = null;
-                ganttData.forEach((dataPoint, index) => {
-                    if (dataPoint.isMilestone) {
-                        const x = xAxis.getPixelForValue(dataPoint.x[0]);
-                        // Même décalage que dans le plugin milestonePlugin
-                        const laneHeight = (yAxis.bottom - yAxis.top) / labels.length;
-                        const yOffset = -laneHeight * 0.25;
-                        const capsuleY = yAxis.getPixelForValue(dataPoint.y) + yOffset;
+                let milestoneClickedTask = null;
 
-                        // Dimensions de la capsule (même que le plugin)
-                        const capsuleWidth = 50;
-                        const capsuleHeight = 20;
+                if (ganttViewMode === 'cascade') {
+                    // Mode cascade : vérifier les jalons dans milestonesData
+                    if (milestones && milestones.length > 0) {
+                        milestones.forEach((milestone) => {
+                            const x = xAxis.getPixelForValue(milestone.date);
+                            // IMPORTANT: yPosition est déjà non-entier pour être ENTRE les lanes
+                            const capsuleY = yAxis.getPixelForValue(milestone.yPosition);
 
-                        // Vérifier si le clic est dans la capsule
-                        const halfWidth = capsuleWidth / 2;
-                        const halfHeight = capsuleHeight / 2;
+                            const capsuleWidth = 50;
+                            const capsuleHeight = 20;
 
-                        if (clickX >= x - halfWidth && clickX <= x + halfWidth &&
-                            clickY >= capsuleY - halfHeight && clickY <= capsuleY + halfHeight) {
-                            milestoneClicked = index;
-                        }
+                            const halfWidth = capsuleWidth / 2;
+                            const halfHeight = capsuleHeight / 2;
+
+                            if (clickX >= x - halfWidth && clickX <= x + halfWidth &&
+                                clickY >= capsuleY - halfHeight && clickY <= capsuleY + halfHeight) {
+                                milestoneClickedTask = milestone.task;
+                            }
+                        });
                     }
-                });
-
-                let dataIndex;
-
-                if (milestoneClicked !== null) {
-                    // Clic sur une capsule de jalon
-                    dataIndex = milestoneClicked;
                 } else {
-                    // Utiliser la détection Chart.js normale pour les tâches
+                    // Modes groupe et compact : vérifier dans ganttData
+                    ganttData.forEach((dataPoint, index) => {
+                        if (dataPoint.isMilestone) {
+                            const x = xAxis.getPixelForValue(dataPoint.x[0]);
+                            let capsuleY = yAxis.getPixelForValue(dataPoint.y);
+
+                            // Appliquer le décalage si mode compact
+                            if (ganttViewMode === 'compact' && dataPoint.compactMode) {
+                                capsuleY += 45;
+                            }
+
+                            const capsuleWidth = 50;
+                            const capsuleHeight = 20;
+
+                            const halfWidth = capsuleWidth / 2;
+                            const halfHeight = capsuleHeight / 2;
+
+                            if (clickX >= x - halfWidth && clickX <= x + halfWidth &&
+                                clickY >= capsuleY - halfHeight && clickY <= capsuleY + halfHeight) {
+                                // Mode Compact/Groupe : On traite le jalon comme une tâche normale via son index
+                                // On ne définit PAS milestoneClickedTask pour éviter d'entrer dans la logique Cascade
+                                dataIndex = index;
+                                return; // Sortir de la boucle
+                            }
+                        }
+                    });
+                }
+
+                // Vérifier d'abord si on clique sur un bord d'une tâche pour le redimensionnement
+                if (!milestoneClickedTask && dataIndex === undefined) {
+                    ganttData.forEach((dataPoint, index) => {
+                        if (dataPoint.isMilestone) return; // Skip milestones
+
+                        const xStart = xAxis.getPixelForValue(dataPoint.x[0]);
+                        const xEnd = xAxis.getPixelForValue(dataPoint.x[1]);
+                        const y = yAxis.getPixelForValue(dataPoint.y);
+                        const barHeight = 35; // Hauteur fixe des barres (barThickness)
+
+                        // Tolérance de 10 pixels pour le clic sur les bords
+                        const edgeTolerance = 10;
+
+                        // Vérifier si on est près du bord gauche ou droit
+                        if (Math.abs(clickX - xStart) <= edgeTolerance &&
+                            clickY >= y - barHeight/2 && clickY <= y + barHeight/2) {
+                            // Bord gauche - redimensionner la date de début
+                            resizeEdge = 'left';
+                            resizeTaskIndex = index;
+                            resizeStartDate = dataPoint.x[0];
+                            resizeEndDate = dataPoint.x[1];
+                            isResizing = true;
+                            dragStartX = clickX; // Initialiser dragStartX pour éviter les bugs
+                            return; // Sortir de la boucle
+                        } else if (Math.abs(clickX - xEnd) <= edgeTolerance &&
+                            clickY >= y - barHeight/2 && clickY <= y + barHeight/2) {
+                            // Bord droit - redimensionner la date de fin
+                            resizeEdge = 'right';
+                            resizeTaskIndex = index;
+                            resizeStartDate = dataPoint.x[0];
+                            resizeEndDate = dataPoint.x[1];
+                            isResizing = true;
+                            dragStartX = clickX; // Initialiser dragStartX pour éviter les bugs
+                            return; // Sortir de la boucle
+                        }
+                    });
+                }
+
+                if (isResizing) {
+                    // Mode redimensionnement
+                    canvas.style.cursor = resizeEdge === 'left' ? 'w-resize' : 'e-resize';
+                    dragStartX = clickX;
+                    return;
+                }
+
+                if (milestoneClickedTask !== null) {
+                    // Clic sur une capsule de jalon - permettre le drag & drop
+                    isDragging = true;
+                    draggedMilestone = milestoneClickedTask;
+                    dragStartDate = new Date(milestoneClickedTask.startDate).getTime();
+                    dragStartX = clickX;
+
+                    // Trouver les données du jalon dans milestones
+                    draggedMilestoneData = milestones.find(m => m.task === milestoneClickedTask);
+
+                    canvas.style.cursor = 'grabbing';
+
+                    // Calculer les snap targets (sans exclusion de tâche pour les jalons)
+                    const snapTargets = getSnapTargets(-1);
+
+                    snapLines = snapTargets.map(target => ({
+                        x: xAxis.getPixelForValue(target.date),
+                        date: target.date,
+                        type: target.type,
+                        taskId: target.taskId
+                    }));
+                } else if (dataIndex === undefined) {
+                    // Utiliser la détection Chart.js normale pour les tâches (seulement si pas déjà trouvé)
                     const elements = ganttChart.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
 
                     if (elements.length > 0) {
@@ -6623,104 +7015,288 @@
             });
 
             canvas.addEventListener('mousemove', function(e) {
-                if (!isDragging || draggedTaskIndex === null) return;
-
                 const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+
+                // Détection du survol des bords pour changer le curseur (si pas en mode drag/resize)
+                if (!isDragging && !isResizing) {
+                    const xAxis = ganttChart.scales.x;
+                    const yAxis = ganttChart.scales.y;
+                    let hoveringEdge = false;
+
+                    ganttData.forEach((dataPoint, index) => {
+                        if (dataPoint.isMilestone) return; // Skip milestones
+
+                        const xStart = xAxis.getPixelForValue(dataPoint.x[0]);
+                        const xEnd = xAxis.getPixelForValue(dataPoint.x[1]);
+                        const y = yAxis.getPixelForValue(dataPoint.y);
+                        const barHeight = 50;
+                        const edgeTolerance = 10;
+
+                        // Vérifier si on survole le bord gauche ou droit
+                        if ((Math.abs(mouseX - xStart) <= edgeTolerance ||
+                             Math.abs(mouseX - xEnd) <= edgeTolerance) &&
+                            mouseY >= y - barHeight/2 && mouseY <= y + barHeight/2) {
+                            hoveringEdge = true;
+                            canvas.style.cursor = Math.abs(mouseX - xStart) <= edgeTolerance ? 'w-resize' : 'e-resize';
+                        }
+                    });
+
+                    if (!hoveringEdge) {
+                        canvas.style.cursor = 'grab';
+                    }
+                }
+
+                // Mode redimensionnement
+                if (isResizing) {
+                    const xAxis = ganttChart.scales.x;
+
+                    // Calculer le déplacement en pixels et le convertir en temps
+                    const deltaX = mouseX - dragStartX;
+
+                    // Utiliser la bonne référence selon le bord qu'on redimensionne
+                    const refDate = resizeEdge === 'left' ? resizeStartDate : resizeEndDate;
+                    const newPixel = xAxis.getPixelForValue(refDate) + deltaX;
+                    const newDate = xAxis.getValueForPixel(newPixel);
+
+                    let finalDate = newDate;
+
+                    // Appliquer le magnétisme seulement si Shift n'est PAS enfoncé
+                    if (!e.shiftKey) {
+                        const snapTargets = getSnapTargets(resizeTaskIndex);
+                        const snapped = findSnapDate(newDate, snapTargets);
+
+                        if (snapped) {
+                            finalDate = snapped.date;
+                            snapLines = snapLines.filter(line => Math.abs(line.date - finalDate) < 86400000);
+                        } else {
+                            snapLines = [];
+                        }
+                    } else {
+                        snapLines = [];
+                    }
+
+                    const task = ganttData[resizeTaskIndex].task;
+                    if (!task) return;
+
+                    if (resizeEdge === 'left') {
+                        // Redimensionner la date de début (garder la date de fin fixe)
+                        ganttData[resizeTaskIndex].x[0] = finalDate;
+                    } else {
+                        // Redimensionner la date de fin (garder la date de début fixe)
+                        ganttData[resizeTaskIndex].x[1] = finalDate;
+                    }
+
+                    ganttChart.update('none');
+                    return;
+                }
+
+                if (!isDragging) return;
+                if (draggedMilestone && !draggedMilestoneData) return;
+                if (!draggedMilestone && draggedTaskIndex === null) return;
+
                 const xAxis = ganttChart.scales.x;
 
                 // Calculer le déplacement en pixels et le convertir en temps
-                const deltaX = x - dragStartX;
+                const deltaX = mouseX - dragStartX;
                 const dataStart = dragStartDate;
                 const pixelStart = xAxis.getPixelForValue(dataStart);
                 const newPixel = pixelStart + deltaX;
                 const newDate = xAxis.getValueForPixel(newPixel);
 
-                // Appliquer le magnétisme
-                const snapTargets = getSnapTargets(draggedTaskIndex);
-                const snapped = findSnapDate(newDate, snapTargets);
-
                 let finalDate = newDate;
-                if (snapped) {
-                    finalDate = snapped.date;
-                    // Afficher les lignes de snap
-                    snapLines = snapLines.filter(line => Math.abs(line.date - finalDate) < 86400000); // ±1 jour
+
+                // Appliquer le magnétisme seulement si Shift n'est PAS enfoncé
+                if (!e.shiftKey) {
+                    const snapTargets = getSnapTargets(draggedMilestone ? -1 : draggedTaskIndex);
+                    const snapped = findSnapDate(newDate, snapTargets);
+
+                    if (snapped) {
+                        finalDate = snapped.date;
+                        // Afficher les lignes de snap
+                        snapLines = snapLines.filter(line => Math.abs(line.date - finalDate) < 86400000); // ±1 jour
+                    } else {
+                        snapLines = [];
+                    }
                 } else {
                     snapLines = [];
                 }
 
-                // Mettre à jour visuellement la barre (sans sauvegarder)
-                const task = phases.flatMap(p => p.tasks).find((t, i) => i === draggedTaskIndex);
-                if (!task) return;
+                if (draggedMilestone && draggedMilestoneData) {
+                    // Drag d'un jalon (tous modes)
+                    draggedMilestoneData.date = finalDate;
+                    
+                    // En mode compact/groupe, mettre aussi à jour ganttData pour le retour visuel
+                    if (draggedTaskIndex !== null) {
+                        ganttData[draggedTaskIndex].x[0] = finalDate;
+                        ganttData[draggedTaskIndex].x[1] = finalDate + (2 * 24 * 60 * 60 * 1000);
+                    }
+                } else if (draggedTaskIndex !== null) {
+                    const task = ganttData[draggedTaskIndex] ? ganttData[draggedTaskIndex].task : null;
+                    if (!task) return;
 
-                const isMilestone = task.isMilestone || ganttData[draggedTaskIndex].isMilestone;
+                    const isMilestone = task.isMilestone || ganttData[draggedTaskIndex].isMilestone;
 
-                if (isMilestone) {
-                    // Pour un jalon : déplacer la barre de 2 jours (zone de clic)
-                    ganttData[draggedTaskIndex].x[0] = finalDate;
-                    ganttData[draggedTaskIndex].x[1] = finalDate + (2 * 24 * 60 * 60 * 1000); // 2 jours pour la zone de clic
-                } else {
-                    // Pour une tâche normale : déplacer en gardant la durée
-                    const duration = task.duration || 7;
-                    const newEndDate = new Date(finalDate + duration * 86400000);
-                    ganttData[draggedTaskIndex].x[0] = finalDate;
-                    ganttData[draggedTaskIndex].x[1] = newEndDate.getTime();
+                    if (isMilestone) {
+                        // Pour un jalon : déplacer la barre de 2 jours (zone de clic)
+                        ganttData[draggedTaskIndex].x[0] = finalDate;
+                        ganttData[draggedTaskIndex].x[1] = finalDate + (2 * 24 * 60 * 60 * 1000); // 2 jours pour la zone de clic
+                    } else {
+                        // Pour une tâche normale : déplacer en gardant la durée
+                        const duration = task.duration || 7;
+                        const newEndDate = new Date(finalDate + duration * 86400000);
+                        ganttData[draggedTaskIndex].x[0] = finalDate;
+                        ganttData[draggedTaskIndex].x[1] = newEndDate.getTime();
+                    }
                 }
 
                 ganttChart.update('none'); // Update sans animation pour la fluidité
             });
 
             canvas.addEventListener('mouseup', function(e) {
-                if (!isDragging || draggedTaskIndex === null) return;
+                // Gestion de la fin du redimensionnement
+                if (isResizing) {
+                    const task = ganttData[resizeTaskIndex].task;
+                    if (!task) return;
 
-                // Sauvegarder les nouvelles dates
-                const task = phases.flatMap(p => p.tasks).find((t, i) => i === draggedTaskIndex);
-                if (!task) return;
+                    // Sauvegarder l'état avant modification
+                    saveState();
 
-                const newStart = new Date(ganttData[draggedTaskIndex].x[0]);
-                const isMilestone = task.isMilestone || ganttData[draggedTaskIndex].isMilestone;
+                    // Mettre à jour les dates de la tâche
+                    const newStart = new Date(ganttData[resizeTaskIndex].x[0]);
+                    const newEnd = new Date(ganttData[resizeTaskIndex].x[1]);
 
-                // Sauvegarder l'état avant modification
-                saveState();
-
-                // Mettre à jour la tâche/jalon
-                task.startDate = newStart.toISOString().split('T')[0];
-
-                if (isMilestone) {
-                    // Pour un jalon : pas de date fin
-                    task.endDate = null;
-                    task.duration = 0;
-                } else {
-                    // Pour une tâche normale : calculer la date fin
-                    const newEnd = new Date(ganttData[draggedTaskIndex].x[1]);
+                    task.startDate = newStart.toISOString().split('T')[0];
                     task.endDate = newEnd.toISOString().split('T')[0];
                     task.duration = calculateDuration(task.startDate, task.endDate);
+
+                    // Recalculer les dates de la phase
+                    const phase = phases.find(p => p.id === parseInt(task.id.split('.')[0]));
+                    if (phase) {
+                        updatePhaseDates(phase);
+                    }
+
+                    // Réinitialiser
+                    isResizing = false;
+                    resizeEdge = null;
+                    resizeTaskIndex = null;
+                    resizeStartDate = null;
+                    resizeEndDate = null;
+                    snapLines = [];
+                    canvas.style.cursor = 'grab';
+
+                    // Re-rendre tout
+                    ganttChart.update('none');
+                    renderPlanning();
+                    updateDashboard();
+
+                    showToast('✅ Tâche redimensionnée');
+                    return;
                 }
 
-                // Recalculer les dates de la phase
-                const phase = phases.find(p => p.id === parseInt(task.id.split('.')[0]));
-                if (phase) {
-                    updatePhaseDates(phase);
+                // Gestion de la fin du drag & drop
+                if (!isDragging) return;
+                if (draggedMilestone && !draggedMilestoneData) return;
+                if (!draggedMilestone && draggedTaskIndex === null) return;
+
+                if (draggedMilestone && draggedMilestoneData) {
+                    // Fin du drag d'un jalon (tous modes)
+                    saveState();
+
+                    // Mettre à jour la date du jalon
+                    const newStart = new Date(draggedMilestoneData.date);
+                    draggedMilestone.startDate = newStart.toISOString().split('T')[0];
+                    // Pour un jalon, endDate = startDate
+                    draggedMilestone.endDate = draggedMilestone.startDate;
+
+                    // Recalculer les dates de la phase
+                    const phase = phases.find(p => p.id === parseInt(draggedMilestone.id.split('.')[0]));
+                    if (phase) {
+                        updatePhaseDates(phase);
+                    }
+
+                    // Réinitialiser
+                    isDragging = false;
+                    draggedMilestone = null;
+                    draggedMilestoneData = null;
+                    draggedTaskIndex = null;
+                    snapLines = [];
+                    canvas.style.cursor = 'grab';
+
+                    // Re-rendre tout
+                    sanitizeData();
+                    ganttChart.update('none');
+                    renderPlanning();
+                    updateDashboard();
+
+                    showToast('✅ Jalon déplacé');
+                } else {
+                    // Fin du drag d'une tâche normale
+                    if (!ganttData[draggedTaskIndex]) return; // Sécurité supplémentaire
+                    const task = ganttData[draggedTaskIndex].task;
+                    if (!task) return;
+
+                    const newStart = new Date(ganttData[draggedTaskIndex].x[0]);
+                    const isMilestone = task.isMilestone || ganttData[draggedTaskIndex].isMilestone;
+
+                    // Sauvegarder l'état avant modification
+                    saveState();
+
+                    // Mettre à jour la tâche/jalon
+                    task.startDate = newStart.toISOString().split('T')[0];
+
+                    if (isMilestone) {
+                        // Pour un jalon : date fin = date début
+                        task.endDate = task.startDate;
+                    } else {
+                        // Tâche normale
+                        const newEnd = new Date(ganttData[draggedTaskIndex].x[1]);
+                        task.endDate = newEnd.toISOString().split('T')[0];
+                        task.duration = calculateDuration(task.startDate, task.endDate);
+                    }
+
+                    // Recalculer les dates de la phase
+                    const phase = phases.find(p => p.id === parseInt(task.id.split('.')[0]));
+                    if (phase) {
+                        updatePhaseDates(phase);
+                    }
+
+                    // Réinitialiser
+                    isDragging = false;
+                    draggedTaskIndex = null;
+                    snapLines = [];
+                    canvas.style.cursor = 'grab';
+
+                    // Re-rendre tout
+                    sanitizeData();
+                    ganttChart.update('none');
+                    renderPlanning();
+                    updateDashboard();
+
+                    const itemType = isMilestone ? 'Jalon' : 'Tâche';
+                    showToast(`✅ ${itemType} déplacé(e)`);
                 }
-
-                // Réinitialiser
-                isDragging = false;
-                draggedTaskIndex = null;
-                snapLines = [];
-                canvas.style.cursor = 'grab';
-
-                // Re-rendre tout
-                ganttChart.update('none');
-                renderRisks();
-
-                const itemType = isMilestone ? 'Jalon' : 'Tâche';
-                showToast(`✅ ${itemType} déplacé(e)`);
             });
 
             canvas.addEventListener('mouseleave', function() {
                 if (isDragging) {
                     isDragging = false;
                     draggedTaskIndex = null;
+                    draggedMilestone = null;
+                    draggedMilestoneData = null;
+                    snapLines = [];
+                    canvas.style.cursor = 'grab';
+                    ganttChart.update('none');
+                }
+
+                // Réinitialiser le redimensionnement si on quitte le canvas
+                if (isResizing) {
+                    isResizing = false;
+                    resizeEdge = null;
+                    resizeTaskIndex = null;
+                    resizeStartDate = null;
+                    resizeEndDate = null;
                     snapLines = [];
                     canvas.style.cursor = 'grab';
                     ganttChart.update('none');
@@ -6732,47 +7308,52 @@
         // Mise à jour du Dashboard
         // ========================================
         function updateDashboard(currentRisks) {
-            // Utiliser les tâches (risks) et phases
-            const allTasks = tasks;
+            // Récupérer toutes les tâches depuis les phases
+            const allTasks = riskGroups.flatMap(p => p.tasks);
+
+            // Vérifier que les éléments existent avant de les mettre à jour
+            const totalEl = document.getElementById('dashboard-total-tasks');
+            const inProgressEl = document.getElementById('dashboard-in-progress');
+            const completedEl = document.getElementById('dashboard-completed');
+            const durationEl = document.getElementById('dashboard-total-duration');
+            const progressionEl = document.getElementById('dashboard-progression');
+
+            if (!totalEl || !inProgressEl || !completedEl || !durationEl || !progressionEl) {
+                return; // Un des éléments n'existe pas
+            }
 
             // 1. Nombre total de tâches
-            document.getElementById('dashboard-total-risks').textContent = allTasks.length;
+            totalEl.textContent = allTasks.length;
 
             // 2. Tâches en cours
             const inProgressTasks = allTasks.filter(task => {
-                return task.statut === 'En cours';
+                return task.statut === 'statusInProgress' || task.statut === 'En cours';
             }).length;
-            document.getElementById('dashboard-critical-before').textContent = inProgressTasks;
+            inProgressEl.textContent = inProgressTasks;
 
             // 3. Tâches terminées
             const completedTasks = allTasks.filter(task => {
-                return task.statut === 'Terminé' || task.statut === 'Traité';
+                return task.statut === 'statusDone' || task.statut === 'statusTreated' || task.statut === 'Terminé';
             }).length;
-            document.getElementById('dashboard-critical-after').textContent = completedTasks;
+            completedEl.textContent = completedTasks;
 
-            // 4. Durée totale du projet
-            let totalDuration = 0;
-            phases.forEach(phase => {
-                if (phase.duration) {
-                    totalDuration += phase.duration;
-                }
-            });
-            document.getElementById('dashboard-avg-reduction').textContent = `${totalDuration} jours`;
+            // 4. Durée totale du projet (Somme des durées des tâches uniques)
+            const totalDuration = allTasks.reduce((sum, task) => sum + (parseInt(task.duration) || 0), 0);
+            durationEl.textContent = `${totalDuration} j`;
 
-            // 5. Tâches terminées / total
+            // 5. Progression (Tâches terminées / total)
             const completionRate = allTasks.length > 0
                 ? Math.round((completedTasks / allTasks.length) * 100)
                 : 0;
-            const treatedEl = document.getElementById('dashboard-treated');
-            treatedEl.textContent = `${completionRate}%`;
+            progressionEl.textContent = `${completionRate}%`;
 
             // Colorer selon le taux de complétion
             if (completionRate >= 75) {
-                treatedEl.style.color = '#1A6A3E'; // Vert
+                progressionEl.style.color = '#1A6A3E'; // Vert
             } else if (completionRate >= 50) {
-                treatedEl.style.color = '#FF9500'; // Orange
+                progressionEl.style.color = '#FF9500'; // Orange
             } else {
-                treatedEl.style.color = '#666666'; // Gris
+                progressionEl.style.color = '#666666'; // Gris
             }
         }
 
@@ -6815,7 +7396,8 @@
 
 
             // Re-render
-            renderRisks();
+            renderPlanning();
+            updateDashboard();
             initGroupNameEditing();
             initGroupDescriptionEditing();
             initRiskTitleEditing();
@@ -6830,233 +7412,10 @@
         // Modal d'agrandissement des matrices
         // ========================================
 
-        let modalChartInstance = null;
-        let currentMatrixType = 'before'; // 'before' ou 'after'
-
-        function openMatrixModal(type) {
-            currentMatrixType = type;
-            const modal = document.getElementById('matrix-modal');
-            const title = document.getElementById('matrix-modal-title');
-            const canvas = document.getElementById('chartModal');
-
-            // Déterminer le titre et les données
-            if (type === 'before') {
-                title.textContent = 'Matrice des risques non remédiés';
-            } else {
-                title.textContent = 'Matrice des risques remédiés';
-            }
-
-            // Afficher la modal
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-
-            // Détruire l'ancien graphique s'il existe
-            if (modalChartInstance) {
-                modalChartInstance.destroy();
-            }
-
-            // Récupérer les données actuelles
-            const currentRisks = getCurrentRisks();
-            let chartData = [];
-
-            // --- MODE 1 : VUE PAR GROUPES ---
-            if (matrixViewMode === 'groups') {
-                chartData = riskGroups.map((group, groupIndex) => {
-                    let totalProb = 0;
-                    let totalImpact = 0;
-                    let count = 0;
-
-                    group.tasks.forEach(risk => {
-                        const riskData = currentRisks.find(r => r.id === risk.id);
-                        if (!riskData) return;
-
-                        const prob = type === 'before' ? riskData.gcBefore[0] : riskData.gcAfter[0];
-                        const impact = type === 'before' ? riskData.gcBefore[1] : riskData.gcAfter[1];
-
-                        if (prob === 0 || impact === 0) return;
-
-                        totalProb += (type === 'before' ? (riskData.dtuBefore[0] + prob)/2 : (riskData.dtuAfter[0] + prob)/2);
-                        totalImpact += (type === 'before' ? (riskData.dtuBefore[1] + impact)/2 : (riskData.dtuAfter[1] + impact)/2);
-                        count++;
-                    });
-
-                    if (count === 0) return null;
-
-                    const avgProb = totalProb / count;
-                    const avgImpact = totalImpact / count;
-
-                    return {
-                        x: avgProb, // Pas d'offset initial, l'algo s'en charge
-                        y: avgImpact,
-                        baseX: avgProb,
-                        baseY: avgImpact,
-                        label: `Groupe ${group.id}`,
-                        shortLabel: `${group.id}`,
-                        groupName: group.name
-                    };
-                }).filter(d => d !== null);
-            }
-            // --- MODE 2 : VUE PAR RISQUES ---
-            else {
-                currentRisks.forEach((risk) => {
-                    const prob = type === 'before' ? risk.gcBefore[0] : risk.gcAfter[0];
-                    const impact = type === 'before' ? risk.gcBefore[1] : risk.gcAfter[1];
-
-                    if (prob > 0 && impact > 0) {
-                        const baseX = type === 'before' ? (risk.dtuBefore[0] + prob)/2 : (risk.dtuAfter[0] + prob)/2;
-                        const baseY = type === 'before' ? (risk.dtuBefore[1] + impact)/2 : (risk.dtuAfter[1] + impact)/2;
-                        
-                        const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
-                        const groupName = group ? group.name : 'Inconnu';
-
-                        chartData.push({
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: `Risque ${risk.id}`,
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-                });
-            }
-
-            // APPLIQUER L'ANTI-COLLISION
-            resolveCollisions(chartData);
-
-            // Créer le graphique dans la modal
-            modalChartInstance = new Chart(canvas, {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: 'rgba(0, 122, 255, 0.8)',
-                        borderColor: 'white',
-                        borderWidth: 1.5,
-                        pointRadius: matrixViewMode === 'risks' ? 12 : 14,
-                        pointHoverRadius: matrixViewMode === 'risks' ? 14 : 16,
-                        pointStyle: 'circle'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1,
-                    animation: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            padding: 12,
-                            callbacks: {
-                                title: function(context) {
-                                    const point = context[0].raw;
-                                    if (matrixViewMode === 'risks') {
-                                        return `${point.shortLabel} - ${point.riskTitle}`;
-                                    }
-                                    return point.label;
-                                },
-                                label: function(context) {
-                                    const point = context.raw;
-                                    const realX = point.baseX || point.x;
-                                    const realY = point.baseY || point.y;
-                                    const criticality = realX * realY;
-                                    
-                                    if (matrixViewMode === 'risks') {
-                                        return [
-                                            `Groupe: ${point.groupName}`,
-                                            `Probabilité: ${realX}`,
-                                            `Impact: ${realY}`,
-                                            `Criticité: ${criticality}`
-                                        ];
-                                    } else {
-                                        return [
-                                            `${point.groupName}`,
-                                            `Probabilité: ${realX.toFixed(2)}`,
-                                            `Impact: ${realY.toFixed(2)}`,
-                                            `Criticité: ${criticality.toFixed(1)}/25`
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                font: { size: 12 },
-                                callback: function(value) {
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: { display: false },
-                            title: {
-                                display: true,
-                                text: 'Probabilité →',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
-                        y: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                font: { size: 12 },
-                                callback: function(value) {
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: { display: false },
-                            title: {
-                                display: true,
-                                text: '↑ Impact',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        }
-                    }
-                },
-                plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
-            });
-        }
-
-        function closeMatrixModal(event) {
-            if (event) {
-                // Empêcher la fermeture si on clique sur le contenu (pas le fond)
-                if (event.target.closest('.matrix-modal-content') && !event.target.classList.contains('matrix-modal-close')) {
-                    return;
-                }
-                event.stopPropagation();
-            }
-
-            const modal = document.getElementById('matrix-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-
-            // Détruire le graphique pour libérer la mémoire
-            if (modalChartInstance) {
-                modalChartInstance.destroy();
-                modalChartInstance = null;
-            }
-        }
-
-        // Navigation entre les matrices (cycle)
-        function navigateMatrix(direction) {
-            if (direction === 'next') {
-                // Cycle: before → after → before
-                currentMatrixType = currentMatrixType === 'before' ? 'after' : 'before';
-            } else {
-                // Cycle: after → before → after
-                currentMatrixType = currentMatrixType === 'after' ? 'before' : 'after';
-            }
-            // Note: modal des matrices supprimée, plus nécessaire
-        }
+        // Les fonctions de gestion de la modal matricielle ont été supprimées car elles sont obsolètes pour le planning.
+        function openMatrixModal(type) {}
+        function closeMatrixModal(event) {}
+        function navigateMatrix(direction) {}
 
 
         // ========================================
@@ -7077,7 +7436,7 @@
             });
 
             // Re-render les risques pour mettre à jour les dropdowns traduits
-            renderRisks();
+            renderPlanning();
             initGroupNameEditing();
             initGroupDescriptionEditing();
             initRiskTitleEditing();
@@ -7094,61 +7453,51 @@
             document.getElementById('language-selector').value = savedLang;
         }
 
-        let matrixViewMode = 'groups'; // 'groups' ou 'risks'
+        // Les fonctions de vue matricielle ont été supprimées.
 
-        function setMatrixView(mode) {
-            matrixViewMode = mode;
-            // Sauvegarder la préférence de l'utilisateur
-            localStorage.setItem('riskr-matrix-view', mode);
-            
-            // Mettre à jour l'état visuel des boutons
-            const btnGroups = document.getElementById('view-btn-groups');
-            const btnRisks = document.getElementById('view-btn-risks');
-            
-            if (btnGroups && btnRisks) {
-                if (mode === 'groups') {
-                    btnGroups.classList.add('active');
-                    btnGroups.style.background = 'white';
-                    btnGroups.style.color = '#1d1d1f';
-                    btnGroups.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-                    
-                    btnRisks.classList.remove('active');
-                    btnRisks.style.background = 'transparent';
-                    btnRisks.style.color = '#666';
-                    btnRisks.style.boxShadow = 'none';
-                } else {
-                    btnRisks.classList.add('active');
-                    btnRisks.style.background = 'white';
-                    btnRisks.style.color = '#1d1d1f';
-                    btnRisks.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-                    
-                    btnGroups.classList.remove('active');
-                    btnGroups.style.background = 'transparent';
-                    btnGroups.style.color = '#666';
-                    btnGroups.style.boxShadow = 'none';
-                }
-            }
-            
-            updateGantt();
-        }
+        // Nettoyer les données (doublons, cohérence, dates invalides)
+        function sanitizeData() {
+            const seenIds = new Set();
+            riskGroups.forEach(group => {
+                group.tasks = group.tasks.filter(task => {
+                    // 1. Vérifier doublons ID
+                    if (seenIds.has(task.id)) {
+                        console.warn(`Doublon supprimé: ${task.id}`);
+                        return false;
+                    }
+                    seenIds.add(task.id);
 
-        // Initialisation de la vue matricielle (Groupes ou Risques)
-        function initMatrixView() {
-            const savedView = localStorage.getItem('riskr-matrix-view');
-            // Si une préférence est sauvegardée, on l'applique
-            if (savedView === 'groups' || savedView === 'risks') {
-                setMatrixView(savedView);
-            } else {
-                // Sinon, valeur par défaut
-                setMatrixView('groups');
-            }
+                    // 2. Vérifier dates
+                    if (!task.startDate) return false; // Pas de date de début = poubelle
+                    
+                    const start = new Date(task.startDate).getTime();
+                    const end = task.endDate ? new Date(task.endDate).getTime() : start;
+
+                    if (isNaN(start) || (task.endDate && isNaN(end))) {
+                        console.warn(`Dates invalides pour ${task.id}`);
+                        return false;
+                    }
+
+                    if (end < start) {
+                        console.warn(`Fin avant début pour ${task.id}, correction automatique`);
+                        task.endDate = task.startDate; // Correction
+                    }
+
+                    return true;
+                });
+            });
+            
+            // Reconstruire le tableau plat
+            risks.length = 0;
+            riskGroups.forEach(g => risks.push(...g.tasks));
         }
 
         // Initialisation
+        sanitizeData(); // Nettoyage préventif
         initLanguage(); // Initialiser la langue sauvegardée
-        initMatrixView(); // Restaurer la vue matricielle sauvegardée
+        initGanttView(); // Restaurer la vue Gantt sauvegardée
         restoreGroupMappingFromStorage(); // Restaurer le mapping depuis localStorage (une seule fois)
-        renderRisks();
+        renderPlanning();
         initGroupNameEditing(); // Activer l'édition inline sur les noms de groupes
         initGroupDescriptionEditing(); // Activer l'édition inline sur les descriptions de groupes
         initRiskTitleEditing(); // Activer l'édition inline sur les noms de risques
@@ -7157,6 +7506,7 @@
         initResponsableEditing(); // Activer les dropdowns de statut
         initSectionTitleEditing(); // Activer l'édition inline sur les sous-titres de sections
         updateGantt();
+        updateDashboard();
 
         // Sauvegarder l'état initial pour le système undo/redo
         saveState();
