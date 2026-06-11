@@ -8,6 +8,25 @@
 
 **Riskr** est une application web one-page complète pour l'analyse et la gestion des risques. Elle permet de visualiser l'évolution des risques avant et après la mise en place de mesures de remédiation, à travers des matrices interactives et des tableaux détaillés.
 
+## 📦 Données séparées (riskr-data.js)
+
+Les données vivent dans `riskr-data.js` (format `window.RISKR_DATA`), chargé
+automatiquement par `riskr.html`. Le HTML est le moteur, le fichier de données
+est le contenu : pour une nouvelle analyse, seul `riskr-data.js` change.
+
+- **Format canonique** : `risks[]` à plat + `riskGroups[].riskIds`
+- **Round-trip garanti** : l'export JSON et l'export `riskr-data.js`
+  (menu Exporter) produisent ce même format, ré-importable et rechargeable
+  tel quel à côté du HTML
+- Sans `riskr-data.js`, la page affiche un placeholder minimal (pas de
+  données d'exemple cachées dans le HTML)
+
+## 🔌 100 % hors-ligne
+
+Toutes les bibliothèques (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,
+xlsx 0.18.5) sont vendorisées inline dans le HTML : aucune dépendance CDN,
+la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
+
 ## ✨ Fonctionnalités
 
 ### Gestion des Risques
