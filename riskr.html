@@ -476,11 +476,57 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Référence aux données publiques : si riskr-data.local.js les remplace,
         // l'enregistrement doit viser ce fichier privé et non riskr-data.js.
         window.RISKR_PUBLIC_DATA = window.RISKR_DATA;
+
+        // Thème clair / sombre : préférence de l'utilisateur (commune à toutes les analyses),
+        // sinon celle du système ; appliqué avant l'affichage pour éviter un flash
+        try {
+            document.documentElement.dataset.theme = localStorage.getItem('riskr-theme') ||
+                (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        } catch (error) {
+            document.documentElement.dataset.theme = 'light'; // stockage bloqué par le navigateur
+        }
         if (window.location.protocol === 'file:') {
             document.write('<script src="riskr-data.local.js"><\/script>');
         }
     </script>
     <style>
+        /* Thème : couleurs de surface, de texte et de bordure. Les couleurs de cotation
+           (cases, badges) restent identiques dans les deux thèmes. */
+        :root {
+            color-scheme: light;
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --surface-2: #f5f5f7;
+            --text: #1d1d1f;
+            --text-2: #6e6e73;
+            --text-3: #86868b;
+            --border: #e5e5e7;
+            --border-strong: #d2d2d7;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --primary-bg: #1d1d1f;
+            --primary-fg: #ffffff;
+            --primary-hover: #3a3a3c;
+            --sticky-bg: rgba(245, 245, 247, 0.95);
+        }
+
+        [data-theme="dark"] {
+            color-scheme: dark;
+            --bg: #0e0e10;
+            --surface: #1c1c1e;
+            --surface-2: #2a2a2d;
+            --text: #f5f5f7;
+            --text-2: #aeaeb2;
+            --text-3: #8e8e93;
+            --border: #38383c;
+            --border-strong: #4a4a4f;
+            --accent: #0a84ff;
+            --accent-hover: #409cff;
+            --primary-bg: #f5f5f7;
+            --primary-fg: #1d1d1f;
+            --primary-hover: #d2d2d7;
+            --sticky-bg: rgba(28, 28, 30, 0.95);
+        }
         * {
             margin: 0;
             padding: 0;
@@ -489,9 +535,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f7fa;
+            background: var(--bg);
             padding: 20px;
-            color: #1d1d1f;
+            color: var(--text);
             line-height: 1.5;
         }
         
@@ -499,7 +545,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             width: 98%;
             max-width: none;
             margin: 0 auto;
-            background: white;
+            background: var(--surface);
             padding: 40px;
             border-radius: 16px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
@@ -513,36 +559,189 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .in-iframe .app-header { display: none !important; }
         .in-iframe .app-controls { display: none !important; }
 
-        /* Header avec icône, titre et contrôles */
+        /* En-tête : logo + titre à gauche, commandes à droite */
         .app-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-            position: relative;
+            justify-content: space-between;
+            gap: 24px;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
         }
 
         .app-icon {
-            width: 64px;
-            height: 64px;
-            opacity: 0.9;
+            width: 44px;
+            height: 44px;
             flex-shrink: 0;
+            filter: drop-shadow(0 2px 6px rgba(74, 144, 226, 0.25));
         }
 
         .app-title-section {
-            flex: 1;
             min-width: 0;
+        }
+
+        .app-header h1 {
+            font-size: 24px;
+            letter-spacing: -0.4px;
+        }
+
+        #main-subtitle {
+            margin: 2px 0 0 -8px; /* compense la marge intérieure de la zone modifiable */
+            font-size: 14px;
+            color: var(--text-3);
         }
 
         .app-controls {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             flex-shrink: 0;
         }
 
+        /* Commandes de l'en-tête : boutons icônes sans bordure, libellé en infobulle */
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-2);
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .icon-btn:hover,
+        .icon-btn[aria-expanded="true"] {
+            color: var(--text);
+            background: var(--surface-2);
+        }
+
+        .icon-btn[hidden] {
+            display: none;
+        }
+
+        .icon-btn .icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .icon-btn-primary,
+        .icon-btn-primary:hover {
+            color: var(--primary-fg);
+            background: var(--primary-bg);
+        }
+
+        .icon-btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 20px;
+            margin: 0 4px;
+            background: var(--border);
+        }
+
+        /* Les matrices restent orientées de gauche à droite (probabilité croissante vers la
+           droite), y compris en arabe : les flèches d'axe gardent leur sens */
+        canvas {
+            direction: ltr;
+        }
+
+        /* Menus déroulants de l'en-tête (export, langue) */
+        .menu-anchor {
+            position: relative;
+        }
+
+        .menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            inset-inline-end: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            min-width: 210px;
+            padding: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .menu[hidden] {
+            display: none;
+        }
+
+        .menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            font: inherit;
+            font-size: 14px;
+            color: var(--text);
+            text-align: start;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .menu button:hover {
+            background: var(--surface-2);
+        }
+
+        .menu-hint {
+            margin-inline-start: auto;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .menu button.active::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            margin-inline-start: auto;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        /* Icônes au trait : taille et couleur du texte environnant */
+        .icon {
+            width: 1.1em;
+            height: 1.1em;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: -0.2em;
+        }
+
+        .toolbar-icon {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
         h1 {
-            color: #1d1d1f;
+            color: var(--text);
             margin: 0;
             font-size: 28px;
             font-weight: 600;
@@ -550,7 +749,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         h2 {
-            color: #1d1d1f;
+            color: var(--text);
             margin: 16px 0 12px 0;
             font-size: 22px;
             font-weight: 600;
@@ -558,23 +757,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         h3 {
-            color: #1d1d1f;
+            color: var(--text);
             font-size: 17px;
             font-weight: 600;
             margin-bottom: 16px;
         }
         
         .risk-item {
-            background: #f5f5f7;
+            background: var(--surface-2);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border);
             transition: border-color 0.2s ease;
         }
 
         .risk-item:hover {
-            border-color: #d2d2d7;
+            border-color: var(--border-strong);
         }
         
         .risk-group {
@@ -582,19 +781,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         .risk-group-header {
-            background: #f5f5f7;
-            color: #1d1d1f;
+            background: var(--surface-2);
+            color: var(--text);
             padding: 12px 20px;
             border-radius: 12px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 16px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border);
         }
         
         .risk-group-number {
-            background: #0071e3;
+            background: var(--accent);
             color: white;
             font-weight: 600;
             font-size: 18px;
@@ -610,12 +809,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risk-group-title {
             font-size: 20px;
             font-weight: 600;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         .risk-group-description {
             font-size: 16px;
-            color: #5a5a5f;
+            color: var(--text-2);
             margin-top: 4px;
         }
 
@@ -636,10 +835,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-group-description:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
+            outline: 2px solid var(--accent);
+            background: var(--surface);
             cursor: text;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         .editable-group-description::after {
@@ -671,8 +870,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-risk-title:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
+            outline: 2px solid var(--accent);
+            background: var(--surface);
             cursor: text;
         }
 
@@ -691,14 +890,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         /* Texte vide modifiable : indication grisée, sans texte factice dans les données */
         [data-placeholder]:empty::before {
             content: attr(data-placeholder);
-            color: #a1a1a6;
+            color: var(--text-3);
             font-style: italic;
+        }
+
+        .criticality-detail {
+            font-weight: 400;
+            opacity: 0.75;
         }
 
         .word-counter {
             margin-left: 8px;
             font-size: 12px;
-            color: #86868b;
+            color: var(--text-3);
         }
 
         .word-counter.over-limit {
@@ -708,7 +912,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .risks-table .risk-id {
             font-weight: 600;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         /* Mesures : une ligne par mesure (texte | porteur | échéance | suppression) */
@@ -718,7 +922,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             gap: 4px 12px;
             align-items: center;
             font-size: 14px;
-            color: #555;
+            color: var(--text-2);
         }
 
         .mesures-header,
@@ -730,7 +934,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
-            color: #86868b;
+            color: var(--text-3);
         }
 
         .editable-mesure,
@@ -749,8 +953,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .editable-mesure:focus,
         .editable-group-note:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
+            outline: 2px solid var(--accent);
+            background: var(--surface);
         }
 
         .mesure-delete {
@@ -770,7 +974,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             justify-self: start;
             background: none;
             border: none;
-            color: #0071e3;
+            color: var(--accent);
             cursor: pointer;
             font-size: 13px;
             padding: 4px 6px;
@@ -791,7 +995,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             display: inline-block;
             position: relative;
             min-width: 60px;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         .editable-responsable:hover {
@@ -800,8 +1004,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-responsable:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
+            outline: 2px solid var(--accent);
+            background: var(--surface);
             cursor: text;
         }
 
@@ -826,7 +1030,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .risk-group-header-collapsible .risk-group-number {
-            background: #0071e3;
+            background: var(--accent);
             color: white;
             font-weight: 600;
             font-size: 18px;
@@ -851,19 +1055,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         .risk-group-header {
-            background: #f5f5f7;
-            color: #1d1d1f;
+            background: var(--surface-2);
+            color: var(--text);
             padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 15px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border);
         }
         
         .risk-group-number {
-            background: #0071e3;
+            background: var(--accent);
             color: white;
             font-weight: 600;
             font-size: 18px;
@@ -896,27 +1100,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             width: 100%;
             border-collapse: collapse;
             font-size: 15px;
-            background: white;
+            background: var(--surface);
             table-layout: fixed;
         }
 
         .risks-table thead {
-            background: #f5f5f7;
+            background: var(--surface-2);
         }
 
         .risks-table th {
             padding: 12px;
             text-align: left;
             font-weight: 600;
-            color: #1d1d1f;
-            border-bottom: 2px solid #d2d2d7;
+            color: var(--text);
+            border-bottom: 2px solid var(--border-strong);
             font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .risks-table tbody tr:not(.risk-separator-row) {
-            border-bottom: 1px solid #e5e5e7;
+            border-bottom: 1px solid var(--border);
             transition: all 0.2s ease;
             cursor: move;
             position: relative;
@@ -928,7 +1132,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             left: -20px;
             top: 50%;
             transform: translateY(-50%);
-            color: #ccc;
+            color: var(--border-strong);
             font-size: 18px;
             letter-spacing: -4px;
             opacity: 0;
@@ -948,12 +1152,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         /* Hover sur l'ensemble risque + remédiation */
         .risks-table tbody tr[data-risk-id]:hover,
         .risks-table tbody tr[data-risk-id]:hover + .remediation-row {
-            background-color: #f0f4f8 !important;
+            background-color: var(--surface-2) !important;
         }
 
         .risks-table tbody tr.dragging {
             opacity: 0.5;
-            background: #e3f2fd;
+            background: var(--surface-2);
         }
 
         .risks-table td {
@@ -963,39 +1167,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .risks-table .risk-title-cell {
             font-weight: 600;
-            color: #1d1d1f;
+            color: var(--text);
             font-size: 15px;
             position: relative;
         }
 
         .risks-table .expand-icon {
-            display: inline-block;
-            width: 20px;
+            display: inline-flex;
+            vertical-align: middle;
             cursor: pointer;
             user-select: none;
-            margin-right: 8px;
-            color: #0071e3;
-            font-size: 12px;
+            margin-right: 6px;
+            color: var(--text-2);
+            font-size: 14px;
             transition: transform 0.2s ease;
         }
 
+        .risks-table .expand-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
         .risks-table .expand-icon:hover {
-            color: #0051a8;
+            color: var(--accent-hover);
         }
 
         .risks-table .remediations-cell {
-            color: #555;
+            color: var(--text-2);
             font-size: 14px;
             line-height: 1.6;
         }
 
         /* Alternance de couleurs : un bloc (risque + remédiation) sur deux */
         .risks-table tbody tr.risk-even {
-            background-color: #ffffff;
+            background-color: var(--surface);
         }
 
         .risks-table tbody tr.risk-odd {
-            background-color: #f9fafb;
+            background-color: var(--surface-2);
         }
 
         .risks-table .remediation-row {
@@ -1008,7 +1216,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .risks-table .remediation-cell-expanded {
             padding: 12px 20px 16px 20px;
-            border-top: 1px solid #e5e5ea;
+            border-top: 1px solid var(--border);
         }
 
         .risks-table .dropdowns-cell {
@@ -1019,10 +1227,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             width: 48%;
             padding: 6px 8px 6px 4px;
             margin: 0 1%;
-            border: 1px solid #d2d2d7;
+            border: 1px solid var(--border-strong);
             border-radius: 6px;
             font-size: 13px;
-            background: white;
+            background: var(--surface);
             cursor: pointer;
             transition: all 0.2s ease;
             appearance: none;
@@ -1033,13 +1241,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .risks-table .dropdowns-cell select:hover {
-            border-color: #0071e3;
-            background-color: #f9f9fb;
+            border-color: var(--accent);
+            background-color: var(--surface-2);
         }
 
         .risks-table .dropdowns-cell select:focus {
             outline: none;
-            border-color: #0071e3;
+            border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
         }
 
@@ -1051,10 +1259,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risks-table .dropdown-single-cell select {
             width: 100%;
             padding: 5px 6px 5px 3px;
-            border: 1px solid #d2d2d7;
+            border: 1px solid var(--border-strong);
             border-radius: 6px;
             font-size: 13px;
-            background: white;
+            background: var(--surface);
             cursor: pointer;
             transition: all 0.2s ease;
             appearance: none;
@@ -1065,13 +1273,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .risks-table .dropdown-single-cell select:hover {
-            border-color: #0071e3;
-            background-color: #f9f9fb;
+            border-color: var(--accent);
+            background-color: var(--surface-2);
         }
 
         .risks-table .dropdown-single-cell select:focus {
             outline: none;
-            border-color: #0071e3;
+            border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
         }
 
@@ -1084,10 +1292,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risks-table .status-dropdown {
             width: 100%;
             padding: 5px 6px 5px 3px;
-            border: 1px solid #d2d2d7;
+            border: 1px solid var(--border-strong);
             border-radius: 6px;
             font-size: 13px;
-            background: white;
+            background: var(--surface);
             cursor: pointer;
             transition: all 0.2s ease;
             appearance: none;
@@ -1098,13 +1306,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .risks-table .status-dropdown:hover {
-            border-color: #0071e3;
-            background-color: #f9f9fb;
+            border-color: var(--accent);
+            background-color: var(--surface-2);
         }
 
         .risks-table .status-dropdown:focus {
             outline: none;
-            border-color: #0071e3;
+            border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
         }
 
@@ -1114,7 +1322,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             position: sticky;
             top: 20px;
             z-index: 100;
-            background: white;
+            background: var(--surface);
             padding: 16px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
@@ -1183,7 +1391,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .group-summary-table .group-name {
             font-size: 16px;
             font-weight: 600;
-            color: #1d1d1f;
+            color: var(--text);
             margin-bottom: 4px;
             line-height: 1.3;
         }
@@ -1191,43 +1399,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .group-summary-table .group-description {
             font-size: 16px;
             font-weight: 400;
-            color: #5a5a5f;
+            color: var(--text-2);
             line-height: 1.4;
         }
 
         .group-summary-table .group-narrative {
             margin-top: 7px;
             font-size: 14px;
-            color: #3f3f46;
+            color: var(--text-2);
             line-height: 1.35;
         }
 
         .group-summary-table .group-narrative-label {
             font-weight: 600;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         .group-summary-copy-button {
             margin-left: auto;
             padding: 6px 10px;
-            border: 1px solid #c7c7cc;
+            border: 1px solid var(--border-strong);
             border-radius: 6px;
-            background: #ffffff;
-            color: #1d1d1f;
+            background: var(--surface);
+            color: var(--text);
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
         }
 
         .group-summary-copy-button:hover {
-            background: #e8e8ed;
+            background: var(--border);
         }
 
         .chart-wrapper {
-            background: white;
+            background: var(--surface);
             padding: 12px;
             border-radius: 10px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1238,7 +1446,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .chart-wrapper h3 {
             text-align: center;
             margin-bottom: 8px;
-            color: #1d1d1f;
+            color: var(--text);
             font-size: 14px;
             font-weight: 600;
             line-height: 1.3;
@@ -1257,34 +1465,37 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             flex: 1;
         }
 
-        .file-save-button {
-            padding: 8px 12px;
-            font-size: 14px;
-            border-radius: 8px;
-            border: 1px solid #d2d2d7;
-            background: white;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        /* Voyant d'enregistrement : pictogramme seul, libellé en infobulle (masqué quand vide) */
+        .file-save-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 36px;
+            color: var(--text-3);
         }
 
-        .file-save-button[hidden] {
+        .file-save-status:empty {
             display: none;
         }
 
-        .file-save-status {
-            font-size: 13px;
-            color: #86868b;
-            white-space: nowrap;
+        .file-save-status .icon {
+            width: 16px;
+            height: 16px;
         }
 
-        .file-save-status.dirty,
+        .file-save-status.dirty {
+            color: #ff9f0a;
+        }
+
         .file-save-status.error {
-            color: #b25000;
-            font-weight: 600;
+            color: #ff3b30;
         }
 
-        .file-save-status.saved {
-            color: #1a6a3e;
+        .file-save-status.clean,
+        .file-save-status.saved,
+        .file-save-status.downloaded {
+            color: #34c759;
         }
 
         .chart-actions {
@@ -1296,22 +1507,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             z-index: 10;
         }
 
+        /* Boutons des matrices : carrés, icône au trait (même style que l'en-tête) */
         .chart-action-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e5e5e7;
-            border-radius: 6px;
-            font-size: 16px;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: var(--text-2);
+            background: transparent;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            padding: 6px 10px;
-            transition: all 0.2s;
-            opacity: 0.7;
-            backdrop-filter: blur(10px);
+            transition: color 0.15s ease, background-color 0.15s ease;
         }
 
         .chart-action-btn:hover {
-            opacity: 1;
-            background: rgba(255, 255, 255, 1);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            color: var(--text);
+            background: var(--surface-2);
         }
 
         .matrix-modal {
@@ -1333,7 +1547,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .matrix-modal-content {
-            background: white;
+            background: var(--surface);
             border-radius: 12px;
             padding: 30px;
             max-width: 90vw;
@@ -1352,13 +1566,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .matrix-modal-copy {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 8px;
+            border: none;
+            border-radius: 10px;
             color: #ffffff;
-            font-size: 14px;
-            padding: 8px 14px;
             cursor: pointer;
+        }
+
+        .matrix-modal-copy .toolbar-icon {
+            width: 18px;
+            height: 18px;
         }
 
         .matrix-modal-copy:hover {
@@ -1370,7 +1592,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             border: none;
             font-size: 32px;
             cursor: pointer;
-            color: #d2d2d7;
+            color: var(--border-strong);
             line-height: 1;
             padding: 0;
             width: 40px;
@@ -1379,6 +1601,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             align-items: center;
             justify-content: center;
             transition: color 0.2s;
+        }
+
+        .matrix-modal-close .icon {
+            width: 26px;
+            height: 26px;
+        }
+
+        .matrix-nav-btn .icon {
+            width: 22px;
+            height: 22px;
         }
 
         .matrix-modal-close:hover {
@@ -1390,8 +1622,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #e5e5e7;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 50%;
             width: 48px;
             height: 48px;
@@ -1400,14 +1632,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             justify-content: center;
             cursor: pointer;
             font-size: 24px;
-            color: #1d1d1f;
+            color: var(--text);
             transition: all 0.2s;
             z-index: 10;
             backdrop-filter: blur(10px);
         }
 
         .matrix-nav-btn:hover {
-            background: rgba(255, 255, 255, 1);
+            background: var(--surface);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             transform: translateY(-50%) scale(1.05);
         }
@@ -1435,7 +1667,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             text-align: center;
             margin: 0;
             font-size: 20px;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         .chart-canvas {
@@ -1476,16 +1708,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         .risk-table-container {
-            background: white;
+            background: var(--surface);
             padding: 16px;
             border-radius: 12px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border);
             margin-bottom: 12px;
         }
         
         .risk-table-container h3 {
             margin-bottom: 16px;
-            color: #1d1d1f;
+            color: var(--text);
             font-size: 17px;
             font-weight: 600;
         }
@@ -1498,15 +1730,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         .risk-table thead {
-            background: #f5f5f7;
+            background: var(--surface-2);
         }
         
         .risk-table th {
             padding: 12px 16px;
             text-align: left;
             font-weight: 600;
-            color: #1d1d1f;
-            border-bottom: 1px solid #d2d2d7;
+            color: var(--text);
+            border-bottom: 1px solid var(--border-strong);
             font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1530,7 +1762,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         
         .risk-table td {
             padding: 14px 16px;
-            border-bottom: 1px solid #f5f5f7;
+            border-bottom: 1px solid var(--border);
         }
         
         .risk-table tbody tr {
@@ -1538,7 +1770,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         .risk-table tbody tr:hover {
-            background: #fafafa;
+            background: var(--surface-2);
         }
         
         .risk-table tbody tr:last-child td {
@@ -1548,7 +1780,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risk-table td:first-child {
             font-weight: 600;
             text-align: center;
-            color: #1d1d1f;
+            color: var(--text);
             font-size: 14px;
         }
         
@@ -1586,7 +1818,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risk-group-description {
             font-size: 14px;
             font-weight: 400;
-            color: #5a5a5f;
+            color: var(--text-2);
             margin-top: 4px;
             line-height: 1.4;
         }
@@ -1640,18 +1872,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 justify-content: center;
             }
 
-            /* Wrapper du sélecteur de langue en mobile */
-            .container > div[style*="position: absolute"][style*="right: 180px"] {
-                position: static !important;
-                width: 100%;
-                margin-bottom: 16px;
-            }
-
-            #language-selector {
-                position: static !important;
-                width: 100%;
-            }
-
             .container {
                 width: 98%;
                 padding: 15px;
@@ -1667,8 +1887,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 position: relative !important;
             }
 
-            /* Cacher le toggle sticky sur mobile (pas utile) */
-            .sticky-toggle-container {
+            /* Épinglage inutile sur mobile */
+            #sticky-toggle-btn {
                 display: none;
             }
 
@@ -1762,7 +1982,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 -webkit-overflow-scrolling: touch;
                 width: 100%;
                 margin-bottom: 8px;
-                border: 1px solid #e5e5e7;
+                border: 1px solid var(--border);
                 border-radius: 8px;
                 position: relative;
             }
@@ -1773,8 +1993,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 position: sticky;
                 right: 0;
                 float: right;
-                background: rgba(245,245,247,0.95);
-                color: #86868b;
+                background: var(--sticky-bg);
+                color: var(--text-3);
                 font-size: 16px;
                 padding: 8px 12px;
                 pointer-events: none;
@@ -1966,7 +2186,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         /* La section sticky reste avec son fond et padding */
         .sticky-charts-section.collapsible-section {
-            background: white;
+            background: var(--surface);
             padding: 16px;
         }
 
@@ -1988,20 +2208,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             align-items: center;
             gap: 10px;
             padding: 12px;
-            background: #f5f5f7;
+            background: var(--surface-2);
             border-radius: 8px;
             transition: all 0.2s ease;
             margin-bottom: 8px;
         }
 
         .collapsible-header:hover {
-            background: #e8e8ed;
+            background: var(--border);
         }
 
         .collapse-icon {
-            font-size: 14px;
+            display: inline-flex;
+            color: var(--text-2);
             transition: transform 0.3s ease;
-            display: inline-block;
         }
 
         .collapsible-header.collapsed .collapse-icon {
@@ -2022,10 +2242,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         /* Appliquer le style de bordure sur le contenu seulement pour les tableaux */
         .risk-table-container.collapsible-section .collapsible-content {
-            background: white;
+            background: var(--surface);
             padding: 16px;
             border-radius: 12px;
-            border: 1px solid #e5e5e7;
+            border: 1px solid var(--border);
         }
 
         /* Pour les matrices, appliquer un padding mais pas de border (déjà dans sticky-charts-section) */
@@ -2066,14 +2286,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .editable-title:hover,
         .editable-subtitle:hover {
-            background: #f5f5f7;
-            outline: 1px dashed #d2d2d7;
+            background: var(--surface-2);
+            outline: 1px dashed var(--border-strong);
         }
 
         .editable-title:focus,
         .editable-subtitle:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
+            outline: 2px solid var(--accent);
+            background: var(--surface);
             cursor: text;
         }
 
@@ -2108,10 +2328,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-group-name:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
+            outline: 2px solid var(--accent);
+            background: var(--surface);
             cursor: text;
-            color: #1d1d1f;
+            color: var(--text);
         }
 
         .editable-group-name::after {
@@ -2131,7 +2351,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             position: absolute;
             top: 40px;
             right: 40px;
-            background: #0071e3;
+            background: var(--accent);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -2147,66 +2367,58 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .export-button:hover {
-            background: #0077ed;
+            background: var(--accent-hover);
         }
 
         .export-button:active {
-            background: #005bb5;
+            background: var(--accent-hover);
         }
 
-        /* Bouton toggle sticky - Style Apple discret */
-        .sticky-toggle-container {
+        /* Commandes des matrices dans la barre de titre : icônes seules */
+        .section-tools {
+            margin-left: auto;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
             gap: 8px;
-            margin-bottom: 12px;
-            padding: 8px 16px;
         }
 
-        .sticky-toggle-label {
-            font-size: 13px;
-            color: #666666;
-            font-weight: 500;
-            user-select: none;
-        }
-
-        .sticky-toggle-btn {
-            background: #e5e5e7;
-            border: none;
-            border-radius: 20px;
-            padding: 4px;
-            width: 48px;
-            height: 28px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+        .segmented {
             display: flex;
+            padding: 2px;
+            background: var(--border);
+            border-radius: 8px;
+        }
+
+        .segmented-btn,
+        .icon-toggle {
+            width: 30px;
+            height: 26px;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
+            padding: 0;
+            color: var(--text-2);
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: color 0.15s ease, background-color 0.15s ease;
         }
 
-        .sticky-toggle-btn::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            left: 4px;
+        .segmented-btn:hover,
+        .icon-toggle:hover {
+            color: var(--text);
         }
 
-        .sticky-toggle-btn:hover {
-            background: #d1d1d6;
+        .segmented-btn.active {
+            color: var(--text);
+            background: var(--surface);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
-        .sticky-toggle-btn.active {
-            background: #0071e3;
-        }
-
-        .sticky-toggle-btn.active::before {
-            transform: translateX(20px);
+        .icon-toggle.active {
+            color: #ffffff;
+            background: var(--text);
         }
 
         .sticky-charts-section.sticky-disabled {
@@ -2219,13 +2431,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             position: relative;
             margin: 24px 0;
             height: 1px;
-            background: #e5e5e7;
+            background: var(--border);
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
 
         .group-separator:hover {
-            background: #d2d2d7;
+            background: var(--border-strong);
         }
 
         .group-separator-label {
@@ -2233,9 +2445,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
+            background: var(--surface);
             padding: 8px 20px;
-            color: #666666;
+            color: var(--text-2);
             font-size: 14px;
             font-weight: 500;
             white-space: nowrap;
@@ -2247,8 +2459,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .group-separator:hover .group-separator-label {
-            color: #0071e3;
-            background: #f5f5f7;
+            color: var(--accent);
+            background: var(--surface-2);
         }
 
         .group-separator-icon {
@@ -2290,7 +2502,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             left: 0;
             right: 0;
             height: 1px;
-            background: #e5e5e7;
+            background: var(--border);
             opacity: 0;
             transition: opacity 0.2s ease;
             transform: translateY(-50%);
@@ -2305,9 +2517,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
+            background: var(--surface);
             padding: 4px 12px;
-            color: #666666;
+            color: var(--text-2);
             font-size: 12px;
             font-weight: 500;
             white-space: nowrap;
@@ -2323,7 +2535,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .risk-separator:hover .risk-separator-label {
             opacity: 1;
-            color: #0071e3;
+            color: var(--accent);
         }
 
         .risk-separator-icon {
@@ -2335,12 +2547,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risk-separator-row.separator-drag-over .risk-separator::before {
             opacity: 1;
             height: 3px;
-            background: #0071e3;
+            background: var(--accent);
         }
 
         .risk-separator-row.separator-drag-over .risk-separator-label {
             opacity: 1;
-            background: #0071e3;
+            background: var(--accent);
             color: white;
             transform: translate(-50%, -50%) scale(1.1);
         }
@@ -2358,7 +2570,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .toast {
-            background: #1d1d1f;
+            background: var(--text);
             color: white;
             padding: 12px 20px;
             border-radius: 10px;
@@ -2375,7 +2587,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .toast.success {
-            background: #0071e3;
+            background: var(--accent);
         }
 
         .toast.error {
@@ -2413,10 +2625,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         /* Boutons de suppression */
         .delete-btn {
             background: transparent;
-            border: 1px solid #d2d2d7;
-            color: #666666;
-            padding: 6px 12px;
-            border-radius: 6px;
+            border: none;
+            color: var(--text-2);
+            padding: 6px 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
@@ -2457,20 +2669,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             margin-top: 60px;
             padding: 24px 0;
             text-align: center;
-            color: #86868b;
+            color: var(--text-3);
             font-size: 13px;
-            border-top: 1px solid #e5e5e7;
+            border-top: 1px solid var(--border);
         }
 
         .app-footer a {
-            color: #0071e3;
+            color: var(--accent);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
         }
 
         .app-footer a:hover {
-            color: #0077ed;
+            color: var(--accent-hover);
             text-decoration: underline;
         }
 
@@ -2484,7 +2696,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .footer-separator {
-            color: #d2d2d7;
+            color: var(--border-strong);
         }
 
         .footer-copyright {
@@ -2525,8 +2737,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .criticality-unevaluated {
-            background: #F0F0F0;
-            color: #666666;
+            background: var(--surface-2);
+            color: var(--text-2);
             font-style: italic;
         }
 
@@ -2564,13 +2776,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .reduction-neutral {
-            background: #F0F0F0;
-            color: #666666;
+            background: var(--surface-2);
+            color: var(--text-2);
         }
 
         .reduction-na {
-            background: #F9F9FB;
-            color: #999999;
+            background: var(--surface-2);
+            color: var(--text-3);
             font-style: italic;
         }
 
@@ -2580,69 +2792,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             padding: 6px 2px !important;
         }
 
-        /* Dashboard de vue d'ensemble */
-        .dashboard-overview {
-            margin: 24px 0;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-
-        .dashboard-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        .dashboard-card-bg {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            right: -40px;
-            bottom: -40px;
-            opacity: 0.04;
-            color: #1d1d1f;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .dashboard-card-content {
-            flex: 1;
-            z-index: 1;
-            position: relative;
-        }
-
-        .dashboard-card-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1d1d1f;
-            margin-bottom: 4px;
-        }
-
-        .dashboard-card-label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
         @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
             .app-header {
                 flex-wrap: wrap;
                 gap: 12px;
@@ -2651,160 +2801,77 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             .app-controls {
                 width: 100%;
                 justify-content: flex-end;
-            }
-
-            h1 {
-                font-size: 24px;
+                flex-wrap: wrap;
             }
         }
 
         @media (max-width: 480px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .app-header {
-                gap: 10px;
-            }
-
-            .app-icon {
-                width: 48px;
-                height: 48px;
-            }
-
-            h1 {
+            .app-header h1 {
                 font-size: 20px;
             }
 
             #main-subtitle {
-                font-size: 13px !important;
-            }
-
-            .app-controls {
-                gap: 8px;
-            }
-
-            .app-controls select {
-                font-size: 13px !important;
-                padding: 6px 10px !important;
+                font-size: 13px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header avec icône, titre et contrôles -->
-        <div class="app-header">
-            <img src="riskr.png" alt="Riskr" class="app-icon">
-
-            <div class="app-title-section">
-                <h1 id="main-title" class="editable-title"><span data-i18n="pageTitle">Riskr - Analyse de Risques Interactive</span></h1>
-                <p id="main-subtitle" class="editable-subtitle" style="color: #86868b; margin: 4px 0 0 0; font-size: 15px;">Évaluation des risques avant et après remédiation</p>
+        <!-- En-tête : logo, titre et commandes -->
+        <header class="app-header">
+            <div class="app-brand">
+                <svg class="app-icon" viewBox="0 0 512 512" aria-hidden="true">
+                    <defs><linearGradient id="appIconGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6FABF0"/><stop offset="1" stop-color="#4A90E2"/></linearGradient></defs>
+                    <rect width="512" height="512" rx="110" fill="url(#appIconGradient)"/>
+                    <g fill="#fff"><rect x="65" y="65" width="120" height="120" opacity=".95"/><rect x="195" y="65" width="120" height="120" opacity=".3"/><rect x="325" y="65" width="120" height="120" opacity=".3"/><rect x="65" y="195" width="120" height="120" opacity=".7"/><rect x="195" y="195" width="120" height="120" opacity=".7"/><rect x="325" y="195" width="120" height="120" opacity=".3"/><rect x="65" y="325" width="120" height="120" opacity=".7"/><rect x="195" y="325" width="120" height="120" opacity=".7"/><rect x="325" y="325" width="120" height="120" opacity=".7"/></g>
+                    <circle cx="350" cy="350" r="105" fill="#F0F8FF" stroke="#4A90E2" stroke-width="4"/>
+                    <path d="M300 350 L335 385 L405 315" stroke="#4A90E2" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+                <div class="app-title-section">
+                    <h1 id="main-title" class="editable-title"><span data-i18n="pageTitle">Riskr - Analyse de Risques Interactive</span></h1>
+                    <p id="main-subtitle" class="editable-subtitle">Évaluation des risques avant et après remédiation</p>
+                </div>
             </div>
 
-            <div class="app-controls studio-toolbar">
-                <!-- Input caché pour l'import -->
-                <input type="file" id="import-file" style="display: none" accept=".json" onchange="importFromJSON(this)">
-                
-                <!-- Bouton Import -->
-                <button onclick="document.getElementById('import-file').click()" style="padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 6px; font-weight: 500; color: #1d1d1f; transition: background 0.2s;">
-                    <span>📥</span> Import
+            <div class="app-controls">
+                <input type="file" id="import-file" hidden accept=".json" onchange="importFromJSON(this)">
+                <button class="icon-btn" onclick="document.getElementById('import-file').click()" data-i18n-title="importTooltip">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
                 </button>
-
-                <select id="export-format-selector" onchange="handleExport(this.value)" style="padding: 8px 12px 8px 36px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2386868b%22 stroke-width=%222%22><path d=%22M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4%22/><polyline points=%227 10 12 15 17 10%22/><line x1=%2212%22 y1=%2215%22 x2=%2212%22 y2=%223%22/></svg>') no-repeat 10px center; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); appearance: none; padding-right: 30px; background-size: 16px;">
-                    <option value="" disabled selected>Exporter...</option>
-                    <option value="pdf">📄 PDF</option>
-                    <option value="excel">📊 Excel (XLSX)</option>
-                    <option value="csv">📋 CSV</option>
-                    <option value="html">🌐 HTML (Web)</option>
-                    <option value="json">💾 JSON (Données)</option>
-                    <option value="datajs">🗂️ riskr-data.js (rechargeable)</option>
-                </select>
-                <!-- Enregistrement dans le fichier de données -->
-                <button id="file-save-button" class="file-save-button" onclick="onFileSaveButton()"></button>
-                <span id="file-save-status" class="file-save-status"></span>
-                <select id="language-selector" onchange="setLanguage(this.value)" style="padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
-                    <option value="fr">🇫🇷 Français</option>
-                    <option value="en">🇬🇧 English</option>
-                    <option value="es">🇪🇸 Español</option>
-                    <option value="ar">🇸🇦 العربية</option>
-                    <option value="zh">🇨🇳 中文</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Dashboard de vue d'ensemble -->
-        <div class="dashboard-overview">
-            <div class="dashboard-grid">
-                <div class="dashboard-card">
-                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="9" y1="9" x2="15" y2="9"/>
-                        <line x1="9" y1="13" x2="15" y2="13"/>
-                        <line x1="9" y1="17" x2="13" y2="17"/>
-                    </svg>
-                    <div class="dashboard-card-content">
-                        <div class="dashboard-card-value" id="dashboard-total-risks">-</div>
-                        <div class="dashboard-card-label" data-i18n="dashboardRisksEvaluated">Risques évalués</div>
+                <div class="menu-anchor">
+                    <button class="icon-btn" onclick="toggleMenu('export-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="exportBtn">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+                    </button>
+                    <div id="export-menu" class="menu" role="menu" hidden>
+                        <button role="menuitem" onclick="handleExport('pdf')">PDF</button>
+                        <button role="menuitem" onclick="handleExport('excel')">Excel <span class="menu-hint">XLSX</span></button>
+                        <button role="menuitem" onclick="handleExport('csv')">CSV</button>
+                        <button role="menuitem" onclick="handleExport('html')">HTML <span class="menu-hint" data-i18n="exportHtmlHint">Page web</span></button>
+                        <button role="menuitem" onclick="handleExport('json')">JSON <span class="menu-hint" data-i18n="exportJsonHint">Données</span></button>
+                        <button role="menuitem" onclick="handleExport('datajs')">riskr-data.js <span class="menu-hint" data-i18n="exportDataJsHint">Rechargeable</span></button>
                     </div>
                 </div>
-
-                <div class="dashboard-card">
-                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    <div class="dashboard-card-content">
-                        <div class="dashboard-card-value">
-                            <span id="dashboard-critical-before">-</span> → <span id="dashboard-critical-after">-</span>
-                        </div>
-                        <div class="dashboard-card-label" data-i18n="dashboardCriticalRisks">Risques élevés ou critiques (Avant → Après)</div>
+                <span id="file-save-status" class="file-save-status" role="status"></span>
+                <button id="file-save-button" class="icon-btn icon-btn-primary" onclick="onFileSaveButton()">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/></svg>
+                </button>
+                <span class="toolbar-separator" aria-hidden="true"></span>
+                <div class="menu-anchor">
+                    <button class="icon-btn" onclick="toggleMenu('language-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="languageLabel">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+                    </button>
+                    <div id="language-menu" class="menu" role="menu" hidden>
+                        <button role="menuitemradio" data-lang="fr" lang="fr" onclick="setLanguage('fr')">Français</button>
+                        <button role="menuitemradio" data-lang="en" lang="en" onclick="setLanguage('en')">English</button>
+                        <button role="menuitemradio" data-lang="es" lang="es" onclick="setLanguage('es')">Español</button>
+                        <button role="menuitemradio" data-lang="ar" lang="ar" onclick="setLanguage('ar')">العربية</button>
+                        <button role="menuitemradio" data-lang="zh" lang="zh" onclick="setLanguage('zh')">中文</button>
                     </div>
                 </div>
-
-                <div class="dashboard-card">
-                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <polyline points="19 12 12 19 5 12"/>
-                    </svg>
-                    <div class="dashboard-card-content">
-                        <div class="dashboard-card-value" id="dashboard-avg-reduction">-</div>
-                        <div class="dashboard-card-label" data-i18n="dashboardAvgReduction">Réduction moyenne</div>
-                    </div>
-                </div>
-
-                <div class="dashboard-card">
-                    <svg class="dashboard-card-bg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    <div class="dashboard-card-content">
-                        <div class="dashboard-card-value" id="dashboard-treated">-</div>
-                        <div class="dashboard-card-label" data-i18n="dashboardTreated">Risques traités</div>
-                    </div>
-                </div>
+                <button id="theme-button" class="icon-btn" onclick="toggleTheme()"></button>
             </div>
-        </div>
-
-        <!-- Toggle sticky discret au-dessus -->
-        <div class="sticky-toggle-container">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="sticky-toggle-label">Épingler la vue d'ensemble</span>
-                <button onclick="toggleSticky()" class="sticky-toggle-btn" id="sticky-toggle-btn" title="Activer/Désactiver le mode collant"></button>
-            </div>
-            
-            <!-- Séparateur -->
-            <div style="width: 1px; height: 16px; background: #d2d2d7; margin: 0 12px;"></div>
-
-            <!-- Toggle Vue Groupes/Risques -->
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="sticky-toggle-label">Vue :</span>
-                <div class="view-toggle-wrapper" style="background: #e5e5e7; padding: 2px; border-radius: 8px; display: flex;">
-                    <button onclick="setMatrixView('groups')" id="view-btn-groups" class="view-toggle-btn active" style="border: none; background: white; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #1d1d1f; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: all 0.2s;">Groupes</button>
-                    <button onclick="setMatrixView('risks')" id="view-btn-risks" class="view-toggle-btn" style="border: none; background: transparent; padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.2s;">Risques</button>
-                </div>
-            </div>
-        </div>
+        </header>
 
         <!-- Matrices sticky en haut -->
         <div class="sticky-charts-section" id="sticky-section">
@@ -2812,8 +2879,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <!-- Section collapsable pour les matrices -->
             <div class="collapsible-section" style="margin-bottom: 8px;">
                 <h3 class="collapsible-header" onclick="toggleCollapse('matrices-content')" style="margin-top: 0; margin-bottom: 8px;">
-                    <span class="collapse-icon">▼</span>
+                    <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
                     <span data-i18n="matricesTitle">Matrices des Risques</span>
+                    <div class="section-tools" onclick="event.stopPropagation()">
+                        <div class="segmented" role="group" data-i18n-title="matrixViewLabel">
+                            <button id="view-btn-groups" class="segmented-btn active" onclick="setMatrixView('groups')" data-i18n-title="viewGroups"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+                            <button id="view-btn-risks" class="segmented-btn" onclick="setMatrixView('risks')" data-i18n-title="viewRisks"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="2"/><circle cx="11" cy="8" r="2"/><circle cx="17" cy="15" r="2"/><circle cx="18" cy="6" r="2"/></svg></button>
+                        </div>
+                        <button id="sticky-toggle-btn" class="icon-toggle" onclick="toggleSticky()" data-i18n-title="pinMatrices"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg></button>
+                    </div>
                 </h3>
                 <div id="matrices-content" class="collapsible-content">
                     <div class="dashboard-layout">
@@ -2821,8 +2895,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <div class="charts-column">
                             <div class="chart-wrapper">
                                 <div class="chart-actions">
-                                    <button class="chart-action-btn" onclick="copyMatrixImage('before')" title="Copier la matrice en image">📋</button>
-                                    <button class="chart-action-btn" onclick="openMatrixModal('before')" title="Agrandir">🔍</button>
+                                    <button class="chart-action-btn" onclick="copyMatrixImage('before')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
+                                    <button class="chart-action-btn" onclick="openMatrixModal('before')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
                                 </div>
                                 <div class="chart-header">
                                     <h3 data-i18n="matrixBefore">Matrice des risques non remédiés</h3>
@@ -2834,8 +2908,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                             <div class="chart-wrapper">
                                 <div class="chart-actions">
-                                    <button class="chart-action-btn" onclick="copyMatrixImage('after')" title="Copier la matrice en image">📋</button>
-                                    <button class="chart-action-btn" onclick="openMatrixModal('after')" title="Agrandir">🔍</button>
+                                    <button class="chart-action-btn" onclick="copyMatrixImage('after')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
+                                    <button class="chart-action-btn" onclick="openMatrixModal('after')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
                                 </div>
                                 <div class="chart-header">
                                     <h3 data-i18n="matrixAfter">Matrice des risques remédiés</h3>
@@ -2853,11 +2927,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <div id="matrix-modal" class="matrix-modal" onclick="closeMatrixModal(event)">
                 <!-- Commandes hors de la zone blanche : la capture d'écran reste propre -->
                 <div class="matrix-modal-toolbar">
-                    <button class="matrix-modal-copy" onclick="event.stopPropagation(); copyMatrixImage(currentMatrixType)" title="Copier la matrice en image">📋 Copier</button>
-                    <button class="matrix-modal-close" onclick="closeMatrixModal(event)" title="Fermer (Échap)">✕</button>
+                    <button class="matrix-modal-copy" onclick="event.stopPropagation(); copyMatrixImage(currentMatrixType)" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
+                    <button class="matrix-modal-close" onclick="closeMatrixModal(event)" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
                 </div>
-                <button class="matrix-nav-btn prev" onclick="event.stopPropagation(); navigateMatrix('prev')">‹</button>
-                <button class="matrix-nav-btn next" onclick="event.stopPropagation(); navigateMatrix('next')">›</button>
+                <button class="matrix-nav-btn prev" onclick="event.stopPropagation(); navigateMatrix('prev')" data-i18n-title="prevMatrix"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+                <button class="matrix-nav-btn next" onclick="event.stopPropagation(); navigateMatrix('next')" data-i18n-title="nextMatrix"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
                 <div class="matrix-modal-content">
                     <h2 id="matrix-modal-title">Matrice des risques</h2>
                     <div class="matrix-modal-canvas">
@@ -2874,7 +2948,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <!-- Tableau récapitulatif des risques -->
             <div class="risk-table-container collapsible-section" style="margin-bottom: 0;">
                 <h3 class="collapsible-header" onclick="toggleCollapse('risk-recap-table')" style="margin-bottom: 8px;">
-                    <span class="collapse-icon">▼</span>
+                    <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
                     <span data-i18n="riskTableTitle">Tableau Récapitulatif des Risques</span>
                 </h3>
                 <div id="risk-recap-table" class="collapsible-content">
@@ -2883,8 +2957,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <tr>
                                 <th data-i18n="colNumber">N°</th>
                                 <th data-i18n="colDescription">Description du Risque</th>
-                                <th data-i18n="colAvgBefore">Moyenne Avant</th>
-                                <th data-i18n="colAvgAfter">Moyenne Après</th>
+                                <th data-i18n="colAvgBefore">Criticité avant (/5)</th>
+                                <th data-i18n="colAvgAfter">Criticité après (/5)</th>
                             </tr>
                         </thead>
                         <tbody id="risk-table-body">
@@ -2907,10 +2981,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 GitHub
             </a>
             <span class="footer-separator">•</span>
-            <span>Licence AGPL-3.0</span>
+            <span data-i18n="footerLicense">Licence AGPL-3.0</span>
         </div>
         <div class="footer-copyright">
-            © 2025 Riskr — Application d'analyse et de cartographie des risques
+            © 2025 Riskr — <span data-i18n="footerTagline">Application d'analyse et de cartographie des risques</span>
         </div>
     </footer>
 
@@ -2938,6 +3012,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         });
 
+        // Icônes au trait (grille 24×24), partagées par toute l'interface
+        const ICON_PATHS = {"chevron": "<path d=\"M6 9l6 6 6-6\"/>", "trash": "<path d=\"M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "trendDown": "<path d=\"M3 7l6 6 4-4 8 8\"/><path d=\"M21 11v6h-6\"/>", "trendUp": "<path d=\"M3 17l6-6 4 4 8-8\"/><path d=\"M21 13V7h-6\"/>", "minus": "<path d=\"M5 12h14\"/>", "check": "<path d=\"M5 12l5 5L20 7\"/>", "alert": "<path d=\"M12 9v4M12 17h.01\"/><path d=\"M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\"/>", "close": "<path d=\"M18 6L6 18M6 6l12 12\"/>", "left": "<path d=\"M15 18l-6-6 6-6\"/>", "right": "<path d=\"M9 18l6-6-6-6\"/>", "pin": "<path d=\"M12 17v5\"/><path d=\"M9 3h6l-1 6 3 3v2H7v-2l3-3z\"/>", "groups": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/>", "points": "<circle cx=\"6\" cy=\"17\" r=\"2\"/><circle cx=\"11\" cy=\"8\" r=\"2\"/><circle cx=\"17\" cy=\"15\" r=\"2\"/><circle cx=\"18\" cy=\"6\" r=\"2\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"currentColor\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z\"/>"};
+        const icon = name => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name]}</svg>`;
+
+        // Menus de l'en-tête : un seul ouvert à la fois, fermés par un clic ailleurs ou Échap
+        function closeMenus() {
+            document.querySelectorAll('.menu').forEach(menu => {
+                menu.hidden = true;
+                menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        function toggleMenu(id, button) {
+            const opening = document.getElementById(id).hidden;
+            closeMenus();
+            document.getElementById(id).hidden = !opening;
+            button.setAttribute('aria-expanded', String(opening));
+        }
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.menu-anchor') || event.target.closest('.menu button')) closeMenus();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeMenus();
+        });
+
+        // Couleur d'une variable de thème (cf. :root et [data-theme="dark"])
+        const themeColor = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+        function updateThemeButton() {
+            const dark = document.documentElement.dataset.theme === 'dark';
+            const button = document.getElementById('theme-button');
+            button.innerHTML = icon(dark ? 'sun' : 'moon');
+            button.title = t(dark ? 'themeToLight' : 'themeToDark');
+            button.setAttribute('aria-label', button.title);
+        }
+
+        function toggleTheme() {
+            const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+            document.documentElement.dataset.theme = theme;
+            try {
+                localStorage.setItem('riskr-theme', theme);
+            } catch (error) {
+                console.info('Préférence de thème non conservée (stockage indisponible).', error);
+            }
+            updateThemeButton();
+            Object.values(Chart.instances).forEach(chart => chart.update('none'));
+        }
+
         // Fonction pour afficher une notification toast
         function showToast(message, type = 'success') {
             const container = document.querySelector('.toast-container') ||
@@ -2950,7 +3073,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.textContent = message;
+            // Pictogramme en tête (les anciens émojis du message sont retirés)
+            const text = message.replace(/^[^\p{L}\p{N}]+/u, '');
+            toast.innerHTML = icon(type === 'error' ? 'alert' : 'check') + `<span>${escapeHtml(text)}</span>`;
 
             container.appendChild(toast);
 
@@ -3000,9 +3125,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (historyIndex > 0) {
                 historyIndex--;
                 restoreState(history[historyIndex]);
-                showToast('↶ Annulation');
+                showToast(t('undone'));
             } else {
-                showToast('Rien à annuler', 'error');
+                showToast(t('nothingToUndo'), 'error');
             }
         }
 
@@ -3011,9 +3136,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (historyIndex < history.length - 1) {
                 historyIndex++;
                 restoreState(history[historyIndex]);
-                showToast('↷ Rétablissement');
+                showToast(t('redone'));
             } else {
-                showToast('Rien à rétablir', 'error');
+                showToast(t('nothingToRedo'), 'error');
             }
         }
 
@@ -3071,7 +3196,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             const updateCounter = () => {
                 const words = countWords(element.textContent);
-                counter.textContent = `${words}/${options.maxWords} mots`;
+                counter.textContent = t('wordCount', { count: words, max: options.maxWords });
                 counter.classList.toggle('over-limit', words > options.maxWords);
             };
 
@@ -3134,7 +3259,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             ['main-title', 'main-subtitle'].forEach(id => {
                 makeInlineEditable(document.getElementById(id), () => {
                     commitChange();
-                    showToast('✅ Modification sauvegardée');
+                    showToast(t('changeSaved'));
                 }, { required: true });
             });
         }
@@ -3246,7 +3371,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function commitAndRefresh() {
             commitChange();
             updateCharts();
-            showToast('✅ Modification sauvegardée');
+            showToast(t('changeSaved'));
         }
 
         function initGroupNameEditing() {
@@ -3293,7 +3418,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 makeInlineEditable(element, value => {
                     findRiskOf(element).mesures[index][field] = value;
                     commitChange();
-                    showToast('✅ Modification sauvegardée');
+                    showToast(t('changeSaved'));
                 }, {
                     // Une mesure sans texte (vidée ou jamais remplie) est retirée
                     onBlur: value => {
@@ -3322,7 +3447,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             risk.mesures.splice(index, 1);
             if (!wasEmpty) {
                 commitChange();
-                showToast('✅ Mesure supprimée');
+                showToast(t('mesureDeleted'));
             }
             // Laisser le clic en cours se terminer avant de reconstruire le tableau
             setTimeout(renderRisks, 0);
@@ -3346,8 +3471,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     if (!risk) return;
                     risk.statut = e.target.value;
                     commitChange();
-                    updateDashboard(risks); // compteur « risques traités »
-                    showToast('✅ Statut mis à jour');
+                    showToast(t('statusUpdated'));
                 });
             });
         }
@@ -3361,7 +3485,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 makeInlineEditable(element, value => {
                     findRiskOf(element).responsable = value;
                     commitChange();
-                    showToast('✅ Modification sauvegardée');
+                    showToast(t('changeSaved'));
                 }));
         }
 
@@ -3424,9 +3548,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     exportDataJsFile(); // Sauvegarde riskr-data.js rechargeable
                     break;
             }
-
-            // Réinitialiser le sélecteur
-            document.getElementById('export-format-selector').value = '';
         }
         
         // ========================================
@@ -3518,11 +3639,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     renderRisks();
                     updateCharts();
 
-                    showToast('✅ Données importées avec succès !');
+                    showToast(t('importSuccess'));
                     
                 } catch (error) {
                     console.error('Erreur lors de l\'import:', error);
-                    alert('Erreur lors de l\'import du fichier JSON :\n' + error.message);
+                    alert(t('importError') + '\n' + error.message);
                 } finally {
                     // Reset l'input pour permettre de réimporter le même fichier si besoin
                     input.value = '';
@@ -3535,6 +3656,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
         // Export PDF avec jsPDF
         // ========================================
+
+        // Libellés du PDF : les polices standard de jsPDF n'affichent que l'alphabet latin,
+        // l'arabe et le chinois utilisent donc l'anglais
+        const pdfText = key => (currentLanguage === 'ar' || currentLanguage === 'zh') ? translations.en[key] : t(key);
 
         function exportToPDF() {
             const { jsPDF } = window.jspdf;
@@ -3554,7 +3679,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Ajouter les matrices (Before et After) sur la première page
             doc.setFontSize(14);
             doc.setFont(undefined, 'bold');
-            doc.text('Matrices de risques', 105, yPosition, { align: 'center' });
+            doc.text(pdfText('pdfMatricesTitle'), 105, yPosition, { align: 'center' });
             yPosition += 10;
 
             // Capturer les canvas des matrices et les ajouter au PDF
@@ -3562,20 +3687,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const chartAfter = document.getElementById('chartAfter');
 
             if (chartBefore) {
-                const imgBefore = chartBefore.toDataURL('image/png');
+                const imgBefore = withLightTheme(() => chartBefore.toDataURL('image/png'));
                 doc.setFontSize(12);
                 doc.setFont(undefined, 'bold');
-                doc.text('Avant remédiation', 105, yPosition, { align: 'center' });
+                doc.text(pdfText('pdfBefore'), 105, yPosition, { align: 'center' });
                 yPosition += 5;
                 doc.addImage(imgBefore, 'PNG', 15, yPosition, 85, 85);
                 yPosition -= 5;
             }
 
             if (chartAfter) {
-                const imgAfter = chartAfter.toDataURL('image/png');
+                const imgAfter = withLightTheme(() => chartAfter.toDataURL('image/png'));
                 doc.setFontSize(12);
                 doc.setFont(undefined, 'bold');
-                doc.text('Après remédiation', 195, yPosition, { align: 'center' });
+                doc.text(pdfText('pdfAfter'), 195, yPosition, { align: 'center' });
                 yPosition += 5;
                 doc.addImage(imgAfter, 'PNG', 110, yPosition, 85, 85);
                 yPosition += 90;
@@ -3627,7 +3752,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     // Créer le tableau avec autoTable
                     doc.autoTable({
                         startY: yPosition,
-                        head: [['#', 'Risque', 'P.Av', 'I.Av', 'C.Av', 'P.Ap', 'I.Ap', 'C.Ap', 'Réd.']],
+                        head: [['#', pdfText('colRisk'), ...pdfText('pdfColumns').split('|')]],
                         body: tableData,
                         theme: 'grid',
                         styles: { fontSize: 8, cellPadding: 2 },
@@ -3649,7 +3774,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 } else {
                     doc.setFont(undefined, 'normal');
                     doc.setFontSize(10);
-                    doc.text('Aucun risque', 20, yPosition);
+                    doc.text(pdfText('pdfNoRisk'), 20, yPosition);
                     yPosition += 10;
                 }
             });
@@ -3674,7 +3799,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const sheetData = [];
 
                 // En-têtes
-                sheetData.push(['#', 'Risque', 'Remédiations', 'Prob.Avant', 'Impact Avant', 'Crit.Avant', 'Prob.Après', 'Impact Après', 'Crit.Après', 'Réduction', 'Statut', 'Responsable']);
+                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible')]);
 
                 // Données des risques
                 group.risks.forEach(risk => {
@@ -3702,7 +3827,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         impactAfter,
                         critAfter,
                         reduction,
-                        risk.statut || '',
+                        risk.statut ? t(risk.statut) : '',
                         risk.responsable || ''
                     ]);
                 });
@@ -3747,7 +3872,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             let csvContent = '';
 
             // En-têtes CSV
-            csvContent += '#,Groupe,Risque,Remédiations,Prob.Avant,Impact Avant,Crit.Avant,Prob.Après,Impact Après,Crit.Après,Réduction,Statut,Responsable\n';
+            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible')].join(',') + '\n';
 
             // Données
             riskGroups.forEach(group => {
@@ -3786,7 +3911,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         impactAfter,
                         critAfter,
                         reduction,
-                        escapeCSV(risk.statut || ''),
+                        escapeCSV(risk.statut ? t(risk.statut) : ''),
                         escapeCSV(risk.responsable || '')
                     ].join(',') + '\n';
                 });
@@ -3826,11 +3951,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 redoTooltip: "Refaire l'action annulée (Cmd/Ctrl+Y)",
 
                 // Dashboard
-                dashboardTitle: "Vue d'ensemble",
-                dashboardRisksEvaluated: "Risques évalués",
-                dashboardCriticalRisks: "Risques élevés ou critiques (Avant → Après)",
-                dashboardAvgReduction: "Réduction moyenne",
-                dashboardTreated: "Risques traités",
 
                 // Sections
                 matricesTitle: "Matrices des Risques",
@@ -3841,8 +3961,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Tableau récap
                 colNumber: "N°",
                 colDescription: "Description du Risque",
-                colAvgBefore: "Criticité avant (/25)",
-                colAvgAfter: "Criticité après (/25)",
+                colAvgBefore: "Criticité avant (/5)",
+                colAvgAfter: "Criticité après (/5)",
 
                 // Colonnes tableau
                 colRisk: "Risque",
@@ -3858,7 +3978,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Labels axes matrices
                 axisProb: "Probabilité →",
-                axisImpact: "↑ Impact",
+                axisImpact: "Impact →",
 
                 // Probabilités
                 probNotEval: "Non évalué",
@@ -3904,7 +4024,86 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 mesureDelete: "Supprimer la mesure",
                 assessmentNotePlaceholder: "Ajouter une lecture de la catégorie (30 mots max)",
                 remediationNotePlaceholder: "Ajouter la remédiation visée (30 mots max)",
-                copyForWordUnavailable: "La copie n’a pas abouti. Autorisez le presse-papiers puis réessayez."
+                copyForWordUnavailable: "La copie n’a pas abouti. Autorisez le presse-papiers puis réessayez.",
+
+                // Interface complète (en-tête, messages, exports)
+                importTooltip: "Importer un fichier JSON",
+                exportHtmlHint: "Page web",
+                exportJsonHint: "Données",
+                exportDataJsHint: "Rechargeable",
+                languageLabel: "Langue",
+                themeToLight: "Passer au thème clair",
+                themeToDark: "Passer au thème sombre",
+                matrixViewLabel: "Affichage des matrices",
+                viewGroups: "Vue par groupes : une bulle par groupe (moyenne)",
+                viewRisks: "Vue par risques : une bulle par risque",
+                pinMatrices: "Épingler les matrices en haut de l'écran",
+                copyMatrixImage: "Copier la matrice en image",
+                closeEsc: "Fermer (Échap)",
+                prevMatrix: "Matrice précédente",
+                nextMatrix: "Matrice suivante",
+                footerTagline: "Application d'analyse et de cartographie des risques",
+                footerLicense: "Licence AGPL-3.0",
+                groupTableTitle: "Moyennes par Groupe",
+                colGroup: "Groupe",
+                colCategory: "Catégorie",
+                colBeforeShort: "Avant",
+                colAfterShort: "Après",
+                remediationLabel: "Remédiation",
+                noRiskEvaluated: "Aucun risque évalué",
+                deleteRiskTitle: "Supprimer ce risque",
+                colResponsible: "Responsable",
+                wordCount: "{count}/{max} mots",
+                undone: "Action annulée",
+                nothingToUndo: "Rien à annuler",
+                redone: "Action rétablie",
+                nothingToRedo: "Rien à rétablir",
+                changeSaved: "Modification sauvegardée",
+                mesureDeleted: "Mesure supprimée",
+                statusUpdated: "Statut mis à jour",
+                importSuccess: "Données importées avec succès",
+                importError: "Erreur lors de l'import du fichier JSON :",
+                browserSaveFailed: "Sauvegarde navigateur impossible : exportez vos données",
+                dataFileChanged: "{file} a changé : ses données remplacent les modifications du navigateur",
+                confirmDeleteGroup: "Supprimer le groupe « {name} » ?\n\nTous les risques de ce groupe seront également supprimés.",
+                groupDeleted: "Groupe supprimé",
+                confirmDeleteRisk: "Supprimer le risque « {name} » ?",
+                riskDeleted: "Risque supprimé",
+                newRisk: "Nouveau risque",
+                riskAdded: "Nouveau risque ajouté",
+                newGroup: "Nouveau groupe",
+                newGroupDescription: "Cliquer pour modifier la description",
+                groupAdded: "Nouveau groupe ajouté",
+                showMatricesToCopy: "Affichez les matrices pour pouvoir les copier",
+                matrixCopied: "Matrice copiée : collez-la où vous voulez",
+                matrixDownloaded: "Copie d'image impossible ici : image téléchargée",
+                saveDownload: "Enregistrer : télécharger {file} à placer à côté de riskr.html",
+                saveResume: "Reprendre l'enregistrement : autoriser l'écriture dans {file} pour cette session",
+                saveRetry: "Réessayer l'enregistrement dans le fichier",
+                saveLink: "Enregistrer dans le fichier : choisir {file}, ensuite chaque modification y est enregistrée",
+                savedIn: "Enregistré dans {file}",
+                unsavedChanges: "Modifications non enregistrées",
+                savingLabel: "Enregistrement…",
+                downloadedReplace: "Téléchargé : remplacez {file} à côté de riskr.html",
+                saveFailed: "Échec de l'enregistrement",
+                dataFileDescription: "Données Riskr",
+                confirmSaveOther: "Les données affichées viennent de {source}.\nLes enregistrer quand même dans {target} ?",
+                invalidRiskId: "Identifiant de risque invalide : « {id} »",
+                duplicateRisk: "Risque en double : {id}",
+                invalidGroupId: "Identifiant de groupe invalide : « {id} »",
+                groupLabel: "Groupe {id}",
+                riskLabel: "Risque {id}",
+                tipProbability: "Probabilité",
+                tipImpact: "Impact",
+                tipAvgProbability: "Probabilité moyenne",
+                tipAvgImpact: "Impact moyen",
+                tipAvgCriticality: "Criticité moyenne",
+                pdfMatricesTitle: "Matrices de risques",
+                pdfBefore: "Avant remédiation",
+                pdfAfter: "Après remédiation",
+                pdfNoRisk: "Aucun risque",
+                pdfColumns: "P.Av|I.Av|C.Av|P.Ap|I.Ap|C.Ap|Réd.",
+                exportColumns: "Prob. avant|Impact avant|Crit. avant|Prob. après|Impact après|Crit. après"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -3917,12 +4116,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 redoBtn: "Redo",
                 redoTooltip: "Redo undone action (Cmd/Ctrl+Y)",
 
-                dashboardTitle: "Overview",
-                dashboardRisksEvaluated: "Evaluated risks",
-                dashboardCriticalRisks: "High or critical risks (Before → After)",
-                dashboardAvgReduction: "Average reduction",
-                dashboardTreated: "Treated risks",
-
                 matricesTitle: "Risk Matrices",
                 matrixBefore: "Unmitigated risks matrix",
                 matrixAfter: "Mitigated risks matrix",
@@ -3930,8 +4123,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "No.",
                 colDescription: "Risk Description",
-                colAvgBefore: "Criticality before (/25)",
-                colAvgAfter: "Criticality after (/25)",
+                colAvgBefore: "Criticality before (/5)",
+                colAvgAfter: "Criticality after (/5)",
 
                 colRisk: "Risk",
                 colRemediations: "Remediations",
@@ -3945,7 +4138,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 colResp: "Owner",
 
                 axisProb: "Probability →",
-                axisImpact: "↑ Impact",
+                axisImpact: "Impact →",
 
                 probNotEval: "Not evaluated",
                 probVeryUnlikely: "Very unlikely (< 5%)",
@@ -3986,7 +4179,86 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 mesureDelete: "Delete the measure",
                 assessmentNotePlaceholder: "Add a reading of the category (30 words max)",
                 remediationNotePlaceholder: "Add the target remediation (30 words max)",
-                copyForWordUnavailable: "Copy failed. Allow clipboard access and try again."
+                copyForWordUnavailable: "Copy failed. Allow clipboard access and try again.",
+
+                // Interface complète (en-tête, messages, exports)
+                importTooltip: "Import a JSON file",
+                exportHtmlHint: "Web page",
+                exportJsonHint: "Data",
+                exportDataJsHint: "Reloadable",
+                languageLabel: "Language",
+                themeToLight: "Switch to light theme",
+                themeToDark: "Switch to dark theme",
+                matrixViewLabel: "Matrix display",
+                viewGroups: "Group view: one bubble per group (average)",
+                viewRisks: "Risk view: one bubble per risk",
+                pinMatrices: "Pin the matrices to the top of the screen",
+                copyMatrixImage: "Copy the matrix as an image",
+                closeEsc: "Close (Esc)",
+                prevMatrix: "Previous matrix",
+                nextMatrix: "Next matrix",
+                footerTagline: "Risk analysis and mapping application",
+                footerLicense: "AGPL-3.0 License",
+                groupTableTitle: "Averages by Group",
+                colGroup: "Group",
+                colCategory: "Category",
+                colBeforeShort: "Before",
+                colAfterShort: "After",
+                remediationLabel: "Remediation",
+                noRiskEvaluated: "No risk assessed",
+                deleteRiskTitle: "Delete this risk",
+                colResponsible: "Owner",
+                wordCount: "{count}/{max} words",
+                undone: "Undone",
+                nothingToUndo: "Nothing to undo",
+                redone: "Redone",
+                nothingToRedo: "Nothing to redo",
+                changeSaved: "Change saved",
+                mesureDeleted: "Measure deleted",
+                statusUpdated: "Status updated",
+                importSuccess: "Data imported successfully",
+                importError: "Error while importing the JSON file:",
+                browserSaveFailed: "Browser backup unavailable: export your data",
+                dataFileChanged: "{file} has changed: its data replaces the changes made in the browser",
+                confirmDeleteGroup: "Delete the group \"{name}\"?\n\nAll the risks in this group will also be deleted.",
+                groupDeleted: "Group deleted",
+                confirmDeleteRisk: "Delete the risk \"{name}\"?",
+                riskDeleted: "Risk deleted",
+                newRisk: "New risk",
+                riskAdded: "New risk added",
+                newGroup: "New group",
+                newGroupDescription: "Click to edit the description",
+                groupAdded: "New group added",
+                showMatricesToCopy: "Show the matrices to be able to copy them",
+                matrixCopied: "Matrix copied: paste it wherever you like",
+                matrixDownloaded: "Image copy not available here: image downloaded",
+                saveDownload: "Save: download {file} and place it next to riskr.html",
+                saveResume: "Resume saving: allow writing to {file} for this session",
+                saveRetry: "Retry saving to the file",
+                saveLink: "Save to file: choose {file}, then every change is saved to it",
+                savedIn: "Saved to {file}",
+                unsavedChanges: "Unsaved changes",
+                savingLabel: "Saving…",
+                downloadedReplace: "Downloaded: replace {file} next to riskr.html",
+                saveFailed: "Saving failed",
+                dataFileDescription: "Riskr data",
+                confirmSaveOther: "The data shown comes from {source}.\nSave it to {target} anyway?",
+                invalidRiskId: "Invalid risk identifier: \"{id}\"",
+                duplicateRisk: "Duplicate risk: {id}",
+                invalidGroupId: "Invalid group identifier: \"{id}\"",
+                groupLabel: "Group {id}",
+                riskLabel: "Risk {id}",
+                tipProbability: "Probability",
+                tipImpact: "Impact",
+                tipAvgProbability: "Average probability",
+                tipAvgImpact: "Average impact",
+                tipAvgCriticality: "Average criticality",
+                pdfMatricesTitle: "Risk matrices",
+                pdfBefore: "Before remediation",
+                pdfAfter: "After remediation",
+                pdfNoRisk: "No risk",
+                pdfColumns: "P.Bef|I.Bef|C.Bef|P.Aft|I.Aft|C.Aft|Red.",
+                exportColumns: "Prob. before|Impact before|Crit. before|Prob. after|Impact after|Crit. after"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -3999,12 +4271,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 redoBtn: "Rehacer",
                 redoTooltip: "Rehacer acción deshecha (Cmd/Ctrl+Y)",
 
-                dashboardTitle: "Vista general",
-                dashboardRisksEvaluated: "Riesgos evaluados",
-                dashboardCriticalRisks: "Riesgos altos o críticos (Antes → Después)",
-                dashboardAvgReduction: "Reducción promedio",
-                dashboardTreated: "Riesgos tratados",
-
                 matricesTitle: "Matrices de Riesgos",
                 matrixBefore: "Matriz de riesgos no remediados",
                 matrixAfter: "Matriz de riesgos remediados",
@@ -4012,8 +4278,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "N°",
                 colDescription: "Descripción del Riesgo",
-                colAvgBefore: "Criticidad antes (/25)",
-                colAvgAfter: "Criticidad después (/25)",
+                colAvgBefore: "Criticidad antes (/5)",
+                colAvgAfter: "Criticidad después (/5)",
 
                 colRisk: "Riesgo",
                 colRemediations: "Remediaciones",
@@ -4027,7 +4293,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 colResp: "Resp.",
 
                 axisProb: "Probabilidad →",
-                axisImpact: "↑ Impacto",
+                axisImpact: "Impacto →",
 
                 probNotEval: "No evaluado",
                 probVeryUnlikely: "Muy improbable (< 5%)",
@@ -4061,7 +4327,93 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 zoomMatrix: "Ampliar matriz",
                 copyForWord: "Copiar para Word",
                 copiedForWord: "Copiado",
-                copyForWordUnavailable: "No se pudo copiar. Autorice el portapapeles e inténtelo de nuevo."
+                copyForWordUnavailable: "No se pudo copiar. Autorice el portapapeles e inténtelo de nuevo.",
+
+                // Interface complète (en-tête, messages, exports)
+                mesureOwner: "Responsable",
+                mesureDueDate: "Plazo (opcional)",
+                mesureTextPlaceholder: "Describir la medida",
+                mesureAdd: "Añadir una medida",
+                mesureDelete: "Eliminar la medida",
+                assessmentNotePlaceholder: "Añadir una lectura de la categoría (30 palabras máx.)",
+                remediationNotePlaceholder: "Añadir la remediación prevista (30 palabras máx.)",
+                importTooltip: "Importar un archivo JSON",
+                exportHtmlHint: "Página web",
+                exportJsonHint: "Datos",
+                exportDataJsHint: "Recargable",
+                languageLabel: "Idioma",
+                themeToLight: "Cambiar al tema claro",
+                themeToDark: "Cambiar al tema oscuro",
+                matrixViewLabel: "Visualización de las matrices",
+                viewGroups: "Vista por grupos: una burbuja por grupo (media)",
+                viewRisks: "Vista por riesgos: una burbuja por riesgo",
+                pinMatrices: "Fijar las matrices en la parte superior de la pantalla",
+                copyMatrixImage: "Copiar la matriz como imagen",
+                closeEsc: "Cerrar (Esc)",
+                prevMatrix: "Matriz anterior",
+                nextMatrix: "Matriz siguiente",
+                footerTagline: "Aplicación de análisis y cartografía de riesgos",
+                footerLicense: "Licencia AGPL-3.0",
+                groupTableTitle: "Medias por grupo",
+                colGroup: "Grupo",
+                colCategory: "Categoría",
+                colBeforeShort: "Antes",
+                colAfterShort: "Después",
+                remediationLabel: "Remediación",
+                noRiskEvaluated: "Ningún riesgo evaluado",
+                deleteRiskTitle: "Eliminar este riesgo",
+                colResponsible: "Responsable",
+                wordCount: "{count}/{max} palabras",
+                undone: "Acción deshecha",
+                nothingToUndo: "Nada que deshacer",
+                redone: "Acción rehecha",
+                nothingToRedo: "Nada que rehacer",
+                changeSaved: "Cambio guardado",
+                mesureDeleted: "Medida eliminada",
+                statusUpdated: "Estado actualizado",
+                importSuccess: "Datos importados correctamente",
+                importError: "Error al importar el archivo JSON:",
+                browserSaveFailed: "No se puede guardar en el navegador: exporte sus datos",
+                dataFileChanged: "{file} ha cambiado: sus datos sustituyen los cambios del navegador",
+                confirmDeleteGroup: "¿Eliminar el grupo «{name}»?\n\nTambién se eliminarán todos los riesgos de este grupo.",
+                groupDeleted: "Grupo eliminado",
+                confirmDeleteRisk: "¿Eliminar el riesgo «{name}»?",
+                riskDeleted: "Riesgo eliminado",
+                newRisk: "Nuevo riesgo",
+                riskAdded: "Nuevo riesgo añadido",
+                newGroup: "Nuevo grupo",
+                newGroupDescription: "Haga clic para editar la descripción",
+                groupAdded: "Nuevo grupo añadido",
+                showMatricesToCopy: "Muestre las matrices para poder copiarlas",
+                matrixCopied: "Matriz copiada: péguela donde quiera",
+                matrixDownloaded: "No se puede copiar la imagen aquí: imagen descargada",
+                saveDownload: "Guardar: descargar {file} y colocarlo junto a riskr.html",
+                saveResume: "Reanudar el guardado: permitir la escritura en {file} durante esta sesión",
+                saveRetry: "Reintentar el guardado en el archivo",
+                saveLink: "Guardar en el archivo: elija {file}; después, cada cambio se guarda en él",
+                savedIn: "Guardado en {file}",
+                unsavedChanges: "Cambios sin guardar",
+                savingLabel: "Guardando…",
+                downloadedReplace: "Descargado: sustituya {file} junto a riskr.html",
+                saveFailed: "Error al guardar",
+                dataFileDescription: "Datos de Riskr",
+                confirmSaveOther: "Los datos mostrados provienen de {source}.\n¿Guardarlos de todos modos en {target}?",
+                invalidRiskId: "Identificador de riesgo no válido: «{id}»",
+                duplicateRisk: "Riesgo duplicado: {id}",
+                invalidGroupId: "Identificador de grupo no válido: «{id}»",
+                groupLabel: "Grupo {id}",
+                riskLabel: "Riesgo {id}",
+                tipProbability: "Probabilidad",
+                tipImpact: "Impacto",
+                tipAvgProbability: "Probabilidad media",
+                tipAvgImpact: "Impacto medio",
+                tipAvgCriticality: "Criticidad media",
+                pdfMatricesTitle: "Matrices de riesgos",
+                pdfBefore: "Antes de la remediación",
+                pdfAfter: "Después de la remediación",
+                pdfNoRisk: "Ningún riesgo",
+                pdfColumns: "P.Ant|I.Ant|C.Ant|P.Des|I.Des|C.Des|Red.",
+                exportColumns: "Prob. antes|Impacto antes|Crit. antes|Prob. después|Impacto después|Crit. después"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -4074,12 +4426,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 redoBtn: "重做",
                 redoTooltip: "重做已撤销的操作 (Cmd/Ctrl+Y)",
 
-                dashboardTitle: "概览",
-                dashboardRisksEvaluated: "已评估风险",
-                dashboardCriticalRisks: "高或严重风险 (前 → 后)",
-                dashboardAvgReduction: "平均降低",
-                dashboardTreated: "已处理风险",
-
                 matricesTitle: "风险矩阵",
                 matrixBefore: "未缓解风险矩阵",
                 matrixAfter: "已缓解风险矩阵",
@@ -4087,8 +4433,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "编号",
                 colDescription: "风险描述",
-                colAvgBefore: "之前关键度 (/25)",
-                colAvgAfter: "之后关键度 (/25)",
+                colAvgBefore: "之前关键度 (/5)",
+                colAvgAfter: "之后关键度 (/5)",
 
                 colRisk: "风险",
                 colRemediations: "缓解措施",
@@ -4102,7 +4448,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 colResp: "负责人",
 
                 axisProb: "概率 →",
-                axisImpact: "↑ 影响",
+                axisImpact: "影响 →",
 
                 probNotEval: "未评估",
                 probVeryUnlikely: "非常不可能 (< 5%)",
@@ -4136,7 +4482,93 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 zoomMatrix: "放大矩阵",
                 copyForWord: "复制到 Word",
                 copiedForWord: "已复制",
-                copyForWordUnavailable: "复制失败。请允许访问剪贴板后重试。"
+                copyForWordUnavailable: "复制失败。请允许访问剪贴板后重试。",
+
+                // Interface complète (en-tête, messages, exports)
+                mesureOwner: "负责人",
+                mesureDueDate: "截止日期（可选）",
+                mesureTextPlaceholder: "描述措施",
+                mesureAdd: "添加措施",
+                mesureDelete: "删除措施",
+                assessmentNotePlaceholder: "添加该类别的解读（最多 30 词）",
+                remediationNotePlaceholder: "添加计划的补救措施（最多 30 词）",
+                importTooltip: "导入 JSON 文件",
+                exportHtmlHint: "网页",
+                exportJsonHint: "数据",
+                exportDataJsHint: "可重新加载",
+                languageLabel: "语言",
+                themeToLight: "切换到浅色主题",
+                themeToDark: "切换到深色主题",
+                matrixViewLabel: "矩阵显示",
+                viewGroups: "按组查看：每组一个气泡（平均值）",
+                viewRisks: "按风险查看：每个风险一个气泡",
+                pinMatrices: "将矩阵固定在屏幕顶部",
+                copyMatrixImage: "将矩阵复制为图片",
+                closeEsc: "关闭 (Esc)",
+                prevMatrix: "上一个矩阵",
+                nextMatrix: "下一个矩阵",
+                footerTagline: "风险分析与风险地图应用",
+                footerLicense: "AGPL-3.0 许可证",
+                groupTableTitle: "按组平均值",
+                colGroup: "组",
+                colCategory: "类别",
+                colBeforeShort: "之前",
+                colAfterShort: "之后",
+                remediationLabel: "补救",
+                noRiskEvaluated: "尚无已评估的风险",
+                deleteRiskTitle: "删除此风险",
+                colResponsible: "负责人",
+                wordCount: "{count}/{max} 词",
+                undone: "已撤销",
+                nothingToUndo: "没有可撤销的操作",
+                redone: "已重做",
+                nothingToRedo: "没有可重做的操作",
+                changeSaved: "修改已保存",
+                mesureDeleted: "措施已删除",
+                statusUpdated: "状态已更新",
+                importSuccess: "数据导入成功",
+                importError: "导入 JSON 文件时出错：",
+                browserSaveFailed: "无法在浏览器中保存：请导出您的数据",
+                dataFileChanged: "{file} 已更改：其数据将替换浏览器中的修改",
+                confirmDeleteGroup: "删除组“{name}”？\n\n该组中的所有风险也将被删除。",
+                groupDeleted: "组已删除",
+                confirmDeleteRisk: "删除风险“{name}”？",
+                riskDeleted: "风险已删除",
+                newRisk: "新风险",
+                riskAdded: "已添加新风险",
+                newGroup: "新组",
+                newGroupDescription: "点击编辑描述",
+                groupAdded: "已添加新组",
+                showMatricesToCopy: "请先显示矩阵才能复制",
+                matrixCopied: "矩阵已复制：可粘贴到任意位置",
+                matrixDownloaded: "此处无法复制图片：已下载图片",
+                saveDownload: "保存：下载 {file} 并放在 riskr.html 旁边",
+                saveResume: "继续保存：允许本次会话写入 {file}",
+                saveRetry: "重试保存到文件",
+                saveLink: "保存到文件：选择 {file}，之后每次修改都会保存到其中",
+                savedIn: "已保存到 {file}",
+                unsavedChanges: "有未保存的修改",
+                savingLabel: "正在保存…",
+                downloadedReplace: "已下载：请替换 riskr.html 旁边的 {file}",
+                saveFailed: "保存失败",
+                dataFileDescription: "Riskr 数据",
+                confirmSaveOther: "当前数据来自 {source}。\n仍要保存到 {target} 吗？",
+                invalidRiskId: "无效的风险标识：“{id}”",
+                duplicateRisk: "重复的风险：{id}",
+                invalidGroupId: "无效的组标识：“{id}”",
+                groupLabel: "第 {id} 组",
+                riskLabel: "风险 {id}",
+                tipProbability: "概率",
+                tipImpact: "影响",
+                tipAvgProbability: "平均概率",
+                tipAvgImpact: "平均影响",
+                tipAvgCriticality: "平均严重度",
+                pdfMatricesTitle: "风险矩阵",
+                pdfBefore: "补救前",
+                pdfAfter: "补救后",
+                pdfNoRisk: "无风险",
+                pdfColumns: "前P|前I|前C|后P|后I|后C|降低",
+                exportColumns: "补救前概率|补救前影响|补救前严重度|补救后概率|补救后影响|补救后严重度"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -4149,12 +4581,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 redoBtn: "إعادة",
                 redoTooltip: "إعادة الإجراء الملغي (Cmd/Ctrl+Y)",
 
-                dashboardTitle: "نظرة عامة",
-                dashboardRisksEvaluated: "المخاطر المقيمة",
-                dashboardCriticalRisks: "المخاطر المرتفعة أو الحرجة (قبل ← بعد)",
-                dashboardAvgReduction: "متوسط الانخفاض",
-                dashboardTreated: "المخاطر المعالجة",
-
                 matricesTitle: "مصفوفات المخاطر",
                 matrixBefore: "مصفوفة المخاطر غير المعالجة",
                 matrixAfter: "مصفوفة المخاطر المعالجة",
@@ -4162,8 +4588,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "رقم",
                 colDescription: "وصف المخاطرة",
-                colAvgBefore: "الخطورة قبل (/25)",
-                colAvgAfter: "الخطورة بعد (/25)",
+                colAvgBefore: "الخطورة قبل (/5)",
+                colAvgAfter: "الخطورة بعد (/5)",
 
                 colRisk: "المخاطرة",
                 colRemediations: "المعالجات",
@@ -4176,8 +4602,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 colStatus: "حالة",
                 colResp: "مسؤول",
 
-                axisProb: "الاحتمال ←",
-                axisImpact: "↑ التأثير",
+                axisProb: "الاحتمال →",
+                axisImpact: "التأثير →",
 
                 probNotEval: "غير مقيم",
                 probVeryUnlikely: "مستبعد جداً (< 5%)",
@@ -4211,7 +4637,93 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 zoomMatrix: "تكبير المصفوفة",
                 copyForWord: "نسخ إلى Word",
                 copiedForWord: "تم النسخ",
-                copyForWordUnavailable: "تعذر النسخ. اسمح بالوصول إلى الحافظة ثم أعد المحاولة."
+                copyForWordUnavailable: "تعذر النسخ. اسمح بالوصول إلى الحافظة ثم أعد المحاولة.",
+
+                // Interface complète (en-tête, messages, exports)
+                mesureOwner: "المسؤول",
+                mesureDueDate: "الموعد النهائي (اختياري)",
+                mesureTextPlaceholder: "صِف الإجراء",
+                mesureAdd: "إضافة إجراء",
+                mesureDelete: "حذف الإجراء",
+                assessmentNotePlaceholder: "أضف قراءة للفئة (30 كلمة كحد أقصى)",
+                remediationNotePlaceholder: "أضف المعالجة المستهدفة (30 كلمة كحد أقصى)",
+                importTooltip: "استيراد ملف JSON",
+                exportHtmlHint: "صفحة ويب",
+                exportJsonHint: "بيانات",
+                exportDataJsHint: "قابل لإعادة التحميل",
+                languageLabel: "اللغة",
+                themeToLight: "التبديل إلى المظهر الفاتح",
+                themeToDark: "التبديل إلى المظهر الداكن",
+                matrixViewLabel: "عرض المصفوفات",
+                viewGroups: "عرض حسب المجموعات: فقاعة واحدة لكل مجموعة (المتوسط)",
+                viewRisks: "عرض حسب المخاطر: فقاعة واحدة لكل خطر",
+                pinMatrices: "تثبيت المصفوفات أعلى الشاشة",
+                copyMatrixImage: "نسخ المصفوفة كصورة",
+                closeEsc: "إغلاق (Esc)",
+                prevMatrix: "المصفوفة السابقة",
+                nextMatrix: "المصفوفة التالية",
+                footerTagline: "تطبيق لتحليل المخاطر ورسم خرائطها",
+                footerLicense: "ترخيص AGPL-3.0",
+                groupTableTitle: "المتوسطات حسب المجموعة",
+                colGroup: "المجموعة",
+                colCategory: "الفئة",
+                colBeforeShort: "قبل",
+                colAfterShort: "بعد",
+                remediationLabel: "المعالجة",
+                noRiskEvaluated: "لم يُقيَّم أي خطر",
+                deleteRiskTitle: "حذف هذا الخطر",
+                colResponsible: "المسؤول",
+                wordCount: "{count}/{max} كلمة",
+                undone: "تم التراجع",
+                nothingToUndo: "لا يوجد ما يمكن التراجع عنه",
+                redone: "تمت الإعادة",
+                nothingToRedo: "لا يوجد ما يمكن إعادته",
+                changeSaved: "تم حفظ التعديل",
+                mesureDeleted: "تم حذف الإجراء",
+                statusUpdated: "تم تحديث الحالة",
+                importSuccess: "تم استيراد البيانات بنجاح",
+                importError: "خطأ أثناء استيراد ملف JSON:",
+                browserSaveFailed: "تعذّر الحفظ في المتصفح: صدِّر بياناتك",
+                dataFileChanged: "تغيّر {file}: بياناته تحل محل التعديلات في المتصفح",
+                confirmDeleteGroup: "حذف المجموعة «{name}»؟\n\nستُحذف أيضًا جميع مخاطر هذه المجموعة.",
+                groupDeleted: "تم حذف المجموعة",
+                confirmDeleteRisk: "حذف الخطر «{name}»؟",
+                riskDeleted: "تم حذف الخطر",
+                newRisk: "خطر جديد",
+                riskAdded: "تمت إضافة خطر جديد",
+                newGroup: "مجموعة جديدة",
+                newGroupDescription: "انقر لتعديل الوصف",
+                groupAdded: "تمت إضافة مجموعة جديدة",
+                showMatricesToCopy: "اعرض المصفوفات لتتمكن من نسخها",
+                matrixCopied: "تم نسخ المصفوفة: الصقها حيث تشاء",
+                matrixDownloaded: "نسخ الصورة غير متاح هنا: تم تنزيل الصورة",
+                saveDownload: "حفظ: نزِّل {file} وضعه بجانب riskr.html",
+                saveResume: "استئناف الحفظ: السماح بالكتابة في {file} لهذه الجلسة",
+                saveRetry: "إعادة محاولة الحفظ في الملف",
+                saveLink: "الحفظ في الملف: اختر {file}، وبعدها يُحفظ فيه كل تعديل",
+                savedIn: "تم الحفظ في {file}",
+                unsavedChanges: "تعديلات غير محفوظة",
+                savingLabel: "جارٍ الحفظ…",
+                downloadedReplace: "تم التنزيل: استبدل {file} بجانب riskr.html",
+                saveFailed: "فشل الحفظ",
+                dataFileDescription: "بيانات Riskr",
+                confirmSaveOther: "البيانات المعروضة مصدرها {source}.\nهل تريد حفظها في {target} على أي حال؟",
+                invalidRiskId: "معرّف خطر غير صالح: «{id}»",
+                duplicateRisk: "خطر مكرر: {id}",
+                invalidGroupId: "معرّف مجموعة غير صالح: «{id}»",
+                groupLabel: "المجموعة {id}",
+                riskLabel: "الخطر {id}",
+                tipProbability: "الاحتمال",
+                tipImpact: "التأثير",
+                tipAvgProbability: "متوسط الاحتمال",
+                tipAvgImpact: "متوسط التأثير",
+                tipAvgCriticality: "متوسط الخطورة",
+                pdfMatricesTitle: "مصفوفات المخاطر",
+                pdfBefore: "قبل المعالجة",
+                pdfAfter: "بعد المعالجة",
+                pdfNoRisk: "لا يوجد خطر",
+                pdfColumns: "ا.قبل|ت.قبل|خ.قبل|ا.بعد|ت.بعد|خ.بعد|تخفيض",
+                exportColumns: "الاحتمال قبل|التأثير قبل|الخطورة قبل|الاحتمال بعد|التأثير بعد|الخطورة بعد"
             }
         };
 
@@ -4275,8 +4787,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         let currentLanguage = riskrStorage.getItem('riskr-language') || 'fr';
 
-        function t(key) {
-            return translations[currentLanguage][key] || translations.fr[key] || key;
+        function t(key, params = {}) {
+            const text = translations[currentLanguage][key] || translations.fr[key] || key;
+            return text.replace(/\{(\w+)\}/g, (match, name) => name in params ? params[name] : match);
         }
 
         // ========================================
@@ -4285,39 +4798,39 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function getProbabilityScale() {
             return [
-                {value: 0, label: t('probNotEval'), color: "#F0F0F0", emoji: "⚪"},
-                {value: 1, label: t('probVeryUnlikely'), color: "#C5E0B3", emoji: "🟩"},
-                {value: 2, label: t('probUnlikely'), color: "#FFE699", emoji: "🟨"},
-                {value: 3, label: t('probPossible'), color: "#F4B183", emoji: "🟧"},
-                {value: 4, label: t('probLikely'), color: "#FFC7CE", emoji: "🟥"},
-                {value: 5, label: t('probAlmostCertain'), color: "#FFC7CE", emoji: "🟥"}
+                {value: 0, label: t('probNotEval'), color: "#F0F0F0"},
+                {value: 1, label: t('probVeryUnlikely'), color: "#C5E0B3"},
+                {value: 2, label: t('probUnlikely'), color: "#FFE699"},
+                {value: 3, label: t('probPossible'), color: "#F4B183"},
+                {value: 4, label: t('probLikely'), color: "#FFC7CE"},
+                {value: 5, label: t('probAlmostCertain'), color: "#FFC7CE"}
             ];
         }
 
         function getImpactScale() {
             return [
-                {value: 0, label: t('impactNotEval'), color: "#F0F0F0", emoji: "⚪"},
-                {value: 1, label: t('impactMinor'), color: "#C5E0B3", emoji: "🟩"},
-                {value: 2, label: t('impactModerate'), color: "#FFE699", emoji: "🟨"},
-                {value: 3, label: t('impactSignificant'), color: "#F4B183", emoji: "🟧"},
-                {value: 4, label: t('impactMajor'), color: "#FFC7CE", emoji: "🟥"},
-                {value: 5, label: t('impactCatastrophic'), color: "#FFC7CE", emoji: "🟥"}
+                {value: 0, label: t('impactNotEval'), color: "#F0F0F0"},
+                {value: 1, label: t('impactMinor'), color: "#C5E0B3"},
+                {value: 2, label: t('impactModerate'), color: "#FFE699"},
+                {value: 3, label: t('impactSignificant'), color: "#F4B183"},
+                {value: 4, label: t('impactMajor'), color: "#FFC7CE"},
+                {value: 5, label: t('impactCatastrophic'), color: "#FFC7CE"}
             ];
         }
 
         function getStatusOptions() {
             return [
-                { value: "statusNotTreated", label: t('statusNotTreated'), emoji: "⚪" },
-                { value: "statusInProgress", label: t('statusInProgress'), emoji: "🔄" },
-                { value: "statusTreated", label: t('statusTreated'), emoji: "✅" },
-                { value: "statusAccepted", label: t('statusAccepted'), emoji: "🤝" }
+                { value: "statusNotTreated", label: t('statusNotTreated') },
+                { value: "statusInProgress", label: t('statusInProgress') },
+                { value: "statusTreated", label: t('statusTreated') },
+                { value: "statusAccepted", label: t('statusAccepted') }
             ];
         }
 
         // Helper pour générer les options avec carrés colorés
         function generateOptions(scale, selectedValue) {
             return scale.map(item =>
-                `<option value="${item.value}" ${item.value === selectedValue ? 'selected' : ''} style="background-color: ${item.color};">${item.emoji} ${item.label}</option>`
+                `<option value="${item.value}" ${item.value === selectedValue ? 'selected' : ''} style="background-color: ${item.color};">${item.label}</option>`
             ).join('');
         }
 
@@ -4326,7 +4839,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const statusOptions = getStatusOptions();
 
             return statusOptions.map(item =>
-                `<option value="${item.value}" ${item.value === selectedStatus ? 'selected' : ''}>${item.emoji} ${item.label}</option>`
+                `<option value="${item.value}" ${item.value === selectedStatus ? 'selected' : ''}>${item.label}</option>`
             ).join('');
         }
 
@@ -4350,6 +4863,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             window.RISKR_DATA && window.RISKR_DATA.appState && window.RISKR_DATA.appState.criticalityThresholds);
         const CRITICALITY_COLORS = { low: '#C5E0B3', medium: '#FFE699', high: '#F4B183', critical: '#FFC7CE' };
 
+        // Affichage d'une criticité P × I (sur 25) ramenée sur 5 ; les seuils restent sur 25
+        const formatOutOf5 = score => `${(score / 5).toFixed(1)}/5`;
+
         // Niveau d'un score : low (faible) | medium (modéré) | high (élevé) | critical
         function getCriticalityLevel(score) {
             if (score === null || score === undefined) return null;
@@ -4366,7 +4882,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Si non évalué, afficher un badge gris
             if (score === null) {
                 return `<span class="criticality-badge criticality-unevaluated">
-                    ⚪ ${t('critNotEval')}
+                    ${t('critNotEval')}
                 </span>`;
             }
 
@@ -4379,15 +4895,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 critical: 'critCritical'
             };
 
-            const emojis = {
-                low: '🟩',
-                medium: '🟨',
-                high: '🟧',
-                critical: '🟥'
-            };
-
             return `<span class="criticality-badge criticality-${level}">
-                ${emojis[level]} <span class="criticality-score">${score}</span> ${t(labelKeys[level])}
+                <span class="criticality-score">${score}</span> ${t(labelKeys[level])}
             </span>`;
         }
 
@@ -4432,17 +4941,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (reductionPercent > 0) {
                 // Réduction positive = amélioration
                 badgeClass = 'reduction-positive';
-                emoji = '📉';
+                emoji = icon('trendDown');
                 label = `${reductionPercent}%`;
             } else if (reductionPercent < 0) {
                 // Réduction négative = dégradation
                 badgeClass = 'reduction-negative';
-                emoji = '📈';
+                emoji = icon('trendUp');
                 label = `${Math.abs(reductionPercent)}%`;
             } else {
                 // Aucun changement
                 badgeClass = 'reduction-neutral';
-                emoji = '➖';
+                emoji = icon('minus');
                 label = '0%';
             }
 
@@ -4500,7 +5009,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // risque : assessmentBefore/After, sinon anciens référentiels B (gc*) puis A (dtu*).
         function normalizeRisk(raw) {
             const id = String(raw && raw.id !== undefined ? raw.id : '');
-            if (!SAFE_ID.test(id)) throw new Error(`Identifiant de risque invalide : "${id}"`);
+            if (!SAFE_ID.test(id)) throw new Error(t('invalidRiskId', { id }));
             const risk = Object.assign({}, raw, {
                 id,
                 title: String(raw.title || ''),
@@ -4532,14 +5041,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const riskById = new Map();
             rawRisks.forEach(raw => {
                 const risk = normalizeRisk(raw);
-                if (riskById.has(risk.id)) throw new Error(`Risque en double : ${risk.id}`);
+                if (riskById.has(risk.id)) throw new Error(t('duplicateRisk', { id: risk.id }));
                 riskById.set(risk.id, risk);
             });
 
             const newGroups = data.riskGroups.map(raw => {
                 const { risks: nestedRisks, riskIds, ...group } = raw;
                 const groupId = String(raw.id);
-                if (!SAFE_ID.test(groupId)) throw new Error(`Identifiant de groupe invalide : "${groupId}"`);
+                if (!SAFE_ID.test(groupId)) throw new Error(t('invalidGroupId', { id: groupId }));
                 const ids = isCanonical ? riskIds : (nestedRisks || []).map(r => String(r.id));
                 return Object.assign(group, {
                     name: String(raw.name || ''),
@@ -4592,7 +5101,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 }, serializeModel())));
             } catch (error) {
                 console.error('[Riskr] Sauvegarde navigateur impossible :', error);
-                showToast('⚠️ Sauvegarde navigateur impossible : exportez vos données', 'error');
+                showToast(t('browserSaveFailed'), 'error');
             }
         }
 
@@ -4652,27 +5161,30 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const linked = fileHandle && fileWritable;
             button.hidden = linked && fileSaveState !== 'error';
             if (!canLinkFile) {
-                button.textContent = '💾 Enregistrer';
-                button.title = `Télécharger ${dataFileName} à placer à côté de riskr.html`;
+                button.title = t('saveDownload', { file: dataFileName });
             } else if (fileHandle && !fileWritable) {
-                button.textContent = '🔗 Reprendre l\'enregistrement';
-                button.title = `Autoriser l'écriture dans ${fileHandle.name} pour cette session`;
+                button.title = t('saveResume', { file: fileHandle.name });
             } else if (fileSaveState === 'error') {
-                button.textContent = '↻ Réessayer';
-                button.title = 'Relancer l\'enregistrement dans le fichier';
+                button.title = t('saveRetry');
             } else {
-                button.textContent = '💾 Enregistrer dans le fichier';
-                button.title = `Choisir ${dataFileName} : ensuite, chaque modification y est enregistrée`;
+                button.title = t('saveLink', { file: dataFileName });
             }
+            button.setAttribute('aria-label', button.title);
             const labels = {
-                clean: linked ? `✓ Enregistré dans ${fileHandle.name}` : '',
-                dirty: '● Modifications non enregistrées',
-                saving: 'Enregistrement…',
-                saved: `✓ Enregistré dans ${fileHandle ? fileHandle.name : dataFileName}`,
-                downloaded: `✓ Téléchargé : remplacez ${dataFileName} à côté de riskr.html`,
-                error: '⚠ Échec de l\'enregistrement'
+                clean: linked ? t('savedIn', { file: fileHandle.name }) : '',
+                dirty: t('unsavedChanges'),
+                saving: t('savingLabel'),
+                saved: t('savedIn', { file: fileHandle ? fileHandle.name : dataFileName }),
+                downloaded: t('downloadedReplace', { file: dataFileName }),
+                error: t('saveFailed')
             };
-            status.textContent = labels[fileSaveState];
+            // Voyant : pictogramme selon l'état, libellé en infobulle
+            const label = labels[fileSaveState];
+            const stateIcon = fileSaveState === 'error' ? 'alert'
+                : (fileSaveState === 'dirty' || fileSaveState === 'saving') ? 'dot' : 'check';
+            status.innerHTML = label ? icon(stateIcon) : '';
+            status.title = label;
+            status.setAttribute('aria-label', label);
             status.className = `file-save-status ${fileSaveState}`;
         }
 
@@ -4719,11 +5231,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (!fileHandle) {
                     const handle = await window.showSaveFilePicker({
                         suggestedName: dataFileName,
-                        types: [{ description: 'Données Riskr', accept: { 'text/javascript': ['.js'] } }]
+                        types: [{ description: t('dataFileDescription'), accept: { 'text/javascript': ['.js'] } }]
                     });
-                    if (handle.name !== dataFileName && !confirm(
-                        `Les données affichées viennent de ${dataFileName}.\n` +
-                        `Les enregistrer quand même dans ${handle.name} ?`)) return;
+                    if (handle.name !== dataFileName &&
+                        !confirm(t('confirmSaveOther', { source: dataFileName, target: handle.name }))) return;
                     fileHandle = handle;
                     await withFileHandleStore('readwrite', store => store.put(handle, normalizedStorageNamespace));
                 }
@@ -4820,7 +5331,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const model = JSON.parse(saved);
                 if (model.source !== dataSourceFingerprint) {
                     riskrStorage.removeItem(MODEL_STORAGE_KEY);
-                    showToast('ℹ️ riskr-data.js a changé : ses données remplacent les modifications du navigateur', 'error');
+                    showToast(t('dataFileChanged', { file: 'riskr-data.js' }), 'error');
                     return;
                 }
                 applyModel(buildModel(model));
@@ -4885,7 +5396,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const group = riskGroups.find(g => g.id === groupId);
             if (!group) return;
 
-            const confirmDelete = confirm(`Êtes-vous sûr de vouloir supprimer le groupe "${group.name}" ?\n\nTous les risques de ce groupe seront également supprimés.`);
+            const confirmDelete = confirm(t('confirmDeleteGroup', { name: group.name }));
             if (!confirmDelete) return;
 
             // Supprimer le groupe
@@ -4909,7 +5420,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             renderRisks();
             updateCharts();
 
-            showToast('✅ Groupe supprimé');
+            showToast(t('groupDeleted'));
         }
 
         // ========================================
@@ -4920,7 +5431,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const risk = risks.find(r => r.id === riskId);
             if (!risk) return;
 
-            const confirmDelete = confirm(`Êtes-vous sûr de vouloir supprimer le risque "${risk.title}" ?`);
+            const confirmDelete = confirm(t('confirmDeleteRisk', { name: risk.title }));
             if (!confirmDelete) return;
 
             // Trouver le groupe contenant ce risque
@@ -4945,7 +5456,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             renderRisks();
             updateCharts();
 
-            showToast('✅ Risque supprimé');
+            showToast(t('riskDeleted'));
         }
 
         // ========================================
@@ -4959,7 +5470,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Numéro provisoire : commitChange() renumérote selon la position
             const newRisk = {
                 id: 'nouveau',
-                title: "Nouveau risque",
+                title: t('newRisk'),
                 ...emptyAssessments()
             };
 
@@ -4988,7 +5499,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }, 100);
 
             // Afficher un toast
-            showToast('✅ Nouveau risque ajouté');
+            showToast(t('riskAdded'));
         }
 
         // ========================================
@@ -4998,15 +5509,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Groupe créé avec un risque vierge ; numéros provisoires, recalculés par commitChange()
             const defaultRisk = {
                 id: 'nouveau',
-                title: "Nouveau risque",
+                title: t('newRisk'),
                 ...emptyAssessments()
             };
 
             // Créer un nouveau groupe avec le risque par défaut
             const newGroup = {
                 id: 0,
-                name: "Nouveau groupe",
-                description: "Cliquer pour modifier la description",
+                name: t('newGroup'),
+                description: t('newGroupDescription'),
                 risks: [defaultRisk],
                 mesures: []
             };
@@ -5023,7 +5534,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             updateCharts();
 
             // Afficher un toast
-            showToast('✅ Nouveau groupe ajouté');
+            showToast(t('groupAdded'));
         }
 
         // Mettre à jour une ligne de risque quand les dropdowns changent
@@ -5066,7 +5577,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reductionCell.innerHTML = getRiskReductionBadge(probBefore, impactBefore, probAfter, impactAfter);
             }
 
-            // Mettre à jour les matrices et le dashboard
+            // Mettre à jour les matrices et les tableaux
             updateCharts();
         }
 
@@ -5081,7 +5592,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 initialSeparator.dataset.insertPosition = '0';
                 initialSeparator.innerHTML = `
                     <div class="group-separator-label">
-                        <span class="group-separator-icon">+</span>
+                        <span class="group-separator-icon">${icon('plus')}</span>
                         <span>${t('addGroup')}</span>
                     </div>
                 `;
@@ -5106,7 +5617,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 separator.dataset.insertPosition = groupIndex; // Position où insérer le nouveau groupe
                 separator.innerHTML = `
                     <div class="group-separator-label">
-                        <span class="group-separator-icon">+</span>
+                        <span class="group-separator-icon">${icon('plus')}</span>
                         <span>${t('addGroup')}</span>
                     </div>
                 `;
@@ -5128,7 +5639,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     toggleCollapse(`group-content-${group.id}`);
                 };
                 headerDiv.innerHTML = `
-                    <span class="collapse-icon">▼</span>
+                    <span class="collapse-icon">${icon('chevron')}</span>
                     <div class="risk-group-number">${group.id}</div>
                     <div style="flex: 1;">
                         <div class="risk-group-title editable-group-name" id="group-name-${group.id}" data-group-id="${group.id}">${escapeHtml(group.name)}</div>
@@ -5139,7 +5650,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Ajouter le bouton de suppression
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'delete-btn';
-                deleteBtn.innerHTML = `<span>🗑️</span><span>${t('deleteGroup')}</span>`;
+                deleteBtn.innerHTML = `${icon('trash')}<span>${t('deleteGroup')}</span>`;
                 deleteBtn.onclick = (e) => {
                     e.stopPropagation();
                     deleteGroup(group.id);
@@ -5207,7 +5718,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <td colspan="11">
                             <div class="risk-separator" data-group-id="${group.id}" data-risk-position="0">
                                 <div class="risk-separator-label">
-                                    <span class="risk-separator-icon">+</span>
+                                    <span class="risk-separator-icon">${icon('plus')}</span>
                                     <span>${t('addRisk')}</span>
                                 </div>
                             </div>
@@ -5228,7 +5739,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <td colspan="11">
                                 <div class="risk-separator" data-group-id="${group.id}" data-risk-position="${localIndex}">
                                     <div class="risk-separator-label">
-                                        <span class="risk-separator-icon">+</span>
+                                        <span class="risk-separator-icon">${icon('plus')}</span>
                                         <span>${t('addRisk')}</span>
                                     </div>
                                 </div>
@@ -5252,7 +5763,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                         tr.innerHTML = `
                             <td class="risk-title-cell">
-                                <span class="expand-icon" data-risk-id="${risk.id}">▼</span>
+                                <span class="expand-icon" data-risk-id="${risk.id}">${icon('chevron')}</span>
                                 <span class="risk-id">${risk.id}.</span> <span class="editable-risk-title" data-risk-id="${risk.id}">${escapeHtml(risk.title)}</span>
                             </td>
                             <td class="dropdown-single-cell">
@@ -5293,7 +5804,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <span class="editable-responsable" data-risk-id="${risk.id}" data-placeholder="${t('clickToAdd')}">${escapeHtml(risk.responsable)}</span>
                             </td>
                             <td style="text-align: center; padding: 4px;">
-                                <button class="delete-btn delete-risk-btn" onclick="deleteRisk('${risk.id}')" title="Supprimer ce risque">🗑️</button>
+                                <button class="delete-btn delete-risk-btn" onclick="deleteRisk('${risk.id}')" title="${t('deleteRiskTitle')}">${icon('trash')}</button>
                             </td>
                         `;
 
@@ -5317,9 +5828,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="texte" data-placeholder="${t('mesureTextPlaceholder')}">${escapeHtml(mesure.texte)}</span>
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="porteur" data-placeholder="—">${escapeHtml(mesure.porteur)}</span>
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="echeance" data-placeholder="—">${escapeHtml(mesure.echeance)}</span>
-                                        <button class="mesure-delete" data-risk-id="${risk.id}" data-index="${mesureIndex}" title="${t('mesureDelete')}">🗑️</button>
+                                        <button class="mesure-delete" data-risk-id="${risk.id}" data-index="${mesureIndex}" title="${t('mesureDelete')}">${icon('trash')}</button>
                                     </div>`).join('')}
-                                    <button class="mesure-add" data-risk-id="${risk.id}">+ ${t('mesureAdd')}</button>
+                                    <button class="mesure-add" data-risk-id="${risk.id}">${icon('plus')} ${t('mesureAdd')}</button>
                                 </div>
                             </td>
                         `;
@@ -5328,14 +5839,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         // Ajouter le handler pour le toggle expand/collapse
                         const expandIcon = tr.querySelector('.expand-icon');
                         expandIcon.addEventListener('click', () => {
-                            const isCollapsed = remediationRow.classList.contains('collapsed');
-                            if (isCollapsed) {
-                                remediationRow.classList.remove('collapsed');
-                                expandIcon.textContent = '▼';
-                            } else {
-                                remediationRow.classList.add('collapsed');
-                                expandIcon.textContent = '▶';
-                            }
+                            const collapsed = remediationRow.classList.toggle('collapsed');
+                            expandIcon.classList.toggle('collapsed', collapsed); // chevron pivoté
                         });
                     });
 
@@ -5346,7 +5851,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <td colspan="11">
                             <div class="risk-separator" data-group-id="${group.id}" data-risk-position="${group.risks.length}">
                                 <div class="risk-separator-label">
-                                    <span class="risk-separator-icon">+</span>
+                                    <span class="risk-separator-icon">${icon('plus')}</span>
                                     <span>${t('addRisk')}</span>
                                 </div>
                             </div>
@@ -5384,7 +5889,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             finalSeparator.dataset.insertPosition = riskGroups.length; // Position à la fin
             finalSeparator.innerHTML = `
                 <div class="group-separator-label">
-                    <span class="group-separator-icon">+</span>
+                    <span class="group-separator-icon">${icon('plus')}</span>
                     <span>${t('addGroup')}</span>
                 </div>
             `;
@@ -5591,7 +6096,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     ctx.fillRect(xStart, yStart, xEnd - xStart, yEnd - yStart);
 
                     // Dessiner la bordure blanche
-                    ctx.strokeStyle = 'white';
+                    ctx.strokeStyle = themeColor('--surface'); // séparation des cases = fond de la carte
                     ctx.lineWidth = 2;
                     ctx.strokeRect(xStart, yStart, xEnd - xStart, yEnd - yStart);
                 });
@@ -5607,8 +6112,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const { ctx, data, scales: { x, y } } = chart;
 
                 ctx.save();
-                // Police encore plus grande pour une visibilité maximale
-                ctx.font = 'bold 16px Arial'; 
+                // Police proportionnelle à la case (cf. bubbleRatios) : le numéro tient dans la bulle
+                const bubble = data.datasets[0].bubble;
+                ctx.font = `bold ${Math.max(8, Math.round(bubble.font * cellSize(chart)))}px Arial`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
@@ -5631,19 +6137,64 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         };
         
+        // Bulles proportionnelles à la case de la matrice (1 case = 1 unité) : la police
+        // vaut 20 % de la case et le rayon englobe le numéro le plus long (fill = demi-largeur
+        // du texte / rayon). Les bulles de même cotation sont rangées en grille dans leur
+        // case : le rayon est plafonné pour que la case la plus chargée les contienne toutes,
+        // et la police se réduit alors au lieu d'être coupée.
+        // Complexité : O(n) — n = nombre de bulles.
+        const BUBBLE = { font: 0.2, fill: 0.7, minRadius: 0.17, maxRadius: 0.3, gap: 0.02 };
+        const measureContext = document.createElement('canvas').getContext('2d');
+
+        // Regroupe les points qui partagent exactement la même position réelle
+        function stacksByPosition(points) {
+            const stacks = new Map();
+            points.forEach(p => {
+                const key = `${p.baseX},${p.baseY}`;
+                if (!stacks.has(key)) stacks.set(key, []);
+                stacks.get(key).push(p);
+            });
+            return [...stacks.values()];
+        }
+
+        // Plus grand rayon permettant de ranger `count` bulles en grille dans une case
+        function stackRadius(count) {
+            const perRow = Math.ceil(Math.sqrt(count));
+            return (0.5 - (perRow - 1) * BUBBLE.gap / 2) / perRow;
+        }
+
+        // Une liste de points par matrice : les deux matrices partagent la même taille de bulle
+        function bubbleRatios(...pointLists) {
+            const points = pointLists.flat();
+            measureContext.font = `bold ${BUBBLE.font * 100}px Arial`;
+            const widest = Math.max(0, ...points.map(p => measureContext.measureText(String(p.shortLabel)).width)) / 100;
+            const crowded = Math.max(1, ...pointLists.flatMap(list => stacksByPosition(list).map(stack => stack.length)));
+            const needed = widest / 2 / BUBBLE.fill;
+            const radius = Math.min(BUBBLE.maxRadius, stackRadius(crowded), Math.max(needed, BUBBLE.minRadius));
+            return { radius, font: needed > radius ? BUBBLE.font * radius / needed : BUBBLE.font };
+        }
+
+        // Taille d'une case en pixels (l'axe va de 0,5 à 5,5 : 5 cases)
+        // Textes des axes : couleur du thème, relue à chaque rendu
+        const axisColor = () => themeColor('--text-2');
+
+        const cellSize = chart => chart.chartArea ? chart.chartArea.width / 5 : 60;
+        const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart);
+
         // Créer un graphique de risque
-        function createRiskChart(ctx, data, title) {
+        function createRiskChart(ctx, data, title, bubble) {
             return new Chart(ctx, {
                 type: 'scatter',
                 data: {
                     datasets: [{
                         label: 'Risques',
                         data: data,
+                        bubble: bubble,
                         backgroundColor: '#1F4E78',
                         borderColor: 'white',
                         borderWidth: 1.5,
-                        pointRadius: matrixViewMode === 'risks' ? 12 : 14, // Points un peu plus petits si beaucoup de risques
-                        pointHoverRadius: matrixViewMode === 'risks' ? 14 : 16,
+                        pointRadius: bubbleRadius,
+                        pointHoverRadius: context => bubbleRadius(context) * 1.1,
                         pointStyle: 'circle'
                     }]
                 },
@@ -5679,17 +6230,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                     
                                     if (matrixViewMode === 'risks') {
                                         return [
-                                            `Groupe: ${point.groupName}`,
-                                            `Probabilité: ${realX}`,
-                                            `Impact: ${realY}`,
-                                            `Criticité: ${criticality}`
+                                            `${t('colGroup')} : ${point.groupName}`,
+                                            `${t('tipProbability')} : ${realX}`,
+                                            `${t('tipImpact')} : ${realY}`,
+                                            `${t('colCriticality')} : ${criticality}`
                                         ];
                                     } else {
                                         return [
                                             `${point.groupName}`,
-                                            `Probabilité moyenne: ${realX.toFixed(2)}`,
-                                            `Impact moyen: ${realY.toFixed(2)}`,
-                                            `Criticité moyenne: ${criticality.toFixed(1)}/25`
+                                            `${t('tipAvgProbability')} : ${realX.toFixed(2)}`,
+                                            `${t('tipAvgImpact')} : ${realY.toFixed(2)}`,
+                                            `${t('tipAvgCriticality')} : ${formatOutOf5(criticality)}`
                                         ];
                                     }
                                 }
@@ -5702,6 +6253,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             max: 5.5,
                             ticks: {
                                 stepSize: 1,
+                                color: axisColor,
                                 font: {
                                     size: 12
                                 },
@@ -5715,7 +6267,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             },
                             title: {
                                 display: true,
-                                text: 'Probabilité →',
+                                text: t('axisProb'),
+                                color: axisColor,
                                 font: {
                                     size: 14,
                                     weight: 'bold'
@@ -5727,6 +6280,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             max: 5.5,
                             ticks: {
                                 stepSize: 1,
+                                color: axisColor,
                                 font: {
                                     size: 12
                                 },
@@ -5740,7 +6294,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             },
                             title: {
                                 display: true,
-                                text: 'Impact →',
+                                text: t('axisImpact'),
+                                color: axisColor,
                                 font: {
                                     size: 14,
                                     weight: 'bold'
@@ -5778,12 +6333,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <td>${escapeHtml(currentRisk.title)}</td>
                         <td>
                             <span class="criticality-badge ${getCritClass(avgCritBefore)}">
-                                P ${avgProbBefore} × I ${avgImpactBefore} = ${avgCritBefore}/25
+                                ${formatOutOf5(avgCritBefore)} <span class="criticality-detail">(P ${avgProbBefore} × I ${avgImpactBefore})</span>
                             </span>
                         </td>
                         <td>
                             <span class="criticality-badge ${getCritClass(avgCritAfter)}">
-                                P ${avgProbAfter} × I ${avgImpactAfter} = ${avgCritAfter}/25
+                                ${formatOutOf5(avgCritAfter)} <span class="criticality-detail">(P ${avgProbAfter} × I ${avgImpactAfter})</span>
                             </span>
                         </td>
                     `;
@@ -5816,8 +6371,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             groupTableWrapper.innerHTML = `
                 <div class="risk-table-container group-summary-table collapsible-section" style="margin-bottom: 8px;">
                     <h3 class="collapsible-header" onclick="toggleCollapse('group-summary-table-content')" style="margin-bottom: 8px;">
-                        <span class="collapse-icon">▼</span>
-                        Moyennes par Groupe
+                        <span class="collapse-icon">${icon('chevron')}</span>
+                        ${t('groupTableTitle')}
                         <button type="button" class="group-summary-copy-button" onclick="event.stopPropagation(); copyGroupSummaryTableForWord(this)" title="${escapeHtml(t('copyForWord'))}">${escapeHtml(t('copyForWord'))}</button>
                     </h3>
                     <div id="group-summary-table-content" class="collapsible-content">
@@ -5825,10 +6380,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <table id="group-summary-table" class="risk-table" style="table-layout: fixed;">
                                 <thead>
                                     <tr>
-                                        <th style="width: 90px;">Groupe</th>
-                                        <th>Catégorie</th>
-                                        <th style="width: 100px;">Avant</th>
-                                        <th style="width: 100px;">Après</th>
+                                        <th style="width: 90px;">${t('colGroup')}</th>
+                                        <th>${t('colCategory')}</th>
+                                        <th style="width: 100px;">${t('colBeforeShort')}</th>
+                                        <th style="width: 100px;">${t('colAfterShort')}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="group-table-body">
@@ -5848,20 +6403,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const remediationNote = String(group.remediationNote || '').trim();
                 // Toujours affichées (modifiables au clic) ; retirées de la copie Word si vides
                 const assessmentLine = `<div class="group-narrative"><span class="editable-group-note" data-group-id="${group.id}" data-field="assessmentNote" data-placeholder="${t('assessmentNotePlaceholder')}">${escapeHtml(assessmentNote)}</span></div>`;
-                const remediationLine = `<div class="group-narrative"><span class="group-narrative-label">Remédiation - </span><span class="editable-group-note" data-group-id="${group.id}" data-field="remediationNote" data-placeholder="${t('remediationNotePlaceholder')}">${escapeHtml(remediationNote)}</span></div>`;
+                const remediationLine = `<div class="group-narrative"><span class="group-narrative-label">${t('remediationLabel')} - </span><span class="editable-group-note" data-group-id="${group.id}" data-field="remediationNote" data-placeholder="${t('remediationNotePlaceholder')}">${escapeHtml(remediationNote)}</span></div>`;
                 
                 if (critBefore === null || critAfter === null) {
                     // Si pas de données (ex: tous les risques à 0), afficher N/A ou vide
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${escapeHtml(group.id)}</td>
+                        <td style="text-align: center; font-weight: 600; color: var(--text); width: 90px;">${escapeHtml(group.id)}</td>
                         <td>
                             <div class="group-name">${escapeHtml(group.name)}</div>
                             <div class="group-description">${escapeHtml(group.description)}</div>
                             ${assessmentLine}
                             ${remediationLine}
                         </td>
-                        <td colspan="2" style="text-align: center; color: #999; font-style: italic;">Aucun risque évalué</td>
+                        <td colspan="2" style="text-align: center; color: var(--text-3); font-style: italic;">${t('noRiskEvaluated')}</td>
                     `;
                     groupTableBody.appendChild(row);
                     return;
@@ -5871,7 +6426,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${escapeHtml(group.id)}</td>
+                    <td style="text-align: center; font-weight: 600; color: var(--text); width: 90px;">${escapeHtml(group.id)}</td>
                     <td>
                         <div class="group-name">${escapeHtml(group.name)}</div>
                         <div class="group-description">${escapeHtml(group.description)}</div>
@@ -5880,12 +6435,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </td>
                     <td style="text-align: center; width: 100px;">
                         <span class="criticality-badge ${getCritClass(critBefore)}" style="display: block;">
-                            ${critBefore.toFixed(1)}/25
+                            ${formatOutOf5(critBefore)}
                         </span>
                     </td>
                     <td style="text-align: center; width: 100px;">
                         <span class="criticality-badge ${getCritClass(critAfter)}" style="display: block;">
-                            ${critAfter.toFixed(1)}/25
+                            ${formatOutOf5(critAfter)}
                         </span>
                     </td>
                 `;
@@ -6079,25 +6634,40 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
         // Algorithme de répartition des points (Anti-collision)
         // ========================================
-        function resolveCollisions(points) {
+        function resolveCollisions(points, minDistance) {
             // Paramètres de la simulation
             const iterations = 50;       // Nombre de passes pour stabiliser
-            const radius = 0.4;          // Rayon augmenté pour éviter le chevauchement des labels 16px
+            const radius = minDistance + BUBBLE.gap; // Distance visée entre centres (diamètre + marge, en cases)
             const strength = 0.2;        // Force de répulsion plus ferme
             const attraction = 0.05;     // Force de rappel vers la position d'origine
-            const maxDisplacement = 0.48;// Déplacement max autorisé (reste dans la case +/- 0.5)
+            const maxDisplacement = Math.max(0, 0.5 - minDistance / 2); // La bulle entière reste dans sa case
+            // Le point ne quitte pas sa case, pour ne pas induire en erreur sur la cotation
+            const clampToCell = p => {
+                p.x = Math.min(p.baseX + maxDisplacement, Math.max(p.baseX - maxDisplacement, p.x));
+                p.y = Math.min(p.baseY + maxDisplacement, Math.max(p.baseY - maxDisplacement, p.y));
+            };
 
-            // Initialiser les positions actuelles si pas encore fait
-            points.forEach(p => {
-                if (typeof p.x === 'undefined') p.x = p.baseX;
-                if (typeof p.y === 'undefined') p.y = p.baseY;
+            // Les bulles de même cotation partent d'une grille centrée sur leur position réelle,
+            // espacée d'un diamètre : aucune répulsion entre elles, la grille reste stable
+            const step = minDistance + BUBBLE.gap;
+            stacksByPosition(points).forEach(stack => {
+                const perRow = Math.ceil(Math.sqrt(stack.length));
+                const rows = Math.ceil(stack.length / perRow);
+                stack.forEach((p, i) => {
+                    const row = Math.floor(i / perRow);
+                    const inRow = Math.min(perRow, stack.length - row * perRow);
+                    p.anchorX = p.baseX + (i % perRow - (inRow - 1) / 2) * step;
+                    p.anchorY = p.baseY - (row - (rows - 1) / 2) * step;
+                    p.x = p.anchorX;
+                    p.y = p.anchorY;
+                });
             });
 
             for (let i = 0; i < iterations; i++) {
                 points.forEach(p1 => {
-                    // 1. Force de rappel vers l'origine (baseX, baseY)
-                    const distToOriginX = p1.baseX - p1.x;
-                    const distToOriginY = p1.baseY - p1.y;
+                    // 1. Force de rappel vers la place d'origine dans la grille
+                    const distToOriginX = p1.anchorX - p1.x;
+                    const distToOriginY = p1.anchorY - p1.y;
                     
                     p1.x += distToOriginX * attraction;
                     p1.y += distToOriginY * attraction;
@@ -6141,21 +6711,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     });
 
                     // 3. Contraintes (limites de la case)
-                    // On s'assure que le point ne s'éloigne pas trop de sa valeur réelle
-                    // pour ne pas induire en erreur sur la "case" visuelle
-                    const currentDistX = p1.x - p1.baseX;
-                    const currentDistY = p1.y - p1.baseY;
-                    
-                    // Clamper le déplacement
-                    if (Math.abs(currentDistX) > maxDisplacement) {
-                        p1.x = p1.baseX + Math.sign(currentDistX) * maxDisplacement;
-                    }
-                    if (Math.abs(currentDistY) > maxDisplacement) {
-                        p1.y = p1.baseY + Math.sign(currentDistY) * maxDisplacement;
-                    }
+                    clampToCell(p1);
                 });
             }
-            
+            // La répulsion déplace aussi p2 après son propre bornage : passe finale
+            points.forEach(clampToCell);
+
             return points;
         }
 
@@ -6197,7 +6758,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             y: baseY,
                             baseX: baseX,
                             baseY: baseY,
-                            label: `Groupe ${group.id}`,
+                            label: t('groupLabel', { id: group.id }),
                             shortLabel: `${group.id}`,
                             groupName: group.name,
                             groupIndex: groupIndex
@@ -6215,7 +6776,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             y: baseY,
                             baseX: baseX,
                             baseY: baseY,
-                            label: `Groupe ${group.id}`,
+                            label: t('groupLabel', { id: group.id }),
                             shortLabel: `${group.id}`,
                             groupName: group.name,
                             groupIndex: groupIndex
@@ -6242,7 +6803,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             y: baseY,
                             baseX: baseX,
                             baseY: baseY,
-                            label: `Risque ${risk.id}`,
+                            label: t('riskLabel', { id: risk.id }),
                             shortLabel: risk.id,
                             riskTitle: risk.title,
                             groupName: groupName
@@ -6259,7 +6820,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             y: baseY,
                             baseX: baseX,
                             baseY: baseY,
-                            label: `Risque ${risk.id}`,
+                            label: t('riskLabel', { id: risk.id }),
                             shortLabel: risk.id,
                             riskTitle: risk.title,
                             groupName: groupName
@@ -6269,8 +6830,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
 
             // APPLIQUER L'ANTI-COLLISION
-            resolveCollisions(beforeData);
-            resolveCollisions(afterData);
+            // Même taille de bulle sur les deux matrices
+            const bubble = bubbleRatios(beforeData, afterData);
+            resolveCollisions(beforeData, bubble.radius * 2);
+            resolveCollisions(afterData, bubble.radius * 2);
 
             // Détruire les anciens graphiques
             if (chartBefore) chartBefore.destroy();
@@ -6280,72 +6843,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             chartBefore = createRiskChart(
                 document.getElementById('chartBefore').getContext('2d'),
                 beforeData,
-                'Moyenne AVANT'
+                'Moyenne AVANT',
+                bubble
             );
 
             chartAfter = createRiskChart(
                 document.getElementById('chartAfter').getContext('2d'),
                 afterData,
-                'Moyenne APRÈS'
+                'Moyenne APRÈS',
+                bubble
             );
             
             updateRiskTable(currentRisks);
             updateGroupTable();
-            updateDashboard(currentRisks);
-        }
-
-        // ========================================
-        // Mise à jour du Dashboard
-        // ========================================
-        function updateDashboard(currentRisks) {
-            // Risques évalués (cotation avant renseignée)
-            const scoreOf = assessment => assessment ? assessment[0] * assessment[1] : null;
-            const evaluatedRisks = currentRisks
-                .map(risk => ({ before: evaluatedAssessment(risk, 'Before'), after: evaluatedAssessment(risk, 'After') }))
-                .filter(risk => risk.before !== null);
-
-            // 1. Nombre total de risques évalués
-            document.getElementById('dashboard-total-risks').textContent = evaluatedRisks.length;
-
-            // 2. Risques élevés ou critiques (score >= seuil « élevé ») avant et après
-            const criticalBefore = evaluatedRisks.filter(risk => scoreOf(risk.before) >= CRITICALITY_THRESHOLDS.high).length;
-            const criticalAfter = evaluatedRisks.filter(risk => scoreOf(risk.after) >= CRITICALITY_THRESHOLDS.high).length;
-
-            document.getElementById('dashboard-critical-before').textContent = criticalBefore;
-            document.getElementById('dashboard-critical-after').textContent = criticalAfter;
-
-            // 3. Réduction moyenne du risque
-            let totalReduction = 0;
-            let countReduction = 0;
-
-            evaluatedRisks.forEach(risk => {
-                if (!risk.after) return;
-                const reduction = calculateRiskReduction(risk.before[0], risk.before[1], risk.after[0], risk.after[1]);
-                if (reduction !== null) {
-                    totalReduction += reduction;
-                    countReduction++;
-                }
-            });
-
-            const avgReduction = countReduction > 0 ? Math.round(totalReduction / countReduction) : 0;
-            const avgReductionEl = document.getElementById('dashboard-avg-reduction');
-            avgReductionEl.textContent = `${avgReduction}%`;
-
-            // Colorer selon la réduction
-            if (avgReduction > 0) {
-                avgReductionEl.style.color = '#1A6A3E'; // Vert
-            } else if (avgReduction < 0) {
-                avgReductionEl.style.color = '#A02828'; // Rouge
-            } else {
-                avgReductionEl.style.color = '#666666'; // Gris
-            }
-
-            // 4. Risques traités (statut traité ou accepté)
-            const treatedRisks = currentRisks.filter(risk => {
-                return risk.statut === 'statusTreated' || risk.statut === 'statusAccepted';
-            }).length;
-
-            document.getElementById('dashboard-treated').textContent = `${treatedRisks}/${currentRisks.length}`;
         }
 
         // ========================================
@@ -6362,11 +6872,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const canvas = document.getElementById('chartModal');
 
             // Déterminer le titre et les données
-            if (type === 'before') {
-                title.textContent = 'Matrice des risques non remédiés';
-            } else {
-                title.textContent = 'Matrice des risques remédiés';
-            }
+            title.textContent = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
 
             // Afficher la modal
             modal.classList.add('active');
@@ -6410,7 +6916,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         y: avgImpact,
                         baseX: avgProb,
                         baseY: avgImpact,
-                        label: `Groupe ${group.id}`,
+                        label: t('groupLabel', { id: group.id }),
                         shortLabel: `${group.id}`,
                         groupName: group.name
                     };
@@ -6431,7 +6937,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             y: baseY,
                             baseX: baseX,
                             baseY: baseY,
-                            label: `Risque ${risk.id}`,
+                            label: t('riskLabel', { id: risk.id }),
                             shortLabel: risk.id,
                             riskTitle: risk.title,
                             groupName: groupName
@@ -6440,8 +6946,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 });
             }
 
-            // APPLIQUER L'ANTI-COLLISION
-            resolveCollisions(chartData);
+            // APPLIQUER L'ANTI-COLLISION (bulles proportionnelles, cf. bubbleRatios)
+            const bubble = bubbleRatios(chartData);
+            resolveCollisions(chartData, bubble.radius * 2);
 
             // Créer le graphique dans la modal
             modalChartInstance = new Chart(canvas, {
@@ -6449,11 +6956,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 data: {
                     datasets: [{
                         data: chartData,
+                        bubble: bubble,
                         backgroundColor: 'rgba(0, 122, 255, 0.8)',
                         borderColor: 'white',
                         borderWidth: 1.5,
-                        pointRadius: matrixViewMode === 'risks' ? 12 : 14,
-                        pointHoverRadius: matrixViewMode === 'risks' ? 14 : 16,
+                        pointRadius: bubbleRadius,
+                        pointHoverRadius: context => bubbleRadius(context) * 1.1,
                         pointStyle: 'circle'
                     }]
                 },
@@ -6485,17 +6993,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                     
                                     if (matrixViewMode === 'risks') {
                                         return [
-                                            `Groupe: ${point.groupName}`,
-                                            `Probabilité: ${realX}`,
-                                            `Impact: ${realY}`,
-                                            `Criticité: ${criticality}`
+                                            `${t('colGroup')} : ${point.groupName}`,
+                                            `${t('tipProbability')} : ${realX}`,
+                                            `${t('tipImpact')} : ${realY}`,
+                                            `${t('colCriticality')} : ${criticality}`
                                         ];
                                     } else {
                                         return [
                                             `${point.groupName}`,
-                                            `Probabilité: ${realX.toFixed(2)}`,
-                                            `Impact: ${realY.toFixed(2)}`,
-                                            `Criticité: ${criticality.toFixed(1)}/25`
+                                        `${t('tipAvgProbability')} : ${realX.toFixed(2)}`,
+                                            `${t('tipAvgImpact')} : ${realY.toFixed(2)}`,
+                                            `${t('tipAvgCriticality')} : ${formatOutOf5(criticality)}`
                                         ];
                                     }
                                 }
@@ -6508,6 +7016,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             max: 5.5,
                             ticks: {
                                 stepSize: 1,
+                                color: axisColor,
                                 font: { size: 12 },
                                 callback: function(value) {
                                     return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
@@ -6516,7 +7025,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             grid: { display: false },
                             title: {
                                 display: true,
-                                text: 'Probabilité →',
+                                text: t('axisProb'),
+                                color: axisColor,
                                 font: { size: 14, weight: 'bold' }
                             }
                         },
@@ -6525,6 +7035,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             max: 5.5,
                             ticks: {
                                 stepSize: 1,
+                                color: axisColor,
                                 font: { size: 12 },
                                 callback: function(value) {
                                     return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
@@ -6533,7 +7044,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             grid: { display: false },
                             title: {
                                 display: true,
-                                text: '↑ Impact',
+                                text: t('axisImpact'),
+                                color: axisColor,
                                 font: { size: 14, weight: 'bold' }
                             }
                         }
@@ -6541,6 +7053,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 },
                 plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
             });
+        }
+
+        // Les copies et exports sont destinés à Word, PowerPoint, un PDF… : les matrices y sont
+        // redessinées en thème clair le temps de la capture (rendu synchrone, sans animation)
+        function withLightTheme(capture) {
+            const root = document.documentElement;
+            const theme = root.dataset.theme;
+            const charts = Object.values(Chart.instances);
+            root.dataset.theme = 'light';
+            charts.forEach(chart => chart.update('none'));
+            try {
+                return capture();
+            } finally {
+                root.dataset.theme = theme;
+                charts.forEach(chart => chart.update('none'));
+            }
         }
 
         // Compose une image : titre + matrice + légende (numéro → nom), sur fond blanc,
@@ -6568,7 +7096,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             ctx.fillText(title, image.width / 2, padding);
-            ctx.drawImage(chart.canvas, padding, padding + 30 * scale);
+            withLightTheme(() => ctx.drawImage(chart.canvas, padding, padding + 30 * scale));
 
             // Légende : pastille numérotée (comme sur la matrice) + nom
             let y = padding + 30 * scale + chart.canvas.height + 12 * scale;
@@ -6599,7 +7127,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         async function copyMatrixImage(type) {
             const chart = type === 'before' ? chartBefore : chartAfter;
             if (!chart || !chart.width) {
-                showToast('Affichez les matrices pour pouvoir les copier', 'error');
+                showToast(t('showMatricesToCopy'), 'error');
                 return;
             }
             const title = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
@@ -6607,7 +7135,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             try {
                 // La promesse est passée telle quelle : Safari exige l'écriture pendant le clic
                 await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                showToast('✅ Matrice copiée : collez-la où vous voulez');
+                showToast(t('matrixCopied'));
             } catch (error) {
                 console.info('Copie d\'image indisponible, téléchargement du PNG.', error);
                 const link = document.createElement('a');
@@ -6615,7 +7143,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 link.download = `${title}.png`;
                 link.click();
                 URL.revokeObjectURL(link.href);
-                showToast('ℹ️ Copie d\'image impossible ici : image téléchargée');
+                showToast(t('matrixDownloaded'));
             }
         }
 
@@ -6670,28 +7198,37 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Fonction pour changer de langue
         // ========================================
 
+        // Textes statiques (data-i18n : contenu ; data-i18n-title : infobulle et nom accessible),
+        // langue et sens d'écriture du document (l'arabe s'écrit de droite à gauche)
+        function applyTranslations() {
+            document.documentElement.lang = currentLanguage;
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            document.title = t('pageTitle');
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                element.textContent = t(element.dataset.i18n);
+            });
+            document.querySelectorAll('[data-i18n-title]').forEach(element => {
+                element.title = t(element.dataset.i18nTitle);
+                element.setAttribute('aria-label', element.title);
+            });
+            document.querySelectorAll('#language-menu [data-lang]').forEach(item => {
+                const active = item.dataset.lang === currentLanguage;
+                item.classList.toggle('active', active);
+                item.setAttribute('aria-checked', String(active));
+            });
+            updateThemeButton();
+            updateFileSaveUi();
+        }
+
         function setLanguage(lang) {
             currentLanguage = lang;
             riskrStorage.setItem('riskr-language', lang);
-
-            // Mettre à jour le sélecteur
-            document.getElementById('language-selector').value = lang;
-
-            // Mettre à jour tous les éléments avec data-i18n
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                el.textContent = t(key);
-            });
-
-            // Re-render les risques pour mettre à jour les dropdowns traduits
+            applyTranslations();
             renderRisks();
             updateCharts();
-        }
-
-        function initLanguage() {
-            const savedLang = riskrStorage.getItem('riskr-language') || 'fr';
-            currentLanguage = savedLang;
-            document.getElementById('language-selector').value = savedLang;
+            if (document.getElementById('matrix-modal').classList.contains('active')) {
+                openMatrixModal(currentMatrixType);
+            }
         }
 
         let matrixViewMode = 'groups'; // 'groups' ou 'risks'
@@ -6706,27 +7243,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const btnRisks = document.getElementById('view-btn-risks');
             
             if (btnGroups && btnRisks) {
-                if (mode === 'groups') {
-                    btnGroups.classList.add('active');
-                    btnGroups.style.background = 'white';
-                    btnGroups.style.color = '#1d1d1f';
-                    btnGroups.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-                    
-                    btnRisks.classList.remove('active');
-                    btnRisks.style.background = 'transparent';
-                    btnRisks.style.color = '#666';
-                    btnRisks.style.boxShadow = 'none';
-                } else {
-                    btnRisks.classList.add('active');
-                    btnRisks.style.background = 'white';
-                    btnRisks.style.color = '#1d1d1f';
-                    btnRisks.style.boxShadow = '0 1px 2px rgba(0,0,0,0.1)';
-                    
-                    btnGroups.classList.remove('active');
-                    btnGroups.style.background = 'transparent';
-                    btnGroups.style.color = '#666';
-                    btnGroups.style.boxShadow = 'none';
-                }
+                btnGroups.classList.toggle('active', mode === 'groups');
+                btnRisks.classList.toggle('active', mode === 'risks');
             }
             
             updateCharts();
@@ -6745,7 +7263,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         // Initialisation
-        initLanguage(); // Initialiser la langue sauvegardée
+        applyTranslations(); // langue enregistrée (currentLanguage), textes statiques
         initMatrixView(); // Restaurer la vue matricielle sauvegardée
         renderRisks(); // attache aussi l'édition directe
         updateCharts();

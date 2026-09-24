@@ -26,7 +26,8 @@ est le contenu : pour une nouvelle analyse, seul `riskr-data.js` change.
 
 Chaque risque porte **une cotation** avant et après remédiation :
 `assessmentBefore` et `assessmentAfter`, sous la forme `[probabilité, impact]`
-(1 à 5 ; `[0, 0]` = non évalué). La criticité vaut probabilité × impact, sur 25.
+(1 à 5 ; `[0, 0]` = non évalué). La criticité vaut probabilité × impact (sur 25) ;
+elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices.
 
 - `mesures` : liste de mesures `{ texte, porteur, echeance }` (porteur et
   échéance facultatifs ; une simple chaîne de texte est aussi acceptée).
@@ -35,11 +36,11 @@ Chaque risque porte **une cotation** avant et après remédiation :
 - Les numéros (`1.1`, `1.2`…) suivent la position des risques et sont
   recalculés après chaque ajout, suppression ou déplacement.
 - Seuils de criticité par défaut : faible 1-4, modéré 5-9, élevé 10-14,
-  critique 15-25. Ils s'appliquent partout (matrices, badges, tableaux,
-  tableau de bord) et se modifient dans `appState.criticalityThresholds`,
+  critique 15-25. Ils s'appliquent partout (matrices, badges,
+  tableaux) et se modifient dans `appState.criticalityThresholds`,
   par exemple `{ medium: 5, high: 10, critical: 15 }`.
 - La moyenne d'un groupe est la moyenne des criticités de ses risques évalués,
-  sur 25 comme dans le tableau récapitulatif.
+  sur 5 comme dans le tableau récapitulatif.
 - L'import accepte aussi les anciens formats : risques imbriqués dans les
   groupes, anciennes doubles cotations (`assessmentA*`/`assessmentB*`,
   `gcBefore`/`dtuBefore`…), statuts en texte (« En cours »…). Un fichier
@@ -103,7 +104,14 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Design responsive** adapté mobile, tablette et desktop
 - **Sections pliables** pour une navigation optimisée
 - **Édition inline** fluide avec feedbacks visuels
-- **Thème moderne** inspiré du design Apple
+- **Thème clair et thème sombre** : suit le réglage du système, bascule par
+  l'icône soleil/lune (préférence conservée dans le navigateur). Les copies
+  d'image et le PDF restent en version claire
+- **Commandes en icônes** (importer, exporter, enregistrer, langue, thème),
+  libellés en infobulle
+- **5 langues** : français, anglais, espagnol, arabe (de droite à gauche) et
+  chinois. Le PDF utilise l'anglais pour l'arabe et le chinois (polices latines
+  de jsPDF)
 
 ## 🚀 Utilisation
 
