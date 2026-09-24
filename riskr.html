@@ -660,6 +660,255 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         /* Filtres du registre (recherche, listes, appétence, case de matrice) */
+        /* Résumé à droite du titre d'une section repliable */
+        .section-summary {
+            margin-inline-start: auto;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-3);
+        }
+
+        .section-summary .late {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+
+        /* Plan d'actions : trois colonnes (à faire | en cours | faites) */
+        .action-board {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .action-column {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 460px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 10px;
+            background: var(--surface-2);
+        }
+
+        .action-column-title {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-2);
+        }
+
+        .action-card {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .action-card.is-late {
+            border-inline-start: 3px solid #ff3b30;
+        }
+
+        .action-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px 10px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .action-risk {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .action-card.is-late .action-due {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+
+        .action-moves {
+            display: flex;
+            gap: 2px;
+            margin-inline-start: auto;
+        }
+
+        .action-moves button {
+            display: inline-flex;
+            padding: 2px;
+            border: none;
+            border-radius: 4px;
+            background: none;
+            color: var(--text-3);
+            cursor: pointer;
+        }
+
+        .action-moves button:hover {
+            background: var(--surface-2);
+            color: var(--text);
+        }
+
+        [dir="rtl"] .action-moves svg {
+            transform: scaleX(-1);
+        }
+
+        .action-empty {
+            padding: 12px 0;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        @media (max-width: 900px) {
+            .action-board {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Revues : liste des revues figées | graphique d'exposition et comparaison */
+        .reviews-layout {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 16px;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 8px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .review-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .review-item:hover,
+        .review-item.active {
+            background: var(--surface-2);
+        }
+
+        .review-item.active {
+            border-color: var(--accent);
+        }
+
+        .review-info {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .editable-review-label {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .review-meta,
+        .review-empty {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .reviews-chart {
+            position: relative;
+            height: 220px;
+        }
+
+        .review-diff h4 {
+            margin: 12px 0 8px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .diff-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .diff-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .diff-chip b {
+            color: var(--text);
+        }
+
+        .diff-down {
+            color: #34c759;
+        }
+
+        .diff-up {
+            color: #ff3b30;
+        }
+
+        .diff-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 10px 0 0;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .diff-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .diff-title {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text);
+        }
+
+        /* Tendance du tableau récapitulatif (masquée tant qu'aucune revue n'existe) */
+        .risk-table.no-reviews .trend-col {
+            display: none;
+        }
+
+        .trend-line polyline {
+            fill: none;
+            stroke: var(--text-3);
+            stroke-width: 1.5;
+            stroke-linejoin: round;
+        }
+
+        @media (max-width: 900px) {
+            .reviews-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .risk-filters {
             display: flex;
             flex-wrap: wrap;
@@ -1074,10 +1323,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             margin-inline-start: 4px;
         }
 
-        /* Mesures : une ligne par mesure (texte | porteur | échéance | suppression) */
+        /* Mesures : une ligne par mesure (texte | porteur | échéance | état | suppression) */
         .mesures-list {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 180px 160px 36px;
+            grid-template-columns: minmax(0, 1fr) 170px 130px 130px 36px;
             gap: 4px 12px;
             align-items: center;
             font-size: 14px;
@@ -1097,7 +1346,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-mesure,
-        .editable-group-note {
+        .editable-group-note,
+        .editable-review-label {
             cursor: text;
             border-radius: 4px;
             padding: 3px 6px;
@@ -1105,18 +1355,36 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-mesure:hover,
-        .editable-group-note:hover {
+        .editable-group-note:hover,
+        .editable-review-label:hover {
             background: rgba(0, 113, 227, 0.05);
             outline: 1px dashed rgba(0, 113, 227, 0.3);
         }
 
         .editable-mesure:focus,
-        .editable-group-note:focus {
+        .editable-group-note:focus,
+        .editable-review-label:focus {
             outline: 2px solid var(--accent);
             background: var(--surface);
         }
 
-        .mesure-delete {
+        .risks-table .mesure-row .plan-select {
+            min-width: 0;
+        }
+
+        /* Mesure faite : texte barré ; échéance dépassée : en rouge */
+        .mesure-row.is-done .editable-mesure[data-field="texte"] {
+            text-decoration: line-through;
+            color: var(--text-3);
+        }
+
+        .mesure-row.is-late .editable-mesure[data-field="echeance"] {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+
+        .mesure-delete,
+        .review-delete {
             background: none;
             border: none;
             cursor: pointer;
@@ -1124,11 +1392,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-size: 14px;
         }
 
-        .mesure-delete:hover {
+        .mesure-delete:hover,
+        .review-delete:hover {
             opacity: 1;
         }
 
-        .mesure-add {
+        .mesure-add,
+        .review-freeze {
             grid-column: 1 / -1;
             justify-self: start;
             background: none;
@@ -3141,11 +3411,45 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <th data-i18n="colDescription">Description du Risque</th>
                                 <th data-i18n="colAvgBefore">Criticité avant (/5)</th>
                                 <th data-i18n="colAvgAfter">Criticité après (/5)</th>
+                                <th class="trend-col" data-i18n="colTrend">Tendance</th>
                             </tr>
                         </thead>
                         <tbody id="risk-table-body">
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan d'actions : les mesures de tous les risques, par état -->
+        <div class="risk-table-container collapsible-section">
+            <h3 class="collapsible-header" onclick="toggleCollapse('action-plan-content')">
+                <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+                <span data-i18n="actionPlanTitle">Plan d’actions</span>
+                <span id="action-plan-summary" class="section-summary"></span>
+            </h3>
+            <div id="action-plan-content" class="collapsible-content">
+                <div id="action-board" class="action-board"></div>
+            </div>
+        </div>
+
+        <!-- Revues : photos datées des cotations, comparées à l'état actuel -->
+        <div class="risk-table-container collapsible-section">
+            <h3 class="collapsible-header" onclick="toggleCollapse('reviews-content')">
+                <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+                <span data-i18n="reviewsTitle">Revues</span>
+                <span id="reviews-summary" class="section-summary"></span>
+            </h3>
+            <div id="reviews-content" class="collapsible-content">
+                <div class="reviews-layout">
+                    <div>
+                        <button type="button" class="review-freeze" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> <span data-i18n="reviewFreeze">Figer une revue</span></button>
+                        <ul id="review-list" class="review-list"></ul>
+                    </div>
+                    <div>
+                        <div class="reviews-chart"><canvas id="chartReviews"></canvas></div>
+                        <div id="review-diff" class="review-diff"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3523,35 +3827,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Restaurer l'état des sections au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
-            // Restaurer l'état du tableau récapitulatif
-            const riskRecapTable = document.getElementById('risk-recap-table');
-            const isCollapsedRecap = riskrStorage.getItem('collapse-risk-recap-table') === 'true';
-
-            if (isCollapsedRecap && riskRecapTable) {
-                const header = riskRecapTable.previousElementSibling;
-                header.classList.add('collapsed');
-                riskRecapTable.classList.add('collapsed');
-            }
-
-            // Restaurer l'état des matrices
-            const matricesContent = document.getElementById('matrices-content');
-            const isCollapsedMatrices = riskrStorage.getItem('collapse-matrices-content') === 'true';
-
-            if (isCollapsedMatrices && matricesContent) {
-                const header = matricesContent.previousElementSibling;
-                header.classList.add('collapsed');
-                matricesContent.classList.add('collapsed');
-            }
-
-            // Restaurer l'état de la section sticky complète
-            const stickySectionContent = document.getElementById('sticky-section-content');
-            const isCollapsedSticky = riskrStorage.getItem('collapse-sticky-section-content') === 'true';
-
-            if (isCollapsedSticky && stickySectionContent) {
-                const header = stickySectionContent.previousElementSibling;
-                header.classList.add('collapsed');
-                stickySectionContent.classList.add('collapsed');
-            }
+            ['risk-recap-table', 'matrices-content', 'sticky-section-content', 'action-plan-content', 'reviews-content'].forEach(id => {
+                const content = document.getElementById(id);
+                if (content && riskrStorage.getItem(`collapse-${id}`) === 'true') {
+                    content.previousElementSibling.classList.add('collapsed');
+                    content.classList.add('collapsed');
+                }
+            });
         });
 
         // ========================================
@@ -3610,7 +3892,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const index = Number(element.dataset.index);
                 const field = element.dataset.field;
                 makeInlineEditable(element, value => {
-                    findRiskOf(element).mesures[index][field] = value;
+                    const mesure = findRiskOf(element).mesures[index];
+                    mesure[field] = value;
+                    refreshMesureRow(element.parentElement, mesure);
                     commitChange();
                     showToast(t('changeSaved'));
                 }, {
@@ -3628,8 +3912,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
         }
 
+        // Classes d'une ligne de mesure : faite, en retard
+        const mesureRowClasses = mesure =>
+            (mesure.etat === 'done' ? ' is-done' : '') + (isMesureLate(mesure) ? ' is-late' : '');
+
+        function refreshMesureRow(row, mesure) {
+            row.classList.toggle('is-done', mesure.etat === 'done');
+            row.classList.toggle('is-late', isMesureLate(mesure));
+            row.querySelector('[data-field="echeance"]').title = isMesureLate(mesure) ? t('mesureLate') : '';
+        }
+
         function addMesure(risk) {
-            risk.mesures.push({ texte: '', porteur: '', echeance: '' });
+            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo' });
             renderRisks();
             // Ouvre directement la saisie du texte de la nouvelle mesure
             document.querySelector(`.editable-mesure[data-risk-id="${risk.id}"][data-index="${risk.mesures.length - 1}"][data-field="texte"]`).click();
@@ -3680,6 +3974,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     if (!risk) return;
                     if (select.dataset.field === 'traitement') {
                         risk.traitement = select.value;
+                    } else if (select.dataset.field === 'etat') {
+                        const mesure = risk.mesures[Number(select.dataset.index)];
+                        mesure.etat = select.value;
+                        refreshMesureRow(select.parentElement, mesure);
                     } else {
                         risk.assessmentTarget[Number(select.dataset.axis)] = parseInt(select.value, 10) || 0;
                         select.parentElement.querySelector('.target-badge').innerHTML =
@@ -4361,7 +4659,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "Case P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} risques",
                 filterClear: "Effacer les filtres",
-                filterNoMatch: "Aucun risque ne correspond aux filtres"
+                filterNoMatch: "Aucun risque ne correspond aux filtres",
+                mesureState: "État",
+                stateTodo: "À faire",
+                stateDoing: "En cours",
+                stateDone: "Faite",
+                mesureLate: "En retard",
+                actionPlanTitle: "Plan d’actions",
+                actionSummary: "{total} mesures · {done} faites · {doing} en cours · {todo} à faire",
+                actionLateCount: "{count} en retard",
+                actionEmpty: "Aucune mesure",
+                movePrev: "Étape précédente",
+                moveNext: "Étape suivante",
+                reviewsTitle: "Revues",
+                reviewFreeze: "Figer une revue",
+                reviewFreezeHint: "Enregistre une photo datée des cotations de tous les risques",
+                reviewLabel: "Revue n°{n}",
+                reviewSaved: "Revue enregistrée",
+                reviewDelete: "Supprimer cette revue",
+                confirmDeleteReview: "Supprimer la revue « {name} » ?",
+                reviewNone: "Aucune revue pour l’instant : figez-en une pour garder une trace de l’état actuel.",
+                reviewCurrent: "État actuel",
+                reviewCompare: "Comparer",
+                reviewRisks: "{count} risques",
+                diffDown: "En baisse",
+                diffUp: "En hausse",
+                diffSame: "Stables",
+                diffNew: "Nouveaux",
+                diffClosed: "Clos",
+                diffNoChange: "Aucun changement de cotation",
+                reviewExposure: "Exposition moyenne après remédiation (/5)",
+                colTrend: "Tendance",
+                trendTitle: "Criticité après remédiation, revue par revue"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4543,7 +4872,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "Cell P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} risks",
                 filterClear: "Clear filters",
-                filterNoMatch: "No risk matches the filters"
+                filterNoMatch: "No risk matches the filters",
+                mesureState: "Status",
+                stateTodo: "To do",
+                stateDoing: "In progress",
+                stateDone: "Done",
+                mesureLate: "Overdue",
+                actionPlanTitle: "Action plan",
+                actionSummary: "{total} measures · {done} done · {doing} in progress · {todo} to do",
+                actionLateCount: "{count} overdue",
+                actionEmpty: "No measure",
+                movePrev: "Previous step",
+                moveNext: "Next step",
+                reviewsTitle: "Reviews",
+                reviewFreeze: "Record a review",
+                reviewFreezeHint: "Saves a dated snapshot of all risk ratings",
+                reviewLabel: "Review #{n}",
+                reviewSaved: "Review recorded",
+                reviewDelete: "Delete this review",
+                confirmDeleteReview: "Delete the review \"{name}\"?",
+                reviewNone: "No review yet: record one to keep track of the current state.",
+                reviewCurrent: "Current state",
+                reviewCompare: "Compare",
+                reviewRisks: "{count} risks",
+                diffDown: "Down",
+                diffUp: "Up",
+                diffSame: "Stable",
+                diffNew: "New",
+                diffClosed: "Closed",
+                diffNoChange: "No rating change",
+                reviewExposure: "Average exposure after remediation (/5)",
+                colTrend: "Trend",
+                trendTitle: "Criticality after remediation, review by review"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -4725,7 +5085,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "Casilla P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} riesgos",
                 filterClear: "Borrar los filtros",
-                filterNoMatch: "Ningún riesgo coincide con los filtros"
+                filterNoMatch: "Ningún riesgo coincide con los filtros",
+                mesureState: "Estado",
+                stateTodo: "Por hacer",
+                stateDoing: "En curso",
+                stateDone: "Hecha",
+                mesureLate: "Retrasada",
+                actionPlanTitle: "Plan de acción",
+                actionSummary: "{total} medidas · {done} hechas · {doing} en curso · {todo} por hacer",
+                actionLateCount: "{count} retrasadas",
+                actionEmpty: "Ninguna medida",
+                movePrev: "Paso anterior",
+                moveNext: "Paso siguiente",
+                reviewsTitle: "Revisiones",
+                reviewFreeze: "Registrar una revisión",
+                reviewFreezeHint: "Guarda una instantánea fechada de las calificaciones de todos los riesgos",
+                reviewLabel: "Revisión n.º {n}",
+                reviewSaved: "Revisión registrada",
+                reviewDelete: "Eliminar esta revisión",
+                confirmDeleteReview: "¿Eliminar la revisión «{name}»?",
+                reviewNone: "Aún no hay revisiones: registre una para conservar el estado actual.",
+                reviewCurrent: "Estado actual",
+                reviewCompare: "Comparar",
+                reviewRisks: "{count} riesgos",
+                diffDown: "A la baja",
+                diffUp: "Al alza",
+                diffSame: "Estables",
+                diffNew: "Nuevos",
+                diffClosed: "Cerrados",
+                diffNoChange: "Ningún cambio de calificación",
+                reviewExposure: "Exposición media tras la remediación (/5)",
+                colTrend: "Tendencia",
+                trendTitle: "Criticidad tras la remediación, revisión a revisión"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -4907,7 +5298,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "格 P{p} × I{i}（{phase}）",
                 filterCount: "{shown} / {total} 个风险",
                 filterClear: "清除筛选",
-                filterNoMatch: "没有符合筛选条件的风险"
+                filterNoMatch: "没有符合筛选条件的风险",
+                mesureState: "状态",
+                stateTodo: "待办",
+                stateDoing: "进行中",
+                stateDone: "已完成",
+                mesureLate: "已逾期",
+                actionPlanTitle: "行动计划",
+                actionSummary: "{total} 项措施 · {done} 已完成 · {doing} 进行中 · {todo} 待办",
+                actionLateCount: "{count} 项逾期",
+                actionEmpty: "暂无措施",
+                movePrev: "上一步",
+                moveNext: "下一步",
+                reviewsTitle: "评审",
+                reviewFreeze: "记录一次评审",
+                reviewFreezeHint: "保存所有风险评级的带日期快照",
+                reviewLabel: "第 {n} 次评审",
+                reviewSaved: "评审已记录",
+                reviewDelete: "删除此评审",
+                confirmDeleteReview: "删除评审“{name}”？",
+                reviewNone: "暂无评审：记录一次以保存当前状态。",
+                reviewCurrent: "当前状态",
+                reviewCompare: "比较",
+                reviewRisks: "{count} 个风险",
+                diffDown: "下降",
+                diffUp: "上升",
+                diffSame: "持平",
+                diffNew: "新增",
+                diffClosed: "已关闭",
+                diffNoChange: "评级无变化",
+                reviewExposure: "处理后平均暴露（/5）",
+                colTrend: "趋势",
+                trendTitle: "各次评审的处理后严重度"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -5089,7 +5511,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "الخانة P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} مخاطر",
                 filterClear: "مسح عوامل التصفية",
-                filterNoMatch: "لا يوجد خطر مطابق لعوامل التصفية"
+                filterNoMatch: "لا يوجد خطر مطابق لعوامل التصفية",
+                mesureState: "الحالة",
+                stateTodo: "للتنفيذ",
+                stateDoing: "قيد التنفيذ",
+                stateDone: "منجز",
+                mesureLate: "متأخر",
+                actionPlanTitle: "خطة العمل",
+                actionSummary: "{total} إجراءات · {done} منجزة · {doing} قيد التنفيذ · {todo} للتنفيذ",
+                actionLateCount: "{count} متأخرة",
+                actionEmpty: "لا توجد إجراءات",
+                movePrev: "الخطوة السابقة",
+                moveNext: "الخطوة التالية",
+                reviewsTitle: "المراجعات",
+                reviewFreeze: "تسجيل مراجعة",
+                reviewFreezeHint: "يحفظ لقطة مؤرخة لتقييمات جميع المخاطر",
+                reviewLabel: "المراجعة رقم {n}",
+                reviewSaved: "تم تسجيل المراجعة",
+                reviewDelete: "حذف هذه المراجعة",
+                confirmDeleteReview: "حذف المراجعة «{name}»؟",
+                reviewNone: "لا توجد مراجعات بعد: سجّل واحدة للاحتفاظ بالحالة الحالية.",
+                reviewCurrent: "الحالة الحالية",
+                reviewCompare: "مقارنة",
+                reviewRisks: "{count} مخاطر",
+                diffDown: "في انخفاض",
+                diffUp: "في ارتفاع",
+                diffSame: "مستقرة",
+                diffNew: "جديدة",
+                diffClosed: "مغلقة",
+                diffNoChange: "لا يوجد تغيير في التقييم",
+                reviewExposure: "متوسط التعرض بعد المعالجة (/5)",
+                colTrend: "الاتجاه",
+                trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى"
             }
         };
 
@@ -5366,19 +5819,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return candidates.map(toAssessment).find(a => a[0] > 0 && a[1] > 0) || [0, 0];
         }
 
-        // Une mesure : texte + porteur + échéance facultative (anciennement une simple chaîne)
+        // Une mesure : texte + porteur + échéance facultative + état (anciennement une simple chaîne)
+        const MESURE_STATES = { todo: 'stateTodo', doing: 'stateDoing', done: 'stateDone' };
         function normalizeMesure(raw) {
             const mesure = typeof raw === 'string' ? { texte: raw } : (raw || {});
             return {
                 texte: String(mesure.texte || ''),
                 porteur: String(mesure.porteur || ''),
-                echeance: String(mesure.echeance || '')
+                echeance: String(mesure.echeance || ''),
+                etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo'
             };
         }
 
+        // Échéance saisie librement : date reconnue (AAAA-MM-JJ ou JJ/MM/AAAA), sinon null
+        function mesureDueDate(text) {
+            const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text.trim());
+            const fr = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(text.trim());
+            const [year, month, day] = iso ? [iso[1], iso[2], iso[3]] : fr ? [fr[3], fr[2], fr[1]] : [];
+            return year ? new Date(Number(year), Number(month) - 1, Number(day)) : null;
+        }
+
+        // En retard : mesure non faite dont l'échéance est passée (la veille ou avant)
+        function isMesureLate(mesure) {
+            const due = mesureDueDate(mesure.echeance);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return mesure.etat !== 'done' && due !== null && due < today;
+        }
+
+        // Identifiant interne stable d'un risque (les numéros changent à chaque déplacement)
+        const newUid = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+
         // Texte d'une mesure pour les exports : « texte (porteur, échéance) »
         function formatMesure(mesure) {
-            const details = [mesure.porteur, mesure.echeance].filter(Boolean).join(', ');
+            const state = mesure.etat === 'todo' ? '' : t(MESURE_STATES[mesure.etat]);
+            const details = [mesure.porteur, mesure.echeance, state].filter(Boolean).join(', ');
             return details ? `${mesure.texte} (${details})` : mesure.texte;
         }
 
@@ -5389,6 +5864,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (!SAFE_ID.test(id)) throw new Error(t('invalidRiskId', { id }));
             const risk = Object.assign({}, raw, {
                 id,
+                uid: typeof raw.uid === 'string' && raw.uid ? raw.uid : newUid(),
                 title: String(raw.title || ''),
                 assessmentBefore: firstEvaluated(raw.assessmentBefore, raw.assessmentBBefore,
                     raw.gcBefore, raw.assessmentABefore, raw.dtuBefore),
@@ -5442,7 +5918,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (groupedRisks.length < riskById.size) {
                 console.warn(`[Riskr] ${riskById.size - groupedRisks.length} risque(s) sans groupe ignoré(s)`);
             }
-            return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings) };
+            return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings),
+                reviews: normalizeReviews(data.reviews) };
+        }
+
+        // Revues figées : photo datée des cotations, repérées par l'identifiant stable du risque
+        function normalizeReviews(raw) {
+            return (Array.isArray(raw) ? raw : []).filter(review => review && Array.isArray(review.risks)).map(review => ({
+                id: String(review.id || newUid()),
+                date: String(review.date || ''),
+                label: String(review.label || ''),
+                risks: review.risks.filter(r => r && r.uid).map(r => ({
+                    uid: String(r.uid), id: String(r.id || ''), title: String(r.title || ''),
+                    before: toAssessment(r.before), after: toAssessment(r.after)
+                }))
+            }));
         }
 
         // Réglages de l'analyse, enregistrés avec le modèle (historique, navigateur, fichier).
@@ -5464,6 +5954,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             riskGroups.length = 0;
             riskGroups.push(...model.riskGroups);
             Object.assign(settings, model.settings);
+            reviews.length = 0;
+            reviews.push(...model.reviews);
         }
 
         // Copie sérialisable au format canonique (risks[] + riskGroups[].riskIds)
@@ -5471,6 +5963,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return JSON.parse(JSON.stringify({
                 risks,
                 settings,
+                reviews,
                 riskGroups: riskGroups.map(({ risks: groupRisks, ...group }) =>
                     Object.assign(group, { riskIds: groupRisks.map(r => r.id) }))
             }));
@@ -5512,6 +6005,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // À appeler APRÈS chaque modification du modèle
         function commitChange() {
             renumber();
+            renderActionPlan();
             saveState();
             persistModel();
             scheduleFileSave();
@@ -5739,6 +6233,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const risks = [];
         const riskGroups = [];
         const settings = {};
+        const reviews = [];
         if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
             applyModel(buildModel(window.RISKR_DATA));
             // Le script est en fin de page : le titre existe déjà dans le DOM
@@ -5777,6 +6272,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Champs d'un risque vierge (non évalué)
         function emptyAssessments() {
             return {
+                uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
                 mesures: [], statut: 'statusNotTreated', responsable: '', traitement: ''
             };
@@ -6226,13 +6722,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                         <span>${t('colRemediations')}</span>
                                         <span>${t('mesureOwner')}</span>
                                         <span>${t('mesureDueDate')}</span>
+                                        <span>${t('mesureState')}</span>
                                         <span></span>
                                     </div>
                                     ${risk.mesures.map((mesure, mesureIndex) => `
-                                    <div class="mesure-row">
+                                    <div class="mesure-row${mesureRowClasses(mesure)}">
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="texte" data-placeholder="${t('mesureTextPlaceholder')}">${escapeHtml(mesure.texte)}</span>
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="porteur" data-placeholder="—">${escapeHtml(mesure.porteur)}</span>
-                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="echeance" data-placeholder="—">${escapeHtml(mesure.echeance)}</span>
+                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="echeance" data-placeholder="—" title="${isMesureLate(mesure) ? t('mesureLate') : ''}">${escapeHtml(mesure.echeance)}</span>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="etat" aria-label="${t('mesureState')}">
+                                            ${Object.entries(MESURE_STATES).map(([key, label]) => `<option value="${key}" ${key === mesure.etat ? 'selected' : ''}>${t(label)}</option>`).join('')}
+                                        </select>
                                         <button class="mesure-delete" data-risk-id="${risk.id}" data-index="${mesureIndex}" title="${t('mesureDelete')}">${icon('trash')}</button>
                                     </div>`).join('')}
                                     <button class="mesure-add" data-risk-id="${risk.id}">${icon('plus')} ${t('mesureAdd')}</button>
@@ -6315,6 +6815,211 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             initResponsableEditing();
             fillFilterOptions();
             applyFilters();
+            renderActionPlan();
+        }
+
+        // ========================================
+        // Revues : photos datées des cotations, comparées à l'état actuel
+        // ========================================
+
+        let compareReviewId = null; // revue comparée à l'état actuel (par défaut : la dernière)
+        let chartReviews = null;
+
+        // Criticité après remédiation (P × I sur 25), null si non évaluée
+        const residualScore = assessment => assessment[0] * assessment[1] || null;
+
+        // Exposition moyenne /5 des risques évalués, null si aucun
+        function meanExposure(assessments) {
+            const scores = assessments.map(residualScore).filter(score => score !== null);
+            return scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length / 5 : null;
+        }
+
+        const formatReviewDate = date => {
+            const parsed = mesureDueDate(date);
+            return parsed ? parsed.toLocaleDateString(currentLanguage) : date;
+        };
+
+        function freezeReview() {
+            const today = new Date();
+            const review = {
+                id: newUid(),
+                date: [today.getFullYear(), today.getMonth() + 1, today.getDate()].map(n => String(n).padStart(2, '0')).join('-'),
+                label: t('reviewLabel', { n: reviews.length + 1 }),
+                risks: risks.map(risk => ({ uid: risk.uid, id: risk.id, title: risk.title,
+                    before: [...risk.assessmentBefore], after: [...risk.assessmentAfter] }))
+            };
+            reviews.push(review);
+            compareReviewId = review.id;
+            commitChange();
+            renderReviews();
+            updateRiskTable();
+            showToast(t('reviewSaved'));
+        }
+
+        function deleteReview(id) {
+            const index = reviews.findIndex(review => review.id === id);
+            if (index < 0 || !confirm(t('confirmDeleteReview', { name: reviews[index].label }))) return;
+            reviews.splice(index, 1);
+            commitChange();
+            renderReviews();
+            updateRiskTable();
+        }
+
+        function renderReviews() {
+            const list = document.getElementById('review-list');
+            if (!list) return;
+            const compared = reviews.find(review => review.id === compareReviewId) || reviews[reviews.length - 1];
+            const last = reviews[reviews.length - 1];
+            document.getElementById('reviews-summary').textContent = last ? `${last.label} · ${formatReviewDate(last.date)}` : '';
+
+            list.innerHTML = reviews.map(review => {
+                const exposure = meanExposure(review.risks.map(r => r.after));
+                return `<li class="review-item${review === compared ? ' active' : ''}" data-review-id="${escapeHtml(review.id)}" title="${t('reviewCompare')}">
+                    <div class="review-info">
+                        <span class="editable-review-label" data-review-id="${escapeHtml(review.id)}">${escapeHtml(review.label)}</span>
+                        <span class="review-meta">${escapeHtml(formatReviewDate(review.date))} · ${t('reviewRisks', { count: review.risks.length })}${exposure === null ? '' : ` · ${exposure.toFixed(1)}/5`}</span>
+                    </div>
+                    <button type="button" class="review-delete" data-review-id="${escapeHtml(review.id)}" title="${t('reviewDelete')}" aria-label="${t('reviewDelete')}">${icon('trash')}</button>
+                </li>`;
+            }).join('') || `<li class="review-empty">${t('reviewNone')}</li>`;
+            list.querySelectorAll('.review-item').forEach(item => {
+                item.onclick = () => { compareReviewId = item.dataset.reviewId; renderReviews(); };
+            });
+            list.querySelectorAll('.review-delete').forEach(button => {
+                button.onclick = event => { event.stopPropagation(); deleteReview(button.dataset.reviewId); };
+            });
+            list.querySelectorAll('.editable-review-label').forEach(element =>
+                makeInlineEditable(element, value => {
+                    reviews.find(review => review.id === element.dataset.reviewId).label = value;
+                    commitChange();
+                    renderReviews();
+                }, { required: true }));
+
+            renderReviewChart();
+            document.getElementById('review-diff').innerHTML = compared ? reviewDiffHtml(compared) : '';
+        }
+
+        // Exposition moyenne /5 par revue, puis l'état actuel
+        function renderReviewChart() {
+            if (chartReviews) chartReviews.destroy();
+            chartReviews = null;
+            const canvas = document.getElementById('chartReviews');
+            canvas.parentElement.hidden = reviews.length === 0;
+            if (!reviews.length) return;
+            const values = [...reviews.map(review => meanExposure(review.risks.map(r => r.after))),
+                meanExposure(risks.map(risk => risk.assessmentAfter))];
+            chartReviews = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: [...reviews.map(review => review.label), t('reviewCurrent')],
+                    datasets: [{
+                        data: values,
+                        backgroundColor: values.map(value => value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]),
+                        borderColor: values.map((value, index) => index === values.length - 1 ? BUBBLE_COLOR : 'transparent'),
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        maxBarThickness: 56
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: t('reviewExposure'), color: axisColor },
+                        tooltip: { callbacks: { label: context => `${context.raw.toFixed(2)}/5` } }
+                    },
+                    scales: {
+                        x: { ticks: { color: axisColor }, grid: { display: false } },
+                        y: { min: 0, max: 5, ticks: { color: axisColor, stepSize: 1 }, grid: { color: () => themeColor('--border') } }
+                    }
+                }
+            });
+        }
+
+        // Comparaison revue → état actuel, par identifiant stable. Complexité : O(n)
+        function reviewDiffHtml(review) {
+            const previous = new Map(review.risks.map(r => [r.uid, r]));
+            const currentUids = new Set(risks.map(risk => risk.uid));
+            const counts = { down: 0, up: 0, same: 0, new: 0, closed: 0 };
+            const changes = [];
+            risks.forEach(risk => {
+                const old = previous.get(risk.uid);
+                const now = residualScore(risk.assessmentAfter) || 0;
+                const then = old ? residualScore(old.after) || 0 : 0;
+                const kind = !old ? 'new' : now < then ? 'down' : now > then ? 'up' : 'same';
+                counts[kind]++;
+                if (kind !== 'same') changes.push({ kind, id: risk.id, title: risk.title, from: old ? old.after : null, to: risk.assessmentAfter });
+            });
+            review.risks.filter(r => !currentUids.has(r.uid)).forEach(r => {
+                counts.closed++;
+                changes.push({ kind: 'closed', id: r.id, title: r.title, from: r.after, to: null });
+            });
+            const KINDS = { down: ['diffDown', 'trendDown'], up: ['diffUp', 'trendUp'], same: ['diffSame', 'minus'], new: ['diffNew', 'plus'], closed: ['diffClosed', 'check'] };
+            const badge = assessment => assessment ? getCriticalityBadge(...assessment) : '—';
+            return `<h4>${t('reviewCompare')} : ${escapeHtml(review.label)} → ${t('reviewCurrent')}</h4>
+                <div class="diff-chips">${Object.entries(KINDS).map(([kind, [label, iconName]]) =>
+                    `<span class="diff-chip"><span class="diff-${kind}">${icon(iconName)}</span><b>${counts[kind]}</b> ${t(label)}</span>`).join('')}</div>
+                ${changes.length ? `<ul class="diff-list">${changes.map(change => `<li>
+                    <span class="diff-${change.kind}" title="${t(KINDS[change.kind][0])}">${icon(KINDS[change.kind][1])}</span>
+                    <b>${escapeHtml(change.id)}</b><span class="diff-title">${escapeHtml(change.title)}</span>
+                    ${badge(change.from)} → ${badge(change.to)}</li>`).join('')}</ul>`
+                    : `<p class="review-empty">${t('diffNoChange')}</p>`}`;
+        }
+
+        // ========================================
+        // Plan d'actions : les mesures de tous les risques, par état
+        // ========================================
+
+        const MESURE_STATE_ORDER = Object.keys(MESURE_STATES);
+
+        // Complexité : O(m log m), m = nombre de mesures (retards d'abord, puis échéance la plus proche)
+        function renderActionPlan() {
+            const board = document.getElementById('action-board');
+            if (!board) return;
+            const items = risks.flatMap(risk => risk.mesures.map((mesure, index) => {
+                const due = mesureDueDate(mesure.echeance);
+                return { risk, mesure, index, late: isMesureLate(mesure), dueKey: due ? due.getTime() : Number.MAX_SAFE_INTEGER };
+            })).filter(item => item.mesure.texte);
+            items.sort((a, b) => (b.late - a.late) || (a.dueKey - b.dueKey));
+
+            const counts = { todo: 0, doing: 0, done: 0 };
+            items.forEach(item => counts[item.mesure.etat]++);
+            const late = items.filter(item => item.late).length;
+            document.getElementById('action-plan-summary').innerHTML = escapeHtml(t('actionSummary', { total: items.length, ...counts }))
+                + (late ? ` · <span class="late">${escapeHtml(t('actionLateCount', { count: late }))}</span>` : '');
+
+            const moveButton = (item, state, label, iconName) =>
+                `<button type="button" data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}" data-state="${state}" title="${t(label)}" aria-label="${t(label)}">${icon(iconName)}</button>`;
+            board.innerHTML = MESURE_STATE_ORDER.map((state, column) => {
+                const cards = items.filter(item => item.mesure.etat === state);
+                return `<section class="action-column">
+                    <h4 class="action-column-title"><span>${t(MESURE_STATES[state])}</span><span>${cards.length}</span></h4>
+                    ${cards.map(item => `
+                    <article class="action-card${item.late ? ' is-late' : ''}">
+                        <div>${escapeHtml(item.mesure.texte)}</div>
+                        <div class="action-card-meta">
+                            <span class="action-risk" title="${escapeHtml(item.risk.title)}">${escapeHtml(item.risk.id)}</span>
+                            ${item.mesure.porteur ? `<span>${escapeHtml(item.mesure.porteur)}</span>` : ''}
+                            ${item.mesure.echeance ? `<span class="action-due"${item.late ? ` title="${t('mesureLate')}"` : ''}>${escapeHtml(item.mesure.echeance)}</span>` : ''}
+                            <span class="action-moves">
+                                ${column > 0 ? moveButton(item, MESURE_STATE_ORDER[column - 1], 'movePrev', 'left') : ''}
+                                ${column < MESURE_STATE_ORDER.length - 1 ? moveButton(item, MESURE_STATE_ORDER[column + 1], 'moveNext', 'right') : ''}
+                            </span>
+                        </div>
+                    </article>`).join('') || `<p class="action-empty">${t('actionEmpty')}</p>`}
+                </section>`;
+            }).join('');
+
+            board.onclick = event => {
+                const button = event.target.closest('button[data-state]');
+                if (!button) return;
+                findRiskOf(button).mesures[Number(button.dataset.index)].etat = button.dataset.state;
+                commitChange();
+                renderRisks();
+                showToast(t('changeSaved'));
+            };
         }
 
         // ========================================
@@ -6852,6 +7557,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function updateRiskTable() {
             const tableBody = document.getElementById('risk-table-body');
             tableBody.innerHTML = '';
+            tableBody.parentElement.classList.toggle('no-reviews', reviews.length === 0);
+            // Complexité : O(R × n), R = nombre de revues (un index par revue, construit une fois)
+            const reviewScores = reviews.map(review => new Map(review.risks.map(r => [r.uid, residualScore(r.after)])));
             
             riskGroups.forEach(group => {
                 group.risks.forEach(currentRisk => {
@@ -6879,6 +7587,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 ${formatOutOf5(avgCritAfter)} <span class="criticality-detail">(P ${avgProbAfter} × I ${avgImpactAfter})</span>
                             </span>
                         </td>
+                        <td class="trend-col">${trendSparkline([...reviewScores.map(scores => scores.get(currentRisk.uid) ?? null),
+                            residualScore(currentRisk.assessmentAfter)])}</td>
                     `;
                     
                     tableBody.appendChild(row);
@@ -6886,6 +7596,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
         }
         
+        // Mini-courbe de la criticité après remédiation : une valeur par revue, puis l'état actuel
+        function trendSparkline(values) {
+            const points = values
+                .map((value, index) => value === null ? null : { value, x: 2 + index * 80 / Math.max(values.length - 1, 1), y: 22 - value / 25 * 20 })
+                .filter(Boolean);
+            if (points.length < 2) return '';
+            const last = points[points.length - 1];
+            const title = `${t('trendTitle')} : ${points.map(point => formatOutOf5(point.value)).join(' → ')}`;
+            return `<svg class="trend-line" viewBox="0 0 84 24" width="84" height="24" role="img" aria-label="${escapeHtml(title)}"><title>${escapeHtml(title)}</title>
+                <polyline points="${points.map(point => `${point.x},${point.y}`).join(' ')}"/>
+                <circle cx="${last.x}" cy="${last.y}" r="3.5" fill="${CRITICALITY_COLORS[getCriticalityLevel(last.value)]}"/></svg>`;
+        }
+
         // Ajouter un tableau pour les moyennes des groupes
         // Criticité moyenne d'un groupe = moyenne des criticités (P × I, sur 25) de ses
         // risques évalués ; null si aucun. Même échelle que le tableau récapitulatif.
@@ -7418,6 +8141,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             renderMatrixMenu();
             [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
             chartBefore = chartAfter = chartTrajectory = null;
+            renderReviews();
 
             if (matrixLayout === 'trajectory') {
                 const { datasets, bubble } = matrixChartData('trajectory');

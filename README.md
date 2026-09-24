@@ -29,8 +29,14 @@ Chaque risque porte **une cotation** avant et après remédiation :
 (1 à 5 ; `[0, 0]` = non évalué). La criticité vaut probabilité × impact (sur 25) ;
 elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices.
 
-- `mesures` : liste de mesures `{ texte, porteur, echeance }` (porteur et
-  échéance facultatifs ; une simple chaîne de texte est aussi acceptée).
+- `mesures` : liste de mesures `{ texte, porteur, echeance, etat }` (porteur et
+  échéance facultatifs ; `etat` vaut `todo`, `doing` ou `done` ; une simple chaîne
+  de texte est aussi acceptée). Une échéance au format `AAAA-MM-JJ` ou
+  `JJ/MM/AAAA` passée sur une mesure non faite la signale en retard.
+- `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
+  permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
+- `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
+  before, after }] }`, photos datées des cotations servant aux comparaisons.
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
   `statusAccepted`.
 - `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid` ou `''`
@@ -74,7 +80,14 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Ajout/suppression** de risques et de groupes de risques
 - **Drag & drop** pour réorganiser les risques
 - **Numérotation automatique** selon la position (ajout, suppression, glisser-déposer)
-- **Mesures de remédiation** avec porteur et échéance facultative
+- **Mesures de remédiation** avec porteur, échéance facultative et état
+  (à faire, en cours, faite) ; échéance dépassée signalée en rouge
+- **Plan d'actions** : toutes les mesures en trois colonnes par état, retards en
+  tête, flèches pour faire avancer une mesure
+- **Revues** : photo datée des cotations (« Figer une revue »), comparaison d'une
+  revue avec l'état actuel (en baisse, en hausse, nouveaux, clos), graphique de
+  l'exposition moyenne résiduelle par revue et tendance par risque dans le
+  tableau récapitulatif
 - **Stratégie de traitement** (réduire, accepter, transférer, éviter) et
   **cotation cible** par risque
 - **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
