@@ -1347,7 +1347,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .editable-mesure,
         .editable-group-note,
-        .editable-review-label {
+        .editable-review-label,
+        .bowtie-text {
             cursor: text;
             border-radius: 4px;
             padding: 3px 6px;
@@ -1356,14 +1357,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .editable-mesure:hover,
         .editable-group-note:hover,
-        .editable-review-label:hover {
+        .editable-review-label:hover,
+        .bowtie-text:hover {
             background: rgba(0, 113, 227, 0.05);
             outline: 1px dashed rgba(0, 113, 227, 0.3);
         }
 
         .editable-mesure:focus,
         .editable-group-note:focus,
-        .editable-review-label:focus {
+        .editable-review-label:focus,
+        .bowtie-text:focus {
             outline: 2px solid var(--accent);
             background: var(--surface);
         }
@@ -1384,7 +1387,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .mesure-delete,
-        .review-delete {
+        .review-delete,
+        .bowtie-swap {
             background: none;
             border: none;
             cursor: pointer;
@@ -1393,12 +1397,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .mesure-delete:hover,
-        .review-delete:hover {
+        .review-delete:hover,
+        .bowtie-swap:hover {
             opacity: 1;
         }
 
         .mesure-add,
-        .review-freeze {
+        .review-freeze,
+        .bowtie-add,
+        .plan-bowtie {
             grid-column: 1 / -1;
             justify-self: start;
             background: none;
@@ -1958,6 +1965,483 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .chart-action-btn:hover {
             color: var(--text);
             background: var(--surface-2);
+        }
+
+        /* Fiche : fenêtre de premier plan (vue comité, nœud papillon, bibliothèque) */
+        .sheet-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 4vh 16px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+        }
+
+        .sheet-modal[hidden] {
+            display: none;
+        }
+
+        .sheet {
+            width: min(1180px, 100%);
+            padding: 24px 28px;
+            border-radius: 16px;
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .sheet-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .sheet-head h2 {
+            flex: 1;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .sheet-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sheet-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border: none;
+            border-radius: 9px;
+            background: var(--surface-2);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sheet-btn:hover {
+            background: var(--border);
+        }
+
+        .sheet-btn.primary {
+            background: var(--primary-bg);
+            color: var(--primary-fg);
+        }
+
+        .sheet-btn.primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .sheet-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        /* Vue comité */
+        .committee-sub {
+            margin: -12px 0 16px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        .committee-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .committee-kpi,
+        .committee-card {
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .committee-kpi span {
+            display: block;
+        }
+
+        .kpi-label,
+        .committee-card h3 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .kpi-value small {
+            font-size: 14px;
+            color: var(--text-3);
+        }
+
+        .kpi-detail {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .kpi-detail.good {
+            color: #1f8a3c;
+        }
+
+        .kpi-detail.bad {
+            color: #ff3b30;
+        }
+
+        .committee-grid {
+            display: grid;
+            grid-template-columns: 380px minmax(0, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .committee-grid.thirds {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-bottom: 0;
+        }
+
+        .committee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .committee-table th {
+            padding: 6px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            text-align: start;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .committee-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .committee-table .nowrap {
+            white-space: nowrap;
+        }
+
+        .stack-bar {
+            display: flex;
+            height: 24px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: var(--surface-2);
+        }
+
+        .stack-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .stack-legend i {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-inline-end: 5px;
+            border-radius: 3px;
+        }
+
+        .exposure-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 90px 40px;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .exposure-row b {
+            display: block;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .committee-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .committee-list li {
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .committee-list li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 900px) {
+            .committee-kpis,
+            .committee-grid,
+            .committee-grid.thirds {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Nœud papillon : causes → barrières → événement → barrières → conséquences */
+        .bowtie-hint {
+            margin: -8px 0 14px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .bowtie {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 14px;
+            align-items: start;
+            padding: 18px;
+            border-radius: 14px;
+            background: var(--surface-2);
+        }
+
+        .bowtie h3 {
+            margin: 0 0 10px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .bowtie-col {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bowtie-event {
+            align-self: center;
+        }
+
+        .bowtie-node,
+        .bowtie-barrier {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            font-size: 13px;
+        }
+
+        .bowtie-node.cause {
+            border-inline-start: 4px solid #ff9f0a;
+        }
+
+        .bowtie-node.consequence {
+            border-inline-end: 4px solid #ff3b30;
+        }
+
+        .bowtie-node.event {
+            justify-content: center;
+            padding: 18px 12px;
+            border: 2px solid #ff3b30;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .bowtie-barrier.prevention {
+            border: 1.5px solid #0a84ff;
+        }
+
+        .bowtie-barrier.protection {
+            border: 1.5px solid #8e5cf0;
+        }
+
+        .bowtie-barrier.missing {
+            justify-content: center;
+            border: 1.5px dashed #ff9f0a;
+            color: var(--text-3);
+        }
+
+        .bowtie-text,
+        .barrier-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .barrier-state {
+            display: block;
+            margin-top: 2px;
+            font-size: 11px;
+            color: var(--text-3);
+        }
+
+        .plan-bowtie {
+            margin-inline-start: auto;
+        }
+
+        @media (max-width: 900px) {
+            .bowtie {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Bibliothèque de risques types */
+        .library {
+            display: grid;
+            grid-template-columns: 230px minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        .library-themes {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-self: start;
+            padding: 10px;
+            border-radius: 12px;
+            background: var(--surface-2);
+        }
+
+        .library-theme {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 8px;
+            background: none;
+            color: var(--text-2);
+            font-size: 13px;
+            text-align: start;
+            cursor: pointer;
+        }
+
+        .library-theme:hover,
+        .library-theme.active {
+            background: var(--surface);
+        }
+
+        .library-theme.active {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .library-theme span,
+        .library-offline,
+        .library-card-theme {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-3);
+        }
+
+        .library-offline {
+            margin: 10px 4px 0;
+        }
+
+        .library-main {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .library-main .filter-search {
+            max-width: none;
+        }
+
+        .library-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 52vh;
+            overflow-y: auto;
+        }
+
+        .library-card {
+            display: grid;
+            grid-template-columns: 20px minmax(0, 1fr) auto;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .library-card[hidden] {
+            display: none;
+        }
+
+        .library-card.selected {
+            border-color: var(--accent);
+            background: var(--surface-2);
+        }
+
+        .library-mesures {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .library-mesures span {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .library-card.selected .library-mesures span {
+            background: var(--surface);
+        }
+
+        .library-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 18px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .library-foot label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .library-foot .sheet-btn {
+            margin-inline-start: auto;
+        }
+
+        @media (max-width: 900px) {
+            .library {
+                grid-template-columns: 1fr;
+            }
         }
 
         .matrix-modal {
@@ -3268,6 +3752,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             <div class="app-controls">
                 <input type="file" id="import-file" hidden accept=".json" onchange="importFromJSON(this)">
+                <button class="icon-btn" onclick="openCommitteeView()" data-i18n-title="committeeOpen">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M7 12l3-3 2 2 4-4"/></svg>
+                </button>
+                <button class="icon-btn" onclick="openLibrary()" data-i18n-title="libraryOpen">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/><path d="M9 7h6"/></svg>
+                </button>
                 <button class="icon-btn" onclick="document.getElementById('import-file').click()" data-i18n-title="importTooltip">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
                 </button>
@@ -3372,6 +3862,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Fiche : vue comité, nœud papillon, bibliothèque -->
+            <div id="sheet-modal" class="sheet-modal" hidden onclick="if (event.target === this) closeSheet()">
+                <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+                    <div class="sheet-head">
+                        <h2 id="sheet-title"></h2>
+                        <div id="sheet-actions" class="sheet-actions"></div>
+                        <button class="icon-btn" onclick="closeSheet()" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                    </div>
+                    <div id="sheet-body"></div>
                 </div>
             </div>
 
@@ -3511,7 +4013,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         });
 
         // Icônes au trait (grille 24×24), partagées par toute l'interface
-        const ICON_PATHS = {"chevron": "<path d=\"M6 9l6 6 6-6\"/>", "trash": "<path d=\"M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "trendDown": "<path d=\"M3 7l6 6 4-4 8 8\"/><path d=\"M21 11v6h-6\"/>", "trendUp": "<path d=\"M3 17l6-6 4 4 8-8\"/><path d=\"M21 13V7h-6\"/>", "minus": "<path d=\"M5 12h14\"/>", "check": "<path d=\"M5 12l5 5L20 7\"/>", "alert": "<path d=\"M12 9v4M12 17h.01\"/><path d=\"M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\"/>", "close": "<path d=\"M18 6L6 18M6 6l12 12\"/>", "left": "<path d=\"M15 18l-6-6 6-6\"/>", "right": "<path d=\"M9 18l6-6-6-6\"/>", "pin": "<path d=\"M12 17v5\"/><path d=\"M9 3h6l-1 6 3 3v2H7v-2l3-3z\"/>", "groups": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/>", "points": "<circle cx=\"6\" cy=\"17\" r=\"2\"/><circle cx=\"11\" cy=\"8\" r=\"2\"/><circle cx=\"17\" cy=\"15\" r=\"2\"/><circle cx=\"18\" cy=\"6\" r=\"2\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"currentColor\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z\"/>"};
+        const ICON_PATHS = {"chevron": "<path d=\"M6 9l6 6 6-6\"/>", "trash": "<path d=\"M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "trendDown": "<path d=\"M3 7l6 6 4-4 8 8\"/><path d=\"M21 11v6h-6\"/>", "trendUp": "<path d=\"M3 17l6-6 4 4 8-8\"/><path d=\"M21 13V7h-6\"/>", "minus": "<path d=\"M5 12h14\"/>", "check": "<path d=\"M5 12l5 5L20 7\"/>", "alert": "<path d=\"M12 9v4M12 17h.01\"/><path d=\"M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\"/>", "close": "<path d=\"M18 6L6 18M6 6l12 12\"/>", "left": "<path d=\"M15 18l-6-6 6-6\"/>", "right": "<path d=\"M9 18l6-6-6-6\"/>", "pin": "<path d=\"M12 17v5\"/><path d=\"M9 3h6l-1 6 3 3v2H7v-2l3-3z\"/>", "groups": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1.5\"/>", "points": "<circle cx=\"6\" cy=\"17\" r=\"2\"/><circle cx=\"11\" cy=\"8\" r=\"2\"/><circle cx=\"17\" cy=\"15\" r=\"2\"/><circle cx=\"18\" cy=\"6\" r=\"2\"/>", "dot": "<circle cx=\"12\" cy=\"12\" r=\"4\" fill=\"currentColor\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\"/><path d=\"M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4\"/>", "moon": "<path d=\"M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z\"/>", "bowtie": "<path d=\"M3 6v12l9-6zM21 6v12l-9-6z\"/>", "swap": "<path d=\"M7 7h13l-4-4M17 17H4l4 4\"/>"};
         const icon = name => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name]}</svg>`;
 
         // Menus de l'en-tête : un seul ouvert à la fois, fermés par un clic ailleurs ou Échap
@@ -3616,6 +4118,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Re-rendre l'interface
             renderRisks();
             updateCharts();
+            refreshSheet();
         }
 
         // Fonction Undo
@@ -3923,7 +4426,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function addMesure(risk) {
-            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo' });
+            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo', barriere: 'prevention' });
             renderRisks();
             // Ouvre directement la saisie du texte de la nouvelle mesure
             document.querySelector(`.editable-mesure[data-risk-id="${risk.id}"][data-index="${risk.mesures.length - 1}"][data-field="texte"]`).click();
@@ -4690,7 +5193,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "Aucun changement de cotation",
                 reviewExposure: "Exposition moyenne après remédiation (/5)",
                 colTrend: "Tendance",
-                trendTitle: "Criticité après remédiation, revue par revue"
+                trendTitle: "Criticité après remédiation, revue par revue",
+                committeeOpen: "Vue comité : synthèse d’une page",
+                committeeTitle: "Synthèse pour le comité",
+                kpiExposure: "Exposition moyenne",
+                kpiExposureDelta: "{delta} % grâce aux mesures",
+                kpiHighRisks: "Risques élevés ou critiques",
+                kpiHighDelta: "avant → après remédiation",
+                kpiAboveAppetite: "Au-dessus de l’appétence",
+                kpiLate: "Mesures en retard",
+                committeeTop: "Les 5 risques résiduels les plus élevés",
+                committeeTreatments: "Stratégies de traitement",
+                committeeReviews: "Exposition par revue (/5)",
+                committeeDecisions: "Décisions attendues",
+                decisionHint: "arbitrer le traitement ou accepter formellement le risque résiduel ({score})",
+                committeeNoDecision: "Aucun risque au-dessus de l’appétence",
+                committeeCopy: "Copier pour Word ou PowerPoint",
+                committeePdf: "PDF une page",
+                committeeCopied: "Synthèse copiée",
+                bowtieOpen: "Nœud papillon",
+                bowtieCauses: "Causes",
+                bowtiePrevention: "Barrières préventives",
+                bowtieEvent: "Événement redouté",
+                bowtieProtection: "Barrières de protection",
+                bowtieConsequences: "Conséquences",
+                bowtieAddCause: "Ajouter une cause",
+                bowtieAddConsequence: "Ajouter une conséquence",
+                bowtieNoBarrier: "Aucune barrière — à définir",
+                bowtieSwap: "Changer de côté",
+                bowtieHint: "Les barrières sont les mesures du risque : ⇄ les fait passer d’un côté à l’autre.",
+                bowtieItemPlaceholder: "Décrire…",
+                libraryOpen: "Bibliothèque de risques types",
+                librarySearch: "Rechercher un risque type…",
+                libraryAll: "Tous les thèmes",
+                libraryOffline: "Intégrée au fichier : fonctionne hors ligne.",
+                libraryTarget: "Ajouter dans",
+                libraryNewGroup: "Nouveau groupe",
+                libraryWithMesures: "avec les mesures suggérées",
+                libraryAdd: "Ajouter la sélection ({count})",
+                libraryAdded: "Risques ajoutés : {count}",
+                libraryEmpty: "Aucun risque type ne correspond"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4903,7 +5445,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "No rating change",
                 reviewExposure: "Average exposure after remediation (/5)",
                 colTrend: "Trend",
-                trendTitle: "Criticality after remediation, review by review"
+                trendTitle: "Criticality after remediation, review by review",
+                committeeOpen: "Committee view: one-page summary",
+                committeeTitle: "Committee summary",
+                kpiExposure: "Average exposure",
+                kpiExposureDelta: "{delta}% thanks to the measures",
+                kpiHighRisks: "High or critical risks",
+                kpiHighDelta: "before → after remediation",
+                kpiAboveAppetite: "Above appetite",
+                kpiLate: "Overdue measures",
+                committeeTop: "The 5 highest residual risks",
+                committeeTreatments: "Treatment strategies",
+                committeeReviews: "Exposure per review (/5)",
+                committeeDecisions: "Decisions required",
+                decisionHint: "decide on the treatment or formally accept the residual risk ({score})",
+                committeeNoDecision: "No risk above appetite",
+                committeeCopy: "Copy for Word or PowerPoint",
+                committeePdf: "One-page PDF",
+                committeeCopied: "Summary copied",
+                bowtieOpen: "Bow-tie",
+                bowtieCauses: "Causes",
+                bowtiePrevention: "Preventive barriers",
+                bowtieEvent: "Feared event",
+                bowtieProtection: "Protective barriers",
+                bowtieConsequences: "Consequences",
+                bowtieAddCause: "Add a cause",
+                bowtieAddConsequence: "Add a consequence",
+                bowtieNoBarrier: "No barrier — to be defined",
+                bowtieSwap: "Switch side",
+                bowtieHint: "Barriers are the risk’s measures: ⇄ moves them from one side to the other.",
+                bowtieItemPlaceholder: "Describe…",
+                libraryOpen: "Library of standard risks",
+                librarySearch: "Search a standard risk…",
+                libraryAll: "All themes",
+                libraryOffline: "Built into the file: works offline.",
+                libraryTarget: "Add to",
+                libraryNewGroup: "New group",
+                libraryWithMesures: "with the suggested measures",
+                libraryAdd: "Add selection ({count})",
+                libraryAdded: "Risks added: {count}",
+                libraryEmpty: "No standard risk matches"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -5116,7 +5697,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "Ningún cambio de calificación",
                 reviewExposure: "Exposición media tras la remediación (/5)",
                 colTrend: "Tendencia",
-                trendTitle: "Criticidad tras la remediación, revisión a revisión"
+                trendTitle: "Criticidad tras la remediación, revisión a revisión",
+                committeeOpen: "Vista comité: síntesis de una página",
+                committeeTitle: "Síntesis para el comité",
+                kpiExposure: "Exposición media",
+                kpiExposureDelta: "{delta} % gracias a las medidas",
+                kpiHighRisks: "Riesgos altos o críticos",
+                kpiHighDelta: "antes → después de la remediación",
+                kpiAboveAppetite: "Por encima del apetito",
+                kpiLate: "Medidas retrasadas",
+                committeeTop: "Los 5 riesgos residuales más altos",
+                committeeTreatments: "Estrategias de tratamiento",
+                committeeReviews: "Exposición por revisión (/5)",
+                committeeDecisions: "Decisiones esperadas",
+                decisionHint: "decidir el tratamiento o aceptar formalmente el riesgo residual ({score})",
+                committeeNoDecision: "Ningún riesgo por encima del apetito",
+                committeeCopy: "Copiar para Word o PowerPoint",
+                committeePdf: "PDF de una página",
+                committeeCopied: "Síntesis copiada",
+                bowtieOpen: "Pajarita",
+                bowtieCauses: "Causas",
+                bowtiePrevention: "Barreras preventivas",
+                bowtieEvent: "Evento temido",
+                bowtieProtection: "Barreras de protección",
+                bowtieConsequences: "Consecuencias",
+                bowtieAddCause: "Añadir una causa",
+                bowtieAddConsequence: "Añadir una consecuencia",
+                bowtieNoBarrier: "Ninguna barrera — por definir",
+                bowtieSwap: "Cambiar de lado",
+                bowtieHint: "Las barreras son las medidas del riesgo: ⇄ las pasa de un lado al otro.",
+                bowtieItemPlaceholder: "Describir…",
+                libraryOpen: "Biblioteca de riesgos tipo",
+                librarySearch: "Buscar un riesgo tipo…",
+                libraryAll: "Todos los temas",
+                libraryOffline: "Integrada en el archivo: funciona sin conexión.",
+                libraryTarget: "Añadir en",
+                libraryNewGroup: "Nuevo grupo",
+                libraryWithMesures: "con las medidas sugeridas",
+                libraryAdd: "Añadir la selección ({count})",
+                libraryAdded: "Riesgos añadidos: {count}",
+                libraryEmpty: "Ningún riesgo tipo coincide"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -5329,7 +5949,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "评级无变化",
                 reviewExposure: "处理后平均暴露（/5）",
                 colTrend: "趋势",
-                trendTitle: "各次评审的处理后严重度"
+                trendTitle: "各次评审的处理后严重度",
+                committeeOpen: "委员会视图：一页摘要",
+                committeeTitle: "委员会摘要",
+                kpiExposure: "平均暴露",
+                kpiExposureDelta: "措施带来 {delta}%",
+                kpiHighRisks: "高或严重风险",
+                kpiHighDelta: "处理前 → 处理后",
+                kpiAboveAppetite: "超出风险偏好",
+                kpiLate: "逾期措施",
+                committeeTop: "剩余风险最高的 5 项",
+                committeeTreatments: "处理策略",
+                committeeReviews: "各次评审的暴露（/5）",
+                committeeDecisions: "待决事项",
+                decisionHint: "决定处理方式或正式接受剩余风险（{score}）",
+                committeeNoDecision: "没有超出风险偏好的风险",
+                committeeCopy: "复制到 Word 或 PowerPoint",
+                committeePdf: "单页 PDF",
+                committeeCopied: "摘要已复制",
+                bowtieOpen: "蝴蝶结图",
+                bowtieCauses: "原因",
+                bowtiePrevention: "预防屏障",
+                bowtieEvent: "顶上事件",
+                bowtieProtection: "保护屏障",
+                bowtieConsequences: "后果",
+                bowtieAddCause: "添加原因",
+                bowtieAddConsequence: "添加后果",
+                bowtieNoBarrier: "无屏障 — 待定义",
+                bowtieSwap: "切换位置",
+                bowtieHint: "屏障即该风险的措施：⇄ 可在两侧之间切换。",
+                bowtieItemPlaceholder: "描述…",
+                libraryOpen: "标准风险库",
+                librarySearch: "搜索标准风险…",
+                libraryAll: "所有主题",
+                libraryOffline: "内置于文件中：可离线使用。",
+                libraryTarget: "添加到",
+                libraryNewGroup: "新组",
+                libraryWithMesures: "包含建议措施",
+                libraryAdd: "添加所选（{count}）",
+                libraryAdded: "已添加风险：{count}",
+                libraryEmpty: "没有匹配的标准风险"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -5542,7 +6201,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "لا يوجد تغيير في التقييم",
                 reviewExposure: "متوسط التعرض بعد المعالجة (/5)",
                 colTrend: "الاتجاه",
-                trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى"
+                trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى",
+                committeeOpen: "عرض اللجنة: ملخص من صفحة واحدة",
+                committeeTitle: "ملخص للجنة",
+                kpiExposure: "متوسط التعرض",
+                kpiExposureDelta: "{delta}٪ بفضل الإجراءات",
+                kpiHighRisks: "المخاطر المرتفعة أو الحرجة",
+                kpiHighDelta: "قبل → بعد المعالجة",
+                kpiAboveAppetite: "أعلى من مستوى التقبّل",
+                kpiLate: "إجراءات متأخرة",
+                committeeTop: "أعلى 5 مخاطر متبقية",
+                committeeTreatments: "استراتيجيات المعالجة",
+                committeeReviews: "التعرض لكل مراجعة (/5)",
+                committeeDecisions: "القرارات المطلوبة",
+                decisionHint: "البتّ في المعالجة أو القبول الرسمي بالخطر المتبقي ({score})",
+                committeeNoDecision: "لا يوجد خطر أعلى من مستوى التقبّل",
+                committeeCopy: "نسخ إلى Word أو PowerPoint",
+                committeePdf: "ملف PDF من صفحة واحدة",
+                committeeCopied: "تم نسخ الملخص",
+                bowtieOpen: "مخطط ربطة العنق",
+                bowtieCauses: "الأسباب",
+                bowtiePrevention: "الحواجز الوقائية",
+                bowtieEvent: "الحدث المخشي",
+                bowtieProtection: "حواجز الحماية",
+                bowtieConsequences: "العواقب",
+                bowtieAddCause: "إضافة سبب",
+                bowtieAddConsequence: "إضافة عاقبة",
+                bowtieNoBarrier: "لا يوجد حاجز — يجب تحديده",
+                bowtieSwap: "تغيير الجانب",
+                bowtieHint: "الحواجز هي إجراءات الخطر: ⇄ ينقلها من جانب إلى آخر.",
+                bowtieItemPlaceholder: "صِف…",
+                libraryOpen: "مكتبة المخاطر النموذجية",
+                librarySearch: "ابحث عن خطر نموذجي…",
+                libraryAll: "كل المواضيع",
+                libraryOffline: "مدمجة في الملف: تعمل دون اتصال.",
+                libraryTarget: "إضافة إلى",
+                libraryNewGroup: "مجموعة جديدة",
+                libraryWithMesures: "مع الإجراءات المقترحة",
+                libraryAdd: "إضافة المحدد ({count})",
+                libraryAdded: "المخاطر المضافة: {count}",
+                libraryEmpty: "لا يوجد خطر نموذجي مطابق"
             }
         };
 
@@ -5827,9 +6525,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 texte: String(mesure.texte || ''),
                 porteur: String(mesure.porteur || ''),
                 echeance: String(mesure.echeance || ''),
-                etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo'
+                etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo',
+                // Côté de la barrière dans le nœud papillon
+                barriere: mesure.barriere === 'protection' ? 'protection' : 'prevention'
             };
         }
+
+        const stringList = value => (Array.isArray(value) ? value : []).map(String);
 
         // Échéance saisie librement : date reconnue (AAAA-MM-JJ ou JJ/MM/AAAA), sinon null
         function mesureDueDate(text) {
@@ -5876,7 +6578,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     : (LEGACY_STATUS_LABELS[raw.statut] || 'statusNotTreated'),
                 responsable: String(raw.responsable || ''),
                 traitement: raw.traitement in TREATMENTS ? raw.traitement : '',
-                assessmentTarget: toAssessment(raw.assessmentTarget)
+                assessmentTarget: toAssessment(raw.assessmentTarget),
+                causes: stringList(raw.causes),
+                consequences: stringList(raw.consequences)
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -6274,7 +6978,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return {
                 uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
-                mesures: [], statut: 'statusNotTreated', responsable: '', traitement: ''
+                mesures: [], statut: 'statusNotTreated', responsable: '', traitement: '',
+                causes: [], consequences: []
             };
         }
 
@@ -6716,6 +7421,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                         <select class="plan-select" data-risk-id="${risk.id}" data-field="target" data-axis="1" aria-label="${t('colImpact')}">${generateOptions(getImpactScale(), risk.assessmentTarget[1])}</select>
                                         <span class="target-badge">${getCriticalityBadge(...risk.assessmentTarget)}</span>
                                     </div>
+                                    <button type="button" class="plan-bowtie" onclick="openBowtie('${risk.uid}')">${icon('bowtie')} ${t('bowtieOpen')}</button>
                                 </div>
                                 <div class="mesures-list">
                                     <div class="mesures-header">
@@ -7835,6 +8541,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return image;
         }
 
+        // Copie mise en forme (Word, PowerPoint) ; repli par sélection si l'API est refusée
+        async function copyRichHtml(html, plainText) {
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': new Blob([html], { type: 'text/html' }),
+                            'text/plain': new Blob([plainText], { type: 'text/plain' })
+                        })
+                    ]);
+                    return true;
+                }
+            } catch (error) {
+                console.info('Copie HTML directe indisponible, utilisation du mode de compatibilité.', error);
+            }
+            return copyGroupSummaryWithSelectionFallback(html);
+        }
+
         function copyGroupSummaryWithSelectionFallback(html) {
             const holder = document.createElement('div');
             holder.contentEditable = 'true';
@@ -7861,24 +8585,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 return;
             }
 
-            const plainText = sourceTable.innerText.trim();
-            let copied = false;
-            try {
-                if (navigator.clipboard && window.ClipboardItem) {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({
-                            'text/html': new Blob([html], { type: 'text/html' }),
-                            'text/plain': new Blob([plainText], { type: 'text/plain' })
-                        })
-                    ]);
-                    copied = true;
-                }
-            } catch (error) {
-                console.info('Copie HTML directe indisponible, utilisation du mode de compatibilité.', error);
-            }
-
-            if (!copied) copied = copyGroupSummaryWithSelectionFallback(html);
-
+            const copied = await copyRichHtml(html, sourceTable.innerText.trim());
             if (!copied) {
                 alert(t('copyForWordUnavailable'));
                 return;
@@ -8307,6 +9014,403 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             openMatrixModal(types[(types.indexOf(currentMatrixType) + step) % types.length]);
         }
 
+        // ========================================
+        // Vue comité : synthèse d'une page, copiable et exportable en PDF
+        // ========================================
+
+        const TREATMENT_COLORS = { reduce: '#0a84ff', transfer: '#8e5cf0', accept: '#ff9f0a', avoid: '#34c759', '': '#aeaeb2' };
+        const scoreOf = assessment => residualScore(assessment) || 0;
+
+        // Chiffres de la synthèse. Complexité : O(n log n + m), n = risques, m = mesures
+        function committeeStats() {
+            const exposureBefore = meanExposure(risks.map(risk => risk.assessmentBefore));
+            const exposureAfter = meanExposure(risks.map(risk => risk.assessmentAfter));
+            const high = phase => risks.filter(risk => scoreOf(risk[`assessment${phase}`]) >= CRITICALITY_THRESHOLDS.high).length;
+            const mesures = risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte);
+            const treatments = { reduce: 0, transfer: 0, accept: 0, avoid: 0, '': 0 };
+            risks.forEach(risk => treatments[risk.traitement]++);
+            const last = reviews[reviews.length - 1];
+            return {
+                subtitle: last ? `${last.label} · ${formatReviewDate(last.date)}` : new Date().toLocaleDateString(currentLanguage),
+                exposureBefore, exposureAfter,
+                delta: exposureBefore && exposureAfter !== null ? Math.round((exposureAfter / exposureBefore - 1) * 100) : null,
+                highBefore: high('Before'), highAfter: high('After'),
+                above: settings.riskAppetite ? risks.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [],
+                late: mesures.filter(isMesureLate).length, mesureCount: mesures.length,
+                top: risks.filter(risk => scoreOf(risk.assessmentAfter))
+                    .sort((a, b) => scoreOf(b.assessmentAfter) - scoreOf(a.assessmentAfter) || scoreOf(b.assessmentBefore) - scoreOf(a.assessmentBefore))
+                    .slice(0, 5),
+                treatments,
+                exposures: [...reviews.map(review => ({ label: review.label, value: meanExposure(review.risks.map(r => r.after)) })),
+                    { label: t('reviewCurrent'), value: exposureAfter }]
+            };
+        }
+
+        const formatExposure = value => value === null ? '—' : value.toFixed(1);
+        const signedPercent = delta => `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${Math.abs(delta)}`;
+
+        function openCommitteeView() {
+            openSheet(() => {
+                const stats = committeeStats();
+                const kpi = (label, value, detail = '', tone = '') => `<div class="committee-kpi">
+                    <span class="kpi-label">${label}</span><span class="kpi-value">${value}</span>
+                    <span class="kpi-detail ${tone}">${detail}</span></div>`;
+                const totalRisks = risks.length || 1;
+                return {
+                    title: t('committeeTitle'),
+                    actions: `<button type="button" class="sheet-btn" onclick="copyCommitteeView()">${t('committeeCopy')}</button>
+                        <button type="button" class="sheet-btn primary" onclick="exportCommitteePdf()">${t('committeePdf')}</button>`,
+                    body: `<p class="committee-sub">${escapeHtml(stats.subtitle)}</p>
+                        <div class="committee-kpis">
+                            ${kpi(t('kpiExposure'), `${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} <small>/5</small>`,
+                                stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '')}
+                            ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'))}
+                            ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${risks.length}</small>`,
+                                escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good')}
+                            ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good')}
+                        </div>
+                        <div class="committee-grid">
+                            <section class="committee-card"><h3>${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
+                            <section class="committee-card"><h3>${t('committeeTop')}</h3>
+                                <table class="committee-table">
+                                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
+                                    <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
+                                        <td class="nowrap">${getCriticalityBadge(...risk.assessmentBefore)} → ${getCriticalityBadge(...risk.assessmentAfter)}</td>
+                                        <td>${treatmentLabel(risk.traitement)}</td><td>${escapeHtml(risk.responsable) || '—'}</td></tr>`).join('')}</tbody>
+                                </table></section>
+                        </div>
+                        <div class="committee-grid thirds">
+                            <section class="committee-card"><h3>${t('committeeTreatments')}</h3>
+                                <div class="stack-bar">${Object.entries(stats.treatments).filter(([, count]) => count).map(([key, count]) =>
+                                    `<span style="width:${count / totalRisks * 100}%;background:${TREATMENT_COLORS[key]}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
+                                <div class="stack-legend">${Object.entries(stats.treatments).map(([key, count]) =>
+                                    `<span><i style="background:${TREATMENT_COLORS[key]}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
+                            <section class="committee-card"><h3>${t('committeeReviews')}</h3>
+                                ${stats.exposures.map(({ label, value }) => `<div class="exposure-row"><span>${escapeHtml(label)}</span>
+                                    <b style="width:${(value || 0) / 5 * 100}%;background:${value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]}"></b>
+                                    <span>${formatExposure(value)}</span></div>`).join('')}</section>
+                            <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
+                                <ul class="committee-list">${stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
+                                    ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
+                        </div>`,
+                    mount: body => {
+                        const { datasets, bubble } = matrixChartData('trajectory');
+                        sheetChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
+                    }
+                };
+            });
+        }
+
+        const committeeImage = () => withLightTheme(() => sheetChart.canvas.toDataURL('image/png'));
+
+        // Version à coller dans Word ou PowerPoint : tableaux et styles en ligne
+        async function copyCommitteeView() {
+            const stats = committeeStats();
+            const cell = 'padding:6pt 8pt;border:1pt solid #d2d2d7;font-family:Arial,sans-serif;font-size:10pt;vertical-align:top';
+            const head = `${cell};background:#f5f5f7;font-weight:700`;
+            const html = `<h2 style="font-family:Arial,sans-serif">${escapeHtml(t('committeeTitle'))} — ${escapeHtml(stats.subtitle)}</h2>
+                <table style="border-collapse:collapse;width:100%"><tr>
+                    <td style="${cell}"><b>${t('kpiExposure')}</b><br>${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} /5${stats.delta === null ? '' : ` (${signedPercent(stats.delta)} %)`}</td>
+                    <td style="${cell}"><b>${t('kpiHighRisks')}</b><br>${stats.highBefore} → ${stats.highAfter}</td>
+                    <td style="${cell}"><b>${t('kpiAboveAppetite')}</b><br>${stats.above.length} / ${risks.length}</td>
+                    <td style="${cell}"><b>${t('kpiLate')}</b><br>${stats.late} / ${stats.mesureCount}</td></tr></table>
+                <p><img src="${committeeImage()}" width="360" height="360" alt="${escapeHtml(t('matrixTrajectory'))}"></p>
+                <h3 style="font-family:Arial,sans-serif">${t('committeeTop')}</h3>
+                <table style="border-collapse:collapse;width:100%"><tr><th style="${head}">${t('colNumber')}</th><th style="${head}">${t('colRisk')}</th>
+                    <th style="${head}">${t('colBeforeShort')}</th><th style="${head}">${t('colAfterShort')}</th><th style="${head}">${t('colTreatment')}</th><th style="${head}">${t('colResp')}</th></tr>
+                    ${stats.top.map(risk => `<tr><td style="${cell}">${escapeHtml(risk.id)}</td><td style="${cell}">${escapeHtml(risk.title)}</td>
+                        <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentBefore))]}">${scoreOf(risk.assessmentBefore)}</td>
+                        <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentAfter))]}">${scoreOf(risk.assessmentAfter)}</td>
+                        <td style="${cell}">${treatmentLabel(risk.traitement)}</td><td style="${cell}">${escapeHtml(risk.responsable)}</td></tr>`).join('')}</table>
+                <h3 style="font-family:Arial,sans-serif">${t('committeeDecisions')}</h3>
+                <ul style="font-family:Arial,sans-serif;font-size:10pt">${stats.above.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)} : ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul>`;
+            if (await copyRichHtml(html, document.getElementById('sheet-body').innerText)) {
+                showToast(t('committeeCopied'));
+            } else {
+                alert(t('copyForWordUnavailable'));
+            }
+        }
+
+        // PDF paysage d'une page (libellés en anglais pour l'arabe et le chinois, comme l'export PDF)
+        function exportCommitteePdf() {
+            const stats = committeeStats();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text(`${pdfText('committeeTitle')} — ${stats.subtitle}`, 14, 16);
+            const kpis = [
+                [pdfText('kpiExposure'), `${formatExposure(stats.exposureBefore)} -> ${formatExposure(stats.exposureAfter)} /5${stats.delta === null ? '' : ` (${stats.delta > 0 ? '+' : ''}${stats.delta} %)`}`],
+                [pdfText('kpiHighRisks'), `${stats.highBefore} -> ${stats.highAfter}`],
+                [pdfText('kpiAboveAppetite'), `${stats.above.length} / ${risks.length}`],
+                [pdfText('kpiLate'), `${stats.late} / ${stats.mesureCount}`]
+            ];
+            kpis.forEach(([label, value], index) => {
+                const x = 14 + index * 68;
+                doc.roundedRect(x, 22, 64, 20, 3, 3);
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.text(label.toUpperCase(), x + 4, 28);
+                doc.setFontSize(13);
+                doc.setFont(undefined, 'bold');
+                doc.text(value, x + 4, 37);
+            });
+            doc.addImage(committeeImage(), 'PNG', 14, 48, 95, 95);
+            doc.autoTable({
+                startY: 48,
+                margin: { left: 116 },
+                head: [[pdfText('colNumber'), pdfText('colRisk'), pdfText('colBeforeShort'), pdfText('colAfterShort'), pdfText('colTreatment'), pdfText('colResp')]],
+                body: stats.top.map(risk => [risk.id, risk.title, scoreOf(risk.assessmentBefore), scoreOf(risk.assessmentAfter),
+                    currentLanguage === 'ar' || currentLanguage === 'zh' ? translations.en[TREATMENTS[risk.traitement] || 'treatNone'] : treatmentLabel(risk.traitement), risk.responsable]),
+                theme: 'grid',
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [0, 113, 227], textColor: 255 }
+            });
+            let y = Math.max(doc.lastAutoTable.finalY + 8, 150);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(pdfText('committeeDecisions'), 14, y);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            const decisions = stats.above.length
+                ? stats.above.map(risk => `${risk.id} · ${risk.title} (${scoreOf(risk.assessmentAfter)})`)
+                : [pdfText('committeeNoDecision')];
+            decisions.slice(0, 8).forEach(line => {
+                y += 6;
+                doc.text(doc.splitTextToSize(line, 265)[0], 14, y);
+            });
+            doc.save(`riskr_comite_${new Date().toISOString().slice(0, 10)}.pdf`);
+        }
+
+        // ========================================
+        // Nœud papillon d'un risque : les mesures sont les barrières
+        // ========================================
+
+        function openBowtie(uid) {
+            openSheet(() => {
+                const risk = risks.find(r => r.uid === uid);
+                if (!risk) return { title: '', body: '', mount: closeSheet }; // risque supprimé (annulation)
+                const items = (list, kind) => risk[list].map((text, index) => `<div class="bowtie-node ${kind}">
+                        <span class="bowtie-text" data-list="${list}" data-index="${index}" data-placeholder="${t('bowtieItemPlaceholder')}">${escapeHtml(text)}</span>
+                        <button type="button" class="review-delete" data-list="${list}" data-index="${index}" title="${t('mesureDelete')}" aria-label="${t('mesureDelete')}">${icon('trash')}</button>
+                    </div>`).join('') + `<button type="button" class="bowtie-add" data-add="${list}">${icon('plus')} ${t(list === 'causes' ? 'bowtieAddCause' : 'bowtieAddConsequence')}</button>`;
+                const barriers = side => risk.mesures.map((mesure, index) => ({ mesure, index }))
+                    .filter(({ mesure }) => mesure.texte && mesure.barriere === side)
+                    .map(({ mesure, index }) => `<div class="bowtie-barrier ${side}">
+                        <span class="barrier-text">${escapeHtml(mesure.texte)}<span class="barrier-state">${t(MESURE_STATES[mesure.etat])}${mesure.porteur ? ` · ${escapeHtml(mesure.porteur)}` : ''}</span></span>
+                        <button type="button" class="bowtie-swap" data-index="${index}" title="${t('bowtieSwap')}" aria-label="${t('bowtieSwap')}">${icon('swap')}</button>
+                    </div>`).join('') || `<div class="bowtie-barrier missing">${t('bowtieNoBarrier')}</div>`;
+                return {
+                    title: `${risk.id} · ${risk.title}`,
+                    body: `<p class="committee-sub">${getCriticalityBadge(...risk.assessmentBefore)} → ${getCriticalityBadge(...risk.assessmentAfter)}
+                            → ${getCriticalityBadge(...risk.assessmentTarget)} · ${treatmentLabel(risk.traitement)}</p>
+                        <p class="bowtie-hint">${t('bowtieHint')}</p>
+                        <div class="bowtie">
+                            <div class="bowtie-col"><h3>${t('bowtieCauses')}</h3>${items('causes', 'cause')}</div>
+                            <div class="bowtie-col"><h3>${t('bowtiePrevention')}</h3>${barriers('prevention')}</div>
+                            <div class="bowtie-event"><h3>${t('bowtieEvent')}</h3><div class="bowtie-node event">${escapeHtml(risk.title)}</div></div>
+                            <div class="bowtie-col"><h3>${t('bowtieProtection')}</h3>${barriers('protection')}</div>
+                            <div class="bowtie-col"><h3>${t('bowtieConsequences')}</h3>${items('consequences', 'consequence')}</div>
+                        </div>`,
+                    mount: body => {
+                        body.querySelectorAll('.bowtie-text').forEach(element => {
+                            const list = risk[element.dataset.list];
+                            const index = Number(element.dataset.index);
+                            // Tout se règle à la sortie du champ : texte vide = élément retiré
+                            makeInlineEditable(element, () => {}, { onBlur: value => {
+                                if (value) list[index] = value;
+                                else list.splice(index, 1);
+                                if (value !== element.dataset.originalValue) commitChange();
+                                setTimeout(refreshSheet, 0); // laisser le clic en cours se terminer
+                            } });
+                        });
+                        body.querySelectorAll('.bowtie-add').forEach(button => {
+                            button.onclick = () => {
+                                risk[button.dataset.add].push('');
+                                refreshSheet();
+                                document.querySelector(`#sheet-body .bowtie-text[data-list="${button.dataset.add}"][data-index="${risk[button.dataset.add].length - 1}"]`).click();
+                            };
+                        });
+                        body.querySelectorAll('.review-delete').forEach(button => {
+                            button.onclick = () => {
+                                risk[button.dataset.list].splice(Number(button.dataset.index), 1);
+                                commitChange();
+                                refreshSheet();
+                            };
+                        });
+                        body.querySelectorAll('.bowtie-swap').forEach(button => {
+                            button.onclick = () => {
+                                const mesure = risk.mesures[Number(button.dataset.index)];
+                                mesure.barriere = mesure.barriere === 'prevention' ? 'protection' : 'prevention';
+                                commitChange();
+                                refreshSheet();
+                            };
+                        });
+                    }
+                };
+            });
+        }
+
+        // ========================================
+        // Bibliothèque de risques types (intégrée : fonctionne hors ligne)
+        // ========================================
+        // Chaque texte est donné dans les 5 langues : [fr, en, es, ar, zh].
+        // Thème → risques ; un risque = [titre, ...mesures suggérées].
+
+        const RISK_LIBRARY = [
+            {"theme": ["Projet et transformation", "Project and transformation", "Proyecto y transformación", "المشاريع والتحول", "项目与转型"], "risks": [[["Dérive du planning", "Schedule slippage", "Desviación del calendario", "انحراف الجدول الزمني", "进度延误"], ["Jalons intermédiaires suivis en comité", "Intermediate milestones monitored by the steering committee", "Hitos intermedios seguidos en comité", "متابعة مراحل وسيطة في لجنة التوجيه", "由指导委员会跟踪中间里程碑"], ["Marge de planning sur le chemin critique", "Schedule buffer on the critical path", "Margen de calendario en la ruta crítica", "هامش زمني على المسار الحرج", "关键路径预留缓冲时间"]], [["Dépassement budgétaire", "Budget overrun", "Sobrecoste presupuestario", "تجاوز الميزانية", "预算超支"], ["Provision pour aléas", "Contingency reserve", "Provisión para imprevistos", "مخصص للطوارئ", "设立不可预见费用储备"], ["Revue mensuelle des engagements financiers", "Monthly review of financial commitments", "Revisión mensual de los compromisos financieros", "مراجعة شهرية للالتزامات المالية", "每月审查财务承诺"]], [["Résistance au changement des utilisateurs", "User resistance to change", "Resistencia al cambio de los usuarios", "مقاومة المستخدمين للتغيير", "用户抗拒变革"], ["Plan de conduite du changement et formation", "Change management and training plan", "Plan de gestión del cambio y formación", "خطة لإدارة التغيير والتدريب", "变革管理与培训计划"], ["Utilisateurs référents associés aux recettes", "Key users involved in acceptance testing", "Usuarios referentes implicados en las pruebas de aceptación", "إشراك مستخدمين مرجعيين في اختبارات القبول", "关键用户参与验收测试"]]]},
+            {"theme": ["SI et cybersécurité", "IT and cybersecurity", "SI y ciberseguridad", "نظم المعلومات والأمن السيبراني", "信息系统与网络安全"], "risks": [[["Attaque par rançongiciel", "Ransomware attack", "Ataque de ransomware", "هجوم ببرمجية فدية", "勒索软件攻击"], ["Sauvegardes hors ligne testées régulièrement", "Offline backups tested regularly", "Copias de seguridad sin conexión probadas con regularidad", "نسخ احتياطية غير متصلة تُختبر بانتظام", "定期测试的离线备份"], ["Authentification multifacteur sur les accès sensibles", "Multi-factor authentication on sensitive access", "Autenticación multifactor en los accesos sensibles", "مصادقة متعددة العوامل على الوصول الحساس", "敏感访问启用多因素认证"]], [["Indisponibilité d’une application critique", "Critical application outage", "Indisponibilidad de una aplicación crítica", "تعطل تطبيق حيوي", "关键应用不可用"], ["Supervision et astreinte 24/7", "24/7 monitoring and on-call duty", "Supervisión y guardia 24/7", "مراقبة ومناوبة على مدار الساعة", "7×24 小时监控与值班"], ["Plan de reprise informatique testé", "Tested IT disaster recovery plan", "Plan de recuperación informática probado", "خطة تعافٍ معلوماتية مختبرة", "经过测试的 IT 灾难恢复计划"]], [["Fuite de données par un accès mal protégé", "Data leak through a poorly protected access", "Fuga de datos por un acceso mal protegido", "تسرب البيانات عبر وصول ضعيف الحماية", "因访问保护不足导致数据泄露"], ["Revue périodique des habilitations", "Periodic access rights review", "Revisión periódica de las habilitaciones", "مراجعة دورية للصلاحيات", "定期审查访问权限"], ["Chiffrement des données sensibles", "Encryption of sensitive data", "Cifrado de los datos sensibles", "تشفير البيانات الحساسة", "敏感数据加密"]]]},
+            {"theme": ["Fournisseurs et contrats", "Suppliers and contracts", "Proveedores y contratos", "الموردون والعقود", "供应商与合同"], "risks": [[["Dépendance à un fournisseur unique", "Dependence on a single supplier", "Dependencia de un único proveedor", "الاعتماد على مورد وحيد", "依赖单一供应商"], ["Clause de réversibilité dans le contrat", "Reversibility clause in the contract", "Cláusula de reversibilidad en el contrato", "بند قابلية الاسترجاع في العقد", "合同中的可逆性条款"], ["Fournisseur alternatif identifié", "Alternative supplier identified", "Proveedor alternativo identificado", "تحديد مورد بديل", "已确定备选供应商"]], [["Défaillance financière d’un prestataire", "Financial failure of a contractor", "Quiebra de un prestatario", "تعثر مالي لمقدم خدمة", "服务商财务失败"], ["Suivi annuel de la santé financière", "Annual financial health check", "Seguimiento anual de la salud financiera", "متابعة سنوية للوضع المالي", "每年评估财务健康状况"], ["Garantie de bonne exécution", "Performance bond", "Garantía de buena ejecución", "ضمان حسن التنفيذ", "履约保函"]], [["Niveau de service non tenu", "Service level not met", "Nivel de servicio no cumplido", "عدم الالتزام بمستوى الخدمة", "未达到服务水平"], ["Indicateurs de service et pénalités contractuelles", "Service indicators and contractual penalties", "Indicadores de servicio y penalizaciones contractuales", "مؤشرات الخدمة والغرامات التعاقدية", "服务指标与合同罚则"], ["Comité de suivi trimestriel", "Quarterly follow-up committee", "Comité de seguimiento trimestral", "لجنة متابعة فصلية", "季度跟踪委员会"]]]},
+            {"theme": ["Données personnelles (RGPD)", "Personal data (GDPR)", "Datos personales (RGPD)", "البيانات الشخصية (اللائحة العامة لحماية البيانات)", "个人数据（GDPR）"], "risks": [[["Traitement sans base légale", "Processing without a legal basis", "Tratamiento sin base jurídica", "معالجة دون أساس قانوني", "无合法依据的数据处理"], ["Registre des traitements à jour", "Up-to-date record of processing activities", "Registro de actividades de tratamiento actualizado", "سجل محدَّث لأنشطة المعالجة", "及时更新处理活动记录"], ["Validation par le délégué à la protection des données", "Validation by the data protection officer", "Validación por el delegado de protección de datos", "مصادقة مسؤول حماية البيانات", "由数据保护官审核"]], [["Violation de données non notifiée à temps", "Data breach not notified in time", "Violación de datos no notificada a tiempo", "عدم الإبلاغ عن خرق البيانات في الوقت المحدد", "数据泄露未及时通报"], ["Procédure de notification sous 72 heures", "72-hour notification procedure", "Procedimiento de notificación en 72 horas", "إجراء للإبلاغ خلال 72 ساعة", "72 小时内通报程序"], ["Exercice annuel de gestion de violation", "Annual breach response exercise", "Ejercicio anual de gestión de violaciones", "تمرين سنوي على التعامل مع الخروقات", "年度数据泄露应对演练"]], [["Conservation excessive des données", "Excessive data retention", "Conservación excesiva de los datos", "الاحتفاظ المفرط بالبيانات", "数据保存期限过长"], ["Durées de conservation définies par traitement", "Retention periods defined per processing activity", "Plazos de conservación definidos por tratamiento", "مدد احتفاظ محددة لكل معالجة", "为每项处理确定保存期限"], ["Purge automatique des données expirées", "Automatic purge of expired data", "Purga automática de los datos caducados", "حذف تلقائي للبيانات المنتهية", "自动清除过期数据"]]]},
+            {"theme": ["Continuité d’activité", "Business continuity", "Continuidad del negocio", "استمرارية الأعمال", "业务连续性"], "risks": [[["Indisponibilité d’un site", "Site unavailability", "Indisponibilidad de un emplazamiento", "تعذر الوصول إلى موقع", "场地不可用"], ["Site de repli équipé", "Equipped fallback site", "Emplazamiento de respaldo equipado", "موقع بديل مجهز", "配备齐全的备用场地"], ["Plan de continuité d’activité testé chaque année", "Business continuity plan tested every year", "Plan de continuidad probado cada año", "خطة استمرارية أعمال تُختبر سنويًا", "每年测试业务连续性计划"]], [["Perte de compétences clés", "Loss of key skills", "Pérdida de competencias clave", "فقدان كفاءات أساسية", "关键技能流失"], ["Binômes et documentation des savoir-faire", "Backup pairs and documented know-how", "Binomios y documentación del saber hacer", "ثنائيات عمل وتوثيق للخبرات", "结对备岗并记录专业知识"], ["Plan de succession pour les postes critiques", "Succession plan for critical roles", "Plan de sucesión para los puestos críticos", "خطة تعاقب للمناصب الحرجة", "关键岗位继任计划"]], [["Rupture d’approvisionnement", "Supply disruption", "Ruptura de suministro", "انقطاع الإمدادات", "供应中断"], ["Stock de sécurité", "Safety stock", "Stock de seguridad", "مخزون احتياطي", "安全库存"], ["Double source pour les composants critiques", "Dual sourcing for critical components", "Doble fuente para los componentes críticos", "مصدران للمكونات الحرجة", "关键部件双重采购"]]]},
+            {"theme": ["Finance et conformité", "Finance and compliance", "Finanzas y cumplimiento", "المالية والامتثال", "财务与合规"], "risks": [[["Fraude au virement", "Payment fraud", "Fraude en las transferencias", "احتيال في التحويلات المالية", "转账欺诈"], ["Double validation des paiements", "Dual approval of payments", "Doble validación de los pagos", "مصادقة مزدوجة على المدفوعات", "付款双重审批"], ["Contre-appel pour tout changement de coordonnées bancaires", "Call-back check for any change of bank details", "Verificación telefónica ante cualquier cambio de datos bancarios", "اتصال للتحقق من أي تغيير في البيانات المصرفية", "银行信息变更须电话回拨核实"]], [["Non-conformité réglementaire", "Regulatory non-compliance", "Incumplimiento normativo", "عدم الامتثال التنظيمي", "违反监管要求"], ["Veille réglementaire", "Regulatory watch", "Vigilancia normativa", "رصد تنظيمي", "法规跟踪"], ["Audit de conformité annuel", "Annual compliance audit", "Auditoría de cumplimiento anual", "تدقيق امتثال سنوي", "年度合规审计"]], [["Variation défavorable des prix ou des taux", "Adverse price or rate movement", "Variación desfavorable de precios o tipos", "تغير غير مواتٍ في الأسعار أو المعدلات", "价格或利率不利变动"], ["Clauses d’indexation plafonnées", "Capped indexation clauses", "Cláusulas de indexación con tope", "بنود ربط بمؤشر ذات سقف", "设上限的价格指数条款"], ["Couverture des principales expositions", "Hedging of main exposures", "Cobertura de las principales exposiciones", "تحوط للتعرضات الرئيسية", "对主要风险敞口进行对冲"]]]}
+        ];
+
+        const LIBRARY_LANGUAGES = ['fr', 'en', 'es', 'ar', 'zh'];
+        const libraryText = texts => texts[LIBRARY_LANGUAGES.indexOf(currentLanguage)] ?? texts[1];
+        const LIBRARY_ITEMS = RISK_LIBRARY.flatMap((theme, themeIndex) => theme.risks.map(([title, ...mesures], index) =>
+            ({ key: `${themeIndex}-${index}`, theme: themeIndex, title, mesures })));
+
+        // Choix en cours dans la bibliothèque (conservés si la fiche est reconstruite)
+        const library = { theme: -1, query: '', selected: new Set(), target: 'new', withMesures: true };
+
+        function openLibrary() {
+            Object.assign(library, { theme: -1, query: '', target: 'new', withMesures: true });
+            library.selected.clear();
+            openSheet(() => ({
+                title: t('libraryOpen'),
+                body: `<div class="library">
+                    <nav class="library-themes">
+                        ${[{ name: t('libraryAll'), index: -1, count: LIBRARY_ITEMS.length },
+                            ...RISK_LIBRARY.map((theme, index) => ({ name: libraryText(theme.theme), index, count: theme.risks.length }))]
+                            .map(({ name, index, count }) => `<button type="button" class="library-theme" data-theme="${index}">${escapeHtml(name)} <span>${count}</span></button>`).join('')}
+                        <p class="library-offline">${t('libraryOffline')}</p>
+                    </nav>
+                    <div class="library-main">
+                        <label class="filter-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input type="search" id="library-search" placeholder="${t('librarySearch')}" aria-label="${t('librarySearch')}" value="${escapeHtml(library.query)}"></label>
+                        <div class="library-list">
+                            ${LIBRARY_ITEMS.map(item => `<label class="library-card" data-key="${item.key}" data-theme="${item.theme}">
+                                <input type="checkbox" ${library.selected.has(item.key) ? 'checked' : ''}>
+                                <span><b>${escapeHtml(libraryText(item.title))}</b>
+                                    <span class="library-mesures">${item.mesures.map(mesure => `<span>${escapeHtml(libraryText(mesure))}</span>`).join('')}</span></span>
+                                <span class="library-card-theme">${escapeHtml(libraryText(RISK_LIBRARY[item.theme].theme))}</span>
+                            </label>`).join('')}
+                            <p class="review-empty library-empty" hidden>${t('libraryEmpty')}</p>
+                        </div>
+                        <div class="library-foot">
+                            <label>${t('libraryTarget')}
+                                <select id="library-target" class="filter-select">
+                                    <option value="new">${t('libraryNewGroup')}</option>
+                                    ${riskGroups.map((group, index) => `<option value="${index}" ${String(index) === library.target ? 'selected' : ''}>${index + 1}. ${escapeHtml(group.name)}</option>`).join('')}
+                                </select></label>
+                            <label><input type="checkbox" id="library-with-mesures" ${library.withMesures ? 'checked' : ''}> ${t('libraryWithMesures')}</label>
+                            <button type="button" class="sheet-btn primary" id="library-add" onclick="addLibraryRisks()"></button>
+                        </div>
+                    </div>
+                </div>`,
+                mount: body => {
+                    // Filtre par thème et recherche sans reconstruire la liste (le champ garde le focus)
+                    const applyLibraryFilter = () => {
+                        const query = library.query.trim().toLocaleLowerCase();
+                        let shown = 0;
+                        body.querySelectorAll('.library-card').forEach(card => {
+                            const visible = (library.theme < 0 || Number(card.dataset.theme) === library.theme)
+                                && (!query || card.textContent.toLocaleLowerCase().includes(query));
+                            card.hidden = !visible;
+                            card.classList.toggle('selected', library.selected.has(card.dataset.key));
+                            shown += visible;
+                        });
+                        body.querySelector('.library-empty').hidden = shown > 0;
+                        body.querySelectorAll('.library-theme').forEach(button =>
+                            button.classList.toggle('active', Number(button.dataset.theme) === library.theme));
+                        const add = body.querySelector('#library-add');
+                        add.textContent = t('libraryAdd', { count: library.selected.size });
+                        add.disabled = library.selected.size === 0;
+                    };
+                    body.querySelectorAll('.library-theme').forEach(button => {
+                        button.onclick = () => { library.theme = Number(button.dataset.theme); applyLibraryFilter(); };
+                    });
+                    body.querySelector('#library-search').oninput = event => { library.query = event.target.value; applyLibraryFilter(); };
+                    body.querySelectorAll('.library-card input').forEach(checkbox => {
+                        checkbox.onchange = () => {
+                            const key = checkbox.closest('.library-card').dataset.key;
+                            if (checkbox.checked) library.selected.add(key); else library.selected.delete(key);
+                            applyLibraryFilter();
+                        };
+                    });
+                    body.querySelector('#library-target').onchange = event => { library.target = event.target.value; };
+                    body.querySelector('#library-with-mesures').onchange = event => { library.withMesures = event.target.checked; };
+                    applyLibraryFilter();
+                }
+            }));
+        }
+
+        // Ajoute les risques cochés (non évalués) au groupe choisi ou à un nouveau groupe. O(k)
+        function addLibraryRisks() {
+            const chosen = LIBRARY_ITEMS.filter(item => library.selected.has(item.key));
+            if (!chosen.length) return;
+            let group = riskGroups[Number(library.target)];
+            if (!group) {
+                group = { id: 0, name: libraryText(RISK_LIBRARY[chosen[0].theme].theme), description: t('newGroupDescription'), risks: [], mesures: [] };
+                riskGroups.push(group);
+            }
+            chosen.forEach(item => {
+                // Numéro provisoire : commitChange() renumérote selon la position
+                const risk = { id: 'nouveau', title: libraryText(item.title), ...emptyAssessments() };
+                if (library.withMesures) {
+                    risk.mesures = item.mesures.map(mesure => normalizeMesure({ texte: libraryText(mesure) }));
+                }
+                risks.push(risk);
+                group.risks.push(risk);
+            });
+            commitChange();
+            renderRisks();
+            updateCharts();
+            closeSheet();
+            showToast(t('libraryAdded', { count: chosen.length }));
+        }
+
+        // ========================================
+        // Fiche générique : vue comité, nœud papillon, bibliothèque
+        // ========================================
+        // `render()` renvoie { title, actions, body, mount } ; la fiche est reconstruite
+        // après chaque modification (annulation et changement de langue compris).
+
+        let sheetRender = null;
+        let sheetChart = null;
+
+        function openSheet(render) {
+            sheetRender = render;
+            document.getElementById('sheet-modal').hidden = false;
+            document.body.style.overflow = 'hidden';
+            refreshSheet();
+        }
+
+        function refreshSheet() {
+            if (!sheetRender) return;
+            if (sheetChart) sheetChart.destroy();
+            sheetChart = null;
+            const { title, actions = '', body, mount } = sheetRender();
+            document.getElementById('sheet-title').textContent = title;
+            document.getElementById('sheet-actions').innerHTML = actions;
+            document.getElementById('sheet-body').innerHTML = body;
+            if (mount) mount(document.getElementById('sheet-body'));
+        }
+
+        function closeSheet() {
+            if (sheetChart) sheetChart.destroy();
+            sheetChart = null;
+            sheetRender = null;
+            document.getElementById('sheet-modal').hidden = true;
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', event => {
+            // Échap dans un champ en cours d'édition annule la saisie, sans fermer la fiche
+            if (event.key === 'Escape' && sheetRender && !event.target.closest?.('[data-editing-initialized]')) closeSheet();
+        });
+
         // Gestion du clavier pour la modal (Échap, flèches gauche/droite)
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('matrix-modal');
@@ -8357,6 +9461,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             applyTranslations();
             renderRisks();
             updateCharts();
+            refreshSheet();
             if (document.getElementById('matrix-modal').classList.contains('active')) {
                 openMatrixModal(currentMatrixType);
             }

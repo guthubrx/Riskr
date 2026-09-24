@@ -33,6 +33,8 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   échéance facultatifs ; `etat` vaut `todo`, `doing` ou `done` ; une simple chaîne
   de texte est aussi acceptée). Une échéance au format `AAAA-MM-JJ` ou
   `JJ/MM/AAAA` passée sur une mesure non faite la signale en retard.
+- `causes`, `consequences` : listes de textes du nœud papillon ; chaque mesure
+  porte aussi `barriere` (`prevention` ou `protection`), son côté dans le nœud.
 - `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
   permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
 - `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
@@ -93,6 +95,13 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
   risques au-dessus de l'appétence
 - **Catégorisation** par groupes thématiques
+- **Nœud papillon** par risque : causes, barrières préventives, événement redouté,
+  barrières de protection, conséquences (les barrières sont les mesures du risque)
+- **Bibliothèque de risques types** intégrée (hors ligne, 6 thèmes, 5 langues) :
+  ajout en quelques clics, avec ou sans les mesures suggérées
+- **Vue comité** : synthèse d'une page (indicateurs, trajectoire, 5 risques
+  résiduels les plus élevés, traitements, exposition par revue, décisions attendues),
+  copiable dans Word ou PowerPoint et exportable en PDF d'une page
 
 ### Visualisation
 - **Matrices Before/After** avec Chart.js
