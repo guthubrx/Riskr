@@ -1027,46 +1027,125 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         }
 
-        /* Revues : liste des revues figées | graphique d'exposition et comparaison */
-        .reviews-layout {
+        /* Revues : frise | comparaison (compteurs, changements, courbe par groupe) */
+        .reviews-page {
             display: grid;
-            grid-template-columns: 280px minmax(0, 1fr);
-            gap: 16px;
+            grid-template-columns: 360px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
         }
 
-        .review-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin: 8px 0 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .review-item {
+        .big-btn {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 8px;
-            border: 1px solid transparent;
-            border-radius: 8px;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary-bg);
+            color: var(--primary-fg);
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        .review-item:hover,
-        .review-item.active {
-            background: var(--surface-2);
+        .big-btn:hover {
+            background: var(--primary-hover);
         }
 
-        .review-item.active {
-            border-color: var(--accent);
-        }
-
-        .review-info {
+        .review-timeline {
+            position: relative;
             display: flex;
-            flex: 1;
             flex-direction: column;
+            gap: 12px;
+            margin: 18px 0 0;
+            padding: 0 0 0 26px;
+            list-style: none;
+        }
+
+        .review-timeline::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            left: 7px;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .review-card {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            cursor: pointer;
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -26px;
+            width: 12px;
+            height: 12px;
+            margin-top: -8px;
+            border: 2px solid var(--border-strong);
+            border-radius: 50%;
+            background: var(--surface);
+        }
+
+        .review-card.latest::before {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        .review-card.latest {
+            border-color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+        }
+
+        .review-card.compared::before {
+            border-color: #8e5cf0;
+        }
+
+        .review-card.compared {
+            border-color: #8e5cf0;
+        }
+
+        .review-card-body {
+            flex: 1;
             min-width: 0;
+        }
+
+        .review-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .review-badge {
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .review-badge.latest {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .review-badge.compared {
+            background: color-mix(in srgb, #8e5cf0 15%, transparent);
+            color: #8e5cf0;
         }
 
         .editable-review-label {
@@ -1075,77 +1154,135 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .review-meta,
-        .review-empty {
-            font-size: 12px;
+        .review-empty,
+        .reviews-hint {
+            font-size: 13px;
             color: var(--text-3);
+        }
+
+        .reviews-hint {
+            margin: 16px 0 0;
+            line-height: 1.5;
+        }
+
+        .compare-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: var(--text-2);
+        }
+
+        .compare-chip {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .compare-chip.from {
+            background: color-mix(in srgb, #8e5cf0 14%, transparent);
+            color: #8e5cf0;
+        }
+
+        .compare-chip.to {
+            background: color-mix(in srgb, var(--accent) 14%, transparent);
+            color: var(--accent);
+        }
+
+        .review-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .review-kpi {
+            padding: 14px 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text-2);
+        }
+
+        .review-kpi b {
+            display: block;
+            margin-top: 4px;
+            font-size: 28px;
+            color: var(--text);
+        }
+
+        .review-kpi.down b {
+            color: #1f8a3c;
+        }
+
+        .review-kpi.up b {
+            color: #ff3b30;
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
         }
 
         .reviews-chart {
             position: relative;
-            height: 220px;
+            height: 320px;
         }
 
-        .review-diff h4 {
-            margin: 12px 0 8px;
-            font-size: 13px;
-            color: var(--text-2);
+        .change-row {
+            display: grid;
+            grid-template-columns: 28px minmax(0, 1fr) auto 40px;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
         }
 
-        .diff-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+        .change-row:last-child {
+            border-bottom: none;
         }
 
-        .diff-chip {
+        .id-bubble {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 3px 10px;
-            border-radius: 999px;
-            background: var(--surface-2);
-            font-size: 12px;
-            color: var(--text-2);
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #1f4e78;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
         }
 
-        .diff-chip b {
-            color: var(--text);
+        .change-delta {
+            font-weight: 700;
+            text-align: end;
+            color: var(--text-3);
         }
 
-        .diff-down {
-            color: #34c759;
+        .change-delta.down {
+            color: #1f8a3c;
         }
 
-        .diff-up {
+        .change-delta.up {
             color: #ff3b30;
         }
 
-        .diff-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin: 10px 0 0;
-            padding: 0;
-            list-style: none;
-            font-size: 13px;
+        @media (max-width: 1100px) {
+            .reviews-page,
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .diff-list li {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .diff-title {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            color: var(--text);
-        }
-
-        /* Tendance du tableau récapitulatif (masquée tant qu'aucune revue n'existe) */
+        /* Tendance du tableau récapitulatif        /* Tendance du tableau récapitulatif (masquée tant qu'aucune revue n'existe) */
         .risk-table.no-reviews .trend-col {
             display: none;
         }
@@ -1157,11 +1294,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             stroke-linejoin: round;
         }
 
-        @media (max-width: 900px) {
-            .reviews-layout {
-                grid-template-columns: 1fr;
-            }
-        }
 
         .risk-filters {
             display: flex;
@@ -4167,26 +4299,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         <!-- Revues : photos datées des cotations, comparées à l'état actuel -->
         <section class="tab-panel" data-panel="revues" role="tabpanel" hidden>
-        <div class="risk-table-container collapsible-section">
-            <h3 class="collapsible-header" onclick="toggleCollapse('reviews-content')">
-                <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
-                <span data-i18n="reviewsTitle">Revues</span>
-                <span id="reviews-summary" class="section-summary"></span>
-            </h3>
-            <div id="reviews-content" class="collapsible-content">
-                <div class="reviews-layout">
-                    <div>
-                        <button type="button" class="review-freeze" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> <span data-i18n="reviewFreeze">Figer une revue</span></button>
-                        <ul id="review-list" class="review-list"></ul>
-                    </div>
-                    <div>
-                        <div class="reviews-chart"><canvas id="chartReviews"></canvas></div>
-                        <div id="review-diff" class="review-diff"></div>
+            <div class="reviews-page">
+                <aside>
+                    <button type="button" class="big-btn" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="reviewNewFreeze">Figer une nouvelle revue</span></button>
+                    <ol id="review-timeline" class="review-timeline"></ol>
+                    <p class="reviews-hint" data-i18n="reviewsHint"></p>
+                </aside>
+                <div class="reviews-main">
+                    <div id="compare-bar" class="compare-bar"></div>
+                    <div id="review-kpis" class="review-kpis"></div>
+                    <div class="reviews-grid">
+                        <section class="committee-card"><h3 data-i18n="changesTitle">Changements de cotation résiduelle</h3><div id="review-changes"></div></section>
+                        <section class="committee-card"><h3 data-i18n="exposureByGroup">Exposition moyenne par groupe (/5)</h3><div class="reviews-chart"><canvas id="chartReviews"></canvas></div></section>
                     </div>
                 </div>
             </div>
-        </div>
-
         </section>
 
         <!-- Registre : filtres et risques par groupe -->
@@ -5472,6 +5599,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                reviewNewFreeze: "Figer une nouvelle revue",
+                reviewLatest: "dernière",
+                reviewComparedBadge: "comparée",
+                reviewAuthorPlaceholder: "auteur ou instance",
+                reviewsHint: "Une revue fige les cotations à une date. Les revues passées restent consultables et sont enregistrées avec les données.",
+                changesTitle: "Changements de cotation résiduelle",
+                exposureByGroup: "Exposition moyenne par groupe (/5)",
+                diffNewClosed: "Nouveaux · clos",
+                compareTo: "comparée à",
                 viewTable: "Tableau",
                 viewCards: "Cartes",
                 viewEdit: "Édition",
@@ -5742,6 +5878,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                reviewNewFreeze: "Record a new review",
+                reviewLatest: "latest",
+                reviewComparedBadge: "compared",
+                reviewAuthorPlaceholder: "author or body",
+                reviewsHint: "A review freezes the ratings at a given date. Past reviews remain available and are saved with the data.",
+                changesTitle: "Residual rating changes",
+                exposureByGroup: "Average exposure by group (/5)",
+                diffNewClosed: "New · closed",
+                compareTo: "compared with",
                 viewTable: "Table",
                 viewCards: "Cards",
                 viewEdit: "Edit",
@@ -6012,6 +6157,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                reviewNewFreeze: "Registrar una nueva revisión",
+                reviewLatest: "última",
+                reviewComparedBadge: "comparada",
+                reviewAuthorPlaceholder: "autor o instancia",
+                reviewsHint: "Una revisión fija las calificaciones en una fecha. Las revisiones anteriores siguen consultables y se guardan con los datos.",
+                changesTitle: "Cambios de calificación residual",
+                exposureByGroup: "Exposición media por grupo (/5)",
+                diffNewClosed: "Nuevos · cerrados",
+                compareTo: "comparada con",
                 viewTable: "Tabla",
                 viewCards: "Tarjetas",
                 viewEdit: "Edición",
@@ -6282,6 +6436,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                reviewNewFreeze: "记录新的评审",
+                reviewLatest: "最新",
+                reviewComparedBadge: "对比中",
+                reviewAuthorPlaceholder: "作者或机构",
+                reviewsHint: "评审会冻结某一日期的评级。以往的评审仍可查看，并随数据一起保存。",
+                changesTitle: "剩余评级变化",
+                exposureByGroup: "各组平均暴露（/5）",
+                diffNewClosed: "新增 · 关闭",
+                compareTo: "对比",
                 viewTable: "表格",
                 viewCards: "卡片",
                 viewEdit: "编辑",
@@ -6552,6 +6715,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                reviewNewFreeze: "تسجيل مراجعة جديدة",
+                reviewLatest: "الأحدث",
+                reviewComparedBadge: "مقارنة",
+                reviewAuthorPlaceholder: "الكاتب أو الهيئة",
+                reviewsHint: "تثبّت المراجعة التقييمات في تاريخ معيّن. تبقى المراجعات السابقة متاحة وتُحفظ مع البيانات.",
+                changesTitle: "تغييرات التقييم المتبقي",
+                exposureByGroup: "متوسط التعرض حسب المجموعة (/5)",
+                diffNewClosed: "جديدة · مغلقة",
+                compareTo: "مقارنة بـ",
                 viewTable: "جدول",
                 viewCards: "بطاقات",
                 viewEdit: "تحرير",
@@ -6980,8 +7152,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 id: String(review.id || newUid()),
                 date: String(review.date || ''),
                 label: String(review.label || ''),
+                auteur: String(review.auteur || ''),
                 risks: review.risks.filter(r => r && r.uid).map(r => ({
-                    uid: String(r.uid), id: String(r.id || ''), title: String(r.title || ''),
+                    uid: String(r.uid), id: String(r.id || ''), title: String(r.title || ''), groupe: String(r.groupe || ''),
                     before: toAssessment(r.before), after: toAssessment(r.after)
                 }))
             }));
@@ -7878,7 +8051,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Revues : photos datées des cotations, comparées à l'état actuel
         // ========================================
 
-        let compareReviewId = null; // revue comparée à l'état actuel (par défaut : la dernière)
+        // Revues comparées : « from » = revue de départ, « to » = revue d'arrivée ou « current » (état actuel)
+        const comparison = { from: null, to: 'current' };
         let chartReviews = null;
 
         // Criticité après remédiation (P × I sur 25), null si non évaluée
@@ -7897,15 +8071,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function freezeReview() {
             const today = new Date();
-            const review = {
+            const groupOf = new Map(riskGroups.flatMap(group => group.risks.map(risk => [risk.uid, group.name])));
+            const frozen = {
                 id: newUid(),
                 date: [today.getFullYear(), today.getMonth() + 1, today.getDate()].map(n => String(n).padStart(2, '0')).join('-'),
                 label: t('reviewLabel', { n: reviews.length + 1 }),
-                risks: risks.map(risk => ({ uid: risk.uid, id: risk.id, title: risk.title,
+                auteur: '',
+                risks: risks.map(risk => ({ uid: risk.uid, id: risk.id, title: risk.title, groupe: groupOf.get(risk.uid) || '',
                     before: [...risk.assessmentBefore], after: [...risk.assessmentAfter] }))
             };
-            reviews.push(review);
-            compareReviewId = review.id;
+            reviews.push(frozen);
+            Object.assign(comparison, { from: reviews.length > 1 ? reviews[reviews.length - 2].id : frozen.id, to: frozen.id });
             commitChange();
             renderReviews();
             updateRiskTable();
@@ -7913,7 +8089,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function deleteReview(id) {
-            const index = reviews.findIndex(review => review.id === id);
+            const index = reviews.findIndex(r => r.id === id);
             if (index < 0 || !confirm(t('confirmDeleteReview', { name: reviews[index].label }))) return;
             reviews.splice(index, 1);
             commitChange();
@@ -7921,70 +8097,128 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             updateRiskTable();
         }
 
-        function renderReviews() {
-            const list = document.getElementById('review-list');
-            if (!list) return;
-            const compared = reviews.find(review => review.id === compareReviewId) || reviews[reviews.length - 1];
-            const last = reviews[reviews.length - 1];
-            document.getElementById('reviews-summary').textContent = last ? `${last.label} · ${formatReviewDate(last.date)}` : '';
-
-            list.innerHTML = reviews.map(review => {
-                const exposure = meanExposure(review.risks.map(r => r.after));
-                return `<li class="review-item${review === compared ? ' active' : ''}" data-review-id="${escapeHtml(review.id)}" title="${t('reviewCompare')}">
-                    <div class="review-info">
-                        <span class="editable-review-label" data-review-id="${escapeHtml(review.id)}">${escapeHtml(review.label)}</span>
-                        <span class="review-meta">${escapeHtml(formatReviewDate(review.date))} · ${t('reviewRisks', { count: review.risks.length })}${exposure === null ? '' : ` · ${exposure.toFixed(1)}/5`}</span>
-                    </div>
-                    <button type="button" class="review-delete" data-review-id="${escapeHtml(review.id)}" title="${t('reviewDelete')}" aria-label="${t('reviewDelete')}">${icon('trash')}</button>
-                </li>`;
-            }).join('') || `<li class="review-empty">${t('reviewNone')}</li>`;
-            list.querySelectorAll('.review-item').forEach(item => {
-                item.onclick = () => { compareReviewId = item.dataset.reviewId; renderReviews(); };
-            });
-            list.querySelectorAll('.review-delete').forEach(button => {
-                button.onclick = event => { event.stopPropagation(); deleteReview(button.dataset.reviewId); };
-            });
-            list.querySelectorAll('.editable-review-label').forEach(element =>
-                makeInlineEditable(element, value => {
-                    reviews.find(review => review.id === element.dataset.reviewId).label = value;
-                    commitChange();
-                    renderReviews();
-                }, { required: true }));
-
-            renderReviewChart();
-            document.getElementById('review-diff').innerHTML = compared ? reviewDiffHtml(compared) : '';
+        // Photo comparable : revue figée ou état actuel, indexée par identifiant stable. O(n)
+        function snapshotOf(key) {
+            const frozen = reviews.find(r => r.id === key);
+            if (frozen) return { label: frozen.label, risks: new Map(frozen.risks.map(r => [r.uid, r])) };
+            const groupOf = new Map(riskGroups.flatMap(group => group.risks.map(risk => [risk.uid, group.name])));
+            return { label: t('reviewCurrent'), risks: new Map(risks.map(risk => [risk.uid,
+                { uid: risk.uid, id: risk.id, title: risk.title, groupe: groupOf.get(risk.uid), after: risk.assessmentAfter }])) };
         }
 
-        // Exposition moyenne /5 par revue, puis l'état actuel
+        function renderReviews() {
+            const timeline = document.getElementById('review-timeline');
+            if (!timeline) return;
+            // Choix par défaut (ou devenu invalide) : dernière revue → état actuel
+            if (!reviews.some(r => r.id === comparison.from)) comparison.from = reviews.length ? reviews[reviews.length - 1].id : null;
+            if (comparison.to !== 'current' && !reviews.some(r => r.id === comparison.to)) comparison.to = 'current';
+            const latest = reviews[reviews.length - 1];
+
+            timeline.innerHTML = [...reviews].reverse().map(item => `<li class="review-card${item === latest ? ' latest' : ''}${item.id === comparison.from ? ' compared' : ''}" data-review-id="${escapeHtml(item.id)}" title="${t('reviewCompare')}">
+                <div class="review-card-body">
+                    <div class="review-card-head">
+                        <span class="editable-review-label" data-review-id="${escapeHtml(item.id)}">${escapeHtml(item.label)}</span>
+                        ${item.id === comparison.from ? `<span class="review-badge compared">${t('reviewComparedBadge')}</span>` : item === latest ? `<span class="review-badge latest">${t('reviewLatest')}</span>` : ''}
+                    </div>
+                    <div class="review-meta">${escapeHtml(formatReviewDate(item.date))} · <span class="editable-review-label review-author" data-review-id="${escapeHtml(item.id)}" data-field="auteur" data-placeholder="${t('reviewAuthorPlaceholder')}">${escapeHtml(item.auteur)}</span> · ${t('reviewRisks', { count: item.risks.length })}</div>
+                </div>
+                <button type="button" class="review-delete" data-review-id="${escapeHtml(item.id)}" title="${t('reviewDelete')}" aria-label="${t('reviewDelete')}">${icon('trash')}</button>
+            </li>`).join('') || `<li class="review-empty">${t('reviewNone')}</li>`;
+            timeline.querySelectorAll('.review-card').forEach(card => {
+                card.onclick = () => { comparison.from = card.dataset.reviewId; renderReviews(); };
+            });
+            timeline.querySelectorAll('.review-delete').forEach(button => {
+                button.onclick = event => { event.stopPropagation(); deleteReview(button.dataset.reviewId); };
+            });
+            timeline.querySelectorAll('.editable-review-label').forEach(element =>
+                makeInlineEditable(element, value => {
+                    reviews.find(r => r.id === element.dataset.reviewId)[element.dataset.field || 'label'] = value;
+                    commitChange();
+                    renderReviews();
+                }, { required: !element.dataset.field }));
+
+            const options = selected => reviews.map(r => `<option value="${escapeHtml(r.id)}" ${r.id === selected ? 'selected' : ''}>${escapeHtml(r.label)} · ${escapeHtml(formatReviewDate(r.date))}</option>`).join('');
+            const bar = document.getElementById('compare-bar');
+            bar.innerHTML = reviews.length ? `<span>${t('reviewCompare')}</span>
+                <select class="compare-chip from" aria-label="${t('reviewCompare')}">${options(comparison.from)}</select> →
+                <select class="compare-chip to" aria-label="${t('compareTo')}">${options(comparison.to)}<option value="current" ${comparison.to === 'current' ? 'selected' : ''}>${t('reviewCurrent')}</option></select>` : '';
+            if (reviews.length) {
+                bar.querySelector('.from').onchange = event => { comparison.from = event.target.value; renderReviews(); };
+                bar.querySelector('.to').onchange = event => { comparison.to = event.target.value; renderReviews(); };
+            }
+
+            renderReviewComparison();
+            renderReviewChart();
+        }
+
+        // Comparaison de deux photos : compteurs et changements triés par écart. O(n log n)
+        function renderReviewComparison() {
+            const kpis = document.getElementById('review-kpis');
+            const list = document.getElementById('review-changes');
+            if (!comparison.from) {
+                kpis.innerHTML = '';
+                list.innerHTML = `<p class="review-empty">${t('reviewNone')}</p>`;
+                return;
+            }
+            const from = snapshotOf(comparison.from).risks;
+            const to = snapshotOf(comparison.to).risks;
+            const changes = [...to.values()].map(r => ({ risk: r, before: from.get(r.uid), kind: from.has(r.uid) ? 'kept' : 'new' }))
+                .concat([...from.values()].filter(r => !to.has(r.uid)).map(r => ({ risk: r, before: r, kind: 'closed' })));
+            changes.forEach(change => {
+                change.delta = change.kind === 'kept' ? scoreOf(change.risk.after) - scoreOf(change.before.after) : null;
+            });
+            const count = kind => changes.filter(kind).length;
+            kpis.innerHTML = [
+                ['down', t('diffDown'), count(c => c.delta < 0)],
+                ['up', t('diffUp'), count(c => c.delta > 0)],
+                ['', t('diffSame'), count(c => c.delta === 0)],
+                ['', t('diffNewClosed'), `${count(c => c.kind === 'new')} · ${count(c => c.kind === 'closed')}`]
+            ].map(([tone, label, value]) => `<div class="review-kpi ${tone}">${label}<b>${value}</b></div>`).join('');
+
+            changes.sort((a, b) => (a.delta ?? 99) - (b.delta ?? 99) || a.risk.id.localeCompare(b.risk.id, undefined, { numeric: true }));
+            const deltaHtml = change => change.kind === 'new' ? t('diffNew') : change.kind === 'closed' ? t('diffClosed')
+                : change.delta === 0 ? '=' : `${change.delta > 0 ? '+' : '−'}${Math.abs(change.delta)}`;
+            list.innerHTML = changes.map(change => `<div class="change-row">
+                <span class="id-bubble">${escapeHtml(change.risk.id)}</span>
+                <span>${escapeHtml(change.risk.title)}</span>
+                <span class="score-chips">${change.kind === 'new' ? '' : scoreChip(change.before.after)} → ${change.kind === 'closed' ? '—' : scoreChip(change.risk.after)}</span>
+                <span class="change-delta ${change.delta < 0 ? 'down' : change.delta > 0 ? 'up' : ''}">${deltaHtml(change)}</span>
+            </div>`).join('');
+        }
+
+        // Exposition moyenne /5 par groupe, revue par revue puis état actuel (ligne d'appétence en pointillé)
         function renderReviewChart() {
             if (chartReviews) chartReviews.destroy();
             chartReviews = null;
             const canvas = document.getElementById('chartReviews');
             canvas.parentElement.hidden = reviews.length === 0;
             if (!reviews.length) return;
-            const values = [...reviews.map(review => meanExposure(review.risks.map(r => r.after))),
-                meanExposure(risks.map(risk => risk.assessmentAfter))];
+            const snapshots = [...reviews.map(r => snapshotOf(r.id)), snapshotOf('current')];
+            const currentGroup = snapshotOf('current').risks;
+            const groupName = (uid, entry) => entry.groupe || currentGroup.get(uid)?.groupe || '';
+            const names = [...new Set([...riskGroups.map(group => group.name), ...snapshots.flatMap(snap => [...snap.risks].map(([uid, entry]) => groupName(uid, entry)))])].filter(Boolean);
+            const COLORS = ['#5e5ce6', '#30b0c7', '#ff9f0a', '#ff375f', '#34c759', '#af52de', '#0a84ff'];
+            const datasets = names.map((name, index) => ({
+                label: name,
+                data: snapshots.map(snap => meanExposure([...snap.risks].filter(([uid, entry]) => groupName(uid, entry) === name).map(([, entry]) => entry.after))),
+                borderColor: COLORS[index % COLORS.length],
+                backgroundColor: COLORS[index % COLORS.length],
+                tension: 0.25,
+                spanGaps: true
+            }));
+            if (settings.riskAppetite) {
+                datasets.push({ label: t('appetiteLabel'), data: snapshots.map(() => settings.riskAppetite / 5), borderColor: axisColor, borderDash: [6, 5], borderWidth: 1.5, pointRadius: 0 });
+            }
             chartReviews = new Chart(canvas, {
-                type: 'bar',
-                data: {
-                    labels: [...reviews.map(review => review.label), t('reviewCurrent')],
-                    datasets: [{
-                        data: values,
-                        backgroundColor: values.map(value => value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]),
-                        borderColor: values.map((value, index) => index === values.length - 1 ? BUBBLE_COLOR : 'transparent'),
-                        borderWidth: 2,
-                        borderRadius: 6,
-                        maxBarThickness: 56
-                    }]
-                },
+                type: 'line',
+                data: { labels: snapshots.map(snap => snap.label), datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: false,
                     plugins: {
-                        legend: { display: false },
-                        title: { display: true, text: t('reviewExposure'), color: axisColor },
-                        tooltip: { callbacks: { label: context => `${context.raw.toFixed(2)}/5` } }
+                        legend: { position: 'bottom', labels: { color: axisColor, boxWidth: 12, usePointStyle: true } },
+                        tooltip: { callbacks: { label: context => `${context.dataset.label} : ${context.raw === null ? '—' : context.raw.toFixed(2)}/5` } }
                     },
                     scales: {
                         x: { ticks: { color: axisColor }, grid: { display: false } },
@@ -7992,36 +8226,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
                 }
             });
-        }
-
-        // Comparaison revue → état actuel, par identifiant stable. Complexité : O(n)
-        function reviewDiffHtml(review) {
-            const previous = new Map(review.risks.map(r => [r.uid, r]));
-            const currentUids = new Set(risks.map(risk => risk.uid));
-            const counts = { down: 0, up: 0, same: 0, new: 0, closed: 0 };
-            const changes = [];
-            risks.forEach(risk => {
-                const old = previous.get(risk.uid);
-                const now = residualScore(risk.assessmentAfter) || 0;
-                const then = old ? residualScore(old.after) || 0 : 0;
-                const kind = !old ? 'new' : now < then ? 'down' : now > then ? 'up' : 'same';
-                counts[kind]++;
-                if (kind !== 'same') changes.push({ kind, id: risk.id, title: risk.title, from: old ? old.after : null, to: risk.assessmentAfter });
-            });
-            review.risks.filter(r => !currentUids.has(r.uid)).forEach(r => {
-                counts.closed++;
-                changes.push({ kind: 'closed', id: r.id, title: r.title, from: r.after, to: null });
-            });
-            const KINDS = { down: ['diffDown', 'trendDown'], up: ['diffUp', 'trendUp'], same: ['diffSame', 'minus'], new: ['diffNew', 'plus'], closed: ['diffClosed', 'check'] };
-            const badge = assessment => assessment ? getCriticalityBadge(...assessment) : '—';
-            return `<h4>${t('reviewCompare')} : ${escapeHtml(review.label)} → ${t('reviewCurrent')}</h4>
-                <div class="diff-chips">${Object.entries(KINDS).map(([kind, [label, iconName]]) =>
-                    `<span class="diff-chip"><span class="diff-${kind}">${icon(iconName)}</span><b>${counts[kind]}</b> ${t(label)}</span>`).join('')}</div>
-                ${changes.length ? `<ul class="diff-list">${changes.map(change => `<li>
-                    <span class="diff-${change.kind}" title="${t(KINDS[change.kind][0])}">${icon(KINDS[change.kind][1])}</span>
-                    <b>${escapeHtml(change.id)}</b><span class="diff-title">${escapeHtml(change.title)}</span>
-                    ${badge(change.from)} → ${badge(change.to)}</li>`).join('')}</ul>`
-                    : `<p class="review-empty">${t('diffNoChange')}</p>`}`;
         }
 
         // ========================================
