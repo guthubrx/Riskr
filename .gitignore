@@ -5,11 +5,16 @@ archive/
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
 # Fichiers temporaires
 *.tmp
 *.bak
 *~
+*.bkp
+
+# Fichiers de travail (captures, presse-papier d'outils)
+.gemini-clipboard/
 
 # IDE
 .vscode/
