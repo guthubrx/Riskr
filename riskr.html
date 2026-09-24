@@ -660,6 +660,50 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         /* Filtres du registre (recherche, listes, appétence, case de matrice) */
+        /* Onglets de vues (Matrices, Registre, Plan d'actions, Revues, Vue comité) */
+        .view-tabs {
+            display: flex;
+            gap: 4px;
+            width: fit-content;
+            max-width: 100%;
+            margin: 0 0 18px;
+            padding: 4px;
+            overflow-x: auto;
+            border-radius: 12px;
+            background: var(--surface-2);
+        }
+
+        .view-tab {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 14px;
+            border: none;
+            border-radius: 9px;
+            background: none;
+            color: var(--text-2);
+            font-size: 14px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .view-tab:hover {
+            color: var(--text);
+        }
+
+        .view-tab.active {
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Les matrices ont leur onglet : plus besoin de les garder en haut de l'écran */
+        .tab-panel .sticky-charts-section {
+            position: relative;
+            top: 0;
+        }
+
         /* Résumé à droite du titre d'une section repliable */
         .section-summary {
             margin-inline-start: auto;
@@ -2803,11 +2847,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 position: relative !important;
             }
 
-            /* Épinglage inutile sur mobile */
-            #sticky-toggle-btn {
-                display: none;
-            }
-
             /* Réduire la taille des titres */
             h1 {
                 font-size: 24px;
@@ -3795,7 +3834,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </div>
         </header>
 
-        <!-- Matrices sticky en haut -->
+        <!-- Onglets de vues -->
+        <nav class="view-tabs" role="tablist" data-i18n-title="tabsLabel">
+            <button type="button" class="view-tab" role="tab" data-tab="matrices" onclick="showTab('matrices')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="tabMatrices">Matrices</span></button>
+            <button type="button" class="view-tab" role="tab" data-tab="registre" onclick="showTab('registre')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span data-i18n="tabRegister">Registre</span></button>
+            <button type="button" class="view-tab" role="tab" data-tab="actions" onclick="showTab('actions')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="actionPlanTitle">Plan d’actions</span></button>
+            <button type="button" class="view-tab" role="tab" data-tab="revues" onclick="showTab('revues')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="reviewsTitle">Revues</span></button>
+            <button type="button" class="view-tab" role="tab" data-tab="comite" onclick="showTab('comite')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-i18n="tabCommittee">Vue comité</span></button>
+        </nav>
+
+        <section class="tab-panel" data-panel="matrices" role="tabpanel">
         <div class="sticky-charts-section" id="sticky-section">
 
             <!-- Section collapsable pour les matrices -->
@@ -3816,7 +3864,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <button class="icon-toggle" onclick="toggleMenu('matrix-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="displayOptions"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
                             <div id="matrix-menu" class="menu" role="menu" hidden></div>
                         </div>
-                        <button id="sticky-toggle-btn" class="icon-toggle" onclick="toggleSticky()" data-i18n-title="pinMatrices"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg></button>
                     </div>
                 </h3>
                 <div id="matrices-content" class="collapsible-content">
@@ -3865,34 +3912,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 </div>
             </div>
 
-            <!-- Fiche : vue comité, nœud papillon, bibliothèque -->
-            <div id="sheet-modal" class="sheet-modal" hidden onclick="if (event.target === this) closeSheet()">
-                <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
-                    <div class="sheet-head">
-                        <h2 id="sheet-title"></h2>
-                        <div id="sheet-actions" class="sheet-actions"></div>
-                        <button class="icon-btn" onclick="closeSheet()" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-                    </div>
-                    <div id="sheet-body"></div>
-                </div>
-            </div>
-
-            <!-- Modal d'agrandissement de matrice -->
-            <div id="matrix-modal" class="matrix-modal" onclick="closeMatrixModal(event)">
-                <!-- Commandes hors de la zone blanche : la capture d'écran reste propre -->
-                <div class="matrix-modal-toolbar">
-                    <button class="matrix-modal-copy" onclick="event.stopPropagation(); copyMatrixImage(currentMatrixType)" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
-                    <button class="matrix-modal-close" onclick="closeMatrixModal(event)" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
-                </div>
-                <button class="matrix-nav-btn prev" onclick="event.stopPropagation(); navigateMatrix('prev')" data-i18n-title="prevMatrix"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
-                <button class="matrix-nav-btn next" onclick="event.stopPropagation(); navigateMatrix('next')" data-i18n-title="nextMatrix"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
-                <div class="matrix-modal-content">
-                    <h2 id="matrix-modal-title">Matrice des risques</h2>
-                    <div class="matrix-modal-canvas">
-                        <canvas id="chartModal"></canvas>
-                    </div>
-                </div>
-            </div>
 
             <!-- Tableau des groupes (inséré dynamiquement) -->
             <div id="group-table-wrapper">
@@ -3922,8 +3941,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 </div>
             </div>
         </div>
+        </section>
 
         <!-- Plan d'actions : les mesures de tous les risques, par état -->
+        <section class="tab-panel" data-panel="actions" role="tabpanel" hidden>
         <div class="risk-table-container collapsible-section">
             <h3 class="collapsible-header" onclick="toggleCollapse('action-plan-content')">
                 <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
@@ -3935,7 +3956,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </div>
         </div>
 
+        </section>
+
         <!-- Revues : photos datées des cotations, comparées à l'état actuel -->
+        <section class="tab-panel" data-panel="revues" role="tabpanel" hidden>
         <div class="risk-table-container collapsible-section">
             <h3 class="collapsible-header" onclick="toggleCollapse('reviews-content')">
                 <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
@@ -3956,6 +3980,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </div>
         </div>
 
+        </section>
+
+        <!-- Registre : filtres et risques par groupe -->
+        <section class="tab-panel" data-panel="registre" role="tabpanel" hidden>
         <div class="risk-filters" id="risk-filters">
             <label class="filter-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
                 <input type="search" id="filter-text" data-i18n-placeholder="filterSearch" data-i18n-title="filterSearch" oninput="setFilter('text', this.value)"></label>
@@ -3969,7 +3997,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
         </div>
         <div id="risks-container"></div>
+        </section>
+
+        <!-- Vue comité -->
+        <section class="tab-panel" data-panel="comite" role="tabpanel" hidden>
+            <div id="committee-panel"></div>
+        </section>
     </div>
+
+    <!-- Fenêtres (hors des onglets : un onglet masqué les masquerait) -->
+        <!-- Fiche : vue comité, nœud papillon, bibliothèque -->
+        <div id="sheet-modal" class="sheet-modal" hidden onclick="if (event.target === this) closeSheet()">
+            <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+                <div class="sheet-head">
+                    <h2 id="sheet-title"></h2>
+                    <div id="sheet-actions" class="sheet-actions"></div>
+                    <button class="icon-btn" onclick="closeSheet()" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                </div>
+                <div id="sheet-body"></div>
+            </div>
+        </div>
+
+        <!-- Modal d'agrandissement de matrice -->
+        <div id="matrix-modal" class="matrix-modal" onclick="closeMatrixModal(event)">
+            <!-- Commandes hors de la zone blanche : la capture d'écran reste propre -->
+            <div class="matrix-modal-toolbar">
+                <button class="matrix-modal-copy" onclick="event.stopPropagation(); copyMatrixImage(currentMatrixType)" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
+                <button class="matrix-modal-close" onclick="closeMatrixModal(event)" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+            </div>
+            <button class="matrix-nav-btn prev" onclick="event.stopPropagation(); navigateMatrix('prev')" data-i18n-title="prevMatrix"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button class="matrix-nav-btn next" onclick="event.stopPropagation(); navigateMatrix('next')" data-i18n-title="nextMatrix"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+            <div class="matrix-modal-content">
+                <h2 id="matrix-modal-title">Matrice des risques</h2>
+                <div class="matrix-modal-canvas">
+                    <canvas id="chartModal"></canvas>
+                </div>
+            </div>
+        </div>
 
     <!-- Footer -->
     <footer class="app-footer">
@@ -4267,49 +4331,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         document.addEventListener('DOMContentLoaded', initInlineEditing);
 
-        // ========================================
-        // Toggle sticky mode
-        // ========================================
-
-        function toggleSticky() {
-            const stickySection = document.getElementById('sticky-section');
-            const toggleBtn = document.getElementById('sticky-toggle-btn');
-
-            // Toggle : si active, on désactive ; si inactif, on active
-            const isCurrentlyActive = toggleBtn.classList.contains('active');
-
-            if (isCurrentlyActive) {
-                // Désactiver sticky
-                toggleBtn.classList.remove('active');
-                stickySection.classList.add('sticky-disabled');
-                riskrStorage.setItem('sticky-enabled', 'false');
-                console.log(`📌 Mode sticky: DÉSACTIVÉ`);
-            } else {
-                // Activer sticky
-                toggleBtn.classList.add('active');
-                stickySection.classList.remove('sticky-disabled');
-                riskrStorage.setItem('sticky-enabled', 'true');
-                console.log(`📌 Mode sticky: ACTIVÉ`);
-            }
-        }
-
-        // Restaurer l'état du sticky au chargement (LOGIQUE INVERSÉE)
-        document.addEventListener('DOMContentLoaded', function() {
-            const stickyEnabled = riskrStorage.getItem('sticky-enabled');
-            const stickySection = document.getElementById('sticky-section');
-            const toggleBtn = document.getElementById('sticky-toggle-btn');
-
-            // Par défaut, sticky désactivé si pas de préférence
-            if (stickyEnabled === 'true') {
-                // Sticky activé = bouton vert (active) et section sticky
-                toggleBtn.classList.add('active');
-                stickySection.classList.remove('sticky-disabled');
-            } else {
-                // Sticky désactivé par défaut = bouton gris et section non-sticky
-                toggleBtn.classList.remove('active');
-                stickySection.classList.add('sticky-disabled');
-            }
-        });
 
         // ========================================
         // Système de collapse (plier/déplier) pour les sections
@@ -5232,7 +5253,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 libraryWithMesures: "avec les mesures suggérées",
                 libraryAdd: "Ajouter la sélection ({count})",
                 libraryAdded: "Risques ajoutés : {count}",
-                libraryEmpty: "Aucun risque type ne correspond"
+                libraryEmpty: "Aucun risque type ne correspond",
+                tabsLabel: "Vues",
+                tabMatrices: "Matrices",
+                tabRegister: "Registre",
+                tabCommittee: "Vue comité",
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -5484,7 +5509,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 libraryWithMesures: "with the suggested measures",
                 libraryAdd: "Add selection ({count})",
                 libraryAdded: "Risks added: {count}",
-                libraryEmpty: "No standard risk matches"
+                libraryEmpty: "No standard risk matches",
+                tabsLabel: "Views",
+                tabMatrices: "Matrices",
+                tabRegister: "Register",
+                tabCommittee: "Committee view",
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -5736,7 +5765,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 libraryWithMesures: "con las medidas sugeridas",
                 libraryAdd: "Añadir la selección ({count})",
                 libraryAdded: "Riesgos añadidos: {count}",
-                libraryEmpty: "Ningún riesgo tipo coincide"
+                libraryEmpty: "Ningún riesgo tipo coincide",
+                tabsLabel: "Vistas",
+                tabMatrices: "Matrices",
+                tabRegister: "Registro",
+                tabCommittee: "Vista comité",
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -5988,7 +6021,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 libraryWithMesures: "包含建议措施",
                 libraryAdd: "添加所选（{count}）",
                 libraryAdded: "已添加风险：{count}",
-                libraryEmpty: "没有匹配的标准风险"
+                libraryEmpty: "没有匹配的标准风险",
+                tabsLabel: "视图",
+                tabMatrices: "矩阵",
+                tabRegister: "登记册",
+                tabCommittee: "委员会视图",
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -6240,7 +6277,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 libraryWithMesures: "مع الإجراءات المقترحة",
                 libraryAdd: "إضافة المحدد ({count})",
                 libraryAdded: "المخاطر المضافة: {count}",
-                libraryEmpty: "لا يوجد خطر نموذجي مطابق"
+                libraryEmpty: "لا يوجد خطر نموذجي مطابق",
+                tabsLabel: "طرق العرض",
+                tabMatrices: "المصفوفات",
+                tabRegister: "السجل",
+                tabCommittee: "عرض اللجنة",
             }
         };
 
@@ -9370,6 +9411,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             closeSheet();
             showToast(t('libraryAdded', { count: chosen.length }));
         }
+
+        // ========================================
+        // Onglets de vues
+        // ========================================
+
+        const VIEW_TABS = ['matrices', 'registre', 'actions', 'revues', 'comite'];
+        let activeTab = VIEW_TABS.includes(riskrStorage.getItem('active-tab')) ? riskrStorage.getItem('active-tab') : 'matrices';
+
+        function showTab(name) {
+            activeTab = name;
+            riskrStorage.setItem('active-tab', name);
+            document.querySelectorAll('.view-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === name);
+                tab.setAttribute('aria-selected', tab.dataset.tab === name);
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => { panel.hidden = panel.dataset.panel !== name; });
+            // Les graphiques d'un onglet masqué n'ont pas de taille : on les redessine à l'affichage
+            if (name !== 'registre' && name !== 'actions') updateCharts();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => showTab(activeTab));
 
         // ========================================
         // Fiche générique : vue comité, nœud papillon, bibliothèque
