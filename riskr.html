@@ -2038,6 +2038,166 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cursor: default;
         }
 
+        /* Vue comité */
+        .committee-sub {
+            margin: -12px 0 16px;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        .committee-kpis {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .committee-kpi,
+        .committee-card {
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .committee-kpi span {
+            display: block;
+        }
+
+        .kpi-label,
+        .committee-card h3 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .kpi-value small {
+            font-size: 14px;
+            color: var(--text-3);
+        }
+
+        .kpi-detail {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .kpi-detail.good {
+            color: #1f8a3c;
+        }
+
+        .kpi-detail.bad {
+            color: #ff3b30;
+        }
+
+        .committee-grid {
+            display: grid;
+            grid-template-columns: 380px minmax(0, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .committee-grid.thirds {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            margin-bottom: 0;
+        }
+
+        .committee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .committee-table th {
+            padding: 6px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            text-align: start;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .committee-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .committee-table .nowrap {
+            white-space: nowrap;
+        }
+
+        .stack-bar {
+            display: flex;
+            height: 24px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: var(--surface-2);
+        }
+
+        .stack-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .stack-legend i {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            margin-inline-end: 5px;
+            border-radius: 3px;
+        }
+
+        .exposure-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 90px 40px;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .exposure-row b {
+            display: block;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .committee-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .committee-list li {
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .committee-list li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 900px) {
+            .committee-kpis,
+            .committee-grid,
+            .committee-grid.thirds {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .matrix-modal {
             display: none;
             position: fixed;
@@ -3346,6 +3506,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             <div class="app-controls">
                 <input type="file" id="import-file" hidden accept=".json" onchange="importFromJSON(this)">
+                <button class="icon-btn" onclick="openCommitteeView()" data-i18n-title="committeeOpen">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M7 12l3-3 2 2 4-4"/></svg>
+                </button>
                 <button class="icon-btn" onclick="document.getElementById('import-file').click()" data-i18n-title="importTooltip">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
                 </button>
@@ -8128,6 +8291,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return image;
         }
 
+        // Copie mise en forme (Word, PowerPoint) ; repli par sélection si l'API est refusée
+        async function copyRichHtml(html, plainText) {
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': new Blob([html], { type: 'text/html' }),
+                            'text/plain': new Blob([plainText], { type: 'text/plain' })
+                        })
+                    ]);
+                    return true;
+                }
+            } catch (error) {
+                console.info('Copie HTML directe indisponible, utilisation du mode de compatibilité.', error);
+            }
+            return copyGroupSummaryWithSelectionFallback(html);
+        }
+
         function copyGroupSummaryWithSelectionFallback(html) {
             const holder = document.createElement('div');
             holder.contentEditable = 'true';
@@ -8154,24 +8335,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 return;
             }
 
-            const plainText = sourceTable.innerText.trim();
-            let copied = false;
-            try {
-                if (navigator.clipboard && window.ClipboardItem) {
-                    await navigator.clipboard.write([
-                        new ClipboardItem({
-                            'text/html': new Blob([html], { type: 'text/html' }),
-                            'text/plain': new Blob([plainText], { type: 'text/plain' })
-                        })
-                    ]);
-                    copied = true;
-                }
-            } catch (error) {
-                console.info('Copie HTML directe indisponible, utilisation du mode de compatibilité.', error);
-            }
-
-            if (!copied) copied = copyGroupSummaryWithSelectionFallback(html);
-
+            const copied = await copyRichHtml(html, sourceTable.innerText.trim());
             if (!copied) {
                 alert(t('copyForWordUnavailable'));
                 return;
@@ -8598,6 +8762,174 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const types = Object.keys(MATRIX_TITLES);
             const step = direction === 'next' ? 1 : types.length - 1;
             openMatrixModal(types[(types.indexOf(currentMatrixType) + step) % types.length]);
+        }
+
+        // ========================================
+        // Vue comité : synthèse d'une page, copiable et exportable en PDF
+        // ========================================
+
+        const TREATMENT_COLORS = { reduce: '#0a84ff', transfer: '#8e5cf0', accept: '#ff9f0a', avoid: '#34c759', '': '#aeaeb2' };
+        const scoreOf = assessment => residualScore(assessment) || 0;
+
+        // Chiffres de la synthèse. Complexité : O(n log n + m), n = risques, m = mesures
+        function committeeStats() {
+            const exposureBefore = meanExposure(risks.map(risk => risk.assessmentBefore));
+            const exposureAfter = meanExposure(risks.map(risk => risk.assessmentAfter));
+            const high = phase => risks.filter(risk => scoreOf(risk[`assessment${phase}`]) >= CRITICALITY_THRESHOLDS.high).length;
+            const mesures = risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte);
+            const treatments = { reduce: 0, transfer: 0, accept: 0, avoid: 0, '': 0 };
+            risks.forEach(risk => treatments[risk.traitement]++);
+            const last = reviews[reviews.length - 1];
+            return {
+                subtitle: last ? `${last.label} · ${formatReviewDate(last.date)}` : new Date().toLocaleDateString(currentLanguage),
+                exposureBefore, exposureAfter,
+                delta: exposureBefore && exposureAfter !== null ? Math.round((exposureAfter / exposureBefore - 1) * 100) : null,
+                highBefore: high('Before'), highAfter: high('After'),
+                above: settings.riskAppetite ? risks.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [],
+                late: mesures.filter(isMesureLate).length, mesureCount: mesures.length,
+                top: risks.filter(risk => scoreOf(risk.assessmentAfter))
+                    .sort((a, b) => scoreOf(b.assessmentAfter) - scoreOf(a.assessmentAfter) || scoreOf(b.assessmentBefore) - scoreOf(a.assessmentBefore))
+                    .slice(0, 5),
+                treatments,
+                exposures: [...reviews.map(review => ({ label: review.label, value: meanExposure(review.risks.map(r => r.after)) })),
+                    { label: t('reviewCurrent'), value: exposureAfter }]
+            };
+        }
+
+        const formatExposure = value => value === null ? '—' : value.toFixed(1);
+        const signedPercent = delta => `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${Math.abs(delta)}`;
+
+        function openCommitteeView() {
+            openSheet(() => {
+                const stats = committeeStats();
+                const kpi = (label, value, detail = '', tone = '') => `<div class="committee-kpi">
+                    <span class="kpi-label">${label}</span><span class="kpi-value">${value}</span>
+                    <span class="kpi-detail ${tone}">${detail}</span></div>`;
+                const totalRisks = risks.length || 1;
+                return {
+                    title: t('committeeTitle'),
+                    actions: `<button type="button" class="sheet-btn" onclick="copyCommitteeView()">${t('committeeCopy')}</button>
+                        <button type="button" class="sheet-btn primary" onclick="exportCommitteePdf()">${t('committeePdf')}</button>`,
+                    body: `<p class="committee-sub">${escapeHtml(stats.subtitle)}</p>
+                        <div class="committee-kpis">
+                            ${kpi(t('kpiExposure'), `${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} <small>/5</small>`,
+                                stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '')}
+                            ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'))}
+                            ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${risks.length}</small>`,
+                                escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good')}
+                            ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good')}
+                        </div>
+                        <div class="committee-grid">
+                            <section class="committee-card"><h3>${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
+                            <section class="committee-card"><h3>${t('committeeTop')}</h3>
+                                <table class="committee-table">
+                                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
+                                    <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
+                                        <td class="nowrap">${getCriticalityBadge(...risk.assessmentBefore)} → ${getCriticalityBadge(...risk.assessmentAfter)}</td>
+                                        <td>${treatmentLabel(risk.traitement)}</td><td>${escapeHtml(risk.responsable) || '—'}</td></tr>`).join('')}</tbody>
+                                </table></section>
+                        </div>
+                        <div class="committee-grid thirds">
+                            <section class="committee-card"><h3>${t('committeeTreatments')}</h3>
+                                <div class="stack-bar">${Object.entries(stats.treatments).filter(([, count]) => count).map(([key, count]) =>
+                                    `<span style="width:${count / totalRisks * 100}%;background:${TREATMENT_COLORS[key]}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
+                                <div class="stack-legend">${Object.entries(stats.treatments).map(([key, count]) =>
+                                    `<span><i style="background:${TREATMENT_COLORS[key]}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
+                            <section class="committee-card"><h3>${t('committeeReviews')}</h3>
+                                ${stats.exposures.map(({ label, value }) => `<div class="exposure-row"><span>${escapeHtml(label)}</span>
+                                    <b style="width:${(value || 0) / 5 * 100}%;background:${value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]}"></b>
+                                    <span>${formatExposure(value)}</span></div>`).join('')}</section>
+                            <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
+                                <ul class="committee-list">${stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
+                                    ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
+                        </div>`,
+                    mount: body => {
+                        const { datasets, bubble } = matrixChartData('trajectory');
+                        sheetChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
+                    }
+                };
+            });
+        }
+
+        const committeeImage = () => withLightTheme(() => sheetChart.canvas.toDataURL('image/png'));
+
+        // Version à coller dans Word ou PowerPoint : tableaux et styles en ligne
+        async function copyCommitteeView() {
+            const stats = committeeStats();
+            const cell = 'padding:6pt 8pt;border:1pt solid #d2d2d7;font-family:Arial,sans-serif;font-size:10pt;vertical-align:top';
+            const head = `${cell};background:#f5f5f7;font-weight:700`;
+            const html = `<h2 style="font-family:Arial,sans-serif">${escapeHtml(t('committeeTitle'))} — ${escapeHtml(stats.subtitle)}</h2>
+                <table style="border-collapse:collapse;width:100%"><tr>
+                    <td style="${cell}"><b>${t('kpiExposure')}</b><br>${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} /5${stats.delta === null ? '' : ` (${signedPercent(stats.delta)} %)`}</td>
+                    <td style="${cell}"><b>${t('kpiHighRisks')}</b><br>${stats.highBefore} → ${stats.highAfter}</td>
+                    <td style="${cell}"><b>${t('kpiAboveAppetite')}</b><br>${stats.above.length} / ${risks.length}</td>
+                    <td style="${cell}"><b>${t('kpiLate')}</b><br>${stats.late} / ${stats.mesureCount}</td></tr></table>
+                <p><img src="${committeeImage()}" width="360" height="360" alt="${escapeHtml(t('matrixTrajectory'))}"></p>
+                <h3 style="font-family:Arial,sans-serif">${t('committeeTop')}</h3>
+                <table style="border-collapse:collapse;width:100%"><tr><th style="${head}">${t('colNumber')}</th><th style="${head}">${t('colRisk')}</th>
+                    <th style="${head}">${t('colBeforeShort')}</th><th style="${head}">${t('colAfterShort')}</th><th style="${head}">${t('colTreatment')}</th><th style="${head}">${t('colResp')}</th></tr>
+                    ${stats.top.map(risk => `<tr><td style="${cell}">${escapeHtml(risk.id)}</td><td style="${cell}">${escapeHtml(risk.title)}</td>
+                        <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentBefore))]}">${scoreOf(risk.assessmentBefore)}</td>
+                        <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentAfter))]}">${scoreOf(risk.assessmentAfter)}</td>
+                        <td style="${cell}">${treatmentLabel(risk.traitement)}</td><td style="${cell}">${escapeHtml(risk.responsable)}</td></tr>`).join('')}</table>
+                <h3 style="font-family:Arial,sans-serif">${t('committeeDecisions')}</h3>
+                <ul style="font-family:Arial,sans-serif;font-size:10pt">${stats.above.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)} : ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul>`;
+            if (await copyRichHtml(html, document.getElementById('sheet-body').innerText)) {
+                showToast(t('committeeCopied'));
+            } else {
+                alert(t('copyForWordUnavailable'));
+            }
+        }
+
+        // PDF paysage d'une page (libellés en anglais pour l'arabe et le chinois, comme l'export PDF)
+        function exportCommitteePdf() {
+            const stats = committeeStats();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text(`${pdfText('committeeTitle')} — ${stats.subtitle}`, 14, 16);
+            const kpis = [
+                [pdfText('kpiExposure'), `${formatExposure(stats.exposureBefore)} -> ${formatExposure(stats.exposureAfter)} /5${stats.delta === null ? '' : ` (${stats.delta > 0 ? '+' : ''}${stats.delta} %)`}`],
+                [pdfText('kpiHighRisks'), `${stats.highBefore} -> ${stats.highAfter}`],
+                [pdfText('kpiAboveAppetite'), `${stats.above.length} / ${risks.length}`],
+                [pdfText('kpiLate'), `${stats.late} / ${stats.mesureCount}`]
+            ];
+            kpis.forEach(([label, value], index) => {
+                const x = 14 + index * 68;
+                doc.roundedRect(x, 22, 64, 20, 3, 3);
+                doc.setFontSize(8);
+                doc.setFont(undefined, 'normal');
+                doc.text(label.toUpperCase(), x + 4, 28);
+                doc.setFontSize(13);
+                doc.setFont(undefined, 'bold');
+                doc.text(value, x + 4, 37);
+            });
+            doc.addImage(committeeImage(), 'PNG', 14, 48, 95, 95);
+            doc.autoTable({
+                startY: 48,
+                margin: { left: 116 },
+                head: [[pdfText('colNumber'), pdfText('colRisk'), pdfText('colBeforeShort'), pdfText('colAfterShort'), pdfText('colTreatment'), pdfText('colResp')]],
+                body: stats.top.map(risk => [risk.id, risk.title, scoreOf(risk.assessmentBefore), scoreOf(risk.assessmentAfter),
+                    currentLanguage === 'ar' || currentLanguage === 'zh' ? translations.en[TREATMENTS[risk.traitement] || 'treatNone'] : treatmentLabel(risk.traitement), risk.responsable]),
+                theme: 'grid',
+                styles: { fontSize: 8, cellPadding: 2 },
+                headStyles: { fillColor: [0, 113, 227], textColor: 255 }
+            });
+            let y = Math.max(doc.lastAutoTable.finalY + 8, 150);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text(pdfText('committeeDecisions'), 14, y);
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            const decisions = stats.above.length
+                ? stats.above.map(risk => `${risk.id} · ${risk.title} (${scoreOf(risk.assessmentAfter)})`)
+                : [pdfText('committeeNoDecision')];
+            decisions.slice(0, 8).forEach(line => {
+                y += 6;
+                doc.text(doc.splitTextToSize(line, 265)[0], 14, y);
+            });
+            doc.save(`riskr_comite_${new Date().toISOString().slice(0, 10)}.pdf`);
         }
 
         // ========================================
