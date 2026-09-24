@@ -1396,15 +1396,146 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         /* Mise en page des matrices : avant | après, ou trajectoire seule (centrée) */
-        .charts-column:not(.trajectory) > #trajectory-wrapper,
-        .charts-column.trajectory > .chart-wrapper:not(#trajectory-wrapper) {
+        /* Une matrice (avant, après, trajectoire) ou deux côte à côte */
+        .charts-column > .chart-wrapper[hidden] {
             display: none;
         }
 
-        .charts-column.trajectory > #trajectory-wrapper {
-            grid-column: 1 / -1;
+        .charts-column:not([data-layout="split"]) {
+            grid-template-columns: 1fr;
+        }
+
+        .charts-column:not([data-layout="split"]) > .chart-wrapper {
             justify-self: center;
-            width: min(100%, 720px);
+            width: min(100%, 680px);
+        }
+
+        .dashboard-layout.with-panel {
+            grid-template-columns: minmax(0, 1fr) 400px;
+        }
+
+        /* Panneau latéral des matrices : affichage, légende, case sélectionnée, appétence */
+        .matrix-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .panel-card {
+            padding: 16px 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--surface);
+        }
+
+        .panel-card h3 {
+            margin: 0 0 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .panel-card.warning {
+            border-color: #ffc98a;
+            background: color-mix(in srgb, #ff9f0a 6%, var(--surface));
+        }
+
+        .panel-card.warning h3 {
+            color: #b35c00;
+        }
+
+        .option-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .option-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--surface-2);
+            color: var(--text-2);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .option-chip.on {
+            background: color-mix(in srgb, var(--accent) 12%, transparent);
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .option-chip .icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .panel-appetite {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .legend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .legend-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-list svg {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+        }
+
+        .panel-hint {
+            margin: -6px 0 8px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .panel-risk {
+            display: grid;
+            grid-template-columns: 28px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .panel-risk:last-child {
+            border-bottom: none;
+        }
+
+        .panel-risk:hover > span:nth-child(2) {
+            color: var(--accent);
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-layout.with-panel {
+                grid-template-columns: 1fr;
+            }
         }
 
         .menu-label {
@@ -4191,25 +4322,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
                     <span data-i18n="matricesTitle">Matrices des Risques</span>
                     <div class="section-tools" onclick="event.stopPropagation()">
-                        <div class="segmented" role="group" data-i18n-title="matrixViewLabel">
-                            <button id="view-btn-groups" class="segmented-btn active" onclick="setMatrixView('groups')" data-i18n-title="viewGroups"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
-                            <button id="view-btn-risks" class="segmented-btn" onclick="setMatrixView('risks')" data-i18n-title="viewRisks"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="2"/><circle cx="11" cy="8" r="2"/><circle cx="17" cy="15" r="2"/><circle cx="18" cy="6" r="2"/></svg></button>
+                        <div class="segmented labeled matrix-layouts" role="group" data-i18n-title="displayOptions">
+                            <button type="button" class="segmented-btn" data-layout="before" onclick="setMatrixLayout('before')"><span data-i18n="modeBefore">Avant</span></button>
+                            <button type="button" class="segmented-btn" data-layout="after" onclick="setMatrixLayout('after')"><span data-i18n="modeAfter">Après</span></button>
+                            <button type="button" class="segmented-btn" data-layout="split" onclick="setMatrixLayout('split')" data-i18n-title="viewSideBySide"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg></button>
+                            <button type="button" class="segmented-btn" data-layout="trajectory" onclick="setMatrixLayout('trajectory')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg><span data-i18n="modeTrajectory">Trajectoire</span></button>
                         </div>
-                        <div class="segmented" role="group" data-i18n-title="displayOptions">
-                            <button id="layout-btn-split" class="segmented-btn" onclick="setMatrixLayout('split')" data-i18n-title="viewSideBySide"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg></button>
-                            <button id="layout-btn-trajectory" class="segmented-btn" onclick="setMatrixLayout('trajectory')" data-i18n-title="viewTrajectory"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3" fill="currentColor"/><path d="M14.8 9.2L9.5 14.5"/></svg></button>
-                        </div>
-                        <div class="menu-anchor">
-                            <button class="icon-toggle" onclick="toggleMenu('matrix-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="displayOptions"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
-                            <div id="matrix-menu" class="menu" role="menu" hidden></div>
+                        <div class="segmented labeled" role="group" data-i18n-title="matrixViewLabel">
+                            <button type="button" id="view-btn-risks" class="segmented-btn" onclick="setMatrixView('risks')"><span data-i18n="viewRisksShort">Risques</span></button>
+                            <button type="button" id="view-btn-groups" class="segmented-btn" onclick="setMatrixView('groups')"><span data-i18n="viewGroupsShort">Groupes</span></button>
                         </div>
                     </div>
                 </h3>
                 <div id="matrices-content" class="collapsible-content">
-                    <div class="dashboard-layout">
+                    <div class="dashboard-layout with-panel">
                         <!-- Colonne gauche : Matrices -->
                         <div class="charts-column">
-                            <div class="chart-wrapper">
+                            <div class="chart-wrapper" data-matrix="before">
                                 <div class="chart-actions">
                                     <button class="chart-action-btn" onclick="copyMatrixImage('before')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
                                     <button class="chart-action-btn" onclick="openMatrixModal('before')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
@@ -4222,7 +4351,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </div>
                             </div>
 
-                            <div class="chart-wrapper">
+                            <div class="chart-wrapper" data-matrix="after">
                                 <div class="chart-actions">
                                     <button class="chart-action-btn" onclick="copyMatrixImage('after')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
                                     <button class="chart-action-btn" onclick="openMatrixModal('after')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
@@ -4234,7 +4363,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                     <canvas id="chartAfter"></canvas>
                                 </div>
                             </div>
-                            <div class="chart-wrapper" id="trajectory-wrapper">
+                            <div class="chart-wrapper" id="trajectory-wrapper" data-matrix="trajectory">
                                 <div class="chart-actions">
                                     <button class="chart-action-btn" onclick="copyMatrixImage('trajectory')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
                                     <button class="chart-action-btn" onclick="openMatrixModal('trajectory')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
@@ -4247,6 +4376,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </div>
                             </div>
                         </div>
+                        <aside id="matrix-panel" class="matrix-panel"></aside>
                     </div>
                 </div>
             </div>
@@ -5043,12 +5173,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Le PDF présente les matrices avant / après côte à côte, même en vue trajectoire
         function exportToPDF() {
             if (activeTab !== 'matrices') showTab('matrices'); // les matrices doivent être dessinées pour être capturées
-            const trajectory = matrixLayout === 'trajectory';
-            if (trajectory) setMatrixLayout('split');
+            const previous = matrixLayout;
+            if (previous !== 'split') setMatrixLayout('split');
             try {
                 exportPdfDocument();
             } finally {
-                if (trajectory) setMatrixLayout('trajectory');
+                if (previous !== 'split') setMatrixLayout(previous);
             }
         }
 
@@ -5599,6 +5729,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                modeBefore: "Avant",
+                modeAfter: "Après",
+                modeTrajectory: "Trajectoire",
+                viewRisksShort: "Risques",
+                viewGroupsShort: "Groupes",
+                panelDisplay: "Affichage",
+                panelLegend: "Légende",
+                optionCounts: "Nombre par case",
+                optionAppetite: "Appétence",
+                optionTarget: "Cible",
+                optionVelocity: "Taille = vélocité",
+                legendBefore: "Position avant remédiation (inhérent)",
+                legendAfter: "Position après remédiation (résiduel)",
+                legendArrow: "Effet des mesures : plus la flèche est longue, plus la réduction est forte",
+                legendAppetite: "Frontière d’appétence : au-delà, le risque doit être traité ou accepté formellement",
+                legendTarget: "Cotation cible",
+                legendVelocity: "Taille de la bulle : vélocité (vitesse de survenue, 1 à 5)",
+                selectedCell: "Case sélectionnée · P{p} × I{i} ({score}, {level})",
+                selectedCellHint: "Un clic sur une case filtre le registre et ce panneau.",
+                selectedCellEmpty: "Cliquez sur une case de la matrice pour voir ses risques.",
+                aboveAppetiteTitle: "Au-dessus de l’appétence après remédiation",
+                colVelocity: "Vélocité",
                 reviewNewFreeze: "Figer une nouvelle revue",
                 reviewLatest: "dernière",
                 reviewComparedBadge: "comparée",
@@ -5878,6 +6030,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                modeBefore: "Before",
+                modeAfter: "After",
+                modeTrajectory: "Trajectory",
+                viewRisksShort: "Risks",
+                viewGroupsShort: "Groups",
+                panelDisplay: "Display",
+                panelLegend: "Legend",
+                optionCounts: "Count per cell",
+                optionAppetite: "Appetite",
+                optionTarget: "Target",
+                optionVelocity: "Size = velocity",
+                legendBefore: "Position before remediation (inherent)",
+                legendAfter: "Position after remediation (residual)",
+                legendArrow: "Effect of the measures: the longer the arrow, the stronger the reduction",
+                legendAppetite: "Appetite boundary: beyond it, the risk must be treated or formally accepted",
+                legendTarget: "Target rating",
+                legendVelocity: "Bubble size: velocity (speed of onset, 1 to 5)",
+                selectedCell: "Selected cell · P{p} × I{i} ({score}, {level})",
+                selectedCellHint: "Clicking a cell filters the register and this panel.",
+                selectedCellEmpty: "Click a matrix cell to see its risks.",
+                aboveAppetiteTitle: "Above appetite after remediation",
+                colVelocity: "Velocity",
                 reviewNewFreeze: "Record a new review",
                 reviewLatest: "latest",
                 reviewComparedBadge: "compared",
@@ -6157,6 +6331,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                modeBefore: "Antes",
+                modeAfter: "Después",
+                modeTrajectory: "Trayectoria",
+                viewRisksShort: "Riesgos",
+                viewGroupsShort: "Grupos",
+                panelDisplay: "Visualización",
+                panelLegend: "Leyenda",
+                optionCounts: "Número por casilla",
+                optionAppetite: "Apetito",
+                optionTarget: "Objetivo",
+                optionVelocity: "Tamaño = velocidad",
+                legendBefore: "Posición antes de la remediación (inherente)",
+                legendAfter: "Posición después de la remediación (residual)",
+                legendArrow: "Efecto de las medidas: cuanto más larga la flecha, mayor la reducción",
+                legendAppetite: "Frontera de apetito: más allá, el riesgo debe tratarse o aceptarse formalmente",
+                legendTarget: "Calificación objetivo",
+                legendVelocity: "Tamaño de la burbuja: velocidad (rapidez de aparición, 1 a 5)",
+                selectedCell: "Casilla seleccionada · P{p} × I{i} ({score}, {level})",
+                selectedCellHint: "Un clic en una casilla filtra el registro y este panel.",
+                selectedCellEmpty: "Haga clic en una casilla de la matriz para ver sus riesgos.",
+                aboveAppetiteTitle: "Por encima del apetito tras la remediación",
+                colVelocity: "Velocidad",
                 reviewNewFreeze: "Registrar una nueva revisión",
                 reviewLatest: "última",
                 reviewComparedBadge: "comparada",
@@ -6436,6 +6632,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                modeBefore: "处理前",
+                modeAfter: "处理后",
+                modeTrajectory: "轨迹",
+                viewRisksShort: "风险",
+                viewGroupsShort: "组",
+                panelDisplay: "显示",
+                panelLegend: "图例",
+                optionCounts: "每格数量",
+                optionAppetite: "风险偏好",
+                optionTarget: "目标",
+                optionVelocity: "大小 = 速度",
+                legendBefore: "处理前位置（固有）",
+                legendAfter: "处理后位置（剩余）",
+                legendArrow: "措施效果：箭头越长，降低越多",
+                legendAppetite: "风险偏好边界：超出后必须处理或正式接受风险",
+                legendTarget: "目标评级",
+                legendVelocity: "气泡大小：速度（发生速度，1 至 5）",
+                selectedCell: "所选格 · P{p} × I{i}（{score}，{level}）",
+                selectedCellHint: "点击某格会筛选登记册和此面板。",
+                selectedCellEmpty: "点击矩阵中的某格以查看其风险。",
+                aboveAppetiteTitle: "处理后超出风险偏好",
+                colVelocity: "速度",
                 reviewNewFreeze: "记录新的评审",
                 reviewLatest: "最新",
                 reviewComparedBadge: "对比中",
@@ -6715,6 +6933,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                modeBefore: "قبل",
+                modeAfter: "بعد",
+                modeTrajectory: "المسار",
+                viewRisksShort: "المخاطر",
+                viewGroupsShort: "المجموعات",
+                panelDisplay: "العرض",
+                panelLegend: "مفتاح الرموز",
+                optionCounts: "العدد في كل خانة",
+                optionAppetite: "التقبّل",
+                optionTarget: "المستهدف",
+                optionVelocity: "الحجم = السرعة",
+                legendBefore: "الموضع قبل المعالجة (الخطر الأصلي)",
+                legendAfter: "الموضع بعد المعالجة (الخطر المتبقي)",
+                legendArrow: "أثر الإجراءات: كلما طال السهم زاد الخفض",
+                legendAppetite: "حد التقبّل: بعده يجب معالجة الخطر أو قبوله رسميًا",
+                legendTarget: "التقييم المستهدف",
+                legendVelocity: "حجم الفقاعة: السرعة (سرعة الوقوع، من 1 إلى 5)",
+                selectedCell: "الخانة المحددة · P{p} × I{i} ({score}، {level})",
+                selectedCellHint: "النقر على خانة يصفّي السجل وهذه اللوحة.",
+                selectedCellEmpty: "انقر على خانة في المصفوفة لعرض مخاطرها.",
+                aboveAppetiteTitle: "أعلى من مستوى التقبّل بعد المعالجة",
+                colVelocity: "السرعة",
                 reviewNewFreeze: "تسجيل مراجعة جديدة",
                 reviewLatest: "الأحدث",
                 reviewComparedBadge: "مقارنة",
@@ -7099,6 +7339,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 assessmentTarget: toAssessment(raw.assessmentTarget),
                 causes: stringList(raw.causes),
                 consequences: objectList(raw.consequences).map(normalizeConsequence),
+                velocite: toScore(raw.velocite), // vitesse de survenue (1 à 5), 0 = non évaluée
                 notes: objectList(raw.notes).map(normalizeNote),
                 liens: objectList(raw.liens).map(normalizeLink)
             });
@@ -7501,7 +7742,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
                 mesures: [], statut: 'statusNotTreated', responsable: '', traitement: '',
-                causes: [], consequences: [], notes: [], liens: []
+                causes: [], consequences: [], notes: [], liens: [], velocite: 0
             };
         }
 
@@ -8517,8 +8758,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const trajectoryPlugin = {
             id: 'riskTrajectory',
             beforeDatasetsDraw(chart) {
-                const [before, after] = chart.data.datasets;
-                if (!after) return;
+                const before = chart.data.datasets.find(dataset => dataset.hollow);
+                const after = chart.data.datasets.find(dataset => dataset.main);
+                if (!before || !after) return;
                 const { ctx, scales: { x, y } } = chart;
                 const ends = new Map(after.data.map(point => [point.shortLabel, point]));
                 const radius = before.bubble.radius * cellSize(chart), head = radius * 0.55;
@@ -8557,7 +8799,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (!matrixOptions.counts) return;
                 const { ctx, scales: { x, y } } = chart;
                 const counts = new Map();
-                chart.data.datasets[chart.data.datasets.length - 1].data.forEach(point => {
+                mainDataset(chart).data.forEach(point => {
                     const key = `${Math.round(point.baseX)},${Math.round(point.baseY)}`;
                     counts.set(key, (counts.get(key) || 0) + 1);
                 });
@@ -8584,16 +8826,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ctx.save();
                 // Police proportionnelle à la case (cf. bubbleRatios) : le numéro tient dans la bulle
                 const bubble = data.datasets[0].bubble;
-                ctx.font = `bold ${Math.max(8, Math.round(bubble.font * cellSize(chart)))}px Arial`;
+                const fontSize = Math.max(8, Math.round(bubble.font * cellSize(chart)));
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
                 data.datasets.forEach(dataset => {
-                    // Bulle pleine : numéro blanc ombré ; bulle creuse (avant, en trajectoire) : numéro bleu
-                    ctx.shadowColor = dataset.hollow ? 'transparent' : 'rgba(0, 0, 0, 0.5)';
-                    ctx.shadowBlur = dataset.hollow ? 0 : 4;
-                    ctx.fillStyle = dataset.hollow ? BUBBLE_COLOR : 'white';
+                    // Bulle pleine : numéro blanc ombré ; bulle creuse (avant) : numéro bleu ; cible : numéro vert
+                    const light = dataset.hollow || dataset.target;
+                    ctx.shadowColor = light ? 'transparent' : 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = light ? 0 : 4;
+                    ctx.fillStyle = dataset.target ? TARGET_COLOR : dataset.hollow ? BUBBLE_COLOR : 'white';
                     dataset.data.forEach(point => {
+                        // La police suit la taille de la bulle : le numéro n'est jamais coupé
+                        ctx.font = `bold ${Math.max(6, Math.round(fontSize * (point.scale ?? 1) * (dataset.target ? 0.8 : 1)))}px Arial`;
                         ctx.fillText(point.shortLabel, x.getPixelForValue(point.x), y.getPixelForValue(point.y));
                     });
                 });
@@ -8644,9 +8889,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const axisColor = () => themeColor('--text-2');
 
         const cellSize = chart => chart.chartArea ? chart.chartArea.width / 5 : 60;
-        const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart);
+        // Option « Taille = vélocité » : la bulle (et son numéro) rétrécit jusqu'à 68 % pour une vélocité de 1 ;
+        // elle ne grossit jamais, donc les bulles ne se chevauchent pas. Vélocité non évaluée : taille médiane.
+        const velocityScale = velocity => !matrixOptions.velocity ? 1 : velocity ? 0.6 + 0.08 * velocity : 0.84;
+        const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart) * (context.raw?.scale ?? 1);
 
         const BUBBLE_COLOR = '#1F4E78';
+        const TARGET_COLOR = '#1f8a3c';
+        const mainDataset = chart => chart.data.datasets.find(dataset => dataset.main) || chart.data.datasets[chart.data.datasets.length - 1];
 
         // Points d'une phase ('Before' | 'After') selon la vue : un point par risque, ou la
         // cotation moyenne de chaque groupe. Complexité : O(n) — n = nombre de risques.
@@ -8657,8 +8907,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     if (!assessments.length) return null;
                     const x = assessments.reduce((sum, a) => sum + a[0], 0) / assessments.length;
                     const y = assessments.reduce((sum, a) => sum + a[1], 0) / assessments.length;
+                    const velocities = group.risks.map(risk => risk.velocite).filter(Boolean);
                     return { x, y, baseX: x, baseY: y, label: t('groupLabel', { id: group.id }),
-                        shortLabel: `${group.id}`, groupName: group.name };
+                        shortLabel: `${group.id}`, groupName: group.name,
+                        scale: velocityScale(velocities.length ? velocities.reduce((sum, v) => sum + v, 0) / velocities.length : 0) };
                 }).filter(Boolean);
             }
             return riskGroups.flatMap(group => group.risks.map(risk => {
@@ -8666,25 +8918,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (!assessment) return null;
                 const [x, y] = assessment;
                 return { x, y, baseX: x, baseY: y, label: t('riskLabel', { id: risk.id }),
-                    shortLabel: risk.id, riskTitle: risk.title, groupName: group.name };
+                    shortLabel: risk.id, riskTitle: risk.title, groupName: group.name, scale: velocityScale(risk.velocite) };
             })).filter(Boolean);
         }
 
         // Jeux de données d'une matrice 'before' ou 'after', bulles rangées sans chevauchement
         function matrixChartData(type) {
+            const target = () => matrixOptions.target ? [{ data: matrixPoints('Target'), phase: 'Target', target: true }] : [];
             if (type === 'trajectory') {
                 // Avant et après sur la même matrice : bulles rangées ensemble, sans chevauchement
-                const before = matrixPoints('Before'), after = matrixPoints('After');
-                const all = [...before, ...after];
+                const before = matrixPoints('Before'), after = matrixPoints('After'), extra = target();
+                const all = [...before, ...after, ...extra.flatMap(dataset => dataset.data)];
                 const bubble = bubbleRatios(all);
                 resolveCollisions(all, bubble.radius * 2);
-                return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After' }] };
+                return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After', main: true }, ...extra] };
             }
             const phase = type === 'before' ? 'Before' : 'After';
             const data = matrixPoints(phase);
-            const bubble = bubbleRatios(data);
-            resolveCollisions(data, bubble.radius * 2);
-            return { bubble, datasets: [{ data, phase }] };
+            const extra = phase === 'After' ? target() : [];
+            const all = [...data, ...extra.flatMap(dataset => dataset.data)];
+            const bubble = bubbleRatios(all);
+            resolveCollisions(all, bubble.radius * 2);
+            return { bubble, datasets: [{ data, phase, main: true }, ...extra] };
         }
 
         // Graphique d'une matrice : datasets = [{ data, phase, hollow }] (hollow = bulle creuse)
@@ -8692,14 +8947,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return new Chart(canvas, {
                 type: 'scatter',
                 data: {
-                    datasets: datasets.map(({ data, phase, hollow = false }) => ({
-                        data, phase, hollow, bubble,
-                        backgroundColor: hollow ? '#ffffff' : BUBBLE_COLOR, // creuse : fond blanc, lisible dans les deux thèmes
-                        borderColor: hollow ? BUBBLE_COLOR : 'white',
-                        borderWidth: hollow ? 2 : 1.5,
+                    datasets: datasets.map(({ data, phase, hollow = false, main = false, target = false }) => ({
+                        data, phase, hollow, main, target, bubble,
+                        // creuse ou cible : fond blanc, lisible dans les deux thèmes
+                        backgroundColor: hollow || target ? '#ffffff' : BUBBLE_COLOR,
+                        borderColor: target ? TARGET_COLOR : hollow ? BUBBLE_COLOR : 'white',
+                        borderWidth: hollow || target ? 2 : 1.5,
                         pointRadius: bubbleRadius,
                         pointHoverRadius: context => bubbleRadius(context) * 1.1,
-                        pointStyle: 'circle'
+                        pointStyle: target ? 'rectRot' : 'circle'
                     }))
                 },
                 options: {
@@ -9337,6 +9593,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.querySelectorAll('.filter-select').forEach(select =>
                 select.classList.toggle('active', Boolean(riskFilter[select.id.replace('filter-', '')])));
             document.getElementById('filter-clear').hidden = !active;
+            renderMatrixPanel();
             document.getElementById('filter-count').textContent = !active ? ''
                 : visible.size ? t('filterCount', { shown: visible.size, total: risks.length }) : t('filterNoMatch');
             Object.values(Chart.instances).forEach(chart => chart.draw()); // contour de la case sélectionnée
@@ -9347,23 +9604,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const p = Math.round(chart.scales.x.getValueForPixel(event.x));
             const i = Math.round(chart.scales.y.getValueForPixel(event.y));
             if (p < 1 || p > 5 || i < 1 || i > 5) return;
-            const phase = chart.data.datasets[chart.data.datasets.length - 1].phase;
+            const phase = mainDataset(chart).phase;
             const current = riskFilter.cell;
             const same = current && current.p === p && current.i === i && current.phase === phase;
             setFilter('cell', same ? null : { phase, p, i });
             if (!same) {
                 closeMatrixModal();
-                showTab('registre');
-                document.getElementById('risk-filters').scrollIntoView({ block: 'start' });
             }
         }
 
         // Mise en page des matrices : 'split' (avant | après) ou 'trajectory' (une seule matrice)
-        let matrixLayout = riskrStorage.getItem('matrix-layout') === 'trajectory' ? 'trajectory' : 'split';
+        const MATRIX_LAYOUTS = ['before', 'after', 'split', 'trajectory'];
+        let matrixLayout = MATRIX_LAYOUTS.includes(riskrStorage.getItem('matrix-layout')) ? riskrStorage.getItem('matrix-layout') : 'trajectory';
         // Options d'affichage : préférences de l'utilisateur, comme la vue groupes / risques
         const matrixOptions = {
             counts: riskrStorage.getItem('matrix-counts') !== 'false',
-            appetite: riskrStorage.getItem('matrix-appetite') !== 'false'
+            appetite: riskrStorage.getItem('matrix-appetite') !== 'false',
+            target: riskrStorage.getItem('matrix-target') === 'true',
+            velocity: riskrStorage.getItem('matrix-velocity') === 'true'
         };
 
         function setMatrixLayout(layout) {
@@ -9387,49 +9645,93 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             showToast(t('changeSaved'));
         }
 
-        // Menu « Options d'affichage » : cases à cocher et niveaux d'appétence (libellés traduits)
-        function renderMatrixMenu() {
-            const item = (role, on, action, label) =>
-                `<button role="${role}" aria-checked="${on}" class="${on ? 'active' : ''}" onclick="${action}">${label}</button>`;
+        // Panneau latéral des matrices : options, légende, case sélectionnée, risques au-dessus de l'appétence
+        function renderMatrixPanel() {
+            const panel = document.getElementById('matrix-panel');
+            if (!panel) return;
+            const chip = (name, label) => `<button type="button" class="option-chip${matrixOptions[name] ? ' on' : ''}" aria-pressed="${matrixOptions[name]}" onclick="toggleMatrixOption('${name}')">${matrixOptions[name] ? icon('check') : ''}${label}</button>`;
             const levels = [[CRITICALITY_THRESHOLDS.medium - 1, 'critLow'], [CRITICALITY_THRESHOLDS.high - 1, 'critMedium'],
-                [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh']];
-            document.getElementById('matrix-menu').innerHTML =
-                item('menuitemcheckbox', matrixOptions.counts, "toggleMatrixOption('counts')", t('showCounts')) +
-                item('menuitemcheckbox', matrixOptions.appetite, "toggleMatrixOption('appetite')", t('showAppetite')) +
-                `<div class="menu-label">${t('appetiteLabel')}</div>` +
-                levels.map(([max, key]) => item('menuitemradio', settings.riskAppetite === max, `setRiskAppetite(${max})`, `${t(key)} (≤ ${max})`)).join('') +
-                item('menuitemradio', settings.riskAppetite === 0, 'setRiskAppetite(0)', t('appetiteNone'));
+                [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh'], [0, 'appetiteNone']];
+            const svg = inner => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
+            const legend = [
+                matrixLayout === 'trajectory' || matrixLayout === 'before' || matrixLayout === 'split'
+                    ? [svg(`<circle cx="12" cy="12" r="9" fill="${matrixLayout === 'trajectory' ? '#fff' : BUBBLE_COLOR}" stroke="${BUBBLE_COLOR}" stroke-width="2"/>`), 'legendBefore'] : null,
+                matrixLayout !== 'before' ? [svg(`<circle cx="12" cy="12" r="9" fill="${BUBBLE_COLOR}"/>`), 'legendAfter'] : null,
+                matrixLayout === 'trajectory' ? [svg(`<path d="M2 12h17M14 7l5 5-5 5" fill="none" stroke="${BUBBLE_COLOR}" stroke-width="2"/>`), 'legendArrow'] : null,
+                matrixOptions.target ? [svg(`<rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)" fill="#fff" stroke="${TARGET_COLOR}" stroke-width="2"/>`), 'legendTarget'] : null,
+                matrixOptions.appetite && settings.riskAppetite ? [svg('<path d="M1 12h22" stroke="currentColor" stroke-width="2.5" stroke-dasharray="4 3"/>'), 'legendAppetite'] : null,
+                matrixOptions.velocity ? [svg(`<circle cx="7" cy="14" r="4" fill="${BUBBLE_COLOR}"/><circle cx="17" cy="12" r="6.5" fill="${BUBBLE_COLOR}"/>`), 'legendVelocity'] : null
+            ].filter(Boolean);
+
+            const riskRow = risk => `<div class="panel-risk" data-risk-uid="${escapeHtml(risk.uid)}" title="${t('openRiskSheet')}">
+                <span class="id-bubble">${escapeHtml(risk.id)}</span><span>${escapeHtml(risk.title)}</span>
+                <span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)}</span></div>`;
+            const cell = riskFilter.cell;
+            const cellRisks = cell ? risks.filter(risk => {
+                const assessment = evaluatedAssessment(risk, cell.phase);
+                return assessment && assessment[0] === cell.p && assessment[1] === cell.i;
+            }) : [];
+            const cellScore = cell ? cell.p * cell.i : 0;
+            const above = settings.riskAppetite ? risks.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [];
+
+            panel.innerHTML = `
+                <section class="panel-card"><h3>${t('panelDisplay')}</h3>
+                    <div class="option-chips">${chip('counts', t('optionCounts'))}${chip('appetite', t('optionAppetite'))}${chip('target', t('optionTarget'))}${chip('velocity', t('optionVelocity'))}</div>
+                    <label class="panel-appetite">${t('appetiteLabel')}
+                        <select class="filter-select" onchange="setRiskAppetite(Number(this.value))">${levels.map(([max, key]) =>
+                            `<option value="${max}" ${settings.riskAppetite === max ? 'selected' : ''}>${t(key)}${max ? ` (≤ ${max})` : ''}</option>`).join('')}</select></label>
+                </section>
+                <section class="panel-card"><h3>${t('panelLegend')}</h3>
+                    <ul class="legend-list">${legend.map(([symbol, key]) => `<li>${symbol}${t(key)}</li>`).join('')}</ul>
+                </section>
+                <section class="panel-card"><h3>${cell ? t('selectedCell', { p: cell.p, i: cell.i, score: cellScore, level: t(FILTER_LEVELS[getCriticalityLevel(cellScore)]).toLocaleLowerCase() })
+                        : t('selectedCell', {}).split(' · ')[0]}</h3>
+                    <p class="panel-hint">${t(cell ? 'selectedCellHint' : 'selectedCellEmpty')}</p>
+                    ${cellRisks.map(riskRow).join('')}
+                </section>
+                ${above.length ? `<section class="panel-card warning"><h3>${t('aboveAppetiteTitle')}</h3>${above.map(riskRow).join('')}</section>` : ''}`;
+            panel.onclick = event => {
+                const row = event.target.closest('[data-risk-uid]');
+                if (row) openRiskSheet(row.dataset.riskUid);
+            };
         }
 
         function updateCharts() {
-            document.querySelector('.charts-column').classList.toggle('trajectory', matrixLayout === 'trajectory');
-            document.getElementById('layout-btn-split').classList.toggle('active', matrixLayout === 'split');
-            document.getElementById('layout-btn-trajectory').classList.toggle('active', matrixLayout === 'trajectory');
-            renderMatrixMenu();
+            const column = document.querySelector('.charts-column');
+            column.dataset.layout = matrixLayout;
+            const shown = { before: ['before'], after: ['after'], split: ['before', 'after'], trajectory: ['trajectory'] }[matrixLayout];
+            column.querySelectorAll('[data-matrix]').forEach(wrapper => { wrapper.hidden = !shown.includes(wrapper.dataset.matrix); });
+            document.querySelectorAll('.matrix-layouts .segmented-btn').forEach(button =>
+                button.classList.toggle('active', button.dataset.layout === matrixLayout));
             [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
             chartBefore = chartAfter = chartTrajectory = null;
             renderReviews();
             renderCommitteeTab();
             renderRegister();
 
-            if (matrixLayout === 'trajectory') {
-                const { datasets, bubble } = matrixChartData('trajectory');
-                chartTrajectory = createRiskChart(document.getElementById('chartTrajectory'), datasets, bubble);
+            if (matrixLayout !== 'split') {
+                const { datasets, bubble } = matrixChartData(matrixLayout);
+                const chart = createRiskChart(document.getElementById({ before: 'chartBefore', after: 'chartAfter', trajectory: 'chartTrajectory' }[matrixLayout]), datasets, bubble);
+                if (matrixLayout === 'before') chartBefore = chart;
+                else if (matrixLayout === 'after') chartAfter = chart;
+                else chartTrajectory = chart;
                 updateRiskTable();
                 updateGroupTable();
                 applyFilters();
                 return;
             }
 
+            // Côte à côte : même taille de bulle sur les deux matrices
             const before = matrixPoints('Before');
             const after = matrixPoints('After');
-            // Même taille de bulle sur les deux matrices
-            const bubble = bubbleRatios(before, after);
+            const target = matrixOptions.target ? matrixPoints('Target') : [];
+            const bubble = bubbleRatios(before, [...after, ...target]);
             resolveCollisions(before, bubble.radius * 2);
-            resolveCollisions(after, bubble.radius * 2);
+            resolveCollisions([...after, ...target], bubble.radius * 2);
 
-            chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before' }], bubble);
-            chartAfter = createRiskChart(document.getElementById('chartAfter'), [{ data: after, phase: 'After' }], bubble);
+            chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before', main: true }], bubble);
+            chartAfter = createRiskChart(document.getElementById('chartAfter'),
+                [{ data: after, phase: 'After', main: true }, ...(target.length ? [{ data: target, phase: 'Target', target: true }] : [])], bubble);
 
             updateRiskTable();
             updateGroupTable();

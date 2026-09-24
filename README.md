@@ -36,6 +36,8 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
 - `causes` : textes du nœud papillon ; `consequences` : `{ texte, chiffrage }`
   (une simple chaîne est aussi acceptée). Chaque mesure porte aussi `barriere`
   (`prevention` ou `protection`), son côté dans le nœud, et `efficacite` (0 à 5).
+- `velocite` : vitesse de survenue du risque (1 à 5, 0 = non évaluée), utilisée
+  par l'option « Taille = vélocité » des matrices.
 - `notes` : notes de revue `{ date, auteur, texte }` ; `liens` : pièces et liens
   `{ libelle, url }`.
 - `settings.templates` : « Mes modèles » de la bibliothèque `{ titre, description,
@@ -117,8 +119,11 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 
 ### Visualisation
 - **Matrices Before/After** avec Chart.js
-- **Vue trajectoire** : une seule matrice où chaque risque va de sa position avant
-  (bulle creuse) à sa position après (bulle pleine)
+- **Matrices Avant, Après, côte à côte ou Trajectoire** : en trajectoire, chaque
+  risque va de sa position avant (bulle creuse) à sa position après (bulle pleine)
+- **Panneau latéral** : options (nombre par case, appétence, cible en losange vert,
+  taille des bulles selon la vélocité), légende, risques de la case cliquée,
+  risques au-dessus de l'appétence
 - **Appétence au risque** tracée en pointillé, **nombre de risques par case**
   (options d'affichage), clic sur une case pour filtrer le registre
 - Visualisation comparative de l'impact des remédiations
