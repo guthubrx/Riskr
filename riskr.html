@@ -704,6 +704,216 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             top: 0;
         }
 
+        /* Registre compact (tableau ou cartes) */
+        .segmented.labeled .segmented-btn {
+            width: auto;
+            gap: 6px;
+            padding: 0 10px;
+            font-size: 13px;
+        }
+
+        /* Les noms de groupes sont longs : la liste reste compacte, comme dans la maquette */
+        #filter-group {
+            max-width: 200px;
+        }
+
+        .register-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 22px;
+            margin: 4px 0 12px;
+            font-size: 14px;
+            color: var(--text-2);
+        }
+
+        .register-summary b {
+            color: var(--text);
+        }
+
+        .register-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .register-table th {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 600;
+            text-align: start;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .register-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .register-group td {
+            padding: 8px 12px;
+            background: var(--surface-2);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .register-row {
+            cursor: pointer;
+        }
+
+        .register-row:hover td {
+            background: var(--surface-2);
+        }
+
+        .register-row.above td:first-child,
+        .register-card.above {
+            box-shadow: inset 3px 0 0 #ff9f0a;
+        }
+
+        .register-id {
+            color: var(--text-2);
+            font-weight: 500;
+        }
+
+        .register-title {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .register-sub {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .score-chips {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            color: var(--text-3);
+        }
+
+        .score-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 30px;
+            height: 26px;
+            padding: 0 6px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+
+        .score-chip.target {
+            border: 1.5px dashed var(--border-strong);
+            color: var(--text-2);
+        }
+
+        .treat-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--c) 14%, transparent);
+            color: var(--c);
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .owner {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .avatar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .due-late {
+            color: #ff3b30;
+            white-space: nowrap;
+        }
+
+        .due-late::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin-inline-end: 6px;
+            border-radius: 50%;
+            background: #ff3b30;
+        }
+
+        .mesures-pill {
+            display: inline-block;
+            padding: 3px 12px;
+            border: 1px solid var(--border-strong);
+            border-radius: 999px;
+            font-size: 13px;
+            color: var(--text-2);
+            white-space: nowrap;
+        }
+
+        .trend-line.trend-down polyline {
+            stroke: #34c759;
+        }
+
+        .trend-line.trend-up polyline {
+            stroke: #ff3b30;
+        }
+
+        .register-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 12px;
+        }
+
+        .register-cards h3 {
+            grid-column: 1 / -1;
+            margin: 8px 0 0;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .register-card {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            cursor: pointer;
+        }
+
+        .register-card:hover {
+            border-color: var(--accent);
+        }
+
+        .register-card-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+            font-size: 13px;
+        }
+
         /* Résumé à droite du titre d'une section repliable */
         .section-summary {
             margin-inline-start: auto;
@@ -3992,7 +4202,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <button type="button" id="filter-cell" class="filter-chip" onclick="setFilter('cell', null)" hidden></button>
             <span id="filter-count" class="filter-count"></span>
             <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
+            <div class="segmented labeled register-modes" role="group" data-i18n-title="registerViewLabel">
+                <button type="button" class="segmented-btn" data-mode="table" onclick="setRegisterMode('table')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span data-i18n="viewTable">Tableau</span></button>
+                <button type="button" class="segmented-btn" data-mode="cards" onclick="setRegisterMode('cards')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="viewCards">Cartes</span></button>
+                <button type="button" class="segmented-btn" data-mode="edit" onclick="setRegisterMode('edit')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span data-i18n="viewEdit">Édition</span></button>
+            </div>
         </div>
+        <div id="register-summary" class="register-summary"></div>
+        <div id="register-view"></div>
         <div id="risks-container"></div>
         </section>
 
@@ -5255,6 +5472,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                viewTable: "Tableau",
+                viewCards: "Cartes",
+                viewEdit: "Édition",
+                registerViewLabel: "Présentation du registre",
+                colBeforeAfterTarget: "Avant → Après · Cible",
+                colTrendReviews: "Tendance ({count} revues)",
+                colNextDue: "Prochaine échéance",
+                colMesures: "Mesures",
+                residualDetail: "P{p} × I{i} après remédiation",
+                mesuresDone: "{done}/{total} faites",
+                summaryRisks: "risques",
+                summaryAbove: "au-dessus de l’appétence",
+                summaryUp: "en hausse depuis la dernière revue",
+                summaryLate: "mesures en retard",
+                openRiskSheet: "Ouvrir la fiche du risque",
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -5510,6 +5742,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                viewTable: "Table",
+                viewCards: "Cards",
+                viewEdit: "Edit",
+                registerViewLabel: "Register layout",
+                colBeforeAfterTarget: "Before → After · Target",
+                colTrendReviews: "Trend ({count} reviews)",
+                colNextDue: "Next due date",
+                colMesures: "Measures",
+                residualDetail: "P{p} × I{i} after remediation",
+                mesuresDone: "{done}/{total} done",
+                summaryRisks: "risks",
+                summaryAbove: "above appetite",
+                summaryUp: "up since the last review",
+                summaryLate: "overdue measures",
+                openRiskSheet: "Open the risk sheet",
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -5765,6 +6012,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                viewTable: "Tabla",
+                viewCards: "Tarjetas",
+                viewEdit: "Edición",
+                registerViewLabel: "Presentación del registro",
+                colBeforeAfterTarget: "Antes → Después · Objetivo",
+                colTrendReviews: "Tendencia ({count} revisiones)",
+                colNextDue: "Próximo vencimiento",
+                colMesures: "Medidas",
+                residualDetail: "P{p} × I{i} tras la remediación",
+                mesuresDone: "{done}/{total} hechas",
+                summaryRisks: "riesgos",
+                summaryAbove: "por encima del apetito",
+                summaryUp: "al alza desde la última revisión",
+                summaryLate: "medidas retrasadas",
+                openRiskSheet: "Abrir la ficha del riesgo",
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -6020,6 +6282,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                viewTable: "表格",
+                viewCards: "卡片",
+                viewEdit: "编辑",
+                registerViewLabel: "登记册显示方式",
+                colBeforeAfterTarget: "处理前 → 处理后 · 目标",
+                colTrendReviews: "趋势（{count} 次评审）",
+                colNextDue: "下一截止日期",
+                colMesures: "措施",
+                residualDetail: "处理后 P{p} × I{i}",
+                mesuresDone: "已完成 {done}/{total}",
+                summaryRisks: "个风险",
+                summaryAbove: "超出风险偏好",
+                summaryUp: "自上次评审以来上升",
+                summaryLate: "项逾期措施",
+                openRiskSheet: "打开风险卡片",
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -6275,6 +6552,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                viewTable: "جدول",
+                viewCards: "بطاقات",
+                viewEdit: "تحرير",
+                registerViewLabel: "طريقة عرض السجل",
+                colBeforeAfterTarget: "قبل ← بعد · المستهدف",
+                colTrendReviews: "الاتجاه ({count} مراجعات)",
+                colNextDue: "الموعد القادم",
+                colMesures: "الإجراءات",
+                residualDetail: "P{p} × I{i} بعد المعالجة",
+                mesuresDone: "{done}/{total} منجزة",
+                summaryRisks: "مخاطر",
+                summaryAbove: "أعلى من مستوى التقبّل",
+                summaryUp: "في ارتفاع منذ آخر مراجعة",
+                summaryLate: "إجراءات متأخرة",
+                openRiskSheet: "فتح بطاقة الخطر",
             }
         };
 
@@ -7577,6 +7869,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             initPlanEditing();
             initResponsableEditing();
             fillFilterOptions();
+            renderRegister();
             applyFilters();
             renderActionPlan();
         }
@@ -8367,7 +8660,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (points.length < 2) return '';
             const last = points[points.length - 1];
             const title = `${t('trendTitle')} : ${points.map(point => formatOutOf5(point.value)).join(' → ')}`;
-            return `<svg class="trend-line" viewBox="0 0 84 24" width="84" height="24" role="img" aria-label="${escapeHtml(title)}"><title>${escapeHtml(title)}</title>
+            const direction = last.value < points[0].value ? 'down' : last.value > points[0].value ? 'up' : 'flat';
+            return `<svg class="trend-line trend-${direction}" viewBox="0 0 84 24" width="84" height="24" role="img" aria-label="${escapeHtml(title)}"><title>${escapeHtml(title)}</title>
                 <polyline points="${points.map(point => `${point.x},${point.y}`).join(' ')}"/>
                 <circle cx="${last.x}" cy="${last.y}" r="3.5" fill="${CRITICALITY_COLORS[getCriticalityLevel(last.value)]}"/></svg>`;
         }
@@ -8813,11 +9107,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             riskGroups.forEach(group => group.risks.forEach(risk => {
                 if (riskMatches(risk, group)) visible.add(risk.id);
             }));
-            document.querySelectorAll('#risks-container tr[data-risk-id], #risk-table-body tr[data-risk-id]').forEach(row => {
+            document.querySelectorAll('#risks-container tr[data-risk-id], #risk-table-body tr[data-risk-id], #register-view [data-risk-id]').forEach(row => {
                 row.classList.toggle('filtered-out', !visible.has(row.dataset.riskId));
             });
             document.querySelectorAll('#risks-container .remediation-row').forEach(row => {
                 row.classList.toggle('filtered-out', !visible.has(row.id.replace('remediation-row-', '')));
+            });
+            document.querySelectorAll('#register-view [data-group-id]').forEach(element => {
+                const group = riskGroups.find(g => String(g.id) === element.dataset.groupId);
+                element.classList.toggle('filtered-out', !group || !group.risks.some(r => visible.has(r.id)));
             });
             riskGroups.forEach(group => {
                 const content = document.getElementById(`group-content-${group.id}`);
@@ -8908,6 +9206,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             chartBefore = chartAfter = chartTrajectory = null;
             renderReviews();
             renderCommitteeTab();
+            renderRegister();
 
             if (matrixLayout === 'trajectory') {
                 const { datasets, bubble } = matrixChartData('trajectory');
@@ -9444,15 +9743,133 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         // ========================================
+        // Registre compact : tableau ou cartes (l'édition complète reste dans « Édition »)
+        // ========================================
+
+        const REGISTER_MODES = ['table', 'cards', 'edit'];
+        let registerMode = REGISTER_MODES.includes(riskrStorage.getItem('register-mode')) ? riskrStorage.getItem('register-mode') : 'table';
+
+        function setRegisterMode(mode) {
+            registerMode = mode;
+            riskrStorage.setItem('register-mode', mode);
+            renderRegister();
+            applyFilters();
+        }
+
+        // Pastille du porteur : initiales et couleur stable dérivée du nom
+        const AVATAR_COLORS = ['#5e5ce6', '#ff9f0a', '#30b0c7', '#34c759', '#ff375f', '#af52de', '#0a84ff'];
+        function avatar(name) {
+            const initials = name.split(/\s*\/\s*|\s+/).filter(Boolean).slice(0, 2).map(part => part[0].toUpperCase()).join('');
+            const hash = [...name].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) >>> 0, 0);
+            return `<span class="avatar" style="background:${AVATAR_COLORS[hash % AVATAR_COLORS.length]}" aria-hidden="true">${escapeHtml(initials)}</span>`;
+        }
+        const ownerHtml = name => name ? `<span class="owner">${avatar(name)}${escapeHtml(name)}</span>` : '—';
+
+        const scoreChip = (assessment, target = false) => {
+            const score = residualScore(assessment);
+            const background = target || score === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(score)];
+            return `<span class="score-chip${target ? ' target' : ''}" style="background:${background}">${score ?? '—'}</span>`;
+        };
+        const scoreChips = risk => `<span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)} ${scoreChip(risk.assessmentTarget, true)}</span>`;
+        const treatmentPill = key => `<span class="treat-pill" style="--c:${TREATMENT_COLORS[key]}">${treatmentLabel(key)}</span>`;
+
+        // Échéance la plus proche parmi les mesures non faites. O(m) par risque
+        function nextDue(risk) {
+            const due = risk.mesures
+                .filter(mesure => mesure.texte && mesure.etat !== 'done' && mesureDueDate(mesure.echeance))
+                .sort((a, b) => mesureDueDate(a.echeance) - mesureDueDate(b.echeance))[0];
+            return due ? `<span class="${isMesureLate(due) ? 'due-late' : ''}">${escapeHtml(due.echeance)}</span>` : '—';
+        }
+
+        function mesuresPill(risk) {
+            const mesures = risk.mesures.filter(mesure => mesure.texte);
+            return mesures.length ? `<span class="mesures-pill">${t('mesuresDone', { done: mesures.filter(m => m.etat === 'done').length, total: mesures.length })}</span>` : '—';
+        }
+
+        // Complexité : O(R × n + m), R = revues, n = risques, m = mesures
+        function renderRegister() {
+            const view = document.getElementById('register-view');
+            if (!view) return;
+            document.querySelectorAll('.register-modes .segmented-btn').forEach(button =>
+                button.classList.toggle('active', button.dataset.mode === registerMode));
+            document.getElementById('risks-container').hidden = registerMode !== 'edit';
+            view.hidden = registerMode === 'edit';
+
+            const last = reviews[reviews.length - 1];
+            const lastScores = last ? new Map(last.risks.map(r => [r.uid, scoreOf(r.after)])) : new Map();
+            const isAbove = risk => Boolean(settings.riskAppetite) && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
+            const summary = [
+                [risks.length, 'summaryRisks'],
+                [risks.filter(isAbove).length, 'summaryAbove'],
+                [risks.filter(risk => lastScores.has(risk.uid) && scoreOf(risk.assessmentAfter) > lastScores.get(risk.uid)).length, 'summaryUp'],
+                [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate']
+            ];
+            document.getElementById('register-summary').innerHTML = summary.map(([count, key]) => `<span><b>${count}</b> ${t(key)}</span>`).join('');
+            if (registerMode === 'edit') return;
+
+            const reviewScores = reviews.map(review => new Map(review.risks.map(r => [r.uid, residualScore(r.after)])));
+            const trend = risk => trendSparkline([...reviewScores.map(scores => scores.get(risk.uid) ?? null), residualScore(risk.assessmentAfter)]) || '—';
+            const residual = risk => {
+                const after = evaluatedAssessment(risk, 'After');
+                return after ? t('residualDetail', { p: after[0], i: after[1] }) : t('critNotEval');
+            };
+            const attributes = risk => `data-risk-id="${escapeHtml(risk.id)}" data-risk-uid="${escapeHtml(risk.uid)}" title="${t('openRiskSheet')}"`;
+
+            view.innerHTML = registerMode === 'table'
+                ? `<table class="register-table">
+                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeAfterTarget')}</th>
+                        <th>${t('colTrendReviews', { count: reviews.length + 1 })}</th><th>${t('colTreatment')}</th><th>${t('mesureOwner')}</th>
+                        <th>${t('colNextDue')}</th><th>${t('colMesures')}</th></tr></thead>
+                    <tbody>${riskGroups.map((group, index) => `
+                        <tr class="register-group" data-group-id="${escapeHtml(String(group.id))}"><td colspan="8">${index + 1} · ${escapeHtml(group.name)}</td></tr>
+                        ${group.risks.map(risk => `<tr class="register-row${isAbove(risk) ? ' above' : ''}" ${attributes(risk)}>
+                            <td class="register-id">${escapeHtml(risk.id)}</td>
+                            <td><div class="register-title">${escapeHtml(risk.title)}</div><div class="register-sub">${residual(risk)}</div></td>
+                            <td>${scoreChips(risk)}</td>
+                            <td>${trend(risk)}</td>
+                            <td>${treatmentPill(risk.traitement)}</td>
+                            <td>${ownerHtml(risk.responsable)}</td>
+                            <td>${nextDue(risk)}</td>
+                            <td>${mesuresPill(risk)}</td>
+                        </tr>`).join('')}`).join('')}
+                    </tbody></table>`
+                : `<div class="register-cards">${riskGroups.map((group, index) => `
+                    <h3 data-group-id="${escapeHtml(String(group.id))}">${index + 1} · ${escapeHtml(group.name)}</h3>
+                    ${group.risks.map(risk => `<article class="register-card${isAbove(risk) ? ' above' : ''}" ${attributes(risk)}>
+                        <div><div class="register-title"><span class="register-id">${escapeHtml(risk.id)}</span> ${escapeHtml(risk.title)}</div>
+                            <div class="register-sub">${residual(risk)}</div></div>
+                        <div class="register-card-foot">${scoreChips(risk)} ${trend(risk)}</div>
+                        <div class="register-card-foot">${treatmentPill(risk.traitement)} ${ownerHtml(risk.responsable)} ${nextDue(risk)} ${mesuresPill(risk)}</div>
+                    </article>`).join('')}`).join('')}</div>`;
+            view.onclick = event => {
+                const target = event.target.closest('[data-risk-uid]');
+                if (target) openRiskSheet(target.dataset.riskUid);
+            };
+        }
+
+        // Ouvre un risque ; remplacé par la fiche complète (tâche 6) : ici, l'édition à la ligne du risque
+        function openRiskSheet(uid) {
+            const risk = risks.find(r => r.uid === uid);
+            if (!risk) return;
+            setRegisterMode('edit');
+            const row = document.querySelector(`#risks-container tr[data-risk-id="${CSS.escape(risk.id)}"]`);
+            if (row) row.scrollIntoView({ block: 'center' });
+        }
+
+        // ========================================
         // Onglets de vues
         // ========================================
 
         const VIEW_TABS = ['matrices', 'registre', 'actions', 'revues', 'comite'];
-        let activeTab = VIEW_TABS.includes(riskrStorage.getItem('active-tab')) ? riskrStorage.getItem('active-tab') : 'matrices';
+        // Onglet de l'adresse (riskr.html#revues), sinon le dernier utilisé
+        const tabFromHash = location.hash.slice(1);
+        let activeTab = VIEW_TABS.includes(tabFromHash) ? tabFromHash
+            : VIEW_TABS.includes(riskrStorage.getItem('active-tab')) ? riskrStorage.getItem('active-tab') : 'matrices';
 
         function showTab(name) {
             activeTab = name;
             riskrStorage.setItem('active-tab', name);
+            window.history.replaceState(null, '', `#${name}`); // « history » seul désigne la pile d'annulation
             document.querySelectorAll('.view-tab').forEach(tab => {
                 tab.classList.toggle('active', tab.dataset.tab === name);
                 tab.setAttribute('aria-selected', tab.dataset.tab === name);
