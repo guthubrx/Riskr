@@ -4444,7 +4444,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function addMesure(risk) {
-            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo', barriere: 'prevention' });
+            risk.mesures.push(normalizeMesure({}));
             renderRisks();
             // Ouvre directement la saisie du texte de la nouvelle mesure
             document.querySelector(`.editable-mesure[data-risk-id="${risk.id}"][data-index="${risk.mesures.length - 1}"][data-field="texte"]`).click();
@@ -6560,12 +6560,32 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 porteur: String(mesure.porteur || ''),
                 echeance: String(mesure.echeance || ''),
                 etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo',
-                // Côté de la barrière dans le nœud papillon
-                barriere: mesure.barriere === 'protection' ? 'protection' : 'prevention'
+                // Côté de la barrière dans le nœud papillon, et son efficacité (0 = non évaluée, 1 à 5)
+                barriere: mesure.barriere === 'protection' ? 'protection' : 'prevention',
+                efficacite: toScore(mesure.efficacite)
             };
         }
 
         const stringList = value => (Array.isArray(value) ? value : []).map(String);
+        const objectList = value => (Array.isArray(value) ? value : []).filter(item => item !== null && item !== undefined);
+        const toScore = value => Number.isInteger(value) && value >= 0 && value <= 5 ? value : 0;
+
+        // Conséquence du nœud papillon : texte + chiffrage libre (« ≈ 250 k€ / an », « non chiffré »)
+        const normalizeConsequence = raw => typeof raw === 'string'
+            ? { texte: raw, chiffrage: '' }
+            : { texte: String(raw.texte || ''), chiffrage: String(raw.chiffrage || '') };
+
+        // Note de revue d'un risque et pièce ou lien associé
+        const normalizeNote = raw => ({ date: String(raw.date || ''), auteur: String(raw.auteur || ''), texte: String(raw.texte || '') });
+        const normalizeLink = raw => ({ libelle: String(raw.libelle || raw.url || ''), url: String(raw.url || '') });
+
+        // « Mes modèles » : risques enregistrés pour être réutilisés depuis la bibliothèque
+        const normalizeTemplate = raw => ({
+            titre: String(raw.titre || ''),
+            description: String(raw.description || ''),
+            cotation: toAssessment(raw.cotation),
+            mesures: stringList(raw.mesures)
+        });
 
         // Échéance saisie librement : date reconnue (AAAA-MM-JJ ou JJ/MM/AAAA), sinon null
         function mesureDueDate(text) {
@@ -6614,7 +6634,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 traitement: raw.traitement in TREATMENTS ? raw.traitement : '',
                 assessmentTarget: toAssessment(raw.assessmentTarget),
                 causes: stringList(raw.causes),
-                consequences: stringList(raw.consequences)
+                consequences: objectList(raw.consequences).map(normalizeConsequence),
+                notes: objectList(raw.notes).map(normalizeNote),
+                liens: objectList(raw.liens).map(normalizeLink)
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -6681,7 +6703,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return {
                 riskAppetite: Number.isInteger(appetite) && appetite >= 0 && appetite <= 25
                     ? appetite
-                    : CRITICALITY_THRESHOLDS.high - 1
+                    : CRITICALITY_THRESHOLDS.high - 1,
+                templates: objectList(raw && raw.templates).map(normalizeTemplate).filter(template => template.titre)
             };
         }
 
@@ -7013,7 +7036,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
                 mesures: [], statut: 'statusNotTreated', responsable: '', traitement: '',
-                causes: [], consequences: []
+                causes: [], consequences: [], notes: [], liens: []
             };
         }
 
@@ -9238,8 +9261,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             openSheet(() => {
                 const risk = risks.find(r => r.uid === uid);
                 if (!risk) return { title: '', body: '', mount: closeSheet }; // risque supprimé (annulation)
-                const items = (list, kind) => risk[list].map((text, index) => `<div class="bowtie-node ${kind}">
-                        <span class="bowtie-text" data-list="${list}" data-index="${index}" data-placeholder="${t('bowtieItemPlaceholder')}">${escapeHtml(text)}</span>
+                const items = (list, kind) => risk[list].map((entry, index) => `<div class="bowtie-node ${kind}">
+                        <span class="bowtie-text" data-list="${list}" data-index="${index}" data-placeholder="${t('bowtieItemPlaceholder')}">${escapeHtml(entry.texte ?? entry)}</span>
                         <button type="button" class="review-delete" data-list="${list}" data-index="${index}" title="${t('mesureDelete')}" aria-label="${t('mesureDelete')}">${icon('trash')}</button>
                     </div>`).join('') + `<button type="button" class="bowtie-add" data-add="${list}">${icon('plus')} ${t(list === 'causes' ? 'bowtieAddCause' : 'bowtieAddConsequence')}</button>`;
                 const barriers = side => risk.mesures.map((mesure, index) => ({ mesure, index }))
@@ -9266,7 +9289,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             const index = Number(element.dataset.index);
                             // Tout se règle à la sortie du champ : texte vide = élément retiré
                             makeInlineEditable(element, () => {}, { onBlur: value => {
-                                if (value) list[index] = value;
+                                if (value && typeof list[index] === 'object') list[index].texte = value;
+                                else if (value) list[index] = value;
                                 else list.splice(index, 1);
                                 if (value !== element.dataset.originalValue) commitChange();
                                 setTimeout(refreshSheet, 0); // laisser le clic en cours se terminer
@@ -9274,7 +9298,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         });
                         body.querySelectorAll('.bowtie-add').forEach(button => {
                             button.onclick = () => {
-                                risk[button.dataset.add].push('');
+                                risk[button.dataset.add].push(button.dataset.add === 'consequences' ? normalizeConsequence('') : '');
                                 refreshSheet();
                                 document.querySelector(`#sheet-body .bowtie-text[data-list="${button.dataset.add}"][data-index="${risk[button.dataset.add].length - 1}"]`).click();
                             };

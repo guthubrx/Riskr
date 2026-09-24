@@ -33,8 +33,13 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   échéance facultatifs ; `etat` vaut `todo`, `doing` ou `done` ; une simple chaîne
   de texte est aussi acceptée). Une échéance au format `AAAA-MM-JJ` ou
   `JJ/MM/AAAA` passée sur une mesure non faite la signale en retard.
-- `causes`, `consequences` : listes de textes du nœud papillon ; chaque mesure
-  porte aussi `barriere` (`prevention` ou `protection`), son côté dans le nœud.
+- `causes` : textes du nœud papillon ; `consequences` : `{ texte, chiffrage }`
+  (une simple chaîne est aussi acceptée). Chaque mesure porte aussi `barriere`
+  (`prevention` ou `protection`), son côté dans le nœud, et `efficacite` (0 à 5).
+- `notes` : notes de revue `{ date, auteur, texte }` ; `liens` : pièces et liens
+  `{ libelle, url }`.
+- `settings.templates` : « Mes modèles » de la bibliothèque `{ titre, description,
+  cotation, mesures }`.
 - `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
   permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
 - `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
