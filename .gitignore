@@ -16,3 +16,6 @@ archive/
 .idea/
 *.swp
 *.swo
+
+# Données locales privées : jamais versionnées ni publiées
+riskr-data.local.js

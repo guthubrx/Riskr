@@ -20,6 +20,23 @@ est le contenu : pour une nouvelle analyse, seul `riskr-data.js` change.
   tel quel à côté du HTML
 - Sans `riskr-data.js`, la page affiche un placeholder minimal (pas de
   données d'exemple cachées dans le HTML)
+- En ouverture locale, `riskr-data.local.js` peut surcharger les données
+  génériques. Il est ignoré par Git et ne doit contenir que des données privées
+  qui ne doivent pas être publiées.
+
+Chaque risque porte quatre cotations génériques : `assessmentABefore`,
+`assessmentAAfter`, `assessmentBBefore` et `assessmentBAfter`. Elles permettent
+de comparer deux référentiels de cotation sans embarquer de vocabulaire propre à
+une organisation.
+
+Chaque groupe peut également comporter deux champs de synthèse destinés aux
+décideurs :
+
+- `assessmentNote` : lecture courte de la catégorie ;
+- `remediationNote` : remédiation visée.
+
+Riskr contrôle ces deux textes à 30 mots maximum. Le moteur reste compatible
+avec les anciens fichiers de données qui ne les contiennent pas.
 
 ## 🔌 100 % hors-ligne
 
@@ -40,7 +57,9 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Matrices Before/After** avec Chart.js
 - Visualisation comparative de l'impact des remédiations
 - Moyennes par groupe de risques
+- Lecture et remédiation synthétiques par groupe
 - Légende interactive avec codes couleur
+- Copie du tableau de synthèse vers Word, avec les couleurs des cotations
 
 ### Système d'Historique
 - **Undo/Redo** jusqu'à 50 étapes (Cmd+Z / Cmd+Y sur Mac, Ctrl+Z / Ctrl+Y sur Windows/Linux)
@@ -79,7 +98,7 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - Aucune autre dépendance externe
 
 ### Persistance
-- **localStorage** - Stockage navigateur natif
+- **localStorage** - Stockage navigateur natif isolé par analyse
 - Format JSON pour import/export
 
 ### Architecture

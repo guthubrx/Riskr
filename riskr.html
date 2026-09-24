@@ -470,6 +470,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
     </script>
     <script src="riskr-data.js"></script>
+    <script>
+        // Une analyse privée peut surcharger les données génériques uniquement
+        // lors d'une ouverture locale du fichier. Ce fichier est ignoré par Git.
+        if (window.location.protocol === 'file:') {
+            document.write('<script src="riskr-data.local.js"><\/script>');
+        }
+    </script>
     <style>
         * {
             margin: 0;
@@ -1136,14 +1143,47 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             padding: 6px 12px;
         }
 
-        /* Noms de catégories */
-        .group-summary-table td > div:first-child {
+        .group-summary-table .group-name {
             font-size: 16px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+            line-height: 1.3;
         }
 
-        /* Descriptions */
-        .group-summary-table td > div:last-child {
+        .group-summary-table .group-description {
             font-size: 16px;
+            font-weight: 400;
+            color: #5a5a5f;
+            line-height: 1.4;
+        }
+
+        .group-summary-table .group-narrative {
+            margin-top: 7px;
+            font-size: 14px;
+            color: #3f3f46;
+            line-height: 1.35;
+        }
+
+        .group-summary-table .group-narrative-label {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .group-summary-copy-button {
+            margin-left: auto;
+            padding: 6px 10px;
+            border: 1px solid #c7c7cc;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1d1d1f;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .group-summary-copy-button:hover {
+            background: #e8e8ed;
         }
 
         .chart-wrapper {
@@ -2940,7 +2980,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 element.dataset.editingInitialized = 'true';
 
                 // Charger la valeur sauvegardée depuis le navigateur (localStorage)
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                 }
@@ -2968,7 +3008,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const originalValue = element.dataset.originalValue || '';
 
                     if (newValue) {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         console.log(`✅ Sauvegardé: ${storageKey} = "${newValue}"`);
 
                         // N'afficher le toast que si la valeur a changé
@@ -2986,7 +3026,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
                     // Echap pour annuler l'édition
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || element.textContent;
+                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
                         element.blur();
                     }
                 });
@@ -3017,20 +3057,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Désactiver sticky
                 toggleBtn.classList.remove('active');
                 stickySection.classList.add('sticky-disabled');
-                localStorage.setItem('sticky-enabled', 'false');
+                riskrStorage.setItem('sticky-enabled', 'false');
                 console.log(`📌 Mode sticky: DÉSACTIVÉ`);
             } else {
                 // Activer sticky
                 toggleBtn.classList.add('active');
                 stickySection.classList.remove('sticky-disabled');
-                localStorage.setItem('sticky-enabled', 'true');
+                riskrStorage.setItem('sticky-enabled', 'true');
                 console.log(`📌 Mode sticky: ACTIVÉ`);
             }
         }
 
         // Restaurer l'état du sticky au chargement (LOGIQUE INVERSÉE)
         document.addEventListener('DOMContentLoaded', function() {
-            const stickyEnabled = localStorage.getItem('sticky-enabled');
+            const stickyEnabled = riskrStorage.getItem('sticky-enabled');
             const stickySection = document.getElementById('sticky-section');
             const toggleBtn = document.getElementById('sticky-toggle-btn');
 
@@ -3060,14 +3100,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Sauvegarder l'état dans localStorage pour mémoriser la préférence
             const isCollapsed = content.classList.contains('collapsed');
-            localStorage.setItem(`collapse-${contentId}`, isCollapsed);
+            riskrStorage.setItem(`collapse-${contentId}`, isCollapsed);
         }
 
         // Restaurer l'état des sections au chargement de la page
         document.addEventListener('DOMContentLoaded', function() {
             // Restaurer l'état du tableau récapitulatif
             const riskRecapTable = document.getElementById('risk-recap-table');
-            const isCollapsedRecap = localStorage.getItem('collapse-risk-recap-table') === 'true';
+            const isCollapsedRecap = riskrStorage.getItem('collapse-risk-recap-table') === 'true';
 
             if (isCollapsedRecap && riskRecapTable) {
                 const header = riskRecapTable.previousElementSibling;
@@ -3077,7 +3117,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Restaurer l'état des matrices
             const matricesContent = document.getElementById('matrices-content');
-            const isCollapsedMatrices = localStorage.getItem('collapse-matrices-content') === 'true';
+            const isCollapsedMatrices = riskrStorage.getItem('collapse-matrices-content') === 'true';
 
             if (isCollapsedMatrices && matricesContent) {
                 const header = matricesContent.previousElementSibling;
@@ -3087,7 +3127,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Restaurer l'état de la section sticky complète
             const stickySectionContent = document.getElementById('sticky-section-content');
-            const isCollapsedSticky = localStorage.getItem('collapse-sticky-section-content') === 'true';
+            const isCollapsedSticky = riskrStorage.getItem('collapse-sticky-section-content') === 'true';
 
             if (isCollapsedSticky && stickySectionContent) {
                 const header = stickySectionContent.previousElementSibling;
@@ -3111,7 +3151,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const storageKey = `group-name-${groupId}`;
 
                 // Charger la valeur sauvegardée
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                     // Mettre à jour aussi dans l'objet riskGroups
@@ -3146,7 +3186,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const originalValue = element.dataset.originalValue || '';
 
                     if (newValue) {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         // Mettre à jour dans l'objet riskGroups
                         const group = riskGroups.find(g => g.id == groupId);
                         if (group) {
@@ -3171,7 +3211,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
                     // Annuler avec Escape
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || element.textContent;
+                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
                         element.blur();
                     }
                 });
@@ -3189,7 +3229,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const storageKey = `group-desc-${groupId}`;
 
                 // Charger la valeur sauvegardée
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                     const group = riskGroups.find(g => g.id == groupId);
@@ -3222,7 +3262,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const originalValue = element.dataset.originalValue || '';
 
                     if (newValue) {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         const group = riskGroups.find(g => g.id == groupId);
                         if (group) {
                             group.description = newValue;
@@ -3243,7 +3283,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         element.blur();
                     }
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || element.textContent;
+                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
                         element.blur();
                     }
                 });
@@ -3261,7 +3301,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const storageKey = `risk-title-${riskId}`;
 
                 // Charger la valeur sauvegardée
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                     const risk = risks.find(r => r.id === riskId);
@@ -3308,7 +3348,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const originalValue = element.dataset.originalValue || '';
 
                     if (newValue) {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         const risk = risks.find(r => r.id === riskId);
                         if (risk) {
                             risk.title = newValue.replace(`${riskId}. `, '');
@@ -3330,7 +3370,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         element.blur();
                     }
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || element.textContent;
+                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
                         element.blur();
                     }
                 });
@@ -3351,7 +3391,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const storageKey = `risk-remediation-${riskId}`;
 
                 // Charger la valeur sauvegardée
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                     const risk = risks.find(r => r.id === riskId);
@@ -3399,7 +3439,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const originalValue = element.dataset.originalValue || '';
 
                     if (newValue && newValue !== t('clickToAddRemediation')) {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         const risk = risks.find(r => r.id === riskId);
                         if (risk) {
                             // Convertir le texte en tableau de mesures (séparé par •)
@@ -3421,7 +3461,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         element.blur();
                     }
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || element.textContent;
+                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
                         element.blur();
                     }
                 });
@@ -3442,7 +3482,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Charger la valeur sauvegardée depuis localStorage
                 const storageKey = `risk-status-${riskId}`;
-                const savedStatus = localStorage.getItem(storageKey);
+                const savedStatus = riskrStorage.getItem(storageKey);
                 if (savedStatus) {
                     dropdown.value = savedStatus;
                     const risk = risks.find(r => r.id === riskId);
@@ -3456,7 +3496,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const newStatus = e.target.value;
 
                     // Sauvegarder dans localStorage
-                    localStorage.setItem(storageKey, newStatus);
+                    riskrStorage.setItem(storageKey, newStatus);
 
                     // Mettre à jour l'objet risque
                     const risk = risks.find(r => r.id === riskId);
@@ -3484,7 +3524,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const storageKey = `risk-responsable-${riskId}`;
 
                 // Charger la valeur sauvegardée
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                     const risk = risks.find(r => r.id === riskId);
@@ -3533,13 +3573,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     // Si vide, afficher le placeholder
                     if (!newValue || newValue === t('clickToAdd')) {
                         element.textContent = t('clickToAdd');
-                        localStorage.removeItem(storageKey);
+                        riskrStorage.removeItem(storageKey);
                         const risk = risks.find(r => r.id === riskId);
                         if (risk) {
                             risk.responsable = '';
                         }
                     } else {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         const risk = risks.find(r => r.id === riskId);
                         if (risk) {
                             risk.responsable = newValue;
@@ -3560,7 +3600,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         element.blur();
                     }
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || t('clickToAdd');
+                        element.textContent = riskrStorage.getItem(storageKey) || t('clickToAdd');
                         element.blur();
                     }
                 });
@@ -3583,7 +3623,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const storageKey = `section-title-${riskIndex}-${sectionType}`;
 
                 // Charger la valeur sauvegardée
-                const savedValue = localStorage.getItem(storageKey);
+                const savedValue = riskrStorage.getItem(storageKey);
                 if (savedValue) {
                     element.textContent = savedValue;
                 }
@@ -3612,7 +3652,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const originalValue = element.dataset.originalValue || '';
 
                     if (newValue) {
-                        localStorage.setItem(storageKey, newValue);
+                        riskrStorage.setItem(storageKey, newValue);
                         console.log(`✅ Sous-titre de section sauvegardé: "${newValue}"`);
 
                         // N'afficher le toast que si la valeur a changé
@@ -3630,7 +3670,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
                     // Annuler avec Escape
                     if (e.key === 'Escape') {
-                        element.textContent = localStorage.getItem(storageKey) || element.textContent;
+                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
                         element.blur();
                     }
                 });
@@ -3643,8 +3683,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function exportToHTML() {
             // Récupérer les valeurs modifiées depuis localStorage
-            const savedTitle = localStorage.getItem('analysis-main-title');
-            const savedSubtitle = localStorage.getItem('analysis-main-subtitle');
+            const savedTitle = riskrStorage.getItem('analysis-main-title');
+            const savedSubtitle = riskrStorage.getItem('analysis-main-subtitle');
 
             // Récupérer le contenu HTML complet de la page
             let htmlContent = document.documentElement.outerHTML;
@@ -3752,7 +3792,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 appState: {
                     title: document.getElementById('main-title').textContent,
                     subtitle: document.getElementById('main-subtitle').textContent,
-                    language: currentLanguage
+                    language: currentLanguage,
+                    storageNamespace: normalizedStorageNamespace
                 },
                 risks: risks.map(r => Object.assign({}, r)),
                 riskGroups: riskGroups.map(g => {
@@ -3814,11 +3855,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     if (data.appState) {
                         if (data.appState.title) {
                             document.getElementById('main-title').textContent = data.appState.title;
-                            localStorage.setItem('analysis-main-title', data.appState.title);
+                            riskrStorage.setItem('analysis-main-title', data.appState.title);
                         }
                         if (data.appState.subtitle) {
                             document.getElementById('main-subtitle').textContent = data.appState.subtitle;
-                            localStorage.setItem('analysis-main-subtitle', data.appState.subtitle);
+                            riskrStorage.setItem('analysis-main-subtitle', data.appState.subtitle);
                         }
                         if (data.appState.language) {
                             setLanguage(data.appState.language);
@@ -3849,6 +3890,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             }
                         });
                     }
+
+                    validateRiskGroupNarratives(riskGroups);
 
                     // 4. Sauvegarder l'état pour undo/redo
                     saveState();
@@ -3943,12 +3986,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (group.risks && group.risks.length > 0) {
                     // Préparer les données du tableau
                     const tableData = group.risks.map(risk => {
-                        const probBefore = risk.gcBefore[0] || '-';
-                        const impactBefore = risk.gcBefore[1] || '-';
-                        const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]) || '-';
-                        const probAfter = risk.gcAfter[0] || '-';
-                        const impactAfter = risk.gcAfter[1] || '-';
-                        const critAfter = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]) || '-';
+                        const probBefore = risk.assessmentBBefore[0] || '-';
+                        const impactBefore = risk.assessmentBBefore[1] || '-';
+                        const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]) || '-';
+                        const probAfter = risk.assessmentBAfter[0] || '-';
+                        const impactAfter = risk.assessmentBAfter[1] || '-';
+                        const critAfter = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]) || '-';
                         const reduction = critBefore !== '-' && critAfter !== '-'
                             ? `${((1 - critAfter/critBefore) * 100).toFixed(0)}%`
                             : '-';
@@ -4020,12 +4063,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Données des risques
                 group.risks.forEach(risk => {
-                    const probBefore = risk.gcBefore[0] || '';
-                    const impactBefore = risk.gcBefore[1] || '';
-                    const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]) || '';
-                    const probAfter = risk.gcAfter[0] || '';
-                    const impactAfter = risk.gcAfter[1] || '';
-                    const critAfter = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]) || '';
+                    const probBefore = risk.assessmentBBefore[0] || '';
+                    const impactBefore = risk.assessmentBBefore[1] || '';
+                    const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]) || '';
+                    const probAfter = risk.assessmentBAfter[0] || '';
+                    const impactAfter = risk.assessmentBAfter[1] || '';
+                    const critAfter = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]) || '';
                     const reduction = critBefore && critAfter
                         ? ((1 - critAfter/critBefore) * 100).toFixed(0) + '%'
                         : '';
@@ -4094,12 +4137,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Données
             riskGroups.forEach(group => {
                 group.risks.forEach(risk => {
-                    const probBefore = risk.gcBefore[0] || '';
-                    const impactBefore = risk.gcBefore[1] || '';
-                    const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]) || '';
-                    const probAfter = risk.gcAfter[0] || '';
-                    const impactAfter = risk.gcAfter[1] || '';
-                    const critAfter = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]) || '';
+                    const probBefore = risk.assessmentBBefore[0] || '';
+                    const impactBefore = risk.assessmentBBefore[1] || '';
+                    const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]) || '';
+                    const probAfter = risk.assessmentBAfter[0] || '';
+                    const impactAfter = risk.assessmentBAfter[1] || '';
+                    const critAfter = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]) || '';
                     const reduction = critBefore && critAfter
                         ? ((1 - critAfter/critBefore) * 100).toFixed(0) + '%'
                         : '';
@@ -4236,7 +4279,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 deleteGroup: "Supprimer",
                 clickToAdd: "Cliquer pour ajouter",
                 clickToAddRemediation: "Cliquer pour ajouter des remédiations",
-                zoomMatrix: "Agrandir la matrice"
+                zoomMatrix: "Agrandir la matrice",
+                copyForWord: "Copier pour Word",
+                copiedForWord: "Copié",
+                copyForWordUnavailable: "La copie n’a pas abouti. Autorisez le presse-papiers puis réessayez."
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4308,7 +4354,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 deleteGroup: "Delete",
                 clickToAdd: "Click to add",
                 clickToAddRemediation: "Click to add remediations",
-                zoomMatrix: "Enlarge matrix"
+                zoomMatrix: "Enlarge matrix",
+                copyForWord: "Copy for Word",
+                copiedForWord: "Copied",
+                copyForWordUnavailable: "Copy failed. Allow clipboard access and try again."
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -4380,7 +4429,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 deleteGroup: "Eliminar",
                 clickToAdd: "Clic para agregar",
                 clickToAddRemediation: "Clic para agregar remediaciones",
-                zoomMatrix: "Ampliar matriz"
+                zoomMatrix: "Ampliar matriz",
+                copyForWord: "Copiar para Word",
+                copiedForWord: "Copiado",
+                copyForWordUnavailable: "No se pudo copiar. Autorice el portapapeles e inténtelo de nuevo."
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -4452,7 +4504,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 deleteGroup: "删除",
                 clickToAdd: "点击添加",
                 clickToAddRemediation: "点击添加缓解措施",
-                zoomMatrix: "放大矩阵"
+                zoomMatrix: "放大矩阵",
+                copyForWord: "复制到 Word",
+                copiedForWord: "已复制",
+                copyForWordUnavailable: "复制失败。请允许访问剪贴板后重试。"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -4524,11 +4579,72 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 deleteGroup: "حذف",
                 clickToAdd: "انقر للإضافة",
                 clickToAddRemediation: "انقر لإضافة المعالجات",
-                zoomMatrix: "تكبير المصفوفة"
+                zoomMatrix: "تكبير المصفوفة",
+                copyForWord: "نسخ إلى Word",
+                copiedForWord: "تم النسخ",
+                copyForWordUnavailable: "تعذر النسخ. اسمح بالوصول إلى الحافظة ثم أعد المحاولة."
             }
         };
 
-        let currentLanguage = localStorage.getItem('riskr-language') || 'fr';
+        const rawStorageNamespace = window.RISKR_DATA && window.RISKR_DATA.appState
+            ? window.RISKR_DATA.appState.storageNamespace
+            : 'default';
+        const normalizedStorageNamespace = String(rawStorageNamespace || 'default')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '-')
+            .replace(/^-+|-+$/g, '') || 'default';
+        const riskrStoragePrefix = `riskr:${normalizedStorageNamespace}:`;
+        const browserStorage = window.localStorage;
+        const riskrStorage = Object.freeze({
+            getItem: key => browserStorage.getItem(riskrStoragePrefix + key),
+            setItem: (key, value) => browserStorage.setItem(riskrStoragePrefix + key, value),
+            removeItem: key => browserStorage.removeItem(riskrStoragePrefix + key)
+        });
+
+        const riskrGroupNarrativeSchema = Object.freeze({
+            version: 1,
+            fields: {
+                assessmentNote: {
+                    required: true,
+                    maxWords: 30,
+                    guidance: 'Expliquer la lecture de la catégorie en 30 mots maximum.'
+                },
+                remediationNote: {
+                    required: true,
+                    maxWords: 30,
+                    guidance: 'Expliquer la remédiation visée en 30 mots maximum.'
+                }
+            }
+        });
+
+        function countWords(value) {
+            return String(value || '').trim().split(/\s+/).filter(Boolean).length;
+        }
+
+        function validateRiskGroupNarratives(groups) {
+            const errors = [];
+            groups.forEach(group => {
+                Object.entries(riskrGroupNarrativeSchema.fields).forEach(([field, rule]) => {
+                    const value = String(group[field] || '').trim();
+                    if (rule.required && !value) {
+                        errors.push(`Groupe ${group.id} : ${field} est requis.`);
+                    } else if (value && countWords(value) > rule.maxWords) {
+                        errors.push(`Groupe ${group.id} : ${field} dépasse ${rule.maxWords} mots.`);
+                    }
+                });
+            });
+            if (errors.length) console.warn('[Riskr] Narratifs de groupe à compléter :', errors);
+            return errors;
+        }
+
+        function escapeHtml(value) {
+            return String(value || '').replace(/[&<>'"]/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[char]);
+        }
+
+        let currentLanguage = riskrStorage.getItem('riskr-language') || 'fr';
 
         function t(key) {
             return translations[currentLanguage][key] || translations.fr[key] || key;
@@ -4721,8 +4837,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Ne PAS enrichir ce fallback — c'est un témoin visuel, pas un dataset.
             risks = [
                 { id: "1.1", title: "Aucune donnée chargée — générer riskr-data.js",
-                  dtuBefore: [3, 3], dtuAfter: [2, 2],
-                  gcBefore: [3, 3], gcAfter: [2, 2],
+                  assessmentABefore: [3, 3], assessmentAAfter: [2, 2],
+                  assessmentBBefore: [3, 3], assessmentBAfter: [2, 2],
                   mesures: ["Créer riskr-data.js (window.RISKR_DATA) à côté de riskr.html",
                             "Ou importer un JSON via le bouton Importer"],
                   statut: "Non traité", responsable: "" }
@@ -4738,6 +4854,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             ];
         } // fin else (fallback minimal si pas de RISKR_DATA)
 
+        validateRiskGroupNarratives(riskGroups);
+
         let chartBefore, chartAfter;
         
         // Créer l'interface utilisateur
@@ -4747,7 +4865,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 id: group.id,
                 riskIds: group.risks.map(r => r.id)
             }));
-            localStorage.setItem('risk-groups-mapping', JSON.stringify(mapping));
+            riskrStorage.setItem('risk-groups-mapping', JSON.stringify(mapping));
         }
 
         // ========================================
@@ -4876,8 +4994,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 prob_apres: "Non évalué",
                 impact_apres: "Non évalué",
                 mesures: [],
-                gcBefore: [0, 0],
-                gcAfter: [0, 0],
+                assessmentBBefore: [0, 0],
+                assessmentBAfter: [0, 0],
                 statut: "Non traité",
                 responsable: ""
             };
@@ -4930,8 +5048,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 prob_apres: "Non évalué",
                 impact_apres: "Non évalué",
                 mesures: [],
-                gcBefore: [0, 0],
-                gcAfter: [0, 0],
+                assessmentBBefore: [0, 0],
+                assessmentBAfter: [0, 0],
                 statut: "Non traité",
                 responsable: ""
             };
@@ -4991,7 +5109,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Restaurer le mapping des groupes depuis localStorage (appelé UNE SEULE FOIS à l'initialisation)
         function restoreGroupMappingFromStorage() {
-            const savedMapping = localStorage.getItem('risk-groups-mapping');
+            const savedMapping = riskrStorage.getItem('risk-groups-mapping');
             if (savedMapping) {
                 try {
                     const mapping = JSON.parse(savedMapping);
@@ -5242,32 +5360,32 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-prob-before-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getProbabilityScale(), risk.gcBefore[0])}
+                                    ${generateOptions(getProbabilityScale(), risk.assessmentBBefore[0])}
                                 </select>
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-impact-before-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getImpactScale(), risk.gcBefore[1])}
+                                    ${generateOptions(getImpactScale(), risk.assessmentBBefore[1])}
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-before-${index}">
-                                ${getCriticalityBadge(risk.gcBefore[0], risk.gcBefore[1])}
+                                ${getCriticalityBadge(risk.assessmentBBefore[0], risk.assessmentBBefore[1])}
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-prob-after-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getProbabilityScale(), risk.gcAfter[0])}
+                                    ${generateOptions(getProbabilityScale(), risk.assessmentBAfter[0])}
                                 </select>
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-impact-after-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getImpactScale(), risk.gcAfter[1])}
+                                    ${generateOptions(getImpactScale(), risk.assessmentBAfter[1])}
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-after-${index}">
-                                ${getCriticalityBadge(risk.gcAfter[0], risk.gcAfter[1])}
+                                ${getCriticalityBadge(risk.assessmentBAfter[0], risk.assessmentBAfter[1])}
                             </td>
                             <td class="reduction-cell" id="reduction-${index}">
-                                ${getRiskReductionBadge(risk.gcBefore[0], risk.gcBefore[1], risk.gcAfter[0], risk.gcAfter[1])}
+                                ${getRiskReductionBadge(risk.assessmentBBefore[0], risk.assessmentBBefore[1], risk.assessmentBAfter[0], risk.assessmentBAfter[1])}
                             </td>
                             <td class="status-cell">
                                 <select id="status-${index}" data-risk-id="${risk.id}" class="status-dropdown">
@@ -5342,7 +5460,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 groupDiv.appendChild(contentDiv);
 
                 // Restaurer l'état du collapse depuis localStorage
-                const isCollapsed = localStorage.getItem(`collapse-group-content-${group.id}`) === 'true';
+                const isCollapsed = riskrStorage.getItem(`collapse-group-content-${group.id}`) === 'true';
                 if (isCollapsed) {
                     headerDiv.classList.add('collapsed');
                     contentDiv.classList.add('collapsed');
@@ -5689,17 +5807,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const impactAfterElem = document.getElementById(`gc-impact-after-${index}`);
 
                 // Si les éléments n'existent pas encore, utiliser les valeurs du risque
-                const gcProbBefore = probBeforeElem ? parseInt(probBeforeElem.value) : risk.gcBefore[0];
-                const gcImpactBefore = impactBeforeElem ? parseInt(impactBeforeElem.value) : risk.gcBefore[1];
-                const gcProbAfter = probAfterElem ? parseInt(probAfterElem.value) : risk.gcAfter[0];
-                const gcImpactAfter = impactAfterElem ? parseInt(impactAfterElem.value) : risk.gcAfter[1];
+                const assessmentBProbBefore = probBeforeElem ? parseInt(probBeforeElem.value) : risk.assessmentBBefore[0];
+                const assessmentBImpactBefore = impactBeforeElem ? parseInt(impactBeforeElem.value) : risk.assessmentBBefore[1];
+                const assessmentBProbAfter = probAfterElem ? parseInt(probAfterElem.value) : risk.assessmentBAfter[0];
+                const assessmentBImpactAfter = impactAfterElem ? parseInt(impactAfterElem.value) : risk.assessmentBAfter[1];
 
                 return {
                     ...risk,
-                    dtuBefore: [gcProbBefore, gcImpactBefore],  // Utiliser G&C pour DTU
-                    dtuAfter: [gcProbAfter, gcImpactAfter],      // Utiliser G&C pour DTU
-                    gcBefore: [gcProbBefore, gcImpactBefore],
-                    gcAfter: [gcProbAfter, gcImpactAfter]
+                    assessmentABefore: [assessmentBProbBefore, assessmentBImpactBefore],  // Utiliser le référentiel B pour le référentiel A
+                    assessmentAAfter: [assessmentBProbAfter, assessmentBImpactAfter],      // Utiliser le référentiel B pour le référentiel A
+                    assessmentBBefore: [assessmentBProbBefore, assessmentBImpactBefore],
+                    assessmentBAfter: [assessmentBProbAfter, assessmentBImpactAfter]
                 };
             });
         }
@@ -5936,13 +6054,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     
                     const row = document.createElement('tr');
                     
-                    // Calculer les moyennes DTU & G&C
-                    const avgProbBefore = (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
-                    const avgImpactBefore = (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
+                    // Calculer les moyennes des deux référentiels
+                    const avgProbBefore = (currentRisk.assessmentABefore[0] + currentRisk.assessmentBBefore[0]) / 2;
+                    const avgImpactBefore = (currentRisk.assessmentABefore[1] + currentRisk.assessmentBBefore[1]) / 2;
                     const avgCritBefore = avgProbBefore * avgImpactBefore;
                     
-                    const avgProbAfter = (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
-                    const avgImpactAfter = (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
+                    const avgProbAfter = (currentRisk.assessmentAAfter[0] + currentRisk.assessmentBAfter[0]) / 2;
+                    const avgImpactAfter = (currentRisk.assessmentAAfter[1] + currentRisk.assessmentBAfter[1]) / 2;
                     const avgCritAfter = avgProbAfter * avgImpactAfter;
                     
                     function getCritClass(crit) {
@@ -5987,10 +6105,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <h3 class="collapsible-header" onclick="toggleCollapse('group-summary-table-content')" style="margin-bottom: 8px;">
                         <span class="collapse-icon">▼</span>
                         Moyennes par Groupe
+                        <button type="button" class="group-summary-copy-button" onclick="event.stopPropagation(); copyGroupSummaryTableForWord(this)" title="${escapeHtml(t('copyForWord'))}">${escapeHtml(t('copyForWord'))}</button>
                     </h3>
                     <div id="group-summary-table-content" class="collapsible-content">
                         <div class="table-scroll-wrapper">
-                            <table class="risk-table" style="table-layout: fixed;">
+                            <table id="group-summary-table" class="risk-table" style="table-layout: fixed;">
                                 <thead>
                                     <tr>
                                         <th style="width: 90px;">Groupe</th>
@@ -6013,15 +6132,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Trouver les données correspondantes au groupe dans les tableaux (qui peuvent être filtrés)
                 const beforeData = groupBeforeData.find(d => d.groupIndex === index);
                 const afterData = groupAfterData.find(d => d.groupIndex === index);
+                const assessmentNote = String(group.assessmentNote || '').trim();
+                const remediationNote = String(group.remediationNote || '').trim();
+                const assessmentLine = assessmentNote
+                    ? `<div class="group-narrative">${escapeHtml(assessmentNote)}</div>`
+                    : '';
+                const remediationLine = remediationNote
+                    ? `<div class="group-narrative"><span class="group-narrative-label">Remédiation - </span>${escapeHtml(remediationNote)}</div>`
+                    : '';
                 
                 if (!beforeData || !afterData) {
                     // Si pas de données (ex: tous les risques à 0), afficher N/A ou vide
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${group.id}</td>
+                        <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${escapeHtml(group.id)}</td>
                         <td>
-                            <div style="font-weight: 600; color: #1d1d1f; margin-bottom: 4px; line-height: 1.3;">${group.name}</div>
-                            <div style="font-weight: 400; color: #5a5a5f; line-height: 1.4;">${group.description}</div>
+                            <div class="group-name">${escapeHtml(group.name)}</div>
+                            <div class="group-description">${escapeHtml(group.description)}</div>
+                            ${assessmentLine}
+                            ${remediationLine}
                         </td>
                         <td colspan="2" style="text-align: center; color: #999; font-style: italic;">Aucun risque évalué</td>
                     `;
@@ -6053,10 +6182,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${group.id}</td>
+                    <td style="text-align: center; font-weight: 600; color: #1d1d1f; width: 90px;">${escapeHtml(group.id)}</td>
                     <td>
-                        <div style="font-weight: 600; color: #1d1d1f; margin-bottom: 4px; line-height: 1.3;">${group.name}</div>
-                        <div style="font-weight: 400; color: #5a5a5f; line-height: 1.4;">${group.description}</div>
+                        <div class="group-name">${escapeHtml(group.name)}</div>
+                        <div class="group-description">${escapeHtml(group.description)}</div>
+                        ${assessmentLine}
+                        ${remediationLine}
                     </td>
                     <td style="text-align: center; width: 100px;">
                         <span class="criticality-badge ${getCritClass(critBefore)}" style="display: block;">
@@ -6075,7 +6206,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Restaurer l'état du collapse après génération du tableau
             const groupSummaryContent = document.getElementById('group-summary-table-content');
-            const isCollapsed = localStorage.getItem('collapse-group-summary-table-content') === 'true';
+            const isCollapsed = riskrStorage.getItem('collapse-group-summary-table-content') === 'true';
 
             if (isCollapsed && groupSummaryContent) {
                 const header = groupSummaryContent.previousElementSibling;
@@ -6083,7 +6214,162 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 groupSummaryContent.classList.add('collapsed');
             }
         }
-        
+
+        function buildGroupSummaryClipboardHtml() {
+            const sourceTable = document.getElementById('group-summary-table');
+            if (!sourceTable) return null;
+
+            const copiedTable = sourceTable.cloneNode(true);
+            copiedTable.removeAttribute('id');
+            copiedTable.style.cssText = [
+                'width:100%',
+                'border-collapse:collapse',
+                'font-family:Arial, Helvetica, sans-serif',
+                'font-size:10.5pt',
+                'color:#1d1d1f'
+            ].join(';');
+
+            copiedTable.querySelectorAll('th').forEach((cell, index) => {
+                cell.style.cssText = [
+                    'padding:9pt 10pt',
+                    'background-color:#f5f5f7',
+                    'border-bottom:1pt solid #d2d2d7',
+                    'font-family:Arial, Helvetica, sans-serif',
+                    'font-size:9pt',
+                    'font-weight:700',
+                    'color:#1d1d1f',
+                    'text-transform:uppercase',
+                    `text-align:${index === 0 || index > 1 ? 'center' : 'left'}`
+                ].join(';');
+            });
+
+            copiedTable.querySelectorAll('td').forEach((cell, index) => {
+                const columnIndex = index % 4;
+                cell.style.cssText = [
+                    'padding:10pt',
+                    'border-bottom:1pt solid #f5f5f7',
+                    'font-family:Arial, Helvetica, sans-serif',
+                    'font-size:10.5pt',
+                    'vertical-align:top',
+                    `text-align:${columnIndex === 0 || columnIndex > 1 ? 'center' : 'left'}`
+                ].join(';');
+                if (columnIndex === 0) {
+                    cell.style.fontWeight = '700';
+                    cell.style.color = '#1d1d1f';
+                }
+            });
+
+            copiedTable.querySelectorAll('.group-name').forEach(node => {
+                node.style.cssText = 'font-family:Arial, Helvetica, sans-serif;font-size:10.5pt;font-weight:700;color:#1d1d1f;line-height:1.3;margin-bottom:3pt;';
+            });
+            copiedTable.querySelectorAll('.group-description').forEach(node => {
+                node.style.cssText = 'font-family:Arial, Helvetica, sans-serif;font-size:10.5pt;font-weight:400;color:#5a5a5f;line-height:1.4;';
+            });
+            copiedTable.querySelectorAll('.group-narrative').forEach(node => {
+                node.style.cssText = 'margin-top:5pt;font-family:Arial, Helvetica, sans-serif;font-size:9.5pt;color:#3f3f46;line-height:1.35;';
+            });
+            copiedTable.querySelectorAll('.group-narrative-label').forEach(node => {
+                node.style.cssText = 'font-weight:700;color:#1d1d1f;';
+            });
+
+            const getBadgeClipboardColors = badge => {
+                if (badge.classList.contains('criticality-low')) {
+                    return { background: '#C5E0B3', foreground: '#2D5016' };
+                }
+                if (badge.classList.contains('criticality-medium')) {
+                    return { background: '#FFE699', foreground: '#8B6914' };
+                }
+                return { background: '#FFC7CE', foreground: '#C00000' };
+            };
+
+            copiedTable.querySelectorAll('.criticality-badge').forEach(badge => {
+                const colors = getBadgeClipboardColors(badge);
+                const chipTable = document.createElement('table');
+                const chipRow = chipTable.insertRow();
+                const chipCell = chipRow.insertCell();
+                chipTable.setAttribute('role', 'presentation');
+                chipTable.setAttribute('border', '0');
+                chipTable.setAttribute('cellpadding', '0');
+                chipTable.setAttribute('cellspacing', '0');
+                chipTable.style.cssText = 'display:inline-table;border-collapse:separate;border-spacing:0;vertical-align:middle;';
+                chipCell.setAttribute('bgcolor', colors.background);
+                chipCell.style.cssText = [
+                    'padding:5pt 9pt',
+                    'mso-padding-alt:5pt 9pt 5pt 9pt',
+                    `background-color:${colors.background}`,
+                    `color:${colors.foreground}`,
+                    'border-radius:6pt',
+                    'font-family:Arial, Helvetica, sans-serif',
+                    'font-size:10.5pt',
+                    'font-weight:700',
+                    'line-height:1',
+                    'white-space:nowrap',
+                    'text-align:center'
+                ].join(';');
+                chipCell.textContent = badge.textContent.trim();
+                badge.replaceWith(chipTable);
+            });
+
+            return copiedTable.outerHTML;
+        }
+
+        function copyGroupSummaryWithSelectionFallback(html) {
+            const holder = document.createElement('div');
+            holder.contentEditable = 'true';
+            holder.style.cssText = 'position:fixed;left:-10000px;top:0;opacity:0;';
+            holder.innerHTML = html;
+            document.body.appendChild(holder);
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(holder);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            const copied = document.execCommand('copy');
+            selection.removeAllRanges();
+            holder.remove();
+            return copied;
+        }
+
+        async function copyGroupSummaryTableForWord(button) {
+            const html = buildGroupSummaryClipboardHtml();
+            const sourceTable = document.getElementById('group-summary-table');
+            if (!html || !sourceTable) {
+                alert(t('copyForWordUnavailable'));
+                return;
+            }
+
+            const plainText = sourceTable.innerText.trim();
+            let copied = false;
+            try {
+                if (navigator.clipboard && window.ClipboardItem) {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            'text/html': new Blob([html], { type: 'text/html' }),
+                            'text/plain': new Blob([plainText], { type: 'text/plain' })
+                        })
+                    ]);
+                    copied = true;
+                }
+            } catch (error) {
+                console.info('Copie HTML directe indisponible, utilisation du mode de compatibilité.', error);
+            }
+
+            if (!copied) copied = copyGroupSummaryWithSelectionFallback(html);
+
+            if (!copied) {
+                alert(t('copyForWordUnavailable'));
+                return;
+            }
+
+            const originalLabel = button.textContent;
+            button.textContent = t('copiedForWord');
+            button.disabled = true;
+            setTimeout(() => {
+                button.textContent = originalLabel;
+                button.disabled = false;
+            }, 1800);
+        }
         // ========================================
         // Algorithme de répartition des points (Anti-collision)
         // ========================================
@@ -6186,15 +6472,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         const currentRisk = currentRisks.find(r => r.id === risk.id);
                         if (currentRisk) {
                             // Before
-                            if (currentRisk.gcBefore[0] > 0 && currentRisk.gcBefore[1] > 0) {
-                                totalProbBefore += (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
-                                totalImpactBefore += (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
+                            if (currentRisk.assessmentBBefore[0] > 0 && currentRisk.assessmentBBefore[1] > 0) {
+                                totalProbBefore += (currentRisk.assessmentABefore[0] + currentRisk.assessmentBBefore[0]) / 2;
+                                totalImpactBefore += (currentRisk.assessmentABefore[1] + currentRisk.assessmentBBefore[1]) / 2;
                                 countBefore++;
                             }
                             // After
-                            if (currentRisk.gcAfter[0] > 0 && currentRisk.gcAfter[1] > 0) {
-                                totalProbAfter += (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
-                                totalImpactAfter += (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
+                            if (currentRisk.assessmentBAfter[0] > 0 && currentRisk.assessmentBAfter[1] > 0) {
+                                totalProbAfter += (currentRisk.assessmentAAfter[0] + currentRisk.assessmentBAfter[0]) / 2;
+                                totalImpactAfter += (currentRisk.assessmentAAfter[1] + currentRisk.assessmentBAfter[1]) / 2;
                                 countAfter++;
                             }
                         }
@@ -6253,14 +6539,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                      group.risks.forEach(risk => {
                          const currentRisk = currentRisks.find(r => r.id === risk.id);
                          if (currentRisk) {
-                             if (currentRisk.gcBefore[0] > 0 && currentRisk.gcBefore[1] > 0) {
-                                 totalProbBefore += (currentRisk.dtuBefore[0] + currentRisk.gcBefore[0]) / 2;
-                                 totalImpactBefore += (currentRisk.dtuBefore[1] + currentRisk.gcBefore[1]) / 2;
+                             if (currentRisk.assessmentBBefore[0] > 0 && currentRisk.assessmentBBefore[1] > 0) {
+                                 totalProbBefore += (currentRisk.assessmentABefore[0] + currentRisk.assessmentBBefore[0]) / 2;
+                                 totalImpactBefore += (currentRisk.assessmentABefore[1] + currentRisk.assessmentBBefore[1]) / 2;
                                  countBefore++;
                              }
-                             if (currentRisk.gcAfter[0] > 0 && currentRisk.gcAfter[1] > 0) {
-                                 totalProbAfter += (currentRisk.dtuAfter[0] + currentRisk.gcAfter[0]) / 2;
-                                 totalImpactAfter += (currentRisk.dtuAfter[1] + currentRisk.gcAfter[1]) / 2;
+                             if (currentRisk.assessmentBAfter[0] > 0 && currentRisk.assessmentBAfter[1] > 0) {
+                                 totalProbAfter += (currentRisk.assessmentAAfter[0] + currentRisk.assessmentBAfter[0]) / 2;
+                                 totalImpactAfter += (currentRisk.assessmentAAfter[1] + currentRisk.assessmentBAfter[1]) / 2;
                                  countAfter++;
                              }
                          }
@@ -6286,9 +6572,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const groupName = group ? group.name : 'Inconnu';
 
                     // Before
-                    if (risk.gcBefore[0] > 0 && risk.gcBefore[1] > 0) {
-                        const baseX = (risk.dtuBefore[0] + risk.gcBefore[0]) / 2;
-                        const baseY = (risk.dtuBefore[1] + risk.gcBefore[1]) / 2;
+                    if (risk.assessmentBBefore[0] > 0 && risk.assessmentBBefore[1] > 0) {
+                        const baseX = (risk.assessmentABefore[0] + risk.assessmentBBefore[0]) / 2;
+                        const baseY = (risk.assessmentABefore[1] + risk.assessmentBBefore[1]) / 2;
                         
                         beforeData.push({
                             x: baseX, // Initialement à la vraie position
@@ -6303,9 +6589,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
 
                     // After
-                    if (risk.gcAfter[0] > 0 && risk.gcAfter[1] > 0) {
-                        const baseX = (risk.dtuAfter[0] + risk.gcAfter[0]) / 2;
-                        const baseY = (risk.dtuAfter[1] + risk.gcAfter[1]) / 2;
+                    if (risk.assessmentBAfter[0] > 0 && risk.assessmentBAfter[1] > 0) {
+                        const baseX = (risk.assessmentAAfter[0] + risk.assessmentBAfter[0]) / 2;
+                        const baseY = (risk.assessmentAAfter[1] + risk.assessmentBAfter[1]) / 2;
                         
                         afterData.push({
                             x: baseX,
@@ -6353,7 +6639,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function updateDashboard(currentRisks) {
             // Filtrer les risques évalués (criticité non nulle)
             const evaluatedRisks = currentRisks.filter(risk => {
-                const critBefore = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]);
+                const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]);
                 return critBefore !== null;
             });
 
@@ -6362,12 +6648,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // 2. Risques critiques (score >= 10) avant et après
             const criticalBefore = evaluatedRisks.filter(risk => {
-                const score = calculateCriticality(risk.gcBefore[0], risk.gcBefore[1]);
+                const score = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]);
                 return score !== null && score >= 10;
             }).length;
 
             const criticalAfter = evaluatedRisks.filter(risk => {
-                const score = calculateCriticality(risk.gcAfter[0], risk.gcAfter[1]);
+                const score = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]);
                 return score !== null && score >= 10;
             }).length;
 
@@ -6380,8 +6666,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             evaluatedRisks.forEach(risk => {
                 const reduction = calculateRiskReduction(
-                    risk.gcBefore[0], risk.gcBefore[1],
-                    risk.gcAfter[0], risk.gcAfter[1]
+                    risk.assessmentBBefore[0], risk.assessmentBBefore[1],
+                    risk.assessmentBAfter[0], risk.assessmentBAfter[1]
                 );
                 if (reduction !== null) {
                     totalReduction += reduction;
@@ -6402,9 +6688,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 avgReductionEl.style.color = '#666666'; // Gris
             }
 
-            // 4. Risques traités (statut "Traité" ou "Accepté")
+            // 4. Risques traités (statut traité ou accepté)
             const treatedRisks = currentRisks.filter(risk => {
-                return risk.statut === 'Traité' || risk.statut === 'Accepté';
+                return risk.statut === 'statusTreated' || risk.statut === 'statusAccepted';
             }).length;
 
             document.getElementById('dashboard-treated').textContent = `${treatedRisks}/${currentRisks.length}`;
@@ -6434,10 +6720,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const newRisk = {
                 id: newRiskId,
                 title: "Nouveau risque",
-                dtuBefore: [2, 2],
-                dtuAfter: [1, 1],
-                gcBefore: [2, 2],
-                gcAfter: [1, 1],
+                assessmentABefore: [2, 2],
+                assessmentAAfter: [1, 1],
+                assessmentBBefore: [2, 2],
+                assessmentBAfter: [1, 1],
                 mesures: ["Remédiation à définir"]
             };
 
@@ -6505,13 +6791,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         const riskData = currentRisks.find(r => r.id === risk.id);
                         if (!riskData) return;
 
-                        const prob = type === 'before' ? riskData.gcBefore[0] : riskData.gcAfter[0];
-                        const impact = type === 'before' ? riskData.gcBefore[1] : riskData.gcAfter[1];
+                        const prob = type === 'before' ? riskData.assessmentBBefore[0] : riskData.assessmentBAfter[0];
+                        const impact = type === 'before' ? riskData.assessmentBBefore[1] : riskData.assessmentBAfter[1];
 
                         if (prob === 0 || impact === 0) return;
 
-                        totalProb += (type === 'before' ? (riskData.dtuBefore[0] + prob)/2 : (riskData.dtuAfter[0] + prob)/2);
-                        totalImpact += (type === 'before' ? (riskData.dtuBefore[1] + impact)/2 : (riskData.dtuAfter[1] + impact)/2);
+                        totalProb += (type === 'before' ? (riskData.assessmentABefore[0] + prob)/2 : (riskData.assessmentAAfter[0] + prob)/2);
+                        totalImpact += (type === 'before' ? (riskData.assessmentABefore[1] + impact)/2 : (riskData.assessmentAAfter[1] + impact)/2);
                         count++;
                     });
 
@@ -6534,12 +6820,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // --- MODE 2 : VUE PAR RISQUES ---
             else {
                 currentRisks.forEach((risk) => {
-                    const prob = type === 'before' ? risk.gcBefore[0] : risk.gcAfter[0];
-                    const impact = type === 'before' ? risk.gcBefore[1] : risk.gcAfter[1];
+                    const prob = type === 'before' ? risk.assessmentBBefore[0] : risk.assessmentBAfter[0];
+                    const impact = type === 'before' ? risk.assessmentBBefore[1] : risk.assessmentBAfter[1];
 
                     if (prob > 0 && impact > 0) {
-                        const baseX = type === 'before' ? (risk.dtuBefore[0] + prob)/2 : (risk.dtuAfter[0] + prob)/2;
-                        const baseY = type === 'before' ? (risk.dtuBefore[1] + impact)/2 : (risk.dtuAfter[1] + impact)/2;
+                        const baseX = type === 'before' ? (risk.assessmentABefore[0] + prob)/2 : (risk.assessmentAAfter[0] + prob)/2;
+                        const baseY = type === 'before' ? (risk.assessmentABefore[1] + impact)/2 : (risk.assessmentAAfter[1] + impact)/2;
                         
                         const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
                         const groupName = group ? group.name : 'Inconnu';
@@ -6714,7 +7000,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function setLanguage(lang) {
             currentLanguage = lang;
-            localStorage.setItem('riskr-language', lang);
+            riskrStorage.setItem('riskr-language', lang);
 
             // Mettre à jour le sélecteur
             document.getElementById('language-selector').value = lang;
@@ -6738,7 +7024,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function initLanguage() {
-            const savedLang = localStorage.getItem('riskr-language') || 'fr';
+            const savedLang = riskrStorage.getItem('riskr-language') || 'fr';
             currentLanguage = savedLang;
             document.getElementById('language-selector').value = savedLang;
         }
@@ -6748,7 +7034,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function setMatrixView(mode) {
             matrixViewMode = mode;
             // Sauvegarder la préférence de l'utilisateur
-            localStorage.setItem('riskr-matrix-view', mode);
+            riskrStorage.setItem('riskr-matrix-view', mode);
             
             // Mettre à jour l'état visuel des boutons
             const btnGroups = document.getElementById('view-btn-groups');
@@ -6783,7 +7069,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Initialisation de la vue matricielle (Groupes ou Risques)
         function initMatrixView() {
-            const savedView = localStorage.getItem('riskr-matrix-view');
+            const savedView = riskrStorage.getItem('riskr-matrix-view');
             // Si une préférence est sauvegardée, on l'applique
             if (savedView === 'groups' || savedView === 'risks') {
                 setMatrixView(savedView);
