@@ -6357,19 +6357,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                data.datasets[0].data.forEach((point, index) => {
-                    const xPos = x.getPixelForValue(point.x);
-                    const yPos = y.getPixelForValue(point.y);
-
-                    // Utiliser le label court défini dans les données, sinon le numéro de groupe
-                    const label = point.shortLabel || (index + 1);
-
-                    // Ombre portée pour lisibilité sur toutes couleurs
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                    ctx.shadowBlur = 4;
-                    
-                    ctx.fillStyle = 'white';
-                    ctx.fillText(label, xPos, yPos);
+                data.datasets.forEach(dataset => {
+                    // Bulle pleine : numéro blanc ombré ; bulle creuse (avant, en trajectoire) : numéro bleu
+                    ctx.shadowColor = dataset.hollow ? 'transparent' : 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = dataset.hollow ? 0 : 4;
+                    ctx.fillStyle = dataset.hollow ? BUBBLE_COLOR : 'white';
+                    dataset.data.forEach(point => {
+                        ctx.fillText(point.shortLabel, x.getPixelForValue(point.x), y.getPixelForValue(point.y));
+                    });
                 });
 
                 ctx.restore();
@@ -6420,22 +6415,53 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const cellSize = chart => chart.chartArea ? chart.chartArea.width / 5 : 60;
         const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart);
 
-        // Créer un graphique de risque
-        function createRiskChart(ctx, data, title, bubble) {
-            return new Chart(ctx, {
+        const BUBBLE_COLOR = '#1F4E78';
+
+        // Points d'une phase ('Before' | 'After') selon la vue : un point par risque, ou la
+        // cotation moyenne de chaque groupe. Complexité : O(n) — n = nombre de risques.
+        function matrixPoints(phase) {
+            if (matrixViewMode === 'groups') {
+                return riskGroups.map(group => {
+                    const assessments = group.risks.map(risk => evaluatedAssessment(risk, phase)).filter(Boolean);
+                    if (!assessments.length) return null;
+                    const x = assessments.reduce((sum, a) => sum + a[0], 0) / assessments.length;
+                    const y = assessments.reduce((sum, a) => sum + a[1], 0) / assessments.length;
+                    return { x, y, baseX: x, baseY: y, label: t('groupLabel', { id: group.id }),
+                        shortLabel: `${group.id}`, groupName: group.name };
+                }).filter(Boolean);
+            }
+            return riskGroups.flatMap(group => group.risks.map(risk => {
+                const assessment = evaluatedAssessment(risk, phase);
+                if (!assessment) return null;
+                const [x, y] = assessment;
+                return { x, y, baseX: x, baseY: y, label: t('riskLabel', { id: risk.id }),
+                    shortLabel: risk.id, riskTitle: risk.title, groupName: group.name };
+            })).filter(Boolean);
+        }
+
+        // Jeux de données d'une matrice 'before' ou 'after', bulles rangées sans chevauchement
+        function matrixChartData(type) {
+            const phase = type === 'before' ? 'Before' : 'After';
+            const data = matrixPoints(phase);
+            const bubble = bubbleRatios(data);
+            resolveCollisions(data, bubble.radius * 2);
+            return { bubble, datasets: [{ data, phase }] };
+        }
+
+        // Graphique d'une matrice : datasets = [{ data, phase, hollow }] (hollow = bulle creuse)
+        function createRiskChart(canvas, datasets, bubble) {
+            return new Chart(canvas, {
                 type: 'scatter',
                 data: {
-                    datasets: [{
-                        label: 'Risques',
-                        data: data,
-                        bubble: bubble,
-                        backgroundColor: '#1F4E78',
-                        borderColor: 'white',
-                        borderWidth: 1.5,
+                    datasets: datasets.map(({ data, phase, hollow = false }) => ({
+                        data, phase, hollow, bubble,
+                        backgroundColor: hollow ? () => themeColor('--surface') : BUBBLE_COLOR,
+                        borderColor: hollow ? BUBBLE_COLOR : 'white',
+                        borderWidth: hollow ? 2 : 1.5,
                         pointRadius: bubbleRadius,
                         pointHoverRadius: context => bubbleRadius(context) * 1.1,
                         pointStyle: 'circle'
-                    }]
+                    }))
                 },
                 options: {
                     responsive: true,
@@ -6961,139 +6987,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Mettre à jour les graphiques
         function updateCharts() {
-            const currentRisks = risks;
-            
-            let beforeData = [];
-            let afterData = [];
-
-            // --- MODE 1 : VUE PAR GROUPES (MOYENNES) ---
-            if (matrixViewMode === 'groups') {
-                riskGroups.forEach((group, groupIndex) => {
-                    let totalProbBefore = 0, totalImpactBefore = 0, countBefore = 0;
-                    let totalProbAfter = 0, totalImpactAfter = 0, countAfter = 0;
-
-                    group.risks.forEach(risk => {
-                        const before = evaluatedAssessment(risk, 'Before');
-                        if (before) {
-                            totalProbBefore += before[0];
-                            totalImpactBefore += before[1];
-                            countBefore++;
-                        }
-                        const after = evaluatedAssessment(risk, 'After');
-                        if (after) {
-                            totalProbAfter += after[0];
-                            totalImpactAfter += after[1];
-                            countAfter++;
-                        }
-                    });
-
-                    // Préparer données AVANT
-                    if (countBefore > 0) {
-                        const baseX = totalProbBefore / countBefore;
-                        const baseY = totalImpactBefore / countBefore;
-                        
-                        const point = {
-                            x: baseX, // Position initiale = position réelle
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('groupLabel', { id: group.id }),
-                            shortLabel: `${group.id}`,
-                            groupName: group.name,
-                            groupIndex: groupIndex
-                        };
-                        beforeData.push(point);
-                    }
-
-                    // Préparer données APRÈS
-                    if (countAfter > 0) {
-                        const baseX = totalProbAfter / countAfter;
-                        const baseY = totalImpactAfter / countAfter;
-
-                        const point = {
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('groupLabel', { id: group.id }),
-                            shortLabel: `${group.id}`,
-                            groupName: group.name,
-                            groupIndex: groupIndex
-                        };
-                        afterData.push(point);
-                    }
-                });
-            } 
-            // --- MODE 2 : VUE PAR RISQUES INDIVIDUELS ---
-            else {
-                // Ensuite, générer les points pour chaque risque
-                currentRisks.forEach((risk) => {
-                    // Trouver le nom du groupe
-                    const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
-                    const groupName = group ? group.name : 'Inconnu';
-
-                    // Before
-                    const before = evaluatedAssessment(risk, 'Before');
-                    if (before) {
-                        const [baseX, baseY] = before;
-                        
-                        beforeData.push({
-                            x: baseX, // Initialement à la vraie position
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('riskLabel', { id: risk.id }),
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-
-                    // After
-                    const after = evaluatedAssessment(risk, 'After');
-                    if (after) {
-                        const [baseX, baseY] = after;
-                        
-                        afterData.push({
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('riskLabel', { id: risk.id }),
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-                });
-            }
-
-            // APPLIQUER L'ANTI-COLLISION
+            const before = matrixPoints('Before');
+            const after = matrixPoints('After');
             // Même taille de bulle sur les deux matrices
-            const bubble = bubbleRatios(beforeData, afterData);
-            resolveCollisions(beforeData, bubble.radius * 2);
-            resolveCollisions(afterData, bubble.radius * 2);
+            const bubble = bubbleRatios(before, after);
+            resolveCollisions(before, bubble.radius * 2);
+            resolveCollisions(after, bubble.radius * 2);
 
-            // Détruire les anciens graphiques
             if (chartBefore) chartBefore.destroy();
             if (chartAfter) chartAfter.destroy();
+            chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before' }], bubble);
+            chartAfter = createRiskChart(document.getElementById('chartAfter'), [{ data: after, phase: 'After' }], bubble);
 
-            // Créer les nouveaux graphiques
-            chartBefore = createRiskChart(
-                document.getElementById('chartBefore').getContext('2d'),
-                beforeData,
-                'Moyenne AVANT',
-                bubble
-            );
-
-            chartAfter = createRiskChart(
-                document.getElementById('chartAfter').getContext('2d'),
-                afterData,
-                'Moyenne APRÈS',
-                bubble
-            );
-            
-            updateRiskTable(currentRisks);
+            updateRiskTable(risks);
             updateGroupTable();
         }
 
@@ -7106,192 +7012,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function openMatrixModal(type) {
             currentMatrixType = type;
-            const modal = document.getElementById('matrix-modal');
-            const title = document.getElementById('matrix-modal-title');
-            const canvas = document.getElementById('chartModal');
-
-            // Déterminer le titre et les données
-            title.textContent = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
-
-            // Afficher la modal
-            modal.classList.add('active');
+            document.getElementById('matrix-modal-title').textContent = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
+            document.getElementById('matrix-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            // Détruire l'ancien graphique s'il existe
-            if (modalChartInstance) {
-                modalChartInstance.destroy();
-            }
-
-            // Récupérer les données actuelles
-            const currentRisks = risks;
-            let chartData = [];
-
-            // --- MODE 1 : VUE PAR GROUPES ---
-            if (matrixViewMode === 'groups') {
-                chartData = riskGroups.map((group, groupIndex) => {
-                    let totalProb = 0;
-                    let totalImpact = 0;
-                    let count = 0;
-
-                    group.risks.forEach(risk => {
-                        const riskData = currentRisks.find(r => r.id === risk.id);
-                        if (!riskData) return;
-
-                        const combined = evaluatedAssessment(riskData, type === 'before' ? 'Before' : 'After');
-                        if (!combined) return;
-
-                        totalProb += combined[0];
-                        totalImpact += combined[1];
-                        count++;
-                    });
-
-                    if (count === 0) return null;
-
-                    const avgProb = totalProb / count;
-                    const avgImpact = totalImpact / count;
-
-                    return {
-                        x: avgProb, // Pas d'offset initial, l'algo s'en charge
-                        y: avgImpact,
-                        baseX: avgProb,
-                        baseY: avgImpact,
-                        label: t('groupLabel', { id: group.id }),
-                        shortLabel: `${group.id}`,
-                        groupName: group.name
-                    };
-                }).filter(d => d !== null);
-            }
-            // --- MODE 2 : VUE PAR RISQUES ---
-            else {
-                currentRisks.forEach((risk) => {
-                    const combined = evaluatedAssessment(risk, type === 'before' ? 'Before' : 'After');
-                    if (combined) {
-                        const [baseX, baseY] = combined;
-                        
-                        const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
-                        const groupName = group ? group.name : 'Inconnu';
-
-                        chartData.push({
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('riskLabel', { id: risk.id }),
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-                });
-            }
-
-            // APPLIQUER L'ANTI-COLLISION (bulles proportionnelles, cf. bubbleRatios)
-            const bubble = bubbleRatios(chartData);
-            resolveCollisions(chartData, bubble.radius * 2);
-
-            // Créer le graphique dans la modal
-            modalChartInstance = new Chart(canvas, {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        data: chartData,
-                        bubble: bubble,
-                        backgroundColor: 'rgba(0, 122, 255, 0.8)',
-                        borderColor: 'white',
-                        borderWidth: 1.5,
-                        pointRadius: bubbleRadius,
-                        pointHoverRadius: context => bubbleRadius(context) * 1.1,
-                        pointStyle: 'circle'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1,
-                    animation: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            padding: 12,
-                            callbacks: {
-                                title: function(context) {
-                                    const point = context[0].raw;
-                                    if (matrixViewMode === 'risks') {
-                                        return `${point.shortLabel} - ${point.riskTitle}`;
-                                    }
-                                    return point.label;
-                                },
-                                label: function(context) {
-                                    const point = context.raw;
-                                    const realX = point.baseX || point.x;
-                                    const realY = point.baseY || point.y;
-                                    const criticality = realX * realY;
-                                    
-                                    if (matrixViewMode === 'risks') {
-                                        return [
-                                            `${t('colGroup')} : ${point.groupName}`,
-                                            `${t('tipProbability')} : ${realX}`,
-                                            `${t('tipImpact')} : ${realY}`,
-                                            `${t('colCriticality')} : ${criticality}`
-                                        ];
-                                    } else {
-                                        return [
-                                            `${point.groupName}`,
-                                        `${t('tipAvgProbability')} : ${realX.toFixed(2)}`,
-                                            `${t('tipAvgImpact')} : ${realY.toFixed(2)}`,
-                                            `${t('tipAvgCriticality')} : ${formatOutOf5(criticality)}`
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                color: axisColor,
-                                font: { size: 12 },
-                                callback: function(value) {
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: { display: false },
-                            title: {
-                                display: true,
-                                text: t('axisProb'),
-                                color: axisColor,
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
-                        y: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                color: axisColor,
-                                font: { size: 12 },
-                                callback: function(value) {
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: { display: false },
-                            title: {
-                                display: true,
-                                text: t('axisImpact'),
-                                color: axisColor,
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        }
-                    }
-                },
-                plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
-            });
+            if (modalChartInstance) modalChartInstance.destroy();
+            const { datasets, bubble } = matrixChartData(type);
+            modalChartInstance = createRiskChart(document.getElementById('chartModal'), datasets, bubble);
         }
 
         // Les copies et exports sont destinés à Word, PowerPoint, un PDF… : les matrices y sont
