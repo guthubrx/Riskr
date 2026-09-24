@@ -2306,6 +2306,144 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         }
 
+        /* Bibliothèque de risques types */
+        .library {
+            display: grid;
+            grid-template-columns: 230px minmax(0, 1fr);
+            gap: 20px;
+        }
+
+        .library-themes {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-self: start;
+            padding: 10px;
+            border-radius: 12px;
+            background: var(--surface-2);
+        }
+
+        .library-theme {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 8px;
+            background: none;
+            color: var(--text-2);
+            font-size: 13px;
+            text-align: start;
+            cursor: pointer;
+        }
+
+        .library-theme:hover,
+        .library-theme.active {
+            background: var(--surface);
+        }
+
+        .library-theme.active {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .library-theme span,
+        .library-offline,
+        .library-card-theme {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--text-3);
+        }
+
+        .library-offline {
+            margin: 10px 4px 0;
+        }
+
+        .library-main {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .library-main .filter-search {
+            max-width: none;
+        }
+
+        .library-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 52vh;
+            overflow-y: auto;
+        }
+
+        .library-card {
+            display: grid;
+            grid-template-columns: 20px minmax(0, 1fr) auto;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .library-card[hidden] {
+            display: none;
+        }
+
+        .library-card.selected {
+            border-color: var(--accent);
+            background: var(--surface-2);
+        }
+
+        .library-mesures {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .library-mesures span {
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--surface-2);
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .library-card.selected .library-mesures span {
+            background: var(--surface);
+        }
+
+        .library-foot {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 18px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .library-foot label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .library-foot .sheet-btn {
+            margin-inline-start: auto;
+        }
+
+        @media (max-width: 900px) {
+            .library {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .matrix-modal {
             display: none;
             position: fixed;
@@ -3616,6 +3754,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <input type="file" id="import-file" hidden accept=".json" onchange="importFromJSON(this)">
                 <button class="icon-btn" onclick="openCommitteeView()" data-i18n-title="committeeOpen">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M7 12l3-3 2 2 4-4"/></svg>
+                </button>
+                <button class="icon-btn" onclick="openLibrary()" data-i18n-title="libraryOpen">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/><path d="M9 7h6"/></svg>
                 </button>
                 <button class="icon-btn" onclick="document.getElementById('import-file').click()" data-i18n-title="importTooltip">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
@@ -9108,6 +9249,126 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
                 };
             });
+        }
+
+        // ========================================
+        // Bibliothèque de risques types (intégrée : fonctionne hors ligne)
+        // ========================================
+        // Chaque texte est donné dans les 5 langues : [fr, en, es, ar, zh].
+        // Thème → risques ; un risque = [titre, ...mesures suggérées].
+
+        const RISK_LIBRARY = [
+            {"theme": ["Projet et transformation", "Project and transformation", "Proyecto y transformación", "المشاريع والتحول", "项目与转型"], "risks": [[["Dérive du planning", "Schedule slippage", "Desviación del calendario", "انحراف الجدول الزمني", "进度延误"], ["Jalons intermédiaires suivis en comité", "Intermediate milestones monitored by the steering committee", "Hitos intermedios seguidos en comité", "متابعة مراحل وسيطة في لجنة التوجيه", "由指导委员会跟踪中间里程碑"], ["Marge de planning sur le chemin critique", "Schedule buffer on the critical path", "Margen de calendario en la ruta crítica", "هامش زمني على المسار الحرج", "关键路径预留缓冲时间"]], [["Dépassement budgétaire", "Budget overrun", "Sobrecoste presupuestario", "تجاوز الميزانية", "预算超支"], ["Provision pour aléas", "Contingency reserve", "Provisión para imprevistos", "مخصص للطوارئ", "设立不可预见费用储备"], ["Revue mensuelle des engagements financiers", "Monthly review of financial commitments", "Revisión mensual de los compromisos financieros", "مراجعة شهرية للالتزامات المالية", "每月审查财务承诺"]], [["Résistance au changement des utilisateurs", "User resistance to change", "Resistencia al cambio de los usuarios", "مقاومة المستخدمين للتغيير", "用户抗拒变革"], ["Plan de conduite du changement et formation", "Change management and training plan", "Plan de gestión del cambio y formación", "خطة لإدارة التغيير والتدريب", "变革管理与培训计划"], ["Utilisateurs référents associés aux recettes", "Key users involved in acceptance testing", "Usuarios referentes implicados en las pruebas de aceptación", "إشراك مستخدمين مرجعيين في اختبارات القبول", "关键用户参与验收测试"]]]},
+            {"theme": ["SI et cybersécurité", "IT and cybersecurity", "SI y ciberseguridad", "نظم المعلومات والأمن السيبراني", "信息系统与网络安全"], "risks": [[["Attaque par rançongiciel", "Ransomware attack", "Ataque de ransomware", "هجوم ببرمجية فدية", "勒索软件攻击"], ["Sauvegardes hors ligne testées régulièrement", "Offline backups tested regularly", "Copias de seguridad sin conexión probadas con regularidad", "نسخ احتياطية غير متصلة تُختبر بانتظام", "定期测试的离线备份"], ["Authentification multifacteur sur les accès sensibles", "Multi-factor authentication on sensitive access", "Autenticación multifactor en los accesos sensibles", "مصادقة متعددة العوامل على الوصول الحساس", "敏感访问启用多因素认证"]], [["Indisponibilité d’une application critique", "Critical application outage", "Indisponibilidad de una aplicación crítica", "تعطل تطبيق حيوي", "关键应用不可用"], ["Supervision et astreinte 24/7", "24/7 monitoring and on-call duty", "Supervisión y guardia 24/7", "مراقبة ومناوبة على مدار الساعة", "7×24 小时监控与值班"], ["Plan de reprise informatique testé", "Tested IT disaster recovery plan", "Plan de recuperación informática probado", "خطة تعافٍ معلوماتية مختبرة", "经过测试的 IT 灾难恢复计划"]], [["Fuite de données par un accès mal protégé", "Data leak through a poorly protected access", "Fuga de datos por un acceso mal protegido", "تسرب البيانات عبر وصول ضعيف الحماية", "因访问保护不足导致数据泄露"], ["Revue périodique des habilitations", "Periodic access rights review", "Revisión periódica de las habilitaciones", "مراجعة دورية للصلاحيات", "定期审查访问权限"], ["Chiffrement des données sensibles", "Encryption of sensitive data", "Cifrado de los datos sensibles", "تشفير البيانات الحساسة", "敏感数据加密"]]]},
+            {"theme": ["Fournisseurs et contrats", "Suppliers and contracts", "Proveedores y contratos", "الموردون والعقود", "供应商与合同"], "risks": [[["Dépendance à un fournisseur unique", "Dependence on a single supplier", "Dependencia de un único proveedor", "الاعتماد على مورد وحيد", "依赖单一供应商"], ["Clause de réversibilité dans le contrat", "Reversibility clause in the contract", "Cláusula de reversibilidad en el contrato", "بند قابلية الاسترجاع في العقد", "合同中的可逆性条款"], ["Fournisseur alternatif identifié", "Alternative supplier identified", "Proveedor alternativo identificado", "تحديد مورد بديل", "已确定备选供应商"]], [["Défaillance financière d’un prestataire", "Financial failure of a contractor", "Quiebra de un prestatario", "تعثر مالي لمقدم خدمة", "服务商财务失败"], ["Suivi annuel de la santé financière", "Annual financial health check", "Seguimiento anual de la salud financiera", "متابعة سنوية للوضع المالي", "每年评估财务健康状况"], ["Garantie de bonne exécution", "Performance bond", "Garantía de buena ejecución", "ضمان حسن التنفيذ", "履约保函"]], [["Niveau de service non tenu", "Service level not met", "Nivel de servicio no cumplido", "عدم الالتزام بمستوى الخدمة", "未达到服务水平"], ["Indicateurs de service et pénalités contractuelles", "Service indicators and contractual penalties", "Indicadores de servicio y penalizaciones contractuales", "مؤشرات الخدمة والغرامات التعاقدية", "服务指标与合同罚则"], ["Comité de suivi trimestriel", "Quarterly follow-up committee", "Comité de seguimiento trimestral", "لجنة متابعة فصلية", "季度跟踪委员会"]]]},
+            {"theme": ["Données personnelles (RGPD)", "Personal data (GDPR)", "Datos personales (RGPD)", "البيانات الشخصية (اللائحة العامة لحماية البيانات)", "个人数据（GDPR）"], "risks": [[["Traitement sans base légale", "Processing without a legal basis", "Tratamiento sin base jurídica", "معالجة دون أساس قانوني", "无合法依据的数据处理"], ["Registre des traitements à jour", "Up-to-date record of processing activities", "Registro de actividades de tratamiento actualizado", "سجل محدَّث لأنشطة المعالجة", "及时更新处理活动记录"], ["Validation par le délégué à la protection des données", "Validation by the data protection officer", "Validación por el delegado de protección de datos", "مصادقة مسؤول حماية البيانات", "由数据保护官审核"]], [["Violation de données non notifiée à temps", "Data breach not notified in time", "Violación de datos no notificada a tiempo", "عدم الإبلاغ عن خرق البيانات في الوقت المحدد", "数据泄露未及时通报"], ["Procédure de notification sous 72 heures", "72-hour notification procedure", "Procedimiento de notificación en 72 horas", "إجراء للإبلاغ خلال 72 ساعة", "72 小时内通报程序"], ["Exercice annuel de gestion de violation", "Annual breach response exercise", "Ejercicio anual de gestión de violaciones", "تمرين سنوي على التعامل مع الخروقات", "年度数据泄露应对演练"]], [["Conservation excessive des données", "Excessive data retention", "Conservación excesiva de los datos", "الاحتفاظ المفرط بالبيانات", "数据保存期限过长"], ["Durées de conservation définies par traitement", "Retention periods defined per processing activity", "Plazos de conservación definidos por tratamiento", "مدد احتفاظ محددة لكل معالجة", "为每项处理确定保存期限"], ["Purge automatique des données expirées", "Automatic purge of expired data", "Purga automática de los datos caducados", "حذف تلقائي للبيانات المنتهية", "自动清除过期数据"]]]},
+            {"theme": ["Continuité d’activité", "Business continuity", "Continuidad del negocio", "استمرارية الأعمال", "业务连续性"], "risks": [[["Indisponibilité d’un site", "Site unavailability", "Indisponibilidad de un emplazamiento", "تعذر الوصول إلى موقع", "场地不可用"], ["Site de repli équipé", "Equipped fallback site", "Emplazamiento de respaldo equipado", "موقع بديل مجهز", "配备齐全的备用场地"], ["Plan de continuité d’activité testé chaque année", "Business continuity plan tested every year", "Plan de continuidad probado cada año", "خطة استمرارية أعمال تُختبر سنويًا", "每年测试业务连续性计划"]], [["Perte de compétences clés", "Loss of key skills", "Pérdida de competencias clave", "فقدان كفاءات أساسية", "关键技能流失"], ["Binômes et documentation des savoir-faire", "Backup pairs and documented know-how", "Binomios y documentación del saber hacer", "ثنائيات عمل وتوثيق للخبرات", "结对备岗并记录专业知识"], ["Plan de succession pour les postes critiques", "Succession plan for critical roles", "Plan de sucesión para los puestos críticos", "خطة تعاقب للمناصب الحرجة", "关键岗位继任计划"]], [["Rupture d’approvisionnement", "Supply disruption", "Ruptura de suministro", "انقطاع الإمدادات", "供应中断"], ["Stock de sécurité", "Safety stock", "Stock de seguridad", "مخزون احتياطي", "安全库存"], ["Double source pour les composants critiques", "Dual sourcing for critical components", "Doble fuente para los componentes críticos", "مصدران للمكونات الحرجة", "关键部件双重采购"]]]},
+            {"theme": ["Finance et conformité", "Finance and compliance", "Finanzas y cumplimiento", "المالية والامتثال", "财务与合规"], "risks": [[["Fraude au virement", "Payment fraud", "Fraude en las transferencias", "احتيال في التحويلات المالية", "转账欺诈"], ["Double validation des paiements", "Dual approval of payments", "Doble validación de los pagos", "مصادقة مزدوجة على المدفوعات", "付款双重审批"], ["Contre-appel pour tout changement de coordonnées bancaires", "Call-back check for any change of bank details", "Verificación telefónica ante cualquier cambio de datos bancarios", "اتصال للتحقق من أي تغيير في البيانات المصرفية", "银行信息变更须电话回拨核实"]], [["Non-conformité réglementaire", "Regulatory non-compliance", "Incumplimiento normativo", "عدم الامتثال التنظيمي", "违反监管要求"], ["Veille réglementaire", "Regulatory watch", "Vigilancia normativa", "رصد تنظيمي", "法规跟踪"], ["Audit de conformité annuel", "Annual compliance audit", "Auditoría de cumplimiento anual", "تدقيق امتثال سنوي", "年度合规审计"]], [["Variation défavorable des prix ou des taux", "Adverse price or rate movement", "Variación desfavorable de precios o tipos", "تغير غير مواتٍ في الأسعار أو المعدلات", "价格或利率不利变动"], ["Clauses d’indexation plafonnées", "Capped indexation clauses", "Cláusulas de indexación con tope", "بنود ربط بمؤشر ذات سقف", "设上限的价格指数条款"], ["Couverture des principales expositions", "Hedging of main exposures", "Cobertura de las principales exposiciones", "تحوط للتعرضات الرئيسية", "对主要风险敞口进行对冲"]]]}
+        ];
+
+        const LIBRARY_LANGUAGES = ['fr', 'en', 'es', 'ar', 'zh'];
+        const libraryText = texts => texts[LIBRARY_LANGUAGES.indexOf(currentLanguage)] ?? texts[1];
+        const LIBRARY_ITEMS = RISK_LIBRARY.flatMap((theme, themeIndex) => theme.risks.map(([title, ...mesures], index) =>
+            ({ key: `${themeIndex}-${index}`, theme: themeIndex, title, mesures })));
+
+        // Choix en cours dans la bibliothèque (conservés si la fiche est reconstruite)
+        const library = { theme: -1, query: '', selected: new Set(), target: 'new', withMesures: true };
+
+        function openLibrary() {
+            Object.assign(library, { theme: -1, query: '', target: 'new', withMesures: true });
+            library.selected.clear();
+            openSheet(() => ({
+                title: t('libraryOpen'),
+                body: `<div class="library">
+                    <nav class="library-themes">
+                        ${[{ name: t('libraryAll'), index: -1, count: LIBRARY_ITEMS.length },
+                            ...RISK_LIBRARY.map((theme, index) => ({ name: libraryText(theme.theme), index, count: theme.risks.length }))]
+                            .map(({ name, index, count }) => `<button type="button" class="library-theme" data-theme="${index}">${escapeHtml(name)} <span>${count}</span></button>`).join('')}
+                        <p class="library-offline">${t('libraryOffline')}</p>
+                    </nav>
+                    <div class="library-main">
+                        <label class="filter-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input type="search" id="library-search" placeholder="${t('librarySearch')}" aria-label="${t('librarySearch')}" value="${escapeHtml(library.query)}"></label>
+                        <div class="library-list">
+                            ${LIBRARY_ITEMS.map(item => `<label class="library-card" data-key="${item.key}" data-theme="${item.theme}">
+                                <input type="checkbox" ${library.selected.has(item.key) ? 'checked' : ''}>
+                                <span><b>${escapeHtml(libraryText(item.title))}</b>
+                                    <span class="library-mesures">${item.mesures.map(mesure => `<span>${escapeHtml(libraryText(mesure))}</span>`).join('')}</span></span>
+                                <span class="library-card-theme">${escapeHtml(libraryText(RISK_LIBRARY[item.theme].theme))}</span>
+                            </label>`).join('')}
+                            <p class="review-empty library-empty" hidden>${t('libraryEmpty')}</p>
+                        </div>
+                        <div class="library-foot">
+                            <label>${t('libraryTarget')}
+                                <select id="library-target" class="filter-select">
+                                    <option value="new">${t('libraryNewGroup')}</option>
+                                    ${riskGroups.map((group, index) => `<option value="${index}" ${String(index) === library.target ? 'selected' : ''}>${index + 1}. ${escapeHtml(group.name)}</option>`).join('')}
+                                </select></label>
+                            <label><input type="checkbox" id="library-with-mesures" ${library.withMesures ? 'checked' : ''}> ${t('libraryWithMesures')}</label>
+                            <button type="button" class="sheet-btn primary" id="library-add" onclick="addLibraryRisks()"></button>
+                        </div>
+                    </div>
+                </div>`,
+                mount: body => {
+                    // Filtre par thème et recherche sans reconstruire la liste (le champ garde le focus)
+                    const applyLibraryFilter = () => {
+                        const query = library.query.trim().toLocaleLowerCase();
+                        let shown = 0;
+                        body.querySelectorAll('.library-card').forEach(card => {
+                            const visible = (library.theme < 0 || Number(card.dataset.theme) === library.theme)
+                                && (!query || card.textContent.toLocaleLowerCase().includes(query));
+                            card.hidden = !visible;
+                            card.classList.toggle('selected', library.selected.has(card.dataset.key));
+                            shown += visible;
+                        });
+                        body.querySelector('.library-empty').hidden = shown > 0;
+                        body.querySelectorAll('.library-theme').forEach(button =>
+                            button.classList.toggle('active', Number(button.dataset.theme) === library.theme));
+                        const add = body.querySelector('#library-add');
+                        add.textContent = t('libraryAdd', { count: library.selected.size });
+                        add.disabled = library.selected.size === 0;
+                    };
+                    body.querySelectorAll('.library-theme').forEach(button => {
+                        button.onclick = () => { library.theme = Number(button.dataset.theme); applyLibraryFilter(); };
+                    });
+                    body.querySelector('#library-search').oninput = event => { library.query = event.target.value; applyLibraryFilter(); };
+                    body.querySelectorAll('.library-card input').forEach(checkbox => {
+                        checkbox.onchange = () => {
+                            const key = checkbox.closest('.library-card').dataset.key;
+                            if (checkbox.checked) library.selected.add(key); else library.selected.delete(key);
+                            applyLibraryFilter();
+                        };
+                    });
+                    body.querySelector('#library-target').onchange = event => { library.target = event.target.value; };
+                    body.querySelector('#library-with-mesures').onchange = event => { library.withMesures = event.target.checked; };
+                    applyLibraryFilter();
+                }
+            }));
+        }
+
+        // Ajoute les risques cochés (non évalués) au groupe choisi ou à un nouveau groupe. O(k)
+        function addLibraryRisks() {
+            const chosen = LIBRARY_ITEMS.filter(item => library.selected.has(item.key));
+            if (!chosen.length) return;
+            let group = riskGroups[Number(library.target)];
+            if (!group) {
+                group = { id: 0, name: libraryText(RISK_LIBRARY[chosen[0].theme].theme), description: t('newGroupDescription'), risks: [], mesures: [] };
+                riskGroups.push(group);
+            }
+            chosen.forEach(item => {
+                // Numéro provisoire : commitChange() renumérote selon la position
+                const risk = { id: 'nouveau', title: libraryText(item.title), ...emptyAssessments() };
+                if (library.withMesures) {
+                    risk.mesures = item.mesures.map(mesure => normalizeMesure({ texte: libraryText(mesure) }));
+                }
+                risks.push(risk);
+                group.risks.push(risk);
+            });
+            commitChange();
+            renderRisks();
+            updateCharts();
+            closeSheet();
+            showToast(t('libraryAdded', { count: chosen.length }));
         }
 
         // ========================================
