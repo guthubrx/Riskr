@@ -915,6 +915,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: var(--text);
         }
 
+        /* Plan de traitement d'un risque : stratégie et cotation cible, au-dessus des mesures */
+        .risk-plan {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 28px;
+            margin-bottom: 12px;
+        }
+
+        .risk-plan-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .risk-plan-field > span:first-child {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .risks-table .plan-select {
+            width: auto;
+            min-width: 120px;
+            padding-inline-end: 22px;
+        }
+
+        /* Criticité résiduelle au-delà de l'appétence au risque */
+        .appetite-alert {
+            color: #ff9f0a;
+            vertical-align: middle;
+            margin-inline-start: 4px;
+        }
+
         /* Mesures : une ligne par mesure (texte | porteur | échéance | suppression) */
         .mesures-list {
             display: grid;
@@ -1289,7 +1324,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             padding: 6px 4px;
         }
 
-        .risks-table .status-dropdown {
+        .risks-table .status-dropdown,
+        .risks-table .plan-select {
             width: 100%;
             padding: 5px 6px 5px 3px;
             border: 1px solid var(--border-strong);
@@ -1305,12 +1341,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background-size: 16px;
         }
 
-        .risks-table .status-dropdown:hover {
+        .risks-table .status-dropdown:hover,
+        .risks-table .plan-select:hover {
             border-color: var(--accent);
             background-color: var(--surface-2);
         }
 
-        .risks-table .status-dropdown:focus {
+        .risks-table .status-dropdown:focus,
+        .risks-table .plan-select:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
@@ -3476,6 +3514,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
         }
 
+        // Traitement et cotation cible (ligne dépliable du risque)
+        function initPlanEditing() {
+            document.querySelectorAll('.plan-select').forEach(select => {
+                if (select.dataset.listenerInitialized) return;
+                select.dataset.listenerInitialized = 'true';
+                select.addEventListener('change', () => {
+                    const risk = findRiskOf(select);
+                    if (!risk) return;
+                    if (select.dataset.field === 'traitement') {
+                        risk.traitement = select.value;
+                    } else {
+                        risk.assessmentTarget[Number(select.dataset.axis)] = parseInt(select.value, 10) || 0;
+                        select.parentElement.querySelector('.target-badge').innerHTML =
+                            getCriticalityBadge(...risk.assessmentTarget);
+                    }
+                    commitChange();
+                    showToast(t('changeSaved'));
+                });
+            });
+        }
+
         // ========================================
         // Édition inline du champ Responsable
         // ========================================
@@ -5015,6 +5074,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return 'low';
         }
 
+        // Pictogramme d'alerte si la cotation dépasse l'appétence au risque (0 = aucune)
+        function appetiteAlert([probability, impact]) {
+            const score = calculateCriticality(probability, impact);
+            if (!settings.riskAppetite || score === null || score <= settings.riskAppetite) return '';
+            const title = escapeHtml(t('aboveAppetite', { max: settings.riskAppetite }));
+            return `<span class="appetite-alert" title="${title}" aria-label="${title}">${icon('alert')}</span>`;
+        }
+
         // Génère le badge HTML de criticité
         function getCriticalityBadge(probability, impact) {
             const score = calculateCriticality(probability, impact);
@@ -5730,7 +5797,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
 
             if (critAfterCell) {
-                critAfterCell.innerHTML = getCriticalityBadge(probAfter, impactAfter);
+                critAfterCell.innerHTML = getCriticalityBadge(probAfter, impactAfter) + appetiteAlert([probAfter, impactAfter]);
             }
 
             if (reductionCell) {
@@ -5950,7 +6017,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-after-${index}">
-                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}
+                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}${appetiteAlert(risk.assessmentAfter)}
                             </td>
                             <td class="reduction-cell" id="reduction-${index}">
                                 ${getRiskReductionBadge(risk.assessmentBefore[0], risk.assessmentBefore[1], risk.assessmentAfter[0], risk.assessmentAfter[1])}
@@ -5976,6 +6043,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         remediationRow.id = `remediation-row-${risk.id}`;
                         remediationRow.innerHTML = `
                             <td colspan="11" class="remediation-cell-expanded">
+                                <div class="risk-plan">
+                                    <label class="risk-plan-field"><span>${t('colTreatment')}</span>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-field="traitement">
+                                            ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}
+                                        </select></label>
+                                    <div class="risk-plan-field" title="${escapeHtml(t('targetHint'))}"><span>${t('colTarget')}</span>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-field="target" data-axis="0" aria-label="${t('colProb')}">${generateOptions(getProbabilityScale(), risk.assessmentTarget[0])}</select>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-field="target" data-axis="1" aria-label="${t('colImpact')}">${generateOptions(getImpactScale(), risk.assessmentTarget[1])}</select>
+                                        <span class="target-badge">${getCriticalityBadge(...risk.assessmentTarget)}</span>
+                                    </div>
+                                </div>
                                 <div class="mesures-list">
                                     <div class="mesures-header">
                                         <span>${t('colRemediations')}</span>
@@ -6066,6 +6144,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             initRiskTitleEditing();
             initMesureEditing();
             initStatusDropdowns();
+            initPlanEditing();
             initResponsableEditing();
         }
 
