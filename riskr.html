@@ -2011,7 +2011,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background: var(--surface-2);
         }
 
-        /* Fiche : fenêtre de premier plan (vue comité, nœud papillon, bibliothèque) */
+        /* Fiche : fenêtre de premier plan (nœud papillon, bibliothèque) */
         .sheet-modal {
             position: fixed;
             inset: 0;
@@ -3791,9 +3791,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             <div class="app-controls">
                 <input type="file" id="import-file" hidden accept=".json" onchange="importFromJSON(this)">
-                <button class="icon-btn" onclick="openCommitteeView()" data-i18n-title="committeeOpen">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8M7 12l3-3 2 2 4-4"/></svg>
-                </button>
                 <button class="icon-btn" onclick="openLibrary()" data-i18n-title="libraryOpen">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/><path d="M9 7h6"/></svg>
                 </button>
@@ -4006,7 +4003,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     </div>
 
     <!-- Fenêtres (hors des onglets : un onglet masqué les masquerait) -->
-        <!-- Fiche : vue comité, nœud papillon, bibliothèque -->
+        <!-- Fiche : nœud papillon, bibliothèque -->
         <div id="sheet-modal" class="sheet-modal" hidden onclick="if (event.target === this) closeSheet()">
             <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
                 <div class="sheet-head">
@@ -4701,6 +4698,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Le PDF présente les matrices avant / après côte à côte, même en vue trajectoire
         function exportToPDF() {
+            if (activeTab !== 'matrices') showTab('matrices'); // les matrices doivent être dessinées pour être capturées
             const trajectory = matrixLayout === 'trajectory';
             if (trajectory) setMatrixLayout('split');
             try {
@@ -5215,7 +5213,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewExposure: "Exposition moyenne après remédiation (/5)",
                 colTrend: "Tendance",
                 trendTitle: "Criticité après remédiation, revue par revue",
-                committeeOpen: "Vue comité : synthèse d’une page",
                 committeeTitle: "Synthèse pour le comité",
                 kpiExposure: "Exposition moyenne",
                 kpiExposureDelta: "{delta} % grâce aux mesures",
@@ -5471,7 +5468,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewExposure: "Average exposure after remediation (/5)",
                 colTrend: "Trend",
                 trendTitle: "Criticality after remediation, review by review",
-                committeeOpen: "Committee view: one-page summary",
                 committeeTitle: "Committee summary",
                 kpiExposure: "Average exposure",
                 kpiExposureDelta: "{delta}% thanks to the measures",
@@ -5727,7 +5723,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewExposure: "Exposición media tras la remediación (/5)",
                 colTrend: "Tendencia",
                 trendTitle: "Criticidad tras la remediación, revisión a revisión",
-                committeeOpen: "Vista comité: síntesis de una página",
                 committeeTitle: "Síntesis para el comité",
                 kpiExposure: "Exposición media",
                 kpiExposureDelta: "{delta} % gracias a las medidas",
@@ -5983,7 +5978,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewExposure: "处理后平均暴露（/5）",
                 colTrend: "趋势",
                 trendTitle: "各次评审的处理后严重度",
-                committeeOpen: "委员会视图：一页摘要",
                 committeeTitle: "委员会摘要",
                 kpiExposure: "平均暴露",
                 kpiExposureDelta: "措施带来 {delta}%",
@@ -6239,7 +6233,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewExposure: "متوسط التعرض بعد المعالجة (/5)",
                 colTrend: "الاتجاه",
                 trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى",
-                committeeOpen: "عرض اللجنة: ملخص من صفحة واحدة",
                 committeeTitle: "ملخص للجنة",
                 kpiExposure: "متوسط التعرض",
                 kpiExposureDelta: "{delta}٪ بفضل الإجراءات",
@@ -8835,7 +8828,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             setFilter('cell', same ? null : { phase, p, i });
             if (!same) {
                 closeMatrixModal();
-                document.getElementById('risk-filters').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                showTab('registre');
+                document.getElementById('risk-filters').scrollIntoView({ block: 'start' });
             }
         }
 
@@ -8890,6 +8884,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
             chartBefore = chartAfter = chartTrajectory = null;
             renderReviews();
+            renderCommitteeTab();
 
             if (matrixLayout === 'trajectory') {
                 const { datasets, bubble } = matrixChartData('trajectory');
@@ -9090,59 +9085,71 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const formatExposure = value => value === null ? '—' : value.toFixed(1);
         const signedPercent = delta => `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${Math.abs(delta)}`;
 
-        function openCommitteeView() {
-            openSheet(() => {
-                const stats = committeeStats();
-                const kpi = (label, value, detail = '', tone = '') => `<div class="committee-kpi">
-                    <span class="kpi-label">${label}</span><span class="kpi-value">${value}</span>
-                    <span class="kpi-detail ${tone}">${detail}</span></div>`;
-                const totalRisks = risks.length || 1;
-                return {
-                    title: t('committeeTitle'),
-                    actions: `<button type="button" class="sheet-btn" onclick="copyCommitteeView()">${t('committeeCopy')}</button>
-                        <button type="button" class="sheet-btn primary" onclick="exportCommitteePdf()">${t('committeePdf')}</button>`,
-                    body: `<p class="committee-sub">${escapeHtml(stats.subtitle)}</p>
-                        <div class="committee-kpis">
-                            ${kpi(t('kpiExposure'), `${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} <small>/5</small>`,
-                                stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '')}
-                            ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'))}
-                            ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${risks.length}</small>`,
-                                escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good')}
-                            ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good')}
-                        </div>
-                        <div class="committee-grid">
-                            <section class="committee-card"><h3>${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
-                            <section class="committee-card"><h3>${t('committeeTop')}</h3>
-                                <table class="committee-table">
-                                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
-                                    <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
-                                        <td class="nowrap">${getCriticalityBadge(...risk.assessmentBefore)} → ${getCriticalityBadge(...risk.assessmentAfter)}</td>
-                                        <td>${treatmentLabel(risk.traitement)}</td><td>${escapeHtml(risk.responsable) || '—'}</td></tr>`).join('')}</tbody>
-                                </table></section>
-                        </div>
-                        <div class="committee-grid thirds">
-                            <section class="committee-card"><h3>${t('committeeTreatments')}</h3>
-                                <div class="stack-bar">${Object.entries(stats.treatments).filter(([, count]) => count).map(([key, count]) =>
-                                    `<span style="width:${count / totalRisks * 100}%;background:${TREATMENT_COLORS[key]}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
-                                <div class="stack-legend">${Object.entries(stats.treatments).map(([key, count]) =>
-                                    `<span><i style="background:${TREATMENT_COLORS[key]}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
-                            <section class="committee-card"><h3>${t('committeeReviews')}</h3>
-                                ${stats.exposures.map(({ label, value }) => `<div class="exposure-row"><span>${escapeHtml(label)}</span>
-                                    <b style="width:${(value || 0) / 5 * 100}%;background:${value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]}"></b>
-                                    <span>${formatExposure(value)}</span></div>`).join('')}</section>
-                            <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
-                                <ul class="committee-list">${stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
-                                    ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
-                        </div>`,
-                    mount: body => {
-                        const { datasets, bubble } = matrixChartData('trajectory');
-                        sheetChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
-                    }
-                };
-            });
+        // Contenu de la vue comité : titre, boutons, corps et montage du graphique de trajectoire
+        function committeeContent() {
+            const stats = committeeStats();
+            const kpi = (label, value, detail = '', tone = '') => `<div class="committee-kpi">
+                <span class="kpi-label">${label}</span><span class="kpi-value">${value}</span>
+                <span class="kpi-detail ${tone}">${detail}</span></div>`;
+            const totalRisks = risks.length || 1;
+            return {
+                title: t('committeeTitle'),
+                actions: `<button type="button" class="sheet-btn" onclick="copyCommitteeView()">${t('committeeCopy')}</button>
+                    <button type="button" class="sheet-btn primary" onclick="exportCommitteePdf()">${t('committeePdf')}</button>`,
+                body: `<p class="committee-sub">${escapeHtml(stats.subtitle)}</p>
+                    <div class="committee-kpis">
+                        ${kpi(t('kpiExposure'), `${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} <small>/5</small>`,
+                            stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '')}
+                        ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'))}
+                        ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${risks.length}</small>`,
+                            escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good')}
+                        ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good')}
+                    </div>
+                    <div class="committee-grid">
+                        <section class="committee-card"><h3>${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
+                        <section class="committee-card"><h3>${t('committeeTop')}</h3>
+                            <table class="committee-table">
+                                <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
+                                <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
+                                    <td class="nowrap">${getCriticalityBadge(...risk.assessmentBefore)} → ${getCriticalityBadge(...risk.assessmentAfter)}</td>
+                                    <td>${treatmentLabel(risk.traitement)}</td><td>${escapeHtml(risk.responsable) || '—'}</td></tr>`).join('')}</tbody>
+                            </table></section>
+                    </div>
+                    <div class="committee-grid thirds">
+                        <section class="committee-card"><h3>${t('committeeTreatments')}</h3>
+                            <div class="stack-bar">${Object.entries(stats.treatments).filter(([, count]) => count).map(([key, count]) =>
+                                `<span style="width:${count / totalRisks * 100}%;background:${TREATMENT_COLORS[key]}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
+                            <div class="stack-legend">${Object.entries(stats.treatments).map(([key, count]) =>
+                                `<span><i style="background:${TREATMENT_COLORS[key]}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
+                        <section class="committee-card"><h3>${t('committeeReviews')}</h3>
+                            ${stats.exposures.map(({ label, value }) => `<div class="exposure-row"><span>${escapeHtml(label)}</span>
+                                <b style="width:${(value || 0) / 5 * 100}%;background:${value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]}"></b>
+                                <span>${formatExposure(value)}</span></div>`).join('')}</section>
+                        <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
+                            <ul class="committee-list">${stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
+                                ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
+                    </div>`,
+                mount: body => {
+                    const { datasets, bubble } = matrixChartData('trajectory');
+                    committeeChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
+                }
+            };
         }
 
-        const committeeImage = () => withLightTheme(() => sheetChart.canvas.toDataURL('image/png'));
+        let committeeChart = null;
+
+        // Onglet « Vue comité » : reconstruit à chaque mise à jour des graphiques, seulement s'il est affiché
+        function renderCommitteeTab() {
+            if (committeeChart) committeeChart.destroy();
+            committeeChart = null;
+            if (activeTab !== 'comite') return;
+            const { title, actions, body, mount } = committeeContent();
+            const panel = document.getElementById('committee-panel');
+            panel.innerHTML = `<div class="sheet-head"><h2>${escapeHtml(title)}</h2><div class="sheet-actions">${actions}</div></div>${body}`;
+            mount(panel);
+        }
+
+        const committeeImage = () => withLightTheme(() => committeeChart.canvas.toDataURL('image/png'));
 
         // Version à coller dans Word ou PowerPoint : tableaux et styles en ligne
         async function copyCommitteeView() {
@@ -9165,7 +9172,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <td style="${cell}">${treatmentLabel(risk.traitement)}</td><td style="${cell}">${escapeHtml(risk.responsable)}</td></tr>`).join('')}</table>
                 <h3 style="font-family:Arial,sans-serif">${t('committeeDecisions')}</h3>
                 <ul style="font-family:Arial,sans-serif;font-size:10pt">${stats.above.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)} : ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul>`;
-            if (await copyRichHtml(html, document.getElementById('sheet-body').innerText)) {
+            if (await copyRichHtml(html, document.getElementById('committee-panel').innerText)) {
                 showToast(t('committeeCopied'));
             } else {
                 alert(t('copyForWordUnavailable'));
@@ -9434,13 +9441,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         document.addEventListener('DOMContentLoaded', () => showTab(activeTab));
 
         // ========================================
-        // Fiche générique : vue comité, nœud papillon, bibliothèque
+        // Fiche générique : nœud papillon, bibliothèque
         // ========================================
         // `render()` renvoie { title, actions, body, mount } ; la fiche est reconstruite
         // après chaque modification (annulation et changement de langue compris).
 
         let sheetRender = null;
-        let sheetChart = null;
 
         function openSheet(render) {
             sheetRender = render;
@@ -9451,8 +9457,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function refreshSheet() {
             if (!sheetRender) return;
-            if (sheetChart) sheetChart.destroy();
-            sheetChart = null;
             const { title, actions = '', body, mount } = sheetRender();
             document.getElementById('sheet-title').textContent = title;
             document.getElementById('sheet-actions').innerHTML = actions;
@@ -9461,8 +9465,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function closeSheet() {
-            if (sheetChart) sheetChart.destroy();
-            sheetChart = null;
             sheetRender = null;
             document.getElementById('sheet-modal').hidden = true;
             document.body.style.overflow = '';
