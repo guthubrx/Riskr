@@ -473,6 +473,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <script>
         // Une analyse privée peut surcharger les données génériques uniquement
         // lors d'une ouverture locale du fichier. Ce fichier est ignoré par Git.
+        // Référence aux données publiques : si riskr-data.local.js les remplace,
+        // l'enregistrement doit viser ce fichier privé et non riskr-data.js.
+        window.RISKR_PUBLIC_DATA = window.RISKR_DATA;
         if (window.location.protocol === 'file:') {
             document.write('<script src="riskr-data.local.js"><\/script>');
         }
@@ -685,38 +688,92 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             opacity: 0;
         }
 
-        /* Style pour les remédiations éditables */
-        .editable-remediation {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-radius: 4px;
-            padding: 4px 8px;
-            margin: -4px -8px;
-            display: inline-block;
-            position: relative;
+        /* Texte vide modifiable : indication grisée, sans texte factice dans les données */
+        [data-placeholder]:empty::before {
+            content: attr(data-placeholder);
+            color: #a1a1a6;
+            font-style: italic;
         }
 
-        .editable-remediation:hover {
+        .word-counter {
+            margin-left: 8px;
+            font-size: 12px;
+            color: #86868b;
+        }
+
+        .word-counter.over-limit {
+            color: #c00000;
+            font-weight: 600;
+        }
+
+        .risks-table .risk-id {
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        /* Mesures : une ligne par mesure (texte | porteur | échéance | suppression) */
+        .mesures-list {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px 160px 36px;
+            gap: 4px 12px;
+            align-items: center;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .mesures-header,
+        .mesure-row {
+            display: contents;
+        }
+
+        .mesures-header span {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #86868b;
+        }
+
+        .editable-mesure,
+        .editable-group-note {
+            cursor: text;
+            border-radius: 4px;
+            padding: 3px 6px;
+            min-height: 1.4em;
+        }
+
+        .editable-mesure:hover,
+        .editable-group-note:hover {
             background: rgba(0, 113, 227, 0.05);
             outline: 1px dashed rgba(0, 113, 227, 0.3);
         }
 
-        .editable-remediation:focus {
+        .editable-mesure:focus,
+        .editable-group-note:focus {
             outline: 2px solid #0071e3;
             background: #ffffff;
-            cursor: text;
         }
 
-        .editable-remediation::after {
-            content: "";
-            opacity: 0;
-            margin-left: 0;
-            font-size: 0.7em;
-            transition: opacity 0.2s ease;
+        .mesure-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.5;
+            font-size: 14px;
         }
 
-        .editable-remediation:hover::after {
-            opacity: 0;
+        .mesure-delete:hover {
+            opacity: 1;
+        }
+
+        .mesure-add {
+            grid-column: 1 / -1;
+            justify-self: start;
+            background: none;
+            border: none;
+            color: #0071e3;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 6px;
         }
 
         /* Champ Responsable éditable */
@@ -899,14 +956,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background: #e3f2fd;
         }
 
-        .risks-table tbody tr.drag-over-top {
-            border-top: 2px solid #0071e3;
-        }
-
-        .risks-table tbody tr.drag-over-bottom {
-            border-bottom: 2px solid #0071e3;
-        }
-
         .risks-table td {
             padding: 10px 8px;
             vertical-align: middle;
@@ -960,18 +1009,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risks-table .remediation-cell-expanded {
             padding: 12px 20px 16px 20px;
             border-top: 1px solid #e5e5ea;
-        }
-
-        .risks-table .remediation-content {
-            color: #555;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .risks-table .remediation-content strong {
-            color: #1d1d1f;
-            margin-right: 8px;
-            font-weight: 600;
         }
 
         .risks-table .dropdowns-cell {
@@ -1220,10 +1257,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             flex: 1;
         }
 
-        .zoom-btn {
+        .file-save-button {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 8px;
+            border: 1px solid #d2d2d7;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-save-button[hidden] {
+            display: none;
+        }
+
+        .file-save-status {
+            font-size: 13px;
+            color: #86868b;
+            white-space: nowrap;
+        }
+
+        .file-save-status.dirty,
+        .file-save-status.error {
+            color: #b25000;
+            font-weight: 600;
+        }
+
+        .file-save-status.saved {
+            color: #1a6a3e;
+        }
+
+        .chart-actions {
             position: absolute;
             top: 16px;
             right: 16px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .chart-action-btn {
             background: rgba(255, 255, 255, 0.9);
             border: 1px solid #e5e5e7;
             border-radius: 6px;
@@ -1232,11 +1305,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             padding: 6px 10px;
             transition: all 0.2s;
             opacity: 0.7;
-            z-index: 10;
             backdrop-filter: blur(10px);
         }
 
-        .zoom-btn:hover {
+        .chart-action-btn:hover {
             opacity: 1;
             background: rgba(255, 255, 255, 1);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -1270,15 +1342,35 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
 
+        .matrix-modal-toolbar {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .matrix-modal-copy {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 14px;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+
+        .matrix-modal-copy:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .matrix-modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
             background: none;
             border: none;
             font-size: 32px;
             cursor: pointer;
-            color: #666;
+            color: #d2d2d7;
             line-height: 1;
             padding: 0;
             width: 40px;
@@ -1290,12 +1382,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .matrix-modal-close:hover {
-            color: #000;
+            color: #ffffff;
         }
 
         /* Boutons de navigation dans la modal */
         .matrix-nav-btn {
-            position: absolute;
+            position: fixed;
             top: 50%;
             transform: translateY(-50%);
             background: rgba(255, 255, 255, 0.9);
@@ -1321,11 +1413,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .matrix-nav-btn.prev {
-            left: 30px;
+            left: 24px;
         }
 
         .matrix-nav-btn.next {
-            right: 30px;
+            right: 24px;
         }
 
         .matrix-modal-canvas {
@@ -1802,7 +1894,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             /* Forcer le word-wrap sur les textes longs */
             .editable-risk-title,
-            .editable-remediation {
+            .editable-mesure {
                 word-break: break-word;
                 overflow-wrap: break-word;
             }
@@ -2031,40 +2123,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .editable-group-name:hover::after {
-            opacity: 0;
-        }
-
-        /* Styles pour l'édition inline des sous-titres de sections */
-        .editable-section-title {
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-radius: 4px;
-            padding: 4px 8px;
-            margin: -4px -8px;
-            display: inline-block;
-            position: relative;
-        }
-
-        .editable-section-title:hover {
-            background: rgba(0, 113, 227, 0.1);
-            outline: 1px dashed rgba(0, 113, 227, 0.3);
-        }
-
-        .editable-section-title:focus {
-            outline: 2px solid #0071e3;
-            background: #ffffff;
-            cursor: text;
-        }
-
-        .editable-section-title::after {
-            content: "";
-            opacity: 0;
-            margin-left: 0;
-            font-size: 0.7em;
-            transition: opacity 0.2s ease;
-        }
-
-        .editable-section-title:hover::after {
             opacity: 0;
         }
 
@@ -2457,6 +2515,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .criticality-high {
+            background: #F4B183;
+            color: #843C0C;
+        }
+
+        .criticality-critical {
             background: #FFC7CE;
             color: #C00000;
         }
@@ -2657,6 +2720,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <option value="json">💾 JSON (Données)</option>
                     <option value="datajs">🗂️ riskr-data.js (rechargeable)</option>
                 </select>
+                <!-- Enregistrement dans le fichier de données -->
+                <button id="file-save-button" class="file-save-button" onclick="onFileSaveButton()"></button>
+                <span id="file-save-status" class="file-save-status"></span>
                 <select id="language-selector" onchange="setLanguage(this.value)" style="padding: 8px 12px; font-size: 14px; border-radius: 8px; border: 1px solid #d2d2d7; background: white; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
                     <option value="fr">🇫🇷 Français</option>
                     <option value="en">🇬🇧 English</option>
@@ -2693,7 +2759,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <div class="dashboard-card-value">
                             <span id="dashboard-critical-before">-</span> → <span id="dashboard-critical-after">-</span>
                         </div>
-                        <div class="dashboard-card-label" data-i18n="dashboardCriticalRisks">Risques critiques (Avant → Après)</div>
+                        <div class="dashboard-card-label" data-i18n="dashboardCriticalRisks">Risques élevés ou critiques (Avant → Après)</div>
                     </div>
                 </div>
 
@@ -2754,7 +2820,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <!-- Colonne gauche : Matrices -->
                         <div class="charts-column">
                             <div class="chart-wrapper">
-                                <button class="zoom-btn" onclick="openMatrixModal('before')">🔍</button>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn" onclick="copyMatrixImage('before')" title="Copier la matrice en image">📋</button>
+                                    <button class="chart-action-btn" onclick="openMatrixModal('before')" title="Agrandir">🔍</button>
+                                </div>
                                 <div class="chart-header">
                                     <h3 data-i18n="matrixBefore">Matrice des risques non remédiés</h3>
                                 </div>
@@ -2764,7 +2833,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             </div>
 
                             <div class="chart-wrapper">
-                                <button class="zoom-btn" onclick="openMatrixModal('after')">🔍</button>
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn" onclick="copyMatrixImage('after')" title="Copier la matrice en image">📋</button>
+                                    <button class="chart-action-btn" onclick="openMatrixModal('after')" title="Agrandir">🔍</button>
+                                </div>
                                 <div class="chart-header">
                                     <h3 data-i18n="matrixAfter">Matrice des risques remédiés</h3>
                                 </div>
@@ -2779,10 +2851,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             <!-- Modal d'agrandissement de matrice -->
             <div id="matrix-modal" class="matrix-modal" onclick="closeMatrixModal(event)">
+                <!-- Commandes hors de la zone blanche : la capture d'écran reste propre -->
+                <div class="matrix-modal-toolbar">
+                    <button class="matrix-modal-copy" onclick="event.stopPropagation(); copyMatrixImage(currentMatrixType)" title="Copier la matrice en image">📋 Copier</button>
+                    <button class="matrix-modal-close" onclick="closeMatrixModal(event)" title="Fermer (Échap)">✕</button>
+                </div>
+                <button class="matrix-nav-btn prev" onclick="event.stopPropagation(); navigateMatrix('prev')">‹</button>
+                <button class="matrix-nav-btn next" onclick="event.stopPropagation(); navigateMatrix('next')">›</button>
                 <div class="matrix-modal-content">
-                    <button class="matrix-modal-close" onclick="closeMatrixModal(event)">✕</button>
-                    <button class="matrix-nav-btn prev" onclick="event.stopPropagation(); navigateMatrix('prev')">‹</button>
-                    <button class="matrix-nav-btn next" onclick="event.stopPropagation(); navigateMatrix('next')">›</button>
                     <h2 id="matrix-modal-title">Matrice des risques</h2>
                     <div class="matrix-modal-canvas">
                         <canvas id="chartModal"></canvas>
@@ -2896,14 +2972,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Supprimer tous les états après l'index courant (si on a fait undo)
             history = history.slice(0, historyIndex + 1);
 
-            // Créer une copie profonde de l'état actuel
-            const state = {
-                riskGroups: JSON.parse(JSON.stringify(riskGroups)),
-                risks: JSON.parse(JSON.stringify(risks))
-            };
-
-            // Ajouter à l'historique
-            history.push(state);
+            // Copie de l'état courant (format canonique : les groupes référencent les risques par id)
+            history.push(serializeModel());
 
             // Limiter la taille de l'historique
             if (history.length > MAX_HISTORY) {
@@ -2915,12 +2985,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Restaurer un état depuis l'historique
         function restoreState(state) {
-            // Restaurer l'état
-            riskGroups.length = 0;
-            riskGroups.push(...JSON.parse(JSON.stringify(state.riskGroups)));
-
-            risks.length = 0;
-            risks.push(...JSON.parse(JSON.stringify(state.risks)));
+            // Reconstruire le modèle (group.risks pointe vers les objets de risks)
+            applyModel(buildModel(state));
+            persistModel();
+            scheduleFileSave();
 
             // Re-rendre l'interface
             renderRisks();
@@ -2951,6 +3019,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Écouter les raccourcis clavier
         document.addEventListener('keydown', function(e) {
+            // Pendant une saisie, Cmd+Z annule la frappe (comportement natif du navigateur)
+            const target = e.target;
+            if (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return;
+
             // Cmd+Z (Mac) ou Ctrl+Z (Windows/Linux) pour Undo
             if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !e.shiftKey) {
                 e.preventDefault();
@@ -2965,81 +3037,108 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         });
 
         // ========================================
-        // Système d'édition inline pour titre et sous-titre
+        // Édition directe au clic
         // ========================================
 
-        // Fonction pour initialiser l'édition inline (permet de modifier en cliquant)
-        function initInlineEditing() {
-            const title = document.getElementById('main-title');
-            const subtitle = document.getElementById('main-subtitle');
-
-            // Fonction pour rendre un élément éditable
-            function makeEditable(element, storageKey) {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
-
-                // Charger la valeur sauvegardée depuis le navigateur (localStorage)
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
+        // Place le curseur à l'endroit cliqué (Chrome/Safari puis Firefox)
+        function placeCaretAtPoint(x, y) {
+            let range = null;
+            if (document.caretRangeFromPoint) {
+                range = document.caretRangeFromPoint(x, y);
+            } else if (document.caretPositionFromPoint) {
+                const position = document.caretPositionFromPoint(x, y);
+                if (position) {
+                    range = document.createRange();
+                    range.setStart(position.offsetNode, position.offset);
                 }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function() {
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-
-                    // Sélectionner tout le texte pour faciliter l'édition
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus (clic ailleurs)
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    if (newValue) {
-                        riskrStorage.setItem(storageKey, newValue);
-                        console.log(`✅ Sauvegardé: ${storageKey} = "${newValue}"`);
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder aussi quand on appuie sur Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault(); // Empêcher le retour à la ligne
-                        element.blur(); // Déclencher la sauvegarde
-                    }
-                    // Echap pour annuler l'édition
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
-                        element.blur();
-                    }
-                });
             }
-
-            // Initialiser l'édition pour le titre et le sous-titre
-            makeEditable(title, 'analysis-main-title');
-            makeEditable(subtitle, 'analysis-main-subtitle');
-
-            console.log('✏️ Édition inline activée pour le titre et le sous-titre');
+            if (!range) return;
+            range.collapse(true);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
         }
 
-        // Lancer l'initialisation quand le DOM est prêt
+        // Rend un texte modifiable au clic, comme dans un traitement de texte : le
+        // curseur se place là où l'on clique et les clics suivants restent natifs.
+        // Entrée ou clic ailleurs valide (onCommit si le texte a changé), Échap annule.
+        // Options : required (texte vide refusé), maxWords (compteur pendant la saisie),
+        // onBlur (appelé à chaque sortie d'édition avec la valeur finale).
+        function makeInlineEditable(element, onCommit, options = {}) {
+            if (element.dataset.editingInitialized) return;
+            element.dataset.editingInitialized = 'true';
+            let counter = null;
+
+            const updateCounter = () => {
+                const words = countWords(element.textContent);
+                counter.textContent = `${words}/${options.maxWords} mots`;
+                counter.classList.toggle('over-limit', words > options.maxWords);
+            };
+
+            element.addEventListener('click', event => {
+                event.stopPropagation(); // ne pas replier le groupe parent
+                if (element.isContentEditable) return; // déjà en édition : clic natif
+                element.dataset.originalValue = element.textContent.trim();
+                const row = element.closest('tr[data-risk-id]');
+                if (row) row.draggable = false; // sinon cliquer-glisser déplacerait la ligne
+                element.contentEditable = 'true';
+                element.focus({ preventScroll: true });
+                if (event.detail > 0) {
+                    placeCaretAtPoint(event.clientX, event.clientY);
+                } else {
+                    // Activation par programme (nouvelle mesure) : curseur en fin de texte
+                    window.getSelection().selectAllChildren(element);
+                    window.getSelection().collapseToEnd();
+                }
+                if (options.maxWords) {
+                    counter = document.createElement('span');
+                    counter.className = 'word-counter';
+                    element.after(counter);
+                    updateCounter();
+                }
+            });
+
+            element.addEventListener('input', () => {
+                if (counter) updateCounter();
+            });
+
+            element.addEventListener('blur', () => {
+                element.contentEditable = 'false';
+                const row = element.closest('tr[data-risk-id]');
+                if (row) row.draggable = true;
+                if (counter) {
+                    counter.remove();
+                    counter = null;
+                }
+                let value = element.textContent.trim();
+                if (!value && options.required) value = element.dataset.originalValue;
+                element.textContent = value; // retire les <br> parasites (placeholder CSS)
+                if (value !== element.dataset.originalValue) onCommit(value);
+                if (options.onBlur) options.onBlur(value);
+            });
+
+            element.addEventListener('keydown', event => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    element.blur();
+                }
+                if (event.key === 'Escape') {
+                    element.textContent = element.dataset.originalValue;
+                    element.blur();
+                }
+            });
+        }
+
+        // Titre et sous-titre de l'analyse (sauvegardés avec le modèle)
+        function initInlineEditing() {
+            ['main-title', 'main-subtitle'].forEach(id => {
+                makeInlineEditable(document.getElementById(id), () => {
+                    commitChange();
+                    showToast('✅ Modification sauvegardée');
+                }, { required: true });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', initInlineEditing);
 
         // ========================================
@@ -3137,335 +3236,96 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         });
 
         // ========================================
-        // Édition inline des éléments de groupes et risques
+        // Édition directe des groupes et des risques
         // ========================================
+        // Appelées après chaque rendu ; les éléments déjà équipés sont ignorés.
+
+        const findGroupOf = element => riskGroups.find(g => String(g.id) === element.dataset.groupId);
+        const findRiskOf = element => risks.find(r => r.id === element.dataset.riskId);
+
+        function commitAndRefresh() {
+            commitChange();
+            updateCharts();
+            showToast('✅ Modification sauvegardée');
+        }
 
         function initGroupNameEditing() {
-            // Cette fonction sera appelée après le rendu des groupes
-            document.querySelectorAll('.editable-group-name').forEach(element => {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
-
-                const groupId = element.getAttribute('data-group-id');
-                const storageKey = `group-name-${groupId}`;
-
-                // Charger la valeur sauvegardée
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
-                    // Mettre à jour aussi dans l'objet riskGroups
-                    const group = riskGroups.find(g => g.id == groupId);
-                    if (group) {
-                        group.name = savedValue;
-                    }
-                }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Empêcher la propagation au header
-
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-
-                    // Sélectionner tout le texte
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    if (newValue) {
-                        riskrStorage.setItem(storageKey, newValue);
-                        // Mettre à jour dans l'objet riskGroups
-                        const group = riskGroups.find(g => g.id == groupId);
-                        if (group) {
-                            group.name = newValue;
-                        }
-                        // Rafraîchir les graphiques et tableaux pour refléter le changement
-                        updateCharts();
-                        console.log(`✅ Nom du groupe ${groupId} sauvegardé: "${newValue}"`);
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder avec Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        element.blur();
-                    }
-                    // Annuler avec Escape
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
-                        element.blur();
-                    }
-                });
-            });
+            document.querySelectorAll('.editable-group-name').forEach(element =>
+                makeInlineEditable(element, value => {
+                    findGroupOf(element).name = value;
+                    commitAndRefresh();
+                }, { required: true }));
         }
 
         function initGroupDescriptionEditing() {
-            // Cette fonction sera appelée après le rendu des groupes
-            document.querySelectorAll('.editable-group-description').forEach(element => {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
+            document.querySelectorAll('.editable-group-description').forEach(element =>
+                makeInlineEditable(element, value => {
+                    findGroupOf(element).description = value;
+                    commitAndRefresh();
+                }, { required: true }));
+        }
 
-                const groupId = element.getAttribute('data-group-id');
-                const storageKey = `group-desc-${groupId}`;
-
-                // Charger la valeur sauvegardée
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
-                    const group = riskGroups.find(g => g.id == groupId);
-                    if (group) {
-                        group.description = savedValue;
-                    }
-                }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function(e) {
-                    e.stopPropagation();
-
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    if (newValue) {
-                        riskrStorage.setItem(storageKey, newValue);
-                        const group = riskGroups.find(g => g.id == groupId);
-                        if (group) {
-                            group.description = newValue;
-                        }
-                        console.log(`✅ Description du groupe ${groupId} sauvegardée: "${newValue}"`);
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder avec Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        element.blur();
-                    }
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
-                        element.blur();
-                    }
-                });
-            });
+        // Notes de synthèse des groupes (tableau « Moyennes par groupe »), 30 mots max
+        function initGroupNoteEditing() {
+            document.querySelectorAll('.editable-group-note').forEach(element =>
+                makeInlineEditable(element, value => {
+                    findGroupOf(element)[element.dataset.field] = value;
+                    commitAndRefresh();
+                }, { maxWords: riskrGroupNarrativeSchema.fields.assessmentNote.maxWords }));
         }
 
         function initRiskTitleEditing() {
-            // Cette fonction sera appelée après le rendu des risques
-            document.querySelectorAll('.editable-risk-title').forEach(element => {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
-
-                const riskId = element.getAttribute('data-risk-id');
-                const storageKey = `risk-title-${riskId}`;
-
-                // Charger la valeur sauvegardée
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
-                    const risk = risks.find(r => r.id === riskId);
-                    if (risk) {
-                        risk.title = savedValue.replace(`${riskId}. `, '');
-                    }
-                }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    // Désactiver le drag sur la ligne parente pendant l'édition
-                    const row = element.closest('tr');
-                    if (row) {
-                        row.draggable = false;
-                    }
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-
-                    // Réactiver le drag sur la ligne parente
-                    const row = element.closest('tr');
-                    if (row) {
-                        row.draggable = true;
-                    }
-
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    if (newValue) {
-                        riskrStorage.setItem(storageKey, newValue);
-                        const risk = risks.find(r => r.id === riskId);
-                        if (risk) {
-                            risk.title = newValue.replace(`${riskId}. `, '');
-                        }
-                        updateCharts();
-                        console.log(`✅ Titre du risque ${riskId} sauvegardé: "${newValue}"`);
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder avec Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        element.blur();
-                    }
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
-                        element.blur();
-                    }
-                });
-            });
+            document.querySelectorAll('.editable-risk-title').forEach(element =>
+                makeInlineEditable(element, value => {
+                    findRiskOf(element).title = value;
+                    commitAndRefresh();
+                }, { required: true }));
         }
 
         // ========================================
-        // Édition inline des remédiations
+        // Mesures de remédiation : texte, porteur, échéance facultative
         // ========================================
 
-        function initRemediationEditing() {
-            document.querySelectorAll('.editable-remediation').forEach(element => {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
-
-                const riskId = element.getAttribute('data-risk-id');
-                const storageKey = `risk-remediation-${riskId}`;
-
-                // Charger la valeur sauvegardée
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
-                    const risk = risks.find(r => r.id === riskId);
-                    if (risk) {
-                        // Convertir le texte en tableau de mesures (séparé par •)
-                        risk.mesures = savedValue.split(' • ').map(m => m.trim()).filter(m => m);
-                    }
-                }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    // Désactiver le drag sur la ligne parente pendant l'édition
-                    const row = element.closest('tr');
-                    if (row) {
-                        row.draggable = false;
-                    }
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-
-                    // Réactiver le drag sur la ligne parente
-                    const row = element.closest('tr');
-                    if (row) {
-                        row.draggable = true;
-                    }
-
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    if (newValue && newValue !== t('clickToAddRemediation')) {
-                        riskrStorage.setItem(storageKey, newValue);
-                        const risk = risks.find(r => r.id === riskId);
-                        if (risk) {
-                            // Convertir le texte en tableau de mesures (séparé par •)
-                            risk.mesures = newValue.split(' • ').map(m => m.trim()).filter(m => m);
-                            console.log(`✅ Remédiations du risque ${riskId} mises à jour:`, risk.mesures);
-                        }
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder avec Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        element.blur();
-                    }
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
-                        element.blur();
+        function initMesureEditing() {
+            document.querySelectorAll('.editable-mesure').forEach(element => {
+                const index = Number(element.dataset.index);
+                const field = element.dataset.field;
+                makeInlineEditable(element, value => {
+                    findRiskOf(element).mesures[index][field] = value;
+                    commitChange();
+                    showToast('✅ Modification sauvegardée');
+                }, {
+                    // Une mesure sans texte (vidée ou jamais remplie) est retirée
+                    onBlur: value => {
+                        if (field === 'texte' && !value) removeMesure(findRiskOf(element), index);
                     }
                 });
             });
+            document.querySelectorAll('.mesure-delete').forEach(button => {
+                button.onclick = () => removeMesure(findRiskOf(button), Number(button.dataset.index));
+            });
+            document.querySelectorAll('.mesure-add').forEach(button => {
+                button.onclick = () => addMesure(findRiskOf(button));
+            });
+        }
+
+        function addMesure(risk) {
+            risk.mesures.push({ texte: '', porteur: '', echeance: '' });
+            renderRisks();
+            // Ouvre directement la saisie du texte de la nouvelle mesure
+            document.querySelector(`.editable-mesure[data-risk-id="${risk.id}"][data-index="${risk.mesures.length - 1}"][data-field="texte"]`).click();
+        }
+
+        function removeMesure(risk, index) {
+            if (!risk || !risk.mesures[index]) return;
+            const wasEmpty = !risk.mesures[index].texte;
+            risk.mesures.splice(index, 1);
+            if (!wasEmpty) {
+                commitChange();
+                showToast('✅ Mesure supprimée');
+            }
+            // Laisser le clic en cours se terminer avant de reconstruire le tableau
+            setTimeout(renderRisks, 0);
         }
 
         // ========================================
@@ -3480,31 +3340,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 const riskId = dropdown.getAttribute('data-risk-id');
 
-                // Charger la valeur sauvegardée depuis localStorage
-                const storageKey = `risk-status-${riskId}`;
-                const savedStatus = riskrStorage.getItem(storageKey);
-                if (savedStatus) {
-                    dropdown.value = savedStatus;
-                    const risk = risks.find(r => r.id === riskId);
-                    if (risk) {
-                        risk.statut = savedStatus;
-                    }
-                }
-
                 // Écouter les changements de statut
                 dropdown.addEventListener('change', function(e) {
-                    const newStatus = e.target.value;
-
-                    // Sauvegarder dans localStorage
-                    riskrStorage.setItem(storageKey, newStatus);
-
-                    // Mettre à jour l'objet risque
                     const risk = risks.find(r => r.id === riskId);
-                    if (risk) {
-                        risk.statut = newStatus;
-                        console.log(`✅ Statut du risque ${riskId} mis à jour: ${newStatus}`);
-                    }
-
+                    if (!risk) return;
+                    risk.statut = e.target.value;
+                    commitChange();
+                    updateDashboard(risks); // compteur « risques traités »
                     showToast('✅ Statut mis à jour');
                 });
             });
@@ -3515,166 +3357,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
 
         function initResponsableEditing() {
-            document.querySelectorAll('.editable-responsable').forEach(element => {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
-
-                const riskId = element.getAttribute('data-risk-id');
-                const storageKey = `risk-responsable-${riskId}`;
-
-                // Charger la valeur sauvegardée
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
-                    const risk = risks.find(r => r.id === riskId);
-                    if (risk) {
-                        risk.responsable = savedValue;
-                    }
-                }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    // Désactiver le drag sur la ligne parente pendant l'édition
-                    const row = element.closest('tr');
-                    if (row) {
-                        row.draggable = false;
-                    }
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-
-                    // Réactiver le drag sur la ligne parente
-                    const row = element.closest('tr');
-                    if (row) {
-                        row.draggable = true;
-                    }
-
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    // Si vide, afficher le placeholder
-                    if (!newValue || newValue === t('clickToAdd')) {
-                        element.textContent = t('clickToAdd');
-                        riskrStorage.removeItem(storageKey);
-                        const risk = risks.find(r => r.id === riskId);
-                        if (risk) {
-                            risk.responsable = '';
-                        }
-                    } else {
-                        riskrStorage.setItem(storageKey, newValue);
-                        const risk = risks.find(r => r.id === riskId);
-                        if (risk) {
-                            risk.responsable = newValue;
-                            console.log(`✅ Responsable du risque ${riskId} mis à jour: ${newValue}`);
-                        }
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder avec Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        element.blur();
-                    }
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || t('clickToAdd');
-                        element.blur();
-                    }
-                });
-            });
-        }
-
-        // ========================================
-        // Édition inline des sous-titres de sections
-        // ========================================
-
-        function initSectionTitleEditing() {
-            // Cette fonction sera appelée après le rendu des risques
-            document.querySelectorAll('.editable-section-title').forEach(element => {
-                // Éviter de réattacher les event listeners si déjà initialisé
-                if (element.dataset.editingInitialized) return;
-                element.dataset.editingInitialized = 'true';
-
-                const riskIndex = element.getAttribute('data-risk-index');
-                const sectionType = element.getAttribute('data-section-type');
-                const storageKey = `section-title-${riskIndex}-${sectionType}`;
-
-                // Charger la valeur sauvegardée
-                const savedValue = riskrStorage.getItem(storageKey);
-                if (savedValue) {
-                    element.textContent = savedValue;
-                }
-
-                // Activer l'édition au clic
-                element.addEventListener('click', function(e) {
-                    e.stopPropagation();
-
-                    // Stocker la valeur originale pour comparaison
-                    element.dataset.originalValue = element.textContent.trim();
-
-                    element.contentEditable = true;
-                    element.focus({preventScroll: true});
-                    // Sélectionner tout le texte
-                    const range = document.createRange();
-                    range.selectNodeContents(element);
-                    const selection = window.getSelection();
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                });
-
-                // Sauvegarder quand on perd le focus
-                element.addEventListener('blur', function() {
-                    element.contentEditable = false;
-                    const newValue = element.textContent.trim();
-                    const originalValue = element.dataset.originalValue || '';
-
-                    if (newValue) {
-                        riskrStorage.setItem(storageKey, newValue);
-                        console.log(`✅ Sous-titre de section sauvegardé: "${newValue}"`);
-
-                        // N'afficher le toast que si la valeur a changé
-                        if (newValue !== originalValue) {
-                            showToast('✅ Modification sauvegardée');
-                        }
-                    }
-                });
-
-                // Sauvegarder avec Enter
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        element.blur();
-                    }
-                    // Annuler avec Escape
-                    if (e.key === 'Escape') {
-                        element.textContent = riskrStorage.getItem(storageKey) || element.textContent;
-                        element.blur();
-                    }
-                });
-            });
+            document.querySelectorAll('.editable-responsable').forEach(element =>
+                makeInlineEditable(element, value => {
+                    findRiskOf(element).responsable = value;
+                    commitChange();
+                    showToast('✅ Modification sauvegardée');
+                }));
         }
 
         // ========================================
@@ -3682,46 +3370,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
 
         function exportToHTML() {
-            // Récupérer les valeurs modifiées depuis localStorage
-            const savedTitle = riskrStorage.getItem('analysis-main-title');
-            const savedSubtitle = riskrStorage.getItem('analysis-main-subtitle');
-
-            // Récupérer le contenu HTML complet de la page
-            let htmlContent = document.documentElement.outerHTML;
-
-            // Remplacer le titre par la valeur sauvegardée (si elle existe)
-            if (savedTitle) {
-                const titleElement = document.getElementById('main-title');
-                const originalTitle = 'Riskr - Analyse de Risques Interactive';
-                // Remplacer l'ancien titre par le nouveau dans le HTML
-                htmlContent = htmlContent.replace(
-                    `<h1 id="main-title" class="editable-title">${originalTitle}</h1>`,
-                    `<h1 id="main-title" class="editable-title">${savedTitle}</h1>`
-                );
-                // Remplacer aussi si le titre a déjà été modifié
-                const currentTitle = titleElement.textContent;
-                htmlContent = htmlContent.replace(
-                    `<h1 id="main-title" class="editable-title">${currentTitle}</h1>`,
-                    `<h1 id="main-title" class="editable-title">${savedTitle}</h1>`
-                );
-            }
-
-            // Remplacer le sous-titre par la valeur sauvegardée (si elle existe)
-            if (savedSubtitle) {
-                const subtitleElement = document.getElementById('main-subtitle');
-                const originalSubtitle = 'Évaluation des risques avant et après remédiation';
-                // Remplacer l'ancien sous-titre par le nouveau dans le HTML
-                htmlContent = htmlContent.replace(
-                    `style="color: #666; margin-bottom: 20px;">${originalSubtitle}</p>`,
-                    `style="color: #666; margin-bottom: 20px;">${savedSubtitle}</p>`
-                );
-                // Remplacer aussi si le sous-titre a déjà été modifié
-                const currentSubtitle = subtitleElement.textContent;
-                htmlContent = htmlContent.replace(
-                    `style="color: #666; margin-bottom: 20px;">${currentSubtitle}</p>`,
-                    `style="color: #666; margin-bottom: 20px;">${savedSubtitle}</p>`
-                );
-            }
+            // La page contient déjà le titre et le sous-titre courants
+            const htmlContent = document.documentElement.outerHTML;
 
             // Créer un Blob (objet fichier en mémoire) avec le contenu HTML
             const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
@@ -3786,23 +3436,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // riskGroups[].riskIds. Export JSON, riskr-data.js et import partagent
         // ce schéma : le round-trip export -> fichier -> rechargement est garanti.
         function buildCanonicalData() {
-            return {
-                version: "2.0",
+            return Object.assign({
+                version: "2.1",
                 timestamp: new Date().toISOString(),
                 appState: {
                     title: document.getElementById('main-title').textContent,
                     subtitle: document.getElementById('main-subtitle').textContent,
                     language: currentLanguage,
                     storageNamespace: normalizedStorageNamespace
-                },
-                risks: risks.map(r => Object.assign({}, r)),
-                riskGroups: riskGroups.map(g => {
-                    const copy = Object.assign({}, g);
-                    copy.riskIds = (g.risks || []).map(r => r.id);
-                    delete copy.risks; // les risques vivent dans risks[], référencés par riskIds
-                    return copy;
-                })
-            };
+                }
+            }, serializeModel()); // risks[] + riskGroups[].riskIds
         }
 
         function downloadTextFile(content, filename, mime) {
@@ -3827,13 +3470,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Sauvegarde directe au format riskr-data.js : le fichier téléchargé se
         // repose tel quel à côté de riskr.html et est chargé au prochain
         // rechargement — ferme la boucle d'édition (localStorage -> fichier).
-        function exportDataJsFile() {
-            const content = '// riskr-data.js — Données de l\'analyse de risques Riskr\n' +
+        function buildDataFileContent(data) {
+            return `// ${dataFileName} — Données de l'analyse de risques Riskr\n` +
                 '// Généré depuis riskr.html le ' + new Date().toISOString() + '\n' +
                 '// Reposer ce fichier à côté de riskr.html (même dossier).\n' +
-                'window.RISKR_DATA = ' + JSON.stringify(buildCanonicalData(), null, 2) + ';\n';
-            downloadTextFile(content, 'riskr-data.js', 'text/javascript');
-            console.log('✅ riskr-data.js généré !');
+                'window.RISKR_DATA = ' + JSON.stringify(data, null, 2) + ';\n';
+        }
+
+        function exportDataJsFile() {
+            downloadTextFile(buildDataFileContent(buildCanonicalData()), dataFileName, 'text/javascript');
         }
 
         function importFromJSON(input) {
@@ -3845,61 +3490,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    
-                    // Validation basique
-                    if (!data.riskGroups || !Array.isArray(data.riskGroups)) {
-                        throw new Error("Format JSON invalide : 'riskGroups' manquant ou incorrect");
-                    }
 
-                    // 1. Restaurer l'état de l'application
+                    // 1. Valider et normaliser AVANT de toucher aux données en cours.
+                    // Accepte le format canonique (riskr-data.js), les anciens exports
+                    // à risques imbriqués et les anciens champs gcBefore/dtuBefore.
+                    const model = buildModel(data);
+
+                    // 2. Restaurer l'état de l'application
                     if (data.appState) {
                         if (data.appState.title) {
                             document.getElementById('main-title').textContent = data.appState.title;
-                            riskrStorage.setItem('analysis-main-title', data.appState.title);
                         }
                         if (data.appState.subtitle) {
                             document.getElementById('main-subtitle').textContent = data.appState.subtitle;
-                            riskrStorage.setItem('analysis-main-subtitle', data.appState.subtitle);
                         }
                         if (data.appState.language) {
                             setLanguage(data.appState.language);
                         }
                     }
 
-                    // 2+3. Restaurer groupes et risques — accepte les DEUX formats :
-                    //  - canonique : risks[] à plat + riskGroups[].riskIds (= riskr-data.js)
-                    //  - legacy    : riskGroups[].risks imbriqués (anciens exports)
-                    // Dans les deux cas, risks et riskGroups partagent les mêmes
-                    // références d'objets (crucial pour la synchro de l'UI).
-                    risks.length = 0;
-                    riskGroups.length = 0;
-                    const isCanonical = Array.isArray(data.risks) && data.risks.length > 0 &&
-                        data.riskGroups.every(g => Array.isArray(g.riskIds));
-                    if (isCanonical) {
-                        data.risks.forEach(r => risks.push(Object.assign({}, r)));
-                        data.riskGroups.forEach(g => {
-                            riskGroups.push(Object.assign({}, g, {
-                                risks: risks.filter(r => g.riskIds.includes(r.id))
-                            }));
-                        });
-                    } else {
-                        data.riskGroups.forEach(g => riskGroups.push(g));
-                        riskGroups.forEach(group => {
-                            if (group.risks && Array.isArray(group.risks)) {
-                                group.risks.forEach(risk => risks.push(risk));
-                            }
-                        });
-                    }
-
+                    // 3. Remplacer le modèle, l'historiser et le sauvegarder
+                    applyModel(model);
                     validateRiskGroupNarratives(riskGroups);
+                    commitChange();
 
-                    // 4. Sauvegarder l'état pour undo/redo
-                    saveState();
-                    
-                    // 5. Mettre à jour le mapping dans localStorage
-                    saveGroupMapping();
-
-                    // 6. Rafraîchir l'interface
+                    // 4. Rafraîchir l'interface
                     renderRisks();
                     updateCharts();
 
@@ -3986,12 +3601,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (group.risks && group.risks.length > 0) {
                     // Préparer les données du tableau
                     const tableData = group.risks.map(risk => {
-                        const probBefore = risk.assessmentBBefore[0] || '-';
-                        const impactBefore = risk.assessmentBBefore[1] || '-';
-                        const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]) || '-';
-                        const probAfter = risk.assessmentBAfter[0] || '-';
-                        const impactAfter = risk.assessmentBAfter[1] || '-';
-                        const critAfter = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]) || '-';
+                        const probBefore = risk.assessmentBefore[0] || '-';
+                        const impactBefore = risk.assessmentBefore[1] || '-';
+                        const critBefore = calculateCriticality(risk.assessmentBefore[0], risk.assessmentBefore[1]) || '-';
+                        const probAfter = risk.assessmentAfter[0] || '-';
+                        const impactAfter = risk.assessmentAfter[1] || '-';
+                        const critAfter = calculateCriticality(risk.assessmentAfter[0], risk.assessmentAfter[1]) || '-';
                         const reduction = critBefore !== '-' && critAfter !== '-'
                             ? `${((1 - critAfter/critBefore) * 100).toFixed(0)}%`
                             : '-';
@@ -4063,17 +3678,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Données des risques
                 group.risks.forEach(risk => {
-                    const probBefore = risk.assessmentBBefore[0] || '';
-                    const impactBefore = risk.assessmentBBefore[1] || '';
-                    const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]) || '';
-                    const probAfter = risk.assessmentBAfter[0] || '';
-                    const impactAfter = risk.assessmentBAfter[1] || '';
-                    const critAfter = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]) || '';
+                    const probBefore = risk.assessmentBefore[0] || '';
+                    const impactBefore = risk.assessmentBefore[1] || '';
+                    const critBefore = calculateCriticality(risk.assessmentBefore[0], risk.assessmentBefore[1]) || '';
+                    const probAfter = risk.assessmentAfter[0] || '';
+                    const impactAfter = risk.assessmentAfter[1] || '';
+                    const critAfter = calculateCriticality(risk.assessmentAfter[0], risk.assessmentAfter[1]) || '';
                     const reduction = critBefore && critAfter
                         ? ((1 - critAfter/critBefore) * 100).toFixed(0) + '%'
                         : '';
                     const remediations = risk.mesures && risk.mesures.length > 0
-                        ? risk.mesures.join(' • ')
+                        ? risk.mesures.map(formatMesure).join(' • ')
                         : '';
 
                     sheetData.push([
@@ -4137,17 +3752,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Données
             riskGroups.forEach(group => {
                 group.risks.forEach(risk => {
-                    const probBefore = risk.assessmentBBefore[0] || '';
-                    const impactBefore = risk.assessmentBBefore[1] || '';
-                    const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]) || '';
-                    const probAfter = risk.assessmentBAfter[0] || '';
-                    const impactAfter = risk.assessmentBAfter[1] || '';
-                    const critAfter = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]) || '';
+                    const probBefore = risk.assessmentBefore[0] || '';
+                    const impactBefore = risk.assessmentBefore[1] || '';
+                    const critBefore = calculateCriticality(risk.assessmentBefore[0], risk.assessmentBefore[1]) || '';
+                    const probAfter = risk.assessmentAfter[0] || '';
+                    const impactAfter = risk.assessmentAfter[1] || '';
+                    const critAfter = calculateCriticality(risk.assessmentAfter[0], risk.assessmentAfter[1]) || '';
                     const reduction = critBefore && critAfter
                         ? ((1 - critAfter/critBefore) * 100).toFixed(0) + '%'
                         : '';
                     const remediations = risk.mesures && risk.mesures.length > 0
-                        ? risk.mesures.join(' • ')
+                        ? risk.mesures.map(formatMesure).join(' • ')
                         : '';
 
                     // Échapper les guillemets et entourer les champs avec des guillemets si nécessaire
@@ -4213,7 +3828,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Dashboard
                 dashboardTitle: "Vue d'ensemble",
                 dashboardRisksEvaluated: "Risques évalués",
-                dashboardCriticalRisks: "Risques critiques (Avant → Après)",
+                dashboardCriticalRisks: "Risques élevés ou critiques (Avant → Après)",
                 dashboardAvgReduction: "Réduction moyenne",
                 dashboardTreated: "Risques traités",
 
@@ -4226,8 +3841,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Tableau récap
                 colNumber: "N°",
                 colDescription: "Description du Risque",
-                colAvgBefore: "Moyenne Avant",
-                colAvgAfter: "Moyenne Après",
+                colAvgBefore: "Criticité avant (/25)",
+                colAvgAfter: "Criticité après (/25)",
 
                 // Colonnes tableau
                 colRisk: "Risque",
@@ -4269,19 +3884,26 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Badges de criticité
                 critNotEval: "Non évalué",
-                critLow: "Acceptable",
-                critMedium: "À surveiller",
-                critHigh: "Critique",
+                critLow: "Faible",
+                critMedium: "Modéré",
+                critHigh: "Élevé",
+                critCritical: "Critique",
 
                 // Actions
                 addGroup: "Ajouter un groupe",
                 addRisk: "Ajouter un risque",
                 deleteGroup: "Supprimer",
                 clickToAdd: "Cliquer pour ajouter",
-                clickToAddRemediation: "Cliquer pour ajouter des remédiations",
                 zoomMatrix: "Agrandir la matrice",
                 copyForWord: "Copier pour Word",
                 copiedForWord: "Copié",
+                mesureOwner: "Porteur",
+                mesureDueDate: "Échéance (facultatif)",
+                mesureTextPlaceholder: "Décrire la mesure",
+                mesureAdd: "Ajouter une mesure",
+                mesureDelete: "Supprimer la mesure",
+                assessmentNotePlaceholder: "Ajouter une lecture de la catégorie (30 mots max)",
+                remediationNotePlaceholder: "Ajouter la remédiation visée (30 mots max)",
                 copyForWordUnavailable: "La copie n’a pas abouti. Autorisez le presse-papiers puis réessayez."
             },
             en: {
@@ -4297,7 +3919,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 dashboardTitle: "Overview",
                 dashboardRisksEvaluated: "Evaluated risks",
-                dashboardCriticalRisks: "Critical risks (Before → After)",
+                dashboardCriticalRisks: "High or critical risks (Before → After)",
                 dashboardAvgReduction: "Average reduction",
                 dashboardTreated: "Treated risks",
 
@@ -4308,8 +3930,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "No.",
                 colDescription: "Risk Description",
-                colAvgBefore: "Average Before",
-                colAvgAfter: "Average After",
+                colAvgBefore: "Criticality before (/25)",
+                colAvgAfter: "Criticality after (/25)",
 
                 colRisk: "Risk",
                 colRemediations: "Remediations",
@@ -4345,18 +3967,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 statusAccepted: "Accepted",
 
                 critNotEval: "Not evaluated",
-                critLow: "Acceptable",
-                critMedium: "Monitor",
-                critHigh: "Critical",
+                critLow: "Low",
+                critMedium: "Moderate",
+                critHigh: "High",
+                critCritical: "Critical",
 
                 addGroup: "Add group",
                 addRisk: "Add risk",
                 deleteGroup: "Delete",
                 clickToAdd: "Click to add",
-                clickToAddRemediation: "Click to add remediations",
                 zoomMatrix: "Enlarge matrix",
                 copyForWord: "Copy for Word",
                 copiedForWord: "Copied",
+                mesureOwner: "Owner",
+                mesureDueDate: "Due date (optional)",
+                mesureTextPlaceholder: "Describe the measure",
+                mesureAdd: "Add a measure",
+                mesureDelete: "Delete the measure",
+                assessmentNotePlaceholder: "Add a reading of the category (30 words max)",
+                remediationNotePlaceholder: "Add the target remediation (30 words max)",
                 copyForWordUnavailable: "Copy failed. Allow clipboard access and try again."
             },
             es: {
@@ -4372,7 +4001,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 dashboardTitle: "Vista general",
                 dashboardRisksEvaluated: "Riesgos evaluados",
-                dashboardCriticalRisks: "Riesgos críticos (Antes → Después)",
+                dashboardCriticalRisks: "Riesgos altos o críticos (Antes → Después)",
                 dashboardAvgReduction: "Reducción promedio",
                 dashboardTreated: "Riesgos tratados",
 
@@ -4383,8 +4012,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "N°",
                 colDescription: "Descripción del Riesgo",
-                colAvgBefore: "Promedio Antes",
-                colAvgAfter: "Promedio Después",
+                colAvgBefore: "Criticidad antes (/25)",
+                colAvgAfter: "Criticidad después (/25)",
 
                 colRisk: "Riesgo",
                 colRemediations: "Remediaciones",
@@ -4420,15 +4049,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 statusAccepted: "Aceptado",
 
                 critNotEval: "No evaluado",
-                critLow: "Aceptable",
-                critMedium: "Vigilar",
-                critHigh: "Crítico",
+                critLow: "Bajo",
+                critMedium: "Moderado",
+                critHigh: "Alto",
+                critCritical: "Crítico",
 
                 addGroup: "Agregar grupo",
                 addRisk: "Agregar riesgo",
                 deleteGroup: "Eliminar",
                 clickToAdd: "Clic para agregar",
-                clickToAddRemediation: "Clic para agregar remediaciones",
                 zoomMatrix: "Ampliar matriz",
                 copyForWord: "Copiar para Word",
                 copiedForWord: "Copiado",
@@ -4447,7 +4076,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 dashboardTitle: "概览",
                 dashboardRisksEvaluated: "已评估风险",
-                dashboardCriticalRisks: "关键风险 (前 → 后)",
+                dashboardCriticalRisks: "高或严重风险 (前 → 后)",
                 dashboardAvgReduction: "平均降低",
                 dashboardTreated: "已处理风险",
 
@@ -4458,8 +4087,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "编号",
                 colDescription: "风险描述",
-                colAvgBefore: "平均之前",
-                colAvgAfter: "平均之后",
+                colAvgBefore: "之前关键度 (/25)",
+                colAvgAfter: "之后关键度 (/25)",
 
                 colRisk: "风险",
                 colRemediations: "缓解措施",
@@ -4495,15 +4124,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 statusAccepted: "已接受",
 
                 critNotEval: "未评估",
-                critLow: "可接受",
-                critMedium: "需监控",
-                critHigh: "关键",
+                critLow: "低",
+                critMedium: "中",
+                critHigh: "高",
+                critCritical: "严重",
 
                 addGroup: "添加组",
                 addRisk: "添加风险",
                 deleteGroup: "删除",
                 clickToAdd: "点击添加",
-                clickToAddRemediation: "点击添加缓解措施",
                 zoomMatrix: "放大矩阵",
                 copyForWord: "复制到 Word",
                 copiedForWord: "已复制",
@@ -4522,7 +4151,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 dashboardTitle: "نظرة عامة",
                 dashboardRisksEvaluated: "المخاطر المقيمة",
-                dashboardCriticalRisks: "المخاطر الحرجة (قبل ← بعد)",
+                dashboardCriticalRisks: "المخاطر المرتفعة أو الحرجة (قبل ← بعد)",
                 dashboardAvgReduction: "متوسط الانخفاض",
                 dashboardTreated: "المخاطر المعالجة",
 
@@ -4533,8 +4162,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 colNumber: "رقم",
                 colDescription: "وصف المخاطرة",
-                colAvgBefore: "متوسط قبل",
-                colAvgAfter: "متوسط بعد",
+                colAvgBefore: "الخطورة قبل (/25)",
+                colAvgAfter: "الخطورة بعد (/25)",
 
                 colRisk: "المخاطرة",
                 colRemediations: "المعالجات",
@@ -4570,15 +4199,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 statusAccepted: "مقبول",
 
                 critNotEval: "غير مقيم",
-                critLow: "مقبول",
-                critMedium: "للمراقبة",
-                critHigh: "حرج",
+                critLow: "منخفض",
+                critMedium: "متوسط",
+                critHigh: "مرتفع",
+                critCritical: "حرج",
 
                 addGroup: "إضافة مجموعة",
                 addRisk: "إضافة مخاطرة",
                 deleteGroup: "حذف",
                 clickToAdd: "انقر للإضافة",
-                clickToAddRemediation: "انقر لإضافة المعالجات",
                 zoomMatrix: "تكبير المصفوفة",
                 copyForWord: "نسخ إلى Word",
                 copiedForWord: "تم النسخ",
@@ -4714,12 +4343,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return probability * impact;
         }
 
-        // Détermine le niveau de risque selon le score
+        // Seuils de criticité (P × I, sur 25), utilisés partout : matrices, badges,
+        // tableaux, tableau de bord. Modifiables dans riskr-data.js :
+        // appState.criticalityThresholds = { medium: 5, high: 10, critical: 15 }
+        const CRITICALITY_THRESHOLDS = Object.assign({ medium: 5, high: 10, critical: 15 },
+            window.RISKR_DATA && window.RISKR_DATA.appState && window.RISKR_DATA.appState.criticalityThresholds);
+        const CRITICALITY_COLORS = { low: '#C5E0B3', medium: '#FFE699', high: '#F4B183', critical: '#FFC7CE' };
+
+        // Niveau d'un score : low (faible) | medium (modéré) | high (élevé) | critical
         function getCriticalityLevel(score) {
-            if (score === null) return null;
-            if (score >= 15) return 'high';      // Rouge: 15-25 (critique)
-            if (score >= 10) return 'medium';    // Orange: 10-14 (à surveiller)
-            return 'low';                        // Vert/Jaune: 1-9 (acceptable)
+            if (score === null || score === undefined) return null;
+            if (score >= CRITICALITY_THRESHOLDS.critical) return 'critical';
+            if (score >= CRITICALITY_THRESHOLDS.high) return 'high';
+            if (score >= CRITICALITY_THRESHOLDS.medium) return 'medium';
+            return 'low';
         }
 
         // Génère le badge HTML de criticité
@@ -4738,13 +4375,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const labelKeys = {
                 low: 'critLow',
                 medium: 'critMedium',
-                high: 'critHigh'
+                high: 'critHigh',
+                critical: 'critCritical'
             };
 
             const emojis = {
                 low: '🟩',
-                medium: '🟧',
-                high: '🟥'
+                medium: '🟨',
+                high: '🟧',
+                critical: '🟥'
             };
 
             return `<span class="criticality-badge criticality-${level}">
@@ -4812,60 +4451,430 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </span>`;
         }
 
-        // Données des risques — peuvent être remplacées par window.RISKR_DATA
-        let risks, riskGroups;
-        if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
-            risks = window.RISKR_DATA.risks.map(r => Object.assign({}, r));
-            riskGroups = window.RISKR_DATA.riskGroups.map(g => Object.assign({}, g, {
-                risks: risks.filter(r => (g.riskIds || []).includes(r.id))
-            }));
-            if (window.RISKR_DATA.appState) {
-                document.addEventListener('DOMContentLoaded', () => {
-                    if (window.RISKR_DATA.appState.title) {
-                        const el = document.getElementById('main-title');
-                        if (el) el.textContent = window.RISKR_DATA.appState.title;
-                    }
-                    if (window.RISKR_DATA.appState.subtitle) {
-                        const el = document.getElementById('main-subtitle');
-                        if (el) el.textContent = window.RISKR_DATA.appState.subtitle;
-                    }
-                });
+        // ========================================
+        // Modèle de données : normalisation, sauvegarde, reprise
+        // ========================================
+        // Source de vérité unique : risks + riskGroups (group.risks référence les
+        // objets de risks). Chaque modification passe par commitChange(), qui
+        // alimente l'historique et sauvegarde le modèle complet dans le navigateur.
+
+        const STATUS_KEYS = ['statusNotTreated', 'statusInProgress', 'statusTreated', 'statusAccepted'];
+        const LEGACY_STATUS_LABELS = {
+            'Non traité': 'statusNotTreated', 'En cours': 'statusInProgress',
+            'Traité': 'statusTreated', 'Accepté': 'statusAccepted'
+        };
+        const LEGACY_RISK_FIELDS = ['dtuBefore', 'dtuAfter', 'gcBefore', 'gcAfter', 'categorie',
+            'prob_avant', 'impact_avant', 'prob_apres', 'impact_apres',
+            'assessmentABefore', 'assessmentAAfter', 'assessmentBBefore', 'assessmentBAfter'];
+        // Les identifiants sont injectés dans des attributs HTML et des onclick
+        const SAFE_ID = /^[A-Za-z0-9._-]+$/;
+
+        function toAssessment(value) {
+            return Array.isArray(value) && value.length === 2
+                ? value.map(v => parseInt(v, 10) || 0)
+                : [0, 0];
+        }
+
+        // Première cotation évaluée parmi les candidates (format courant puis anciens champs)
+        function firstEvaluated(...candidates) {
+            return candidates.map(toAssessment).find(a => a[0] > 0 && a[1] > 0) || [0, 0];
+        }
+
+        // Une mesure : texte + porteur + échéance facultative (anciennement une simple chaîne)
+        function normalizeMesure(raw) {
+            const mesure = typeof raw === 'string' ? { texte: raw } : (raw || {});
+            return {
+                texte: String(mesure.texte || ''),
+                porteur: String(mesure.porteur || ''),
+                echeance: String(mesure.echeance || '')
+            };
+        }
+
+        // Texte d'une mesure pour les exports : « texte (porteur, échéance) »
+        function formatMesure(mesure) {
+            const details = [mesure.porteur, mesure.echeance].filter(Boolean).join(', ');
+            return details ? `${mesure.texte} (${details})` : mesure.texte;
+        }
+
+        // Accepte le format courant et les anciens formats. Une seule cotation par
+        // risque : assessmentBefore/After, sinon anciens référentiels B (gc*) puis A (dtu*).
+        function normalizeRisk(raw) {
+            const id = String(raw && raw.id !== undefined ? raw.id : '');
+            if (!SAFE_ID.test(id)) throw new Error(`Identifiant de risque invalide : "${id}"`);
+            const risk = Object.assign({}, raw, {
+                id,
+                title: String(raw.title || ''),
+                assessmentBefore: firstEvaluated(raw.assessmentBefore, raw.assessmentBBefore,
+                    raw.gcBefore, raw.assessmentABefore, raw.dtuBefore),
+                assessmentAfter: firstEvaluated(raw.assessmentAfter, raw.assessmentBAfter,
+                    raw.gcAfter, raw.assessmentAAfter, raw.dtuAfter),
+                mesures: Array.isArray(raw.mesures) ? raw.mesures.map(normalizeMesure) : [],
+                statut: STATUS_KEYS.includes(raw.statut)
+                    ? raw.statut
+                    : (LEGACY_STATUS_LABELS[raw.statut] || 'statusNotTreated'),
+                responsable: String(raw.responsable || '')
+            });
+            LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
+            return risk;
+        }
+
+        // Construit un modèle cohérent depuis le format canonique (riskIds) ou
+        // l'ancien format (risques imbriqués). Lève une erreur sans rien modifier.
+        // Complexité : O(n) — n = nombre de risques (index par Map).
+        function buildModel(data) {
+            if (!data || !Array.isArray(data.riskGroups)) {
+                throw new Error("Format invalide : 'riskGroups' manquant ou incorrect");
             }
+            const isCanonical = data.riskGroups.every(g => Array.isArray(g.riskIds));
+            const rawRisks = isCanonical
+                ? (data.risks || [])
+                : data.riskGroups.flatMap(g => g.risks || []);
+            const riskById = new Map();
+            rawRisks.forEach(raw => {
+                const risk = normalizeRisk(raw);
+                if (riskById.has(risk.id)) throw new Error(`Risque en double : ${risk.id}`);
+                riskById.set(risk.id, risk);
+            });
+
+            const newGroups = data.riskGroups.map(raw => {
+                const { risks: nestedRisks, riskIds, ...group } = raw;
+                const groupId = String(raw.id);
+                if (!SAFE_ID.test(groupId)) throw new Error(`Identifiant de groupe invalide : "${groupId}"`);
+                const ids = isCanonical ? riskIds : (nestedRisks || []).map(r => String(r.id));
+                return Object.assign(group, {
+                    name: String(raw.name || ''),
+                    description: String(raw.description || ''),
+                    mesures: Array.isArray(raw.mesures) ? raw.mesures : [],
+                    risks: ids.map(id => riskById.get(String(id))).filter(Boolean)
+                });
+            });
+
+            // Seuls les risques rattachés à un groupe existent (pas de risque fantôme)
+            const groupedRisks = [...new Set(newGroups.flatMap(g => g.risks))];
+            if (groupedRisks.length < riskById.size) {
+                console.warn(`[Riskr] ${riskById.size - groupedRisks.length} risque(s) sans groupe ignoré(s)`);
+            }
+            return { risks: groupedRisks, riskGroups: newGroups };
+        }
+
+        // Remplace le modèle en place (les tableaux gardent leur identité)
+        function applyModel(model) {
+            risks.length = 0;
+            risks.push(...model.risks);
+            riskGroups.length = 0;
+            riskGroups.push(...model.riskGroups);
+        }
+
+        // Copie sérialisable au format canonique (risks[] + riskGroups[].riskIds)
+        function serializeModel() {
+            return JSON.parse(JSON.stringify({
+                risks,
+                riskGroups: riskGroups.map(({ risks: groupRisks, ...group }) =>
+                    Object.assign(group, { riskIds: groupRisks.map(r => r.id) }))
+            }));
+        }
+
+        // Empreinte des données du fichier : si riskr-data.js change, il reprend la main
+        function hashText(text) {
+            let hash = 5381;
+            for (let i = 0; i < text.length; i++) hash = ((hash << 5) + hash + text.charCodeAt(i)) | 0;
+            return String(hash >>> 0);
+        }
+        let dataSourceFingerprint = hashText(JSON.stringify(window.RISKR_DATA || null));
+        const MODEL_STORAGE_KEY = 'model';
+
+        function persistModel() {
+            try {
+                riskrStorage.setItem(MODEL_STORAGE_KEY, JSON.stringify(Object.assign({
+                    source: dataSourceFingerprint,
+                    title: document.getElementById('main-title').textContent,
+                    subtitle: document.getElementById('main-subtitle').textContent
+                }, serializeModel())));
+            } catch (error) {
+                console.error('[Riskr] Sauvegarde navigateur impossible :', error);
+                showToast('⚠️ Sauvegarde navigateur impossible : exportez vos données', 'error');
+            }
+        }
+
+        // Numérotation = position : groupe n, risque n.m. Recalculée à chaque
+        // modification (ajout, suppression, déplacement). Complexité : O(n).
+        function renumber() {
+            riskGroups.forEach((group, groupIndex) => {
+                group.id = groupIndex + 1;
+                group.risks.forEach((risk, riskIndex) => {
+                    risk.id = `${groupIndex + 1}.${riskIndex + 1}`;
+                });
+            });
+        }
+
+        // À appeler APRÈS chaque modification du modèle
+        function commitChange() {
+            renumber();
+            saveState();
+            persistModel();
+            scheduleFileSave();
+        }
+
+        // ========================================
+        // Enregistrement dans le fichier de données
+        // ========================================
+        // Chrome/Edge : après une liaison (un clic), chaque modification est écrite
+        // directement dans le fichier. Firefox/Safari : bouton « Enregistrer » qui
+        // télécharge le fichier, à remplacer à côté de riskr.html.
+
+        const canLinkFile = 'showSaveFilePicker' in window;
+        const dataFileName = window.RISKR_DATA && window.RISKR_DATA !== window.RISKR_PUBLIC_DATA
+            ? 'riskr-data.local.js'
+            : 'riskr-data.js';
+        let fileHandle = null;        // fichier lié (Chrome/Edge)
+        let fileWritable = false;     // autorisation d'écriture accordée pour cette session
+        let fileWriteTimer = null;
+        let fileSaveState = 'clean';  // clean | dirty | saving | saved | downloaded | error
+
+        // Le lien vers le fichier est gardé d'une session à l'autre (IndexedDB)
+        function withFileHandleStore(mode, action) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('riskr', 1);
+                request.onupgradeneeded = () => request.result.createObjectStore('fileHandles');
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    const store = request.result.transaction('fileHandles', mode).objectStore('fileHandles');
+                    const operation = action(store);
+                    operation.onsuccess = () => resolve(operation.result);
+                    operation.onerror = () => reject(operation.error);
+                };
+            });
+        }
+
+        function updateFileSaveUi() {
+            const button = document.getElementById('file-save-button');
+            const status = document.getElementById('file-save-status');
+            const linked = fileHandle && fileWritable;
+            button.hidden = linked && fileSaveState !== 'error';
+            if (!canLinkFile) {
+                button.textContent = '💾 Enregistrer';
+                button.title = `Télécharger ${dataFileName} à placer à côté de riskr.html`;
+            } else if (fileHandle && !fileWritable) {
+                button.textContent = '🔗 Reprendre l\'enregistrement';
+                button.title = `Autoriser l'écriture dans ${fileHandle.name} pour cette session`;
+            } else if (fileSaveState === 'error') {
+                button.textContent = '↻ Réessayer';
+                button.title = 'Relancer l\'enregistrement dans le fichier';
+            } else {
+                button.textContent = '💾 Enregistrer dans le fichier';
+                button.title = `Choisir ${dataFileName} : ensuite, chaque modification y est enregistrée`;
+            }
+            const labels = {
+                clean: linked ? `✓ Enregistré dans ${fileHandle.name}` : '',
+                dirty: '● Modifications non enregistrées',
+                saving: 'Enregistrement…',
+                saved: `✓ Enregistré dans ${fileHandle ? fileHandle.name : dataFileName}`,
+                downloaded: `✓ Téléchargé : remplacez ${dataFileName} à côté de riskr.html`,
+                error: '⚠ Échec de l\'enregistrement'
+            };
+            status.textContent = labels[fileSaveState];
+            status.className = `file-save-status ${fileSaveState}`;
+        }
+
+        function setFileSaveState(state) {
+            fileSaveState = state;
+            updateFileSaveUi();
+        }
+
+        async function writeDataFile() {
+            const data = buildCanonicalData();
+            setFileSaveState('saving');
+            try {
+                const writable = await fileHandle.createWritable();
+                await writable.write(buildDataFileContent(data));
+                await writable.close();
+                // Au prochain chargement, le fichier = ces données : pas d'alerte « fichier modifié »
+                dataSourceFingerprint = hashText(JSON.stringify(data));
+                persistModel();
+                setFileSaveState('saved');
+            } catch (error) {
+                console.error('[Riskr] Écriture du fichier impossible :', error);
+                setFileSaveState('error');
+            }
+        }
+
+        // Regroupe les modifications rapprochées en une seule écriture
+        function scheduleFileSave() {
+            if (!fileHandle || !fileWritable) {
+                setFileSaveState('dirty');
+                return;
+            }
+            setFileSaveState('saving');
+            clearTimeout(fileWriteTimer);
+            fileWriteTimer = setTimeout(writeDataFile, 400);
+        }
+
+        async function onFileSaveButton() {
+            if (!canLinkFile) {
+                exportDataJsFile();
+                setFileSaveState('downloaded');
+                return;
+            }
+            try {
+                if (!fileHandle) {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: dataFileName,
+                        types: [{ description: 'Données Riskr', accept: { 'text/javascript': ['.js'] } }]
+                    });
+                    if (handle.name !== dataFileName && !confirm(
+                        `Les données affichées viennent de ${dataFileName}.\n` +
+                        `Les enregistrer quand même dans ${handle.name} ?`)) return;
+                    fileHandle = handle;
+                    await withFileHandleStore('readwrite', store => store.put(handle, normalizedStorageNamespace));
+                }
+                fileWritable = await fileHandle.requestPermission({ mode: 'readwrite' }) === 'granted';
+                if (fileWritable) await writeDataFile();
+                else updateFileSaveUi();
+            } catch (error) {
+                if (error.name !== 'AbortError') { // AbortError = fenêtre annulée par l'utilisateur
+                    console.error('[Riskr] Liaison au fichier impossible :', error);
+                    setFileSaveState('error');
+                }
+            }
+        }
+
+        // Au chargement : retrouver le fichier lié lors d'une session précédente
+        async function restoreFileLink() {
+            if (canLinkFile) {
+                try {
+                    fileHandle = await withFileHandleStore('readonly', store => store.get(normalizedStorageNamespace)) || null;
+                    if (fileHandle) fileWritable = await fileHandle.queryPermission({ mode: 'readwrite' }) === 'granted';
+                } catch (error) {
+                    console.warn('[Riskr] Fichier lié introuvable :', error);
+                    fileHandle = null;
+                }
+            }
+            updateFileSaveUi();
+        }
+
+        // Fermer la page avec des modifications absentes du fichier : demander confirmation
+        window.addEventListener('beforeunload', event => {
+            if (['dirty', 'saving', 'error'].includes(fileSaveState)) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
+
+        // Reprise unique des sauvegardes champ par champ des versions précédentes
+        function migrateLegacyStorage() {
+            const legacyKeys = [];
+            const take = key => {
+                const value = riskrStorage.getItem(key);
+                if (value !== null) legacyKeys.push(key);
+                return value;
+            };
+            const riskById = new Map(risks.map(r => [r.id, r]));
+
+            const savedTitle = take('analysis-main-title');
+            if (savedTitle) document.getElementById('main-title').textContent = savedTitle;
+            const savedSubtitle = take('analysis-main-subtitle');
+            if (savedSubtitle) document.getElementById('main-subtitle').textContent = savedSubtitle;
+
+            const mapping = take('risk-groups-mapping');
+            if (mapping) {
+                try {
+                    JSON.parse(mapping).forEach(entry => {
+                        const group = riskGroups.find(g => g.id == entry.id);
+                        if (group) group.risks = entry.riskIds.map(id => riskById.get(id)).filter(Boolean);
+                    });
+                } catch (error) {
+                    console.warn('[Riskr] Ancien ordre des risques illisible, ignoré :', error);
+                }
+            }
+            riskGroups.forEach(group => {
+                const name = take(`group-name-${group.id}`);
+                if (name) group.name = name;
+                const description = take(`group-desc-${group.id}`);
+                if (description) group.description = description;
+            });
+            risks.forEach(risk => {
+                const title = take(`risk-title-${risk.id}`);
+                if (title) risk.title = title.replace(`${risk.id}. `, '');
+                const remediation = take(`risk-remediation-${risk.id}`);
+                if (remediation) risk.mesures = remediation.split(' • ').map(m => m.trim()).filter(Boolean);
+                const status = take(`risk-status-${risk.id}`);
+                if (status) risk.statut = status;
+                const responsable = take(`risk-responsable-${risk.id}`);
+                if (responsable) risk.responsable = responsable;
+            });
+            if (!legacyKeys.length) return;
+
+            applyModel(buildModel(serializeModel())); // retire les risques supprimés
+            persistModel();
+            legacyKeys.forEach(key => riskrStorage.removeItem(key));
+            console.log(`[Riskr] ${legacyKeys.length} ancienne(s) sauvegarde(s) reprise(s)`);
+        }
+
+        function loadPersistedModel() {
+            const saved = riskrStorage.getItem(MODEL_STORAGE_KEY);
+            if (!saved) {
+                migrateLegacyStorage();
+                return;
+            }
+            try {
+                const model = JSON.parse(saved);
+                if (model.source !== dataSourceFingerprint) {
+                    riskrStorage.removeItem(MODEL_STORAGE_KEY);
+                    showToast('ℹ️ riskr-data.js a changé : ses données remplacent les modifications du navigateur', 'error');
+                    return;
+                }
+                applyModel(buildModel(model));
+                if (model.title) document.getElementById('main-title').textContent = model.title;
+                if (model.subtitle) document.getElementById('main-subtitle').textContent = model.subtitle;
+            } catch (error) {
+                console.error('[Riskr] Sauvegarde navigateur illisible, ignorée :', error);
+            }
+        }
+
+        // Données des risques — peuvent être remplacées par window.RISKR_DATA
+        const risks = [];
+        const riskGroups = [];
+        if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
+            applyModel(buildModel(window.RISKR_DATA));
+            // Le script est en fin de page : le titre existe déjà dans le DOM
+            const appState = window.RISKR_DATA.appState || {};
+            if (appState.title) document.getElementById('main-title').textContent = appState.title;
+            if (appState.subtitle) document.getElementById('main-subtitle').textContent = appState.subtitle;
         } else {
             // Pas de RISKR_DATA chargé : placeholder minimal.
             // La SOURCE DE VÉRITÉ des données est riskr-data.js (window.RISKR_DATA).
             // Ne PAS enrichir ce fallback — c'est un témoin visuel, pas un dataset.
-            risks = [
-                { id: "1.1", title: "Aucune donnée chargée — générer riskr-data.js",
-                  assessmentABefore: [3, 3], assessmentAAfter: [2, 2],
-                  assessmentBBefore: [3, 3], assessmentBAfter: [2, 2],
-                  mesures: ["Créer riskr-data.js (window.RISKR_DATA) à côté de riskr.html",
-                            "Ou importer un JSON via le bouton Importer"],
-                  statut: "Non traité", responsable: "" }
-            ];
-            riskGroups = [
-                {
-                    id: 1,
-                    name: "Groupe d'exemple (riskr-data.js absent)",
-                    description: "Placeholder affiché en l'absence de données",
-                    risks: risks.filter(r => r.id.startsWith("1.")),
-                    mesures: ["Générer riskr-data.js au format canonique RISKR_DATA"]
-                }
-            ];
+            applyModel(buildModel({
+                risks: [
+                    { id: "1.1", title: "Aucune donnée chargée — générer riskr-data.js",
+                      assessmentBefore: [3, 3], assessmentAfter: [2, 2],
+                      mesures: ["Créer riskr-data.js (window.RISKR_DATA) à côté de riskr.html",
+                                "Ou importer un JSON via le bouton Importer"],
+                      statut: "statusNotTreated", responsable: "" }
+                ],
+                riskGroups: [
+                    {
+                        id: 1,
+                        name: "Groupe d'exemple (riskr-data.js absent)",
+                        description: "Placeholder affiché en l'absence de données",
+                        riskIds: ["1.1"],
+                        mesures: ["Générer riskr-data.js au format canonique RISKR_DATA"]
+                    }
+                ]
+            }));
         } // fin else (fallback minimal si pas de RISKR_DATA)
 
+        loadPersistedModel();
         validateRiskGroupNarratives(riskGroups);
 
         let chartBefore, chartAfter;
-        
-        // Créer l'interface utilisateur
-        // Sauvegarder le mapping des groupes dans localStorage
-        function saveGroupMapping() {
-            const mapping = riskGroups.map(group => ({
-                id: group.id,
-                riskIds: group.risks.map(r => r.id)
-            }));
-            riskrStorage.setItem('risk-groups-mapping', JSON.stringify(mapping));
+
+        // Champs d'un risque vierge (non évalué)
+        function emptyAssessments() {
+            return {
+                assessmentBefore: [0, 0], assessmentAfter: [0, 0],
+                mesures: [], statut: 'statusNotTreated', responsable: ''
+            };
         }
 
         // ========================================
@@ -4878,9 +4887,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             const confirmDelete = confirm(`Êtes-vous sûr de vouloir supprimer le groupe "${group.name}" ?\n\nTous les risques de ce groupe seront également supprimés.`);
             if (!confirmDelete) return;
-
-            // Sauvegarder l'état avant modification
-            saveState();
 
             // Supprimer le groupe
             const groupIndex = riskGroups.findIndex(g => g.id === groupId);
@@ -4897,33 +4903,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Supprimer le groupe
             riskGroups.splice(groupIndex, 1);
 
-            // Renuméroter tous les groupes restants
-            riskGroups.forEach((g, index) => {
-                const oldId = g.id;
-                const newId = index + 1;
-
-                g.id = newId;
-
-                // Renuméroter les risques de ce groupe
-                g.risks.forEach(risk => {
-                    const oldRiskId = risk.id;
-                    const riskNumber = risk.id.split('.')[1];
-                    const newRiskId = `${newId}.${riskNumber}`;
-
-                    // Mettre à jour dans le tableau global risks AVANT de changer risk.id
-                    // (car risk pourrait être une référence au même objet)
-                    const globalRisk = risks.find(r => r.id === oldRiskId);
-                    if (globalRisk) {
-                        globalRisk.id = newRiskId;
-                    }
-
-                    // Maintenant on peut changer risk.id
-                    risk.id = newRiskId;
-                });
-            });
-
-            // Sauvegarder le nouveau mapping AVANT de re-rendre
-            saveGroupMapping();
+            commitChange();
 
             // Re-rendre l'interface
             renderRisks();
@@ -4943,9 +4923,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const confirmDelete = confirm(`Êtes-vous sûr de vouloir supprimer le risque "${risk.title}" ?`);
             if (!confirmDelete) return;
 
-            // Sauvegarder l'état avant modification
-            saveState();
-
             // Trouver le groupe contenant ce risque
             const group = riskGroups.find(g => g.risks.some(r => r.id === riskId));
             if (!group) return;
@@ -4962,8 +4939,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 risks.splice(globalRiskIndex, 1);
             }
 
-            // Sauvegarder le nouveau mapping AVANT de re-rendre
-            saveGroupMapping();
+            commitChange();
 
             // Re-rendre l'interface
             renderRisks();
@@ -4976,28 +4952,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Ajouter un nouveau risque à une position spécifique
         // ========================================
         function addNewRiskAtPosition(groupId, position) {
-            // Sauvegarder l'état avant modification
-            saveState();
-
             // Trouver le groupe cible
             const group = riskGroups.find(g => g.id === groupId);
             if (!group) return;
 
-            // Créer un nouveau risque
-            const newRiskNumber = group.risks.length + 1;
+            // Numéro provisoire : commitChange() renumérote selon la position
             const newRisk = {
-                id: `${groupId}.${newRiskNumber}`,
+                id: 'nouveau',
                 title: "Nouveau risque",
-                categorie: "Risque organisationnel",
-                prob_avant: "Non évalué",
-                impact_avant: "Non évalué",
-                prob_apres: "Non évalué",
-                impact_apres: "Non évalué",
-                mesures: [],
-                assessmentBBefore: [0, 0],
-                assessmentBAfter: [0, 0],
-                statut: "Non traité",
-                responsable: ""
+                ...emptyAssessments()
             };
 
             // Ajouter le risque au tableau global
@@ -5006,8 +4969,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Insérer le risque dans le groupe à la position spécifiée
             group.risks.splice(position, 0, newRisk);
 
-            // Sauvegarder le nouveau mapping AVANT de re-rendre
-            saveGroupMapping();
+            commitChange();
 
             // Re-rendre l'interface
             renderRisks();
@@ -5033,30 +4995,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Ajouter un nouveau groupe à une position spécifique
         // ========================================
         function addNewGroupAtPosition(position) {
-            // Sauvegarder l'état avant modification
-            saveState();
-
-            // Créer un risque par défaut pour le nouveau groupe
-            // Utiliser un ID temporaire unique pour éviter les collisions pendant la renumération
-            const tempId = `temp-${Date.now()}.1`;
+            // Groupe créé avec un risque vierge ; numéros provisoires, recalculés par commitChange()
             const defaultRisk = {
-                id: tempId,
+                id: 'nouveau',
                 title: "Nouveau risque",
-                categorie: "Risque organisationnel",
-                prob_avant: "Non évalué",
-                impact_avant: "Non évalué",
-                prob_apres: "Non évalué",
-                impact_apres: "Non évalué",
-                mesures: [],
-                assessmentBBefore: [0, 0],
-                assessmentBAfter: [0, 0],
-                statut: "Non traité",
-                responsable: ""
+                ...emptyAssessments()
             };
 
             // Créer un nouveau groupe avec le risque par défaut
             const newGroup = {
-                id: 999999, // ID temporaire très élevé pour éviter les collisions
+                id: 0,
                 name: "Nouveau groupe",
                 description: "Cliquer pour modifier la description",
                 risks: [defaultRisk],
@@ -5066,38 +5014,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Insérer le nouveau groupe à la position spécifiée
             riskGroups.splice(position, 0, newGroup);
 
-            // Ajouter le nouveau risque au tableau global AVANT la renumération
             risks.push(defaultRisk);
 
-            // Renuméroter tous les groupes dans l'ordre
-            riskGroups.forEach((group, index) => {
-                const oldId = group.id;
-                const newId = index + 1;
-
-                // Mettre à jour l'ID du groupe
-                group.id = newId;
-
-                // Renuméroter les risques de ce groupe
-                group.risks.forEach(risk => {
-                    // Changer "oldId.X" en "newId.X"
-                    const oldRiskId = risk.id;
-                    const riskNumber = risk.id.split('.')[1];
-                    const newRiskId = `${newId}.${riskNumber}`;
-
-                    // Mettre à jour dans le tableau global risks AVANT de changer risk.id
-                    // (car risk pourrait être une référence au même objet)
-                    const globalRisk = risks.find(r => r.id === oldRiskId);
-                    if (globalRisk) {
-                        globalRisk.id = newRiskId;
-                    }
-
-                    // Maintenant on peut changer risk.id
-                    risk.id = newRiskId;
-                });
-            });
-
-            // Sauvegarder le nouveau mapping AVANT de re-rendre
-            saveGroupMapping();
+            commitChange();
 
             // Re-rendre l'interface
             renderRisks();
@@ -5105,28 +5024,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Afficher un toast
             showToast('✅ Nouveau groupe ajouté');
-        }
-
-        // Restaurer le mapping des groupes depuis localStorage (appelé UNE SEULE FOIS à l'initialisation)
-        function restoreGroupMappingFromStorage() {
-            const savedMapping = riskrStorage.getItem('risk-groups-mapping');
-            if (savedMapping) {
-                try {
-                    const mapping = JSON.parse(savedMapping);
-                    mapping.forEach(groupMap => {
-                        const group = riskGroups.find(g => g.id == groupMap.id);
-                        if (group) {
-                            // Reconstruire le tableau des risques du groupe
-                            group.risks = groupMap.riskIds
-                                .map(riskId => risks.find(r => r.id === riskId))
-                                .filter(r => r !== undefined);
-                        }
-                    });
-                    console.log('✅ Mapping des groupes restauré depuis localStorage');
-                } catch (e) {
-                    console.error('❌ Erreur lors de la restauration du mapping des groupes:', e);
-                }
-            }
         }
 
         // Mettre à jour une ligne de risque quand les dropdowns changent
@@ -5147,6 +5044,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const impactBefore = parseInt(impactBeforeElem.value);
             const probAfter = parseInt(probAfterElem.value);
             const impactAfter = parseInt(impactAfterElem.value);
+
+            risks[riskIndex].assessmentBefore = [probBefore, impactBefore];
+            risks[riskIndex].assessmentAfter = [probAfter, impactAfter];
+            commitChange();
 
             // Mettre à jour les badges de criticité
             const critBeforeCell = document.getElementById(`crit-before-${riskIndex}`);
@@ -5192,7 +5093,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Initialiser quand même les fonctions
                 initDragAndDrop();
                 initRiskTitleEditing();
-                initRemediationEditing();
+                initMesureEditing();
                 initStatusDropdowns();
                 initResponsableEditing();
                 return;
@@ -5230,8 +5131,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <span class="collapse-icon">▼</span>
                     <div class="risk-group-number">${group.id}</div>
                     <div style="flex: 1;">
-                        <div class="risk-group-title editable-group-name" id="group-name-${group.id}" data-group-id="${group.id}">${group.name}</div>
-                        <div class="risk-group-description editable-group-description" id="group-desc-${group.id}" data-group-id="${group.id}">${group.description}</div>
+                        <div class="risk-group-title editable-group-name" id="group-name-${group.id}" data-group-id="${group.id}">${escapeHtml(group.name)}</div>
+                        <div class="risk-group-description editable-group-description" id="group-desc-${group.id}" data-group-id="${group.id}">${escapeHtml(group.description)}</div>
                     </div>
                 `;
 
@@ -5349,43 +5250,39 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         // Ajouter classe pour alternance de couleurs
                         tr.className = localIndex % 2 === 0 ? 'risk-even' : 'risk-odd';
 
-                        const mesuresText = risk.mesures && risk.mesures.length > 0
-                            ? risk.mesures.join(' • ')
-                            : t('clickToAddRemediation');
-
                         tr.innerHTML = `
                             <td class="risk-title-cell">
                                 <span class="expand-icon" data-risk-id="${risk.id}">▼</span>
-                                <span class="editable-risk-title" data-risk-id="${risk.id}">${risk.id}. ${risk.title}</span>
+                                <span class="risk-id">${risk.id}.</span> <span class="editable-risk-title" data-risk-id="${risk.id}">${escapeHtml(risk.title)}</span>
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-prob-before-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getProbabilityScale(), risk.assessmentBBefore[0])}
+                                    ${generateOptions(getProbabilityScale(), risk.assessmentBefore[0])}
                                 </select>
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-impact-before-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getImpactScale(), risk.assessmentBBefore[1])}
+                                    ${generateOptions(getImpactScale(), risk.assessmentBefore[1])}
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-before-${index}">
-                                ${getCriticalityBadge(risk.assessmentBBefore[0], risk.assessmentBBefore[1])}
+                                ${getCriticalityBadge(risk.assessmentBefore[0], risk.assessmentBefore[1])}
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-prob-after-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getProbabilityScale(), risk.assessmentBAfter[0])}
+                                    ${generateOptions(getProbabilityScale(), risk.assessmentAfter[0])}
                                 </select>
                             </td>
                             <td class="dropdown-single-cell">
                                 <select id="gc-impact-after-${index}" onchange="updateRiskRow(${index})">
-                                    ${generateOptions(getImpactScale(), risk.assessmentBAfter[1])}
+                                    ${generateOptions(getImpactScale(), risk.assessmentAfter[1])}
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-after-${index}">
-                                ${getCriticalityBadge(risk.assessmentBAfter[0], risk.assessmentBAfter[1])}
+                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}
                             </td>
                             <td class="reduction-cell" id="reduction-${index}">
-                                ${getRiskReductionBadge(risk.assessmentBBefore[0], risk.assessmentBBefore[1], risk.assessmentBAfter[0], risk.assessmentBAfter[1])}
+                                ${getRiskReductionBadge(risk.assessmentBefore[0], risk.assessmentBefore[1], risk.assessmentAfter[0], risk.assessmentAfter[1])}
                             </td>
                             <td class="status-cell">
                                 <select id="status-${index}" data-risk-id="${risk.id}" class="status-dropdown">
@@ -5393,7 +5290,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </select>
                             </td>
                             <td class="responsable-cell">
-                                <span class="editable-responsable" data-risk-id="${risk.id}">${risk.responsable || t('clickToAdd')}</span>
+                                <span class="editable-responsable" data-risk-id="${risk.id}" data-placeholder="${t('clickToAdd')}">${escapeHtml(risk.responsable)}</span>
                             </td>
                             <td style="text-align: center; padding: 4px;">
                                 <button class="delete-btn delete-risk-btn" onclick="deleteRisk('${risk.id}')" title="Supprimer ce risque">🗑️</button>
@@ -5408,9 +5305,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         remediationRow.id = `remediation-row-${risk.id}`;
                         remediationRow.innerHTML = `
                             <td colspan="11" class="remediation-cell-expanded">
-                                <div class="remediation-content">
-                                    <strong>${t('colRemediations')}:</strong>
-                                    <span class="editable-remediation" data-risk-id="${risk.id}">${mesuresText}</span>
+                                <div class="mesures-list">
+                                    <div class="mesures-header">
+                                        <span>${t('colRemediations')}</span>
+                                        <span>${t('mesureOwner')}</span>
+                                        <span>${t('mesureDueDate')}</span>
+                                        <span></span>
+                                    </div>
+                                    ${risk.mesures.map((mesure, mesureIndex) => `
+                                    <div class="mesure-row">
+                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="texte" data-placeholder="${t('mesureTextPlaceholder')}">${escapeHtml(mesure.texte)}</span>
+                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="porteur" data-placeholder="—">${escapeHtml(mesure.porteur)}</span>
+                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="echeance" data-placeholder="—">${escapeHtml(mesure.echeance)}</span>
+                                        <button class="mesure-delete" data-risk-id="${risk.id}" data-index="${mesureIndex}" title="${t('mesureDelete')}">🗑️</button>
+                                    </div>`).join('')}
+                                    <button class="mesure-add" data-risk-id="${risk.id}">+ ${t('mesureAdd')}</button>
                                 </div>
                             </td>
                         `;
@@ -5490,10 +5399,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             initGroupNameEditing(); // Indispensable pour éditer les nouveaux groupes
             initGroupDescriptionEditing(); // Indispensable pour éditer les descriptions
             initRiskTitleEditing();
-            initRemediationEditing();
+            initMesureEditing();
             initStatusDropdowns();
             initResponsableEditing();
-            initSectionTitleEditing();
         }
 
         // ========================================
@@ -5546,117 +5454,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 remediationRow.classList.remove('dragging');
             }
 
-            // Retirer tous les indicateurs de drop
-            document.querySelectorAll('.risks-table tbody tr:not(.risk-separator-row)').forEach(row => {
-                row.classList.remove('drag-over-top', 'drag-over-bottom');
-            });
-
             // Retirer aussi l'indicateur des séparateurs
             document.querySelectorAll('.risks-table tbody tr.risk-separator-row').forEach(row => {
                 row.classList.remove('separator-drag-over');
             });
-        }
-
-        function handleDragOver(e) {
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            e.dataTransfer.dropEffect = 'move';
-
-            // Ajouter l'indicateur visuel
-            if (draggedRow !== this) {
-                // Déterminer si on monte ou on descend
-                const tbody = this.closest('tbody');
-                const allRiskRows = Array.from(tbody.querySelectorAll('tr[data-risk-id]'));
-                const draggedIndex = allRiskRows.indexOf(draggedRow);
-                const targetIndex = allRiskRows.indexOf(this);
-
-                // Retirer les anciennes classes
-                this.classList.remove('drag-over-top', 'drag-over-bottom');
-
-                if (draggedIndex < targetIndex) {
-                    // On descend : marqueur en bas du target
-                    this.classList.add('drag-over-bottom');
-                } else {
-                    // On monte : marqueur en haut du target
-                    this.classList.add('drag-over-top');
-                }
-            }
-
-            return false;
-        }
-
-        function handleDragLeave(e) {
-            this.classList.remove('drag-over-top', 'drag-over-bottom');
-        }
-
-        function handleDrop(e) {
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
-
-            this.classList.remove('drag-over-top', 'drag-over-bottom');
-
-            if (draggedRow !== this) {
-                const sourceGroupId = draggedRow.closest('tbody').dataset.groupId;
-                const targetGroupId = this.closest('tbody').dataset.groupId;
-                const draggedRiskId = draggedRow.dataset.riskId;
-                const targetRiskId = this.dataset.riskId;
-
-                // Récupérer la ligne de remédiation associée au risque déplacé
-                const draggedRemediationRow = document.getElementById(`remediation-row-${draggedRiskId}`);
-
-                // Déplacer physiquement les deux lignes dans le DOM
-                const targetRow = this;
-                const tbody = targetRow.closest('tbody');
-
-                // Trouver la position d'insertion (avant ou après le target selon la direction)
-                const allRiskRows = Array.from(tbody.querySelectorAll('tr[data-risk-id]'));
-                const draggedIndex = allRiskRows.indexOf(draggedRow);
-                const targetIndex = allRiskRows.indexOf(targetRow);
-
-                if (draggedIndex < targetIndex) {
-                    // Déplacement vers le bas : insérer APRÈS le target
-                    if (targetRow.nextElementSibling) {
-                        // Si le target a une ligne de remédiation après lui, insérer après cette ligne
-                        const targetRemediationRow = document.getElementById(`remediation-row-${targetRiskId}`);
-                        if (targetRemediationRow && targetRemediationRow.nextElementSibling) {
-                            tbody.insertBefore(draggedRow, targetRemediationRow.nextElementSibling);
-                            tbody.insertBefore(draggedRemediationRow, targetRemediationRow.nextElementSibling);
-                        } else {
-                            tbody.appendChild(draggedRow);
-                            tbody.appendChild(draggedRemediationRow);
-                        }
-                    } else {
-                        tbody.appendChild(draggedRow);
-                        tbody.appendChild(draggedRemediationRow);
-                    }
-                } else {
-                    // Déplacement vers le haut : insérer AVANT le target
-                    tbody.insertBefore(draggedRow, targetRow);
-                    tbody.insertBefore(draggedRemediationRow, targetRow);
-                }
-
-                // Mettre à jour la structure de données
-                moveRiskBetweenGroups(draggedRiskId, sourceGroupId, targetGroupId, targetRiskId);
-
-                // Re-render tout le tableau pour recréer les séparateurs et numérotation
-                renderRisks();
-                initGroupNameEditing();
-                initGroupDescriptionEditing();
-                initRiskTitleEditing();
-                initRemediationEditing();
-                initStatusDropdowns();
-                initResponsableEditing();
-                initSectionTitleEditing();
-
-                // Rafraîchir les graphiques
-                updateCharts();
-
-                console.log(`✅ Risque ${draggedRiskId} déplacé du groupe ${sourceGroupId} vers le groupe ${targetGroupId}`);
-            }
-
-            return false;
         }
 
         // Gestion du drag sur les séparateurs (interstices entre les risques)
@@ -5697,13 +5498,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Re-render tout le tableau
                 renderRisks();
-                initGroupNameEditing();
-                initGroupDescriptionEditing();
-                initRiskTitleEditing();
-                initRemediationEditing();
-                initStatusDropdowns();
-                initResponsableEditing();
-                initSectionTitleEditing();
 
                 // Rafraîchir les graphiques
                 updateCharts();
@@ -5756,70 +5550,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             console.log(`➕ Risque inséré à la position ${adjustedPosition}`);
             console.log(`📊 APRÈS: groupe ${targetGroupId} a ${targetGroup.risks.length} risques:`, targetGroup.risks.map(r => r.id));
 
-            // Sauvegarder le mapping
-            saveGroupMapping();
+            commitChange();
             console.log(`💾 Mapping sauvegardé`);
         }
 
-        function moveRiskBetweenGroups(riskId, sourceGroupId, targetGroupId, targetRiskId = null) {
-            // Trouver le risque dans le tableau global
-            const risk = risks.find(r => r.id === riskId);
-            if (!risk) return;
-
-            // Trouver les groupes source et cible
-            const sourceGroup = riskGroups.find(g => g.id == sourceGroupId);
-            const targetGroup = riskGroups.find(g => g.id == targetGroupId);
-
-            if (!sourceGroup || !targetGroup) return;
-
-            // Retirer le risque du groupe source
-            sourceGroup.risks = sourceGroup.risks.filter(r => r.id !== riskId);
-
-            // Ajouter le risque au groupe cible à la bonne position
-            if (!targetGroup.risks.find(r => r.id === riskId)) {
-                if (targetRiskId) {
-                    // Insérer à la position du target
-                    const targetIndex = targetGroup.risks.findIndex(r => r.id === targetRiskId);
-                    if (targetIndex !== -1) {
-                        // Insérer après le target si on descend, avant si on monte
-                        const currentTargetIndex = targetGroup.risks.findIndex(r => r.id === targetRiskId);
-                        targetGroup.risks.splice(currentTargetIndex + 1, 0, risk);
-                    } else {
-                        targetGroup.risks.push(risk);
-                    }
-                } else {
-                    // Si pas de target spécifique, ajouter à la fin
-                    targetGroup.risks.push(risk);
-                }
-            }
-
-            // Sauvegarder le mapping
-            saveGroupMapping();
-        }
-
-        // Lire les valeurs des formulaires
-        function getCurrentRisks() {
-            return risks.map((risk, index) => {
-                // Vérifier que les éléments existent dans le DOM
-                const probBeforeElem = document.getElementById(`gc-prob-before-${index}`);
-                const impactBeforeElem = document.getElementById(`gc-impact-before-${index}`);
-                const probAfterElem = document.getElementById(`gc-prob-after-${index}`);
-                const impactAfterElem = document.getElementById(`gc-impact-after-${index}`);
-
-                // Si les éléments n'existent pas encore, utiliser les valeurs du risque
-                const assessmentBProbBefore = probBeforeElem ? parseInt(probBeforeElem.value) : risk.assessmentBBefore[0];
-                const assessmentBImpactBefore = impactBeforeElem ? parseInt(impactBeforeElem.value) : risk.assessmentBBefore[1];
-                const assessmentBProbAfter = probAfterElem ? parseInt(probAfterElem.value) : risk.assessmentBAfter[0];
-                const assessmentBImpactAfter = impactAfterElem ? parseInt(impactAfterElem.value) : risk.assessmentBAfter[1];
-
-                return {
-                    ...risk,
-                    assessmentABefore: [assessmentBProbBefore, assessmentBImpactBefore],  // Utiliser le référentiel B pour le référentiel A
-                    assessmentAAfter: [assessmentBProbAfter, assessmentBImpactAfter],      // Utiliser le référentiel B pour le référentiel A
-                    assessmentBBefore: [assessmentBProbBefore, assessmentBImpactBefore],
-                    assessmentBAfter: [assessmentBProbAfter, assessmentBImpactAfter]
-                };
-            });
+        // Cotation d'un risque pour une phase ('Before' ou 'After'), ou null si non évaluée
+        function evaluatedAssessment(risk, phase) {
+            const assessment = risk[`assessment${phase}`];
+            return assessment[0] > 0 && assessment[1] > 0 ? assessment : null;
         }
         
         // Plugin pour dessiner la matrice de couleurs en arrière-plan
@@ -5828,44 +5566,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             beforeDatasetsDraw: (chart) => {
                 const { ctx, chartArea: { left, top, width, height }, scales: { x, y } } = chart;
 
-                // Matrice 5×5 complète avec carrés égaux
-                // Criticité = P×I : 1-4 vert, 5-9 jaune, 10-14 orange, 15-25 rouge
-                const zones = [
-                    // Impact 5 (ligne du haut)
-                    { xMin: 0.5, xMax: 1.5, yMin: 4.5, yMax: 5.5, color: '#E8F5E9' },  // P=1, I=5, Crit=5 (vert pâle)
-                    { xMin: 1.5, xMax: 2.5, yMin: 4.5, yMax: 5.5, color: '#FFE699' },  // P=2, I=5, Crit=10 (orange)
-                    { xMin: 2.5, xMax: 3.5, yMin: 4.5, yMax: 5.5, color: '#F4B183' },  // P=3, I=5, Crit=15 (rouge)
-                    { xMin: 3.5, xMax: 4.5, yMin: 4.5, yMax: 5.5, color: '#FFC7CE' },  // P=4, I=5, Crit=20 (rouge)
-                    { xMin: 4.5, xMax: 5.5, yMin: 4.5, yMax: 5.5, color: '#FFC7CE' },  // P=5, I=5, Crit=25 (rouge)
-
-                    // Impact 4
-                    { xMin: 0.5, xMax: 1.5, yMin: 3.5, yMax: 4.5, color: '#C5E0B3' },  // P=1, I=4, Crit=4 (vert)
-                    { xMin: 1.5, xMax: 2.5, yMin: 3.5, yMax: 4.5, color: '#FFE699' },  // P=2, I=4, Crit=8 (jaune)
-                    { xMin: 2.5, xMax: 3.5, yMin: 3.5, yMax: 4.5, color: '#F4B183' },  // P=3, I=4, Crit=12 (orange)
-                    { xMin: 3.5, xMax: 4.5, yMin: 3.5, yMax: 4.5, color: '#FFC7CE' },  // P=4, I=4, Crit=16 (rouge)
-                    { xMin: 4.5, xMax: 5.5, yMin: 3.5, yMax: 4.5, color: '#FFC7CE' },  // P=5, I=4, Crit=20 (rouge)
-
-                    // Impact 3
-                    { xMin: 0.5, xMax: 1.5, yMin: 2.5, yMax: 3.5, color: '#C5E0B3' },  // P=1, I=3, Crit=3 (vert)
-                    { xMin: 1.5, xMax: 2.5, yMin: 2.5, yMax: 3.5, color: '#E8F5E9' },  // P=2, I=3, Crit=6 (vert pâle)
-                    { xMin: 2.5, xMax: 3.5, yMin: 2.5, yMax: 3.5, color: '#FFE699' },  // P=3, I=3, Crit=9 (jaune)
-                    { xMin: 3.5, xMax: 4.5, yMin: 2.5, yMax: 3.5, color: '#F4B183' },  // P=4, I=3, Crit=12 (orange)
-                    { xMin: 4.5, xMax: 5.5, yMin: 2.5, yMax: 3.5, color: '#FFC7CE' },  // P=5, I=3, Crit=15 (rouge)
-
-                    // Impact 2
-                    { xMin: 0.5, xMax: 1.5, yMin: 1.5, yMax: 2.5, color: '#C5E0B3' },  // P=1, I=2, Crit=2 (vert)
-                    { xMin: 1.5, xMax: 2.5, yMin: 1.5, yMax: 2.5, color: '#C5E0B3' },  // P=2, I=2, Crit=4 (vert)
-                    { xMin: 2.5, xMax: 3.5, yMin: 1.5, yMax: 2.5, color: '#E8F5E9' },  // P=3, I=2, Crit=6 (vert pâle)
-                    { xMin: 3.5, xMax: 4.5, yMin: 1.5, yMax: 2.5, color: '#FFE699' },  // P=4, I=2, Crit=8 (jaune)
-                    { xMin: 4.5, xMax: 5.5, yMin: 1.5, yMax: 2.5, color: '#F4B183' },  // P=5, I=2, Crit=10 (orange)
-
-                    // Impact 1
-                    { xMin: 0.5, xMax: 1.5, yMin: 0.5, yMax: 1.5, color: '#C5E0B3' },  // P=1, I=1, Crit=1 (vert)
-                    { xMin: 1.5, xMax: 2.5, yMin: 0.5, yMax: 1.5, color: '#C5E0B3' },  // P=2, I=1, Crit=2 (vert)
-                    { xMin: 2.5, xMax: 3.5, yMin: 0.5, yMax: 1.5, color: '#C5E0B3' },  // P=3, I=1, Crit=3 (vert)
-                    { xMin: 3.5, xMax: 4.5, yMin: 0.5, yMax: 1.5, color: '#C5E0B3' },  // P=4, I=1, Crit=4 (vert)
-                    { xMin: 4.5, xMax: 5.5, yMin: 0.5, yMax: 1.5, color: '#E8F5E9' }   // P=5, I=1, Crit=5 (vert pâle)
-                ];
+                // Matrice 5×5 : couleur de chaque case = niveau de criticité P × I
+                const zones = [];
+                for (let probability = 1; probability <= 5; probability++) {
+                    for (let impact = 1; impact <= 5; impact++) {
+                        zones.push({
+                            xMin: probability - 0.5, xMax: probability + 0.5,
+                            yMin: impact - 0.5, yMax: impact + 0.5,
+                            color: CRITICALITY_COLORS[getCriticalityLevel(probability * impact)]
+                        });
+                    }
+                }
 
                 ctx.save();
 
@@ -6054,33 +5765,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     
                     const row = document.createElement('tr');
                     
-                    // Calculer les moyennes des deux référentiels
-                    const avgProbBefore = (currentRisk.assessmentABefore[0] + currentRisk.assessmentBBefore[0]) / 2;
-                    const avgImpactBefore = (currentRisk.assessmentABefore[1] + currentRisk.assessmentBBefore[1]) / 2;
+                    const [avgProbBefore, avgImpactBefore] = evaluatedAssessment(currentRisk, 'Before') || [0, 0];
                     const avgCritBefore = avgProbBefore * avgImpactBefore;
-                    
-                    const avgProbAfter = (currentRisk.assessmentAAfter[0] + currentRisk.assessmentBAfter[0]) / 2;
-                    const avgImpactAfter = (currentRisk.assessmentAAfter[1] + currentRisk.assessmentBAfter[1]) / 2;
+
+                    const [avgProbAfter, avgImpactAfter] = evaluatedAssessment(currentRisk, 'After') || [0, 0];
                     const avgCritAfter = avgProbAfter * avgImpactAfter;
                     
-                    function getCritClass(crit) {
-                        if (crit <= 4) return 'criticality-low';
-                        if (crit <= 9) return 'criticality-medium';
-                        if (crit <= 14) return 'criticality-high';
-                        return 'criticality-critical';
-                    }
-                    
+                    const getCritClass = crit => `criticality-${getCriticalityLevel(crit)}`;
+
                     row.innerHTML = `
-                        <td>${currentRisk.id}</td>
-                        <td>${currentRisk.title}</td>
+                        <td>${escapeHtml(currentRisk.id)}</td>
+                        <td>${escapeHtml(currentRisk.title)}</td>
                         <td>
                             <span class="criticality-badge ${getCritClass(avgCritBefore)}">
-                                P:${avgProbBefore.toFixed(1)} × I:${avgImpactBefore.toFixed(1)} = ${avgCritBefore.toFixed(1)}
+                                P ${avgProbBefore} × I ${avgImpactBefore} = ${avgCritBefore}/25
                             </span>
                         </td>
                         <td>
                             <span class="criticality-badge ${getCritClass(avgCritAfter)}">
-                                P:${avgProbAfter.toFixed(1)} × I:${avgImpactAfter.toFixed(1)} = ${avgCritAfter.toFixed(1)}
+                                P ${avgProbAfter} × I ${avgImpactAfter} = ${avgCritAfter}/25
                             </span>
                         </td>
                     `;
@@ -6091,7 +5794,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         // Ajouter un tableau pour les moyennes des groupes
-        function updateGroupTable(groupBeforeData, groupAfterData) {
+        // Criticité moyenne d'un groupe = moyenne des criticités (P × I, sur 25) de ses
+        // risques évalués ; null si aucun. Même échelle que le tableau récapitulatif.
+        function meanGroupCriticality(group, phase) {
+            const scores = group.risks
+                .map(risk => evaluatedAssessment(risk, phase))
+                .filter(Boolean)
+                .map(([probability, impact]) => probability * impact);
+            return scores.length ? scores.reduce((sum, score) => sum + score, 0) / scores.length : null;
+        }
+
+        function updateGroupTable() {
             // Récupérer le container dans la colonne droite
             const groupTableWrapper = document.getElementById('group-table-wrapper');
             if (!groupTableWrapper) {
@@ -6129,19 +5842,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const groupTableBody = document.getElementById('group-table-body');
             
             riskGroups.forEach((group, index) => {
-                // Trouver les données correspondantes au groupe dans les tableaux (qui peuvent être filtrés)
-                const beforeData = groupBeforeData.find(d => d.groupIndex === index);
-                const afterData = groupAfterData.find(d => d.groupIndex === index);
+                const critBefore = meanGroupCriticality(group, 'Before');
+                const critAfter = meanGroupCriticality(group, 'After');
                 const assessmentNote = String(group.assessmentNote || '').trim();
                 const remediationNote = String(group.remediationNote || '').trim();
-                const assessmentLine = assessmentNote
-                    ? `<div class="group-narrative">${escapeHtml(assessmentNote)}</div>`
-                    : '';
-                const remediationLine = remediationNote
-                    ? `<div class="group-narrative"><span class="group-narrative-label">Remédiation - </span>${escapeHtml(remediationNote)}</div>`
-                    : '';
+                // Toujours affichées (modifiables au clic) ; retirées de la copie Word si vides
+                const assessmentLine = `<div class="group-narrative"><span class="editable-group-note" data-group-id="${group.id}" data-field="assessmentNote" data-placeholder="${t('assessmentNotePlaceholder')}">${escapeHtml(assessmentNote)}</span></div>`;
+                const remediationLine = `<div class="group-narrative"><span class="group-narrative-label">Remédiation - </span><span class="editable-group-note" data-group-id="${group.id}" data-field="remediationNote" data-placeholder="${t('remediationNotePlaceholder')}">${escapeHtml(remediationNote)}</span></div>`;
                 
-                if (!beforeData || !afterData) {
+                if (critBefore === null || critAfter === null) {
                     // Si pas de données (ex: tous les risques à 0), afficher N/A ou vide
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -6158,27 +5867,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     return;
                 }
                 
-                // Utiliser les valeurs de base
-                const realXBefore = beforeData.baseX;
-                const realYBefore = beforeData.baseY;
-                const realXAfter = afterData.baseX;
-                const realYAfter = afterData.baseY;
-                
-                // Calculer la criticité brute (P×I peut aller jusqu'à 25)
-                const critBeforeRaw = realXBefore * realYBefore;
-                const critAfterRaw = realXAfter * realYAfter;
-
-                // Normaliser sur 5 : (criticité / 25) × 5
-                const critBefore = (critBeforeRaw / 25) * 5;
-                const critAfter = (critAfterRaw / 25) * 5;
-                
-                function getCritClass(crit) {
-                    if (crit === 0) return 'criticality-low';
-                    if (crit <= 0.8) return 'criticality-low';       // 1-4 sur 25 = 0.2-0.8 sur 5
-                    if (crit <= 1.8) return 'criticality-medium';    // 5-9 sur 25 = 1.0-1.8 sur 5
-                    if (crit <= 2.8) return 'criticality-high';      // 10-14 sur 25 = 2.0-2.8 sur 5
-                    return 'criticality-critical';                    // 15-25 sur 25 = 3.0-5 sur 5
-                }
+                const getCritClass = crit => `criticality-${getCriticalityLevel(crit)}`;
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -6191,18 +5880,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </td>
                     <td style="text-align: center; width: 100px;">
                         <span class="criticality-badge ${getCritClass(critBefore)}" style="display: block;">
-                            ${critBefore.toFixed(1)}/5
+                            ${critBefore.toFixed(1)}/25
                         </span>
                     </td>
                     <td style="text-align: center; width: 100px;">
                         <span class="criticality-badge ${getCritClass(critAfter)}" style="display: block;">
-                            ${critAfter.toFixed(1)}/5
+                            ${critAfter.toFixed(1)}/25
                         </span>
                     </td>
                 `;
 
                 groupTableBody.appendChild(row);
             });
+
+            initGroupNoteEditing();
 
             // Restaurer l'état du collapse après génération du tableau
             const groupSummaryContent = document.getElementById('group-summary-table-content');
@@ -6259,58 +5950,73 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 }
             });
 
+            // Alignement à gauche explicite : sinon Word applique celui de son style Normal (souvent justifié)
             copiedTable.querySelectorAll('.group-name').forEach(node => {
-                node.style.cssText = 'font-family:Arial, Helvetica, sans-serif;font-size:10.5pt;font-weight:700;color:#1d1d1f;line-height:1.3;margin-bottom:3pt;';
+                node.style.cssText = 'font-family:Arial, Helvetica, sans-serif;font-size:10.5pt;font-weight:700;color:#1d1d1f;line-height:1.3;margin:0 0 3pt 0;text-align:left;';
             });
             copiedTable.querySelectorAll('.group-description').forEach(node => {
-                node.style.cssText = 'font-family:Arial, Helvetica, sans-serif;font-size:10.5pt;font-weight:400;color:#5a5a5f;line-height:1.4;';
+                node.style.cssText = 'font-family:Arial, Helvetica, sans-serif;font-size:10.5pt;font-weight:400;color:#5a5a5f;line-height:1.4;margin:0;text-align:left;';
+            });
+            copiedTable.querySelectorAll('.editable-group-note').forEach(note => {
+                if (!note.textContent.trim()) note.closest('.group-narrative').remove();
             });
             copiedTable.querySelectorAll('.group-narrative').forEach(node => {
-                node.style.cssText = 'margin-top:5pt;font-family:Arial, Helvetica, sans-serif;font-size:9.5pt;color:#3f3f46;line-height:1.35;';
+                node.style.cssText = 'margin:5pt 0 0 0;font-family:Arial, Helvetica, sans-serif;font-size:9.5pt;color:#3f3f46;line-height:1.35;text-align:left;';
             });
             copiedTable.querySelectorAll('.group-narrative-label').forEach(node => {
                 node.style.cssText = 'font-weight:700;color:#1d1d1f;';
             });
 
-            const getBadgeClipboardColors = badge => {
-                if (badge.classList.contains('criticality-low')) {
-                    return { background: '#C5E0B3', foreground: '#2D5016' };
-                }
-                if (badge.classList.contains('criticality-medium')) {
-                    return { background: '#FFE699', foreground: '#8B6914' };
-                }
-                return { background: '#FFC7CE', foreground: '#C00000' };
-            };
-
-            copiedTable.querySelectorAll('.criticality-badge').forEach(badge => {
-                const colors = getBadgeClipboardColors(badge);
-                const chipTable = document.createElement('table');
-                const chipRow = chipTable.insertRow();
-                const chipCell = chipRow.insertCell();
-                chipTable.setAttribute('role', 'presentation');
-                chipTable.setAttribute('border', '0');
-                chipTable.setAttribute('cellpadding', '0');
-                chipTable.setAttribute('cellspacing', '0');
-                chipTable.style.cssText = 'display:inline-table;border-collapse:separate;border-spacing:0;vertical-align:middle;';
-                chipCell.setAttribute('bgcolor', colors.background);
-                chipCell.style.cssText = [
-                    'padding:5pt 9pt',
-                    'mso-padding-alt:5pt 9pt 5pt 9pt',
-                    `background-color:${colors.background}`,
-                    `color:${colors.foreground}`,
-                    'border-radius:6pt',
-                    'font-family:Arial, Helvetica, sans-serif',
-                    'font-size:10.5pt',
-                    'font-weight:700',
-                    'line-height:1',
-                    'white-space:nowrap',
-                    'text-align:center'
-                ].join(';');
-                chipCell.textContent = badge.textContent.trim();
-                badge.replaceWith(chipTable);
+            // Puces en images PNG : Word ignore border-radius et décale le texte des
+            // cellules (espacement de paragraphe du style Normal). Une image garde le
+            // rendu exact de la page (couleurs, rayon, centrage) sur Mac comme sur PC.
+            const sourceBadges = sourceTable.querySelectorAll('.criticality-badge');
+            copiedTable.querySelectorAll('.criticality-badge').forEach((badge, index) => {
+                const paragraph = document.createElement('p');
+                paragraph.style.cssText = 'margin:0;text-align:center;line-height:normal;';
+                paragraph.appendChild(renderChipImage(sourceBadges[index]));
+                badge.closest('td').style.verticalAlign = 'middle';
+                badge.replaceWith(paragraph);
             });
 
             return copiedTable.outerHTML;
+        }
+
+        // Dessine une puce de criticité de la page en image PNG (même rendu que la page)
+        function renderChipImage(badge) {
+            const style = getComputedStyle(badge);
+            const rect = badge.getBoundingClientRect();
+            // Tableau replié : pas de taille mesurable, on reprend la taille affichée par défaut
+            const width = rect.width || 68;
+            const height = rect.height || 35;
+            const scale = 3; // netteté à l'impression et sur écrans haute densité
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(width * scale);
+            canvas.height = Math.round(height * scale);
+            const ctx = canvas.getContext('2d');
+            ctx.scale(scale, scale);
+
+            ctx.fillStyle = style.backgroundColor;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, width, height, parseFloat(style.borderTopLeftRadius) || 0);
+            ctx.fill();
+
+            const text = badge.textContent.trim();
+            ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+            ctx.fillStyle = style.color;
+            ctx.textAlign = 'center';
+            const metrics = ctx.measureText(text);
+            // Centrage vertical sur les glyphes réels, pas sur la boîte de la police
+            const baseline = height / 2 + (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
+            ctx.fillText(text, width / 2, baseline);
+
+            const image = document.createElement('img');
+            image.src = canvas.toDataURL('image/png');
+            image.alt = text;
+            image.width = Math.round(width);
+            image.height = Math.round(height);
+            image.style.cssText = `width:${image.width}px;height:${image.height}px;border:0;vertical-align:middle;`;
+            return image;
         }
 
         function copyGroupSummaryWithSelectionFallback(html) {
@@ -6455,12 +6161,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Mettre à jour les graphiques
         function updateCharts() {
-            const currentRisks = getCurrentRisks();
+            const currentRisks = risks;
             
             let beforeData = [];
             let afterData = [];
-            let groupBeforeDataForTable = [];
-            let groupAfterDataForTable = [];
 
             // --- MODE 1 : VUE PAR GROUPES (MOYENNES) ---
             if (matrixViewMode === 'groups') {
@@ -6469,20 +6173,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     let totalProbAfter = 0, totalImpactAfter = 0, countAfter = 0;
 
                     group.risks.forEach(risk => {
-                        const currentRisk = currentRisks.find(r => r.id === risk.id);
-                        if (currentRisk) {
-                            // Before
-                            if (currentRisk.assessmentBBefore[0] > 0 && currentRisk.assessmentBBefore[1] > 0) {
-                                totalProbBefore += (currentRisk.assessmentABefore[0] + currentRisk.assessmentBBefore[0]) / 2;
-                                totalImpactBefore += (currentRisk.assessmentABefore[1] + currentRisk.assessmentBBefore[1]) / 2;
-                                countBefore++;
-                            }
-                            // After
-                            if (currentRisk.assessmentBAfter[0] > 0 && currentRisk.assessmentBAfter[1] > 0) {
-                                totalProbAfter += (currentRisk.assessmentAAfter[0] + currentRisk.assessmentBAfter[0]) / 2;
-                                totalImpactAfter += (currentRisk.assessmentAAfter[1] + currentRisk.assessmentBAfter[1]) / 2;
-                                countAfter++;
-                            }
+                        const before = evaluatedAssessment(risk, 'Before');
+                        if (before) {
+                            totalProbBefore += before[0];
+                            totalImpactBefore += before[1];
+                            countBefore++;
+                        }
+                        const after = evaluatedAssessment(risk, 'After');
+                        if (after) {
+                            totalProbAfter += after[0];
+                            totalImpactAfter += after[1];
+                            countAfter++;
                         }
                     });
 
@@ -6502,9 +6203,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             groupIndex: groupIndex
                         };
                         beforeData.push(point);
-                        groupBeforeDataForTable.push(point);
-                    } else {
-                         groupBeforeDataForTable.push({ groupIndex: groupIndex, baseX: 0, baseY: 0 });
                     }
 
                     // Préparer données APRÈS
@@ -6523,48 +6221,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             groupIndex: groupIndex
                         };
                         afterData.push(point);
-                        groupAfterDataForTable.push(point);
-                    } else {
-                        groupAfterDataForTable.push({ groupIndex: groupIndex, baseX: 0, baseY: 0 });
                     }
                 });
             } 
             // --- MODE 2 : VUE PAR RISQUES INDIVIDUELS ---
             else {
-                // D'abord, calculer les moyennes de groupes pour le tableau (toujours nécessaire)
-                riskGroups.forEach((group, groupIndex) => {
-                     let totalProbBefore = 0, totalImpactBefore = 0, countBefore = 0;
-                     let totalProbAfter = 0, totalImpactAfter = 0, countAfter = 0;
-
-                     group.risks.forEach(risk => {
-                         const currentRisk = currentRisks.find(r => r.id === risk.id);
-                         if (currentRisk) {
-                             if (currentRisk.assessmentBBefore[0] > 0 && currentRisk.assessmentBBefore[1] > 0) {
-                                 totalProbBefore += (currentRisk.assessmentABefore[0] + currentRisk.assessmentBBefore[0]) / 2;
-                                 totalImpactBefore += (currentRisk.assessmentABefore[1] + currentRisk.assessmentBBefore[1]) / 2;
-                                 countBefore++;
-                             }
-                             if (currentRisk.assessmentBAfter[0] > 0 && currentRisk.assessmentBAfter[1] > 0) {
-                                 totalProbAfter += (currentRisk.assessmentAAfter[0] + currentRisk.assessmentBAfter[0]) / 2;
-                                 totalImpactAfter += (currentRisk.assessmentAAfter[1] + currentRisk.assessmentBAfter[1]) / 2;
-                                 countAfter++;
-                             }
-                         }
-                     });
-                     
-                     groupBeforeDataForTable.push({ 
-                         groupIndex: groupIndex, 
-                         baseX: countBefore > 0 ? totalProbBefore / countBefore : 0, 
-                         baseY: countBefore > 0 ? totalImpactBefore / countBefore : 0 
-                     });
-                     
-                     groupAfterDataForTable.push({ 
-                         groupIndex: groupIndex, 
-                         baseX: countAfter > 0 ? totalProbAfter / countAfter : 0, 
-                         baseY: countAfter > 0 ? totalImpactAfter / countAfter : 0 
-                     });
-                });
-
                 // Ensuite, générer les points pour chaque risque
                 currentRisks.forEach((risk) => {
                     // Trouver le nom du groupe
@@ -6572,9 +6233,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const groupName = group ? group.name : 'Inconnu';
 
                     // Before
-                    if (risk.assessmentBBefore[0] > 0 && risk.assessmentBBefore[1] > 0) {
-                        const baseX = (risk.assessmentABefore[0] + risk.assessmentBBefore[0]) / 2;
-                        const baseY = (risk.assessmentABefore[1] + risk.assessmentBBefore[1]) / 2;
+                    const before = evaluatedAssessment(risk, 'Before');
+                    if (before) {
+                        const [baseX, baseY] = before;
                         
                         beforeData.push({
                             x: baseX, // Initialement à la vraie position
@@ -6589,9 +6250,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     }
 
                     // After
-                    if (risk.assessmentBAfter[0] > 0 && risk.assessmentBAfter[1] > 0) {
-                        const baseX = (risk.assessmentAAfter[0] + risk.assessmentBAfter[0]) / 2;
-                        const baseY = (risk.assessmentAAfter[1] + risk.assessmentBAfter[1]) / 2;
+                    const after = evaluatedAssessment(risk, 'After');
+                    if (after) {
+                        const [baseX, baseY] = after;
                         
                         afterData.push({
                             x: baseX,
@@ -6629,7 +6290,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             );
             
             updateRiskTable(currentRisks);
-            updateGroupTable(groupBeforeDataForTable, groupAfterDataForTable);
+            updateGroupTable();
             updateDashboard(currentRisks);
         }
 
@@ -6637,25 +6298,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Mise à jour du Dashboard
         // ========================================
         function updateDashboard(currentRisks) {
-            // Filtrer les risques évalués (criticité non nulle)
-            const evaluatedRisks = currentRisks.filter(risk => {
-                const critBefore = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]);
-                return critBefore !== null;
-            });
+            // Risques évalués (cotation avant renseignée)
+            const scoreOf = assessment => assessment ? assessment[0] * assessment[1] : null;
+            const evaluatedRisks = currentRisks
+                .map(risk => ({ before: evaluatedAssessment(risk, 'Before'), after: evaluatedAssessment(risk, 'After') }))
+                .filter(risk => risk.before !== null);
 
             // 1. Nombre total de risques évalués
             document.getElementById('dashboard-total-risks').textContent = evaluatedRisks.length;
 
-            // 2. Risques critiques (score >= 10) avant et après
-            const criticalBefore = evaluatedRisks.filter(risk => {
-                const score = calculateCriticality(risk.assessmentBBefore[0], risk.assessmentBBefore[1]);
-                return score !== null && score >= 10;
-            }).length;
-
-            const criticalAfter = evaluatedRisks.filter(risk => {
-                const score = calculateCriticality(risk.assessmentBAfter[0], risk.assessmentBAfter[1]);
-                return score !== null && score >= 10;
-            }).length;
+            // 2. Risques élevés ou critiques (score >= seuil « élevé ») avant et après
+            const criticalBefore = evaluatedRisks.filter(risk => scoreOf(risk.before) >= CRITICALITY_THRESHOLDS.high).length;
+            const criticalAfter = evaluatedRisks.filter(risk => scoreOf(risk.after) >= CRITICALITY_THRESHOLDS.high).length;
 
             document.getElementById('dashboard-critical-before').textContent = criticalBefore;
             document.getElementById('dashboard-critical-after').textContent = criticalAfter;
@@ -6665,10 +6319,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             let countReduction = 0;
 
             evaluatedRisks.forEach(risk => {
-                const reduction = calculateRiskReduction(
-                    risk.assessmentBBefore[0], risk.assessmentBBefore[1],
-                    risk.assessmentBAfter[0], risk.assessmentBAfter[1]
-                );
+                if (!risk.after) return;
+                const reduction = calculateRiskReduction(risk.before[0], risk.before[1], risk.after[0], risk.after[1]);
                 if (reduction !== null) {
                     totalReduction += reduction;
                     countReduction++;
@@ -6694,57 +6346,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }).length;
 
             document.getElementById('dashboard-treated').textContent = `${treatedRisks}/${currentRisks.length}`;
-        }
-
-        // ========================================
-        // Fonctions pour ajouter des groupes et des risques
-        // ========================================
-
-        window.addNewRiskToGroup = function(groupId) {
-            const group = riskGroups.find(g => g.id == groupId);
-            if (!group) {
-                console.error(`❌ Groupe ${groupId} introuvable`);
-                return;
-            }
-
-            // Créer un nouveau risque avec un ID unique
-            const groupPrefix = `${groupId}.`;
-            const maxNum = risks
-                .filter(r => r.id.startsWith(groupPrefix))
-                .map(r => parseInt(r.id.split('.')[1]))
-                .reduce((max, num) => Math.max(max, num), 0);
-
-            const newRiskId = `${groupId}.${maxNum + 1}`;
-
-            // Créer le nouveau risque
-            const newRisk = {
-                id: newRiskId,
-                title: "Nouveau risque",
-                assessmentABefore: [2, 2],
-                assessmentAAfter: [1, 1],
-                assessmentBBefore: [2, 2],
-                assessmentBAfter: [1, 1],
-                mesures: ["Remédiation à définir"]
-            };
-
-            // Ajouter au tableau global
-            risks.push(newRisk);
-
-            // Ajouter au groupe
-            group.risks.push(newRisk);
-
-            console.log(`✅ Nouveau risque ${newRiskId} ajouté au groupe ${groupId}`);
-
-            // Re-render
-            renderRisks();
-            initGroupNameEditing();
-            initGroupDescriptionEditing();
-            initRiskTitleEditing();
-            initRemediationEditing();
-            initStatusDropdowns();
-                initResponsableEditing();
-            initSectionTitleEditing();
-            updateCharts();
         }
 
         // ========================================
@@ -6777,7 +6378,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
 
             // Récupérer les données actuelles
-            const currentRisks = getCurrentRisks();
+            const currentRisks = risks;
             let chartData = [];
 
             // --- MODE 1 : VUE PAR GROUPES ---
@@ -6791,13 +6392,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         const riskData = currentRisks.find(r => r.id === risk.id);
                         if (!riskData) return;
 
-                        const prob = type === 'before' ? riskData.assessmentBBefore[0] : riskData.assessmentBAfter[0];
-                        const impact = type === 'before' ? riskData.assessmentBBefore[1] : riskData.assessmentBAfter[1];
+                        const combined = evaluatedAssessment(riskData, type === 'before' ? 'Before' : 'After');
+                        if (!combined) return;
 
-                        if (prob === 0 || impact === 0) return;
-
-                        totalProb += (type === 'before' ? (riskData.assessmentABefore[0] + prob)/2 : (riskData.assessmentAAfter[0] + prob)/2);
-                        totalImpact += (type === 'before' ? (riskData.assessmentABefore[1] + impact)/2 : (riskData.assessmentAAfter[1] + impact)/2);
+                        totalProb += combined[0];
+                        totalImpact += combined[1];
                         count++;
                     });
 
@@ -6820,12 +6419,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // --- MODE 2 : VUE PAR RISQUES ---
             else {
                 currentRisks.forEach((risk) => {
-                    const prob = type === 'before' ? risk.assessmentBBefore[0] : risk.assessmentBAfter[0];
-                    const impact = type === 'before' ? risk.assessmentBBefore[1] : risk.assessmentBAfter[1];
-
-                    if (prob > 0 && impact > 0) {
-                        const baseX = type === 'before' ? (risk.assessmentABefore[0] + prob)/2 : (risk.assessmentAAfter[0] + prob)/2;
-                        const baseY = type === 'before' ? (risk.assessmentABefore[1] + impact)/2 : (risk.assessmentAAfter[1] + impact)/2;
+                    const combined = evaluatedAssessment(risk, type === 'before' ? 'Before' : 'After');
+                    if (combined) {
+                        const [baseX, baseY] = combined;
                         
                         const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
                         const groupName = group ? group.name : 'Inconnu';
@@ -6947,6 +6543,82 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
         }
 
+        // Compose une image : titre + matrice + légende (numéro → nom), sur fond blanc,
+        // à la résolution de l'écran. Complexité : O(n) — n = nombre de points.
+        function buildMatrixImage(chart, title) {
+            const scale = chart.canvas.width / chart.width; // densité de pixels de l'écran
+            const padding = 24 * scale;
+            const lineHeight = 22 * scale;
+            const font = size => `${size * scale}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif`;
+            const dataset = chart.data.datasets[0];
+            const entries = [...new Map(dataset.data.map(point =>
+                [point.shortLabel, point.riskTitle || point.groupName])).entries()]
+                .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }));
+
+            const image = document.createElement('canvas');
+            image.width = chart.canvas.width + padding * 2;
+            image.height = padding + 30 * scale + chart.canvas.height + 12 * scale
+                + entries.length * lineHeight + padding;
+            const ctx = image.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, image.width, image.height);
+
+            ctx.fillStyle = '#1d1d1f';
+            ctx.font = `600 ${font(18)}`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(title, image.width / 2, padding);
+            ctx.drawImage(chart.canvas, padding, padding + 30 * scale);
+
+            // Légende : pastille numérotée (comme sur la matrice) + nom
+            let y = padding + 30 * scale + chart.canvas.height + 12 * scale;
+            const radius = 9 * scale;
+            entries.forEach(([label, name]) => {
+                const cx = padding + radius;
+                const cy = y + lineHeight / 2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.fillStyle = dataset.backgroundColor;
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `700 ${font(label.length > 2 ? 8 : 10)}`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, cx, cy);
+                ctx.fillStyle = '#1d1d1f';
+                ctx.font = font(13);
+                ctx.textAlign = 'left';
+                ctx.fillText(name || '', cx + radius + 8 * scale, cy, image.width - cx - radius - padding);
+                y += lineHeight;
+            });
+            return image;
+        }
+
+        // Copie une matrice en image dans le presse-papier (à coller dans Word,
+        // PowerPoint, un mail…). Sans copie d'image possible : téléchargement du PNG.
+        async function copyMatrixImage(type) {
+            const chart = type === 'before' ? chartBefore : chartAfter;
+            if (!chart || !chart.width) {
+                showToast('Affichez les matrices pour pouvoir les copier', 'error');
+                return;
+            }
+            const title = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
+            const blob = new Promise(resolve => buildMatrixImage(chart, title).toBlob(resolve, 'image/png'));
+            try {
+                // La promesse est passée telle quelle : Safari exige l'écriture pendant le clic
+                await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                showToast('✅ Matrice copiée : collez-la où vous voulez');
+            } catch (error) {
+                console.info('Copie d\'image indisponible, téléchargement du PNG.', error);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(await blob);
+                link.download = `${title}.png`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                showToast('ℹ️ Copie d\'image impossible ici : image téléchargée');
+            }
+        }
+
         function closeMatrixModal(event) {
             if (event) {
                 // Empêcher la fermeture si on clique sur le contenu (pas le fond)
@@ -7013,13 +6685,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Re-render les risques pour mettre à jour les dropdowns traduits
             renderRisks();
-            initGroupNameEditing();
-            initGroupDescriptionEditing();
-            initRiskTitleEditing();
-            initRemediationEditing();
-            initStatusDropdowns();
-            initResponsableEditing();
-            initSectionTitleEditing();
             updateCharts();
         }
 
@@ -7082,19 +6747,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Initialisation
         initLanguage(); // Initialiser la langue sauvegardée
         initMatrixView(); // Restaurer la vue matricielle sauvegardée
-        restoreGroupMappingFromStorage(); // Restaurer le mapping depuis localStorage (une seule fois)
-        renderRisks();
-        initGroupNameEditing(); // Activer l'édition inline sur les noms de groupes
-        initGroupDescriptionEditing(); // Activer l'édition inline sur les descriptions de groupes
-        initRiskTitleEditing(); // Activer l'édition inline sur les noms de risques
-        initRemediationEditing(); // Activer l'édition inline sur les remédiations
-        initStatusDropdowns();
-        initResponsableEditing(); // Activer les dropdowns de statut
-        initSectionTitleEditing(); // Activer l'édition inline sur les sous-titres de sections
+        renderRisks(); // attache aussi l'édition directe
         updateCharts();
 
         // Sauvegarder l'état initial pour le système undo/redo
         saveState();
+        restoreFileLink();
     </script>
 </body>
 </html>

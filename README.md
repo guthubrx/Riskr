@@ -24,10 +24,26 @@ est le contenu : pour une nouvelle analyse, seul `riskr-data.js` change.
   génériques. Il est ignoré par Git et ne doit contenir que des données privées
   qui ne doivent pas être publiées.
 
-Chaque risque porte quatre cotations génériques : `assessmentABefore`,
-`assessmentAAfter`, `assessmentBBefore` et `assessmentBAfter`. Elles permettent
-de comparer deux référentiels de cotation sans embarquer de vocabulaire propre à
-une organisation.
+Chaque risque porte **une cotation** avant et après remédiation :
+`assessmentBefore` et `assessmentAfter`, sous la forme `[probabilité, impact]`
+(1 à 5 ; `[0, 0]` = non évalué). La criticité vaut probabilité × impact, sur 25.
+
+- `mesures` : liste de mesures `{ texte, porteur, echeance }` (porteur et
+  échéance facultatifs ; une simple chaîne de texte est aussi acceptée).
+- `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
+  `statusAccepted`.
+- Les numéros (`1.1`, `1.2`…) suivent la position des risques et sont
+  recalculés après chaque ajout, suppression ou déplacement.
+- Seuils de criticité par défaut : faible 1-4, modéré 5-9, élevé 10-14,
+  critique 15-25. Ils s'appliquent partout (matrices, badges, tableaux,
+  tableau de bord) et se modifient dans `appState.criticalityThresholds`,
+  par exemple `{ medium: 5, high: 10, critical: 15 }`.
+- La moyenne d'un groupe est la moyenne des criticités de ses risques évalués,
+  sur 25 comme dans le tableau récapitulatif.
+- L'import accepte aussi les anciens formats : risques imbriqués dans les
+  groupes, anciennes doubles cotations (`assessmentA*`/`assessmentB*`,
+  `gcBefore`/`dtuBefore`…), statuts en texte (« En cours »…). Un fichier
+  invalide est refusé sans modifier l'analyse affichée.
 
 Chaque groupe peut également comporter deux champs de synthèse destinés aux
 décideurs :
@@ -50,7 +66,8 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Édition inline** de tous les champs (titres, descriptions, catégories)
 - **Ajout/suppression** de risques et de groupes de risques
 - **Drag & drop** pour réorganiser les risques
-- **Renumération automatique** lors des modifications
+- **Numérotation automatique** selon la position (ajout, suppression, glisser-déposer)
+- **Mesures de remédiation** avec porteur et échéance facultative
 - **Catégorisation** par groupes thématiques
 
 ### Visualisation
@@ -60,14 +77,25 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - Lecture et remédiation synthétiques par groupe
 - Légende interactive avec codes couleur
 - Copie du tableau de synthèse vers Word, avec les couleurs des cotations
+- Copie d'une matrice en image (titre, matrice et légende) pour la coller ailleurs
 
 ### Système d'Historique
 - **Undo/Redo** jusqu'à 50 étapes (Cmd+Z / Cmd+Y sur Mac, Ctrl+Z / Ctrl+Y sur Windows/Linux)
-- Sauvegarde automatique de chaque modification
-- Navigation dans l'historique des changements
+- Chaque modification (cotation, texte, statut, ajout, suppression, déplacement, import) est historisée
 
 ### Persistance des Données
-- **localStorage** automatique pour sauvegarde locale
+- **Enregistrement dans le fichier** : sous Chrome/Edge, bouton « Enregistrer
+  dans le fichier » une fois, puis chaque modification est écrite
+  automatiquement dans `riskr-data.js` (ou `riskr-data.local.js` si l'analyse
+  vient du fichier privé). Sous Firefox/Safari, le bouton « Enregistrer »
+  télécharge le fichier à remplacer à côté de `riskr.html`. Un voyant indique
+  l'état, et la fermeture de la page est confirmée s'il reste des
+  modifications non enregistrées.
+- **localStorage** : l'analyse complète est aussi sauvegardée dans le
+  navigateur à chaque modification et restaurée au rechargement
+- Si `riskr-data.js` est modifié entre deux ouvertures, **le fichier reprend la
+  main** et les modifications faites dans le navigateur sont abandonnées
+  (un message le signale) : exportez avant de remplacer le fichier
 - **Export/Import JSON** pour partage et backup
 - Aucune connexion serveur requise
 
