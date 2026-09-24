@@ -659,6 +659,107 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             direction: ltr;
         }
 
+        /* Filtres du registre (recherche, listes, appétence, case de matrice) */
+        .risk-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 24px 0 8px;
+            scroll-margin-top: 16px;
+        }
+
+        .filter-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1 1 260px;
+            max-width: 380px;
+            height: 36px;
+            padding: 0 12px;
+            color: var(--text-3);
+            background: var(--surface-2);
+            border-radius: 10px;
+        }
+
+        .filter-search input {
+            width: 100%;
+            font: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+
+        .filter-select,
+        .filter-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 36px;
+            padding: 0 12px;
+            font: inherit;
+            font-size: 13px;
+            color: var(--text-2);
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .filter-select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-inline-end: 30px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+        }
+
+        .filter-select.active,
+        .filter-toggle.active {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 30px;
+            padding: 0 10px;
+            font: inherit;
+            font-size: 13px;
+            color: #ffffff;
+            background: var(--accent);
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .filter-chip[hidden],
+        .filter-toggle[hidden] {
+            display: none;
+        }
+
+        .filter-count {
+            margin-inline-start: auto;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        .filtered-out,
+        #risks-container.filtering .group-separator,
+        #risks-container.filtering .risk-separator-row {
+            display: none !important;
+        }
+
+        .chart-canvas canvas {
+            cursor: pointer; /* un clic sur une case filtre le registre */
+        }
+
         /* Mise en page des matrices : avant | après, ou trajectoire seule (centrée) */
         .charts-column:not(.trajectory) > #trajectory-wrapper,
         .charts-column.trajectory > .chart-wrapper:not(#trajectory-wrapper) {
@@ -3049,6 +3150,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </div>
         </div>
 
+        <div class="risk-filters" id="risk-filters">
+            <label class="filter-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input type="search" id="filter-text" data-i18n-placeholder="filterSearch" data-i18n-title="filterSearch" oninput="setFilter('text', this.value)"></label>
+            <select id="filter-group" class="filter-select" onchange="setFilter('group', this.value)"></select>
+            <select id="filter-level" class="filter-select" onchange="setFilter('level', this.value)"></select>
+            <select id="filter-treatment" class="filter-select" onchange="setFilter('treatment', this.value)"></select>
+            <select id="filter-owner" class="filter-select" onchange="setFilter('owner', this.value)"></select>
+            <button type="button" id="filter-appetite" class="filter-toggle" onclick="setFilter('aboveAppetite', !riskFilter.aboveAppetite)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="filterAboveAppetite">Au-dessus de l’appétence</span></button>
+            <button type="button" id="filter-cell" class="filter-chip" onclick="setFilter('cell', null)" hidden></button>
+            <span id="filter-count" class="filter-count"></span>
+            <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
+        </div>
         <div id="risks-container"></div>
     </div>
 
@@ -6200,6 +6313,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             initStatusDropdowns();
             initPlanEditing();
             initResponsableEditing();
+            fillFilterOptions();
+            applyFilters();
         }
 
         // ========================================
@@ -6393,6 +6508,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     ctx.lineWidth = 2;
                     ctx.strokeRect(xStart, yStart, xEnd - xStart, yEnd - yStart);
                 });
+
+                const cell = riskFilter.cell;
+                if (cell && chart.data.datasets.some(dataset => dataset.phase === cell.phase)) {
+                    ctx.strokeStyle = themeColor('--accent');
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(x.getPixelForValue(cell.p - 0.5) + 1.5, y.getPixelForValue(cell.i + 0.5) + 1.5,
+                        x.getPixelForValue(cell.p + 0.5) - x.getPixelForValue(cell.p - 0.5) - 3,
+                        y.getPixelForValue(cell.i - 0.5) - y.getPixelForValue(cell.i + 0.5) - 3);
+                }
 
                 ctx.restore();
             }
@@ -6618,6 +6742,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     maintainAspectRatio: true,
                     aspectRatio: 1, // Force le graphique à être carré
                     animation: false, // Désactiver toutes les animations
+                    onClick: (event, elements, chart) => selectMatrixCell(event, chart),
                     plugins: {
                         legend: {
                             display: false
@@ -6723,16 +6848,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         
         // Mettre à jour le tableau des risques individuels
-        function updateRiskTable(currentRisks) {
+        // Complexité : O(n) — n = nombre de risques
+        function updateRiskTable() {
             const tableBody = document.getElementById('risk-table-body');
             tableBody.innerHTML = '';
             
             riskGroups.forEach(group => {
-                group.risks.forEach(risk => {
-                    const currentRisk = currentRisks.find(r => r.id === risk.id);
-                    if (!currentRisk) return;
-                    
+                group.risks.forEach(currentRisk => {
                     const row = document.createElement('tr');
+                    row.dataset.riskId = currentRisk.id;
                     
                     const [avgProbBefore, avgImpactBefore] = evaluatedAssessment(currentRisk, 'Before') || [0, 0];
                     const avgCritBefore = avgProbBefore * avgImpactBefore;
@@ -7137,6 +7261,113 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Mettre à jour les graphiques
         const MATRIX_TITLES = { before: 'matrixBefore', after: 'matrixAfter', trajectory: 'matrixTrajectory' };
 
+        // Filtres du registre (état d'affichage, non enregistré). cell = { phase, p, i } : case cliquée
+        const riskFilter = { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, cell: null };
+        const FILTER_LEVELS = { none: 'critNotEval', low: 'critLow', medium: 'critMedium', high: 'critHigh', critical: 'critCritical' };
+
+        const isFilterActive = () => Boolean(riskFilter.text || riskFilter.group || riskFilter.level ||
+            riskFilter.treatment || riskFilter.owner || riskFilter.aboveAppetite || riskFilter.cell);
+
+        function setFilter(name, value) {
+            riskFilter[name] = value;
+            applyFilters();
+        }
+
+        function clearFilters() {
+            Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, cell: null });
+            document.getElementById('filter-text').value = '';
+            fillFilterOptions();
+            applyFilters();
+        }
+
+        function riskMatches(risk, group) {
+            const f = riskFilter;
+            const after = evaluatedAssessment(risk, 'After');
+            const score = after ? after[0] * after[1] : null;
+            if (f.group && String(group.id) !== f.group) return false;
+            if (f.level && (score === null ? 'none' : getCriticalityLevel(score)) !== f.level) return false;
+            if (f.treatment && (risk.traitement || '-') !== f.treatment) return false;
+            if (f.owner && risk.responsable !== f.owner) return false;
+            if (f.aboveAppetite && !(settings.riskAppetite && score > settings.riskAppetite)) return false;
+            if (f.cell) {
+                const cell = evaluatedAssessment(risk, f.cell.phase);
+                if (!cell || cell[0] !== f.cell.p || cell[1] !== f.cell.i) return false;
+            }
+            if (f.text) {
+                const text = [risk.id, risk.title, risk.responsable, ...risk.mesures.flatMap(m => [m.texte, m.porteur])]
+                    .join(' ').toLocaleLowerCase();
+                if (!text.includes(f.text.trim().toLocaleLowerCase())) return false;
+            }
+            return true;
+        }
+
+        // Options des listes de filtres (traduites, porteurs présents dans l'analyse), valeur conservée
+        function fillFilterOptions() {
+            const fill = (id, allKey, options) => {
+                const select = document.getElementById(id);
+                const name = id.replace('filter-', '');
+                select.innerHTML = [['', t(allKey)], ...options]
+                    .map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join('');
+                select.value = riskFilter[name];
+                select.classList.toggle('active', Boolean(riskFilter[name]));
+            };
+            fill('filter-group', 'filterAllGroups', riskGroups.map(g => [String(g.id), `${g.id}. ${g.name}`]));
+            fill('filter-level', 'filterAllLevels', Object.entries(FILTER_LEVELS).map(([value, key]) => [value, t(key)]));
+            fill('filter-treatment', 'filterAllTreatments', [['-', t('treatNone')], ...Object.keys(TREATMENTS).map(key => [key, treatmentLabel(key)])]);
+            const owners = [...new Set(risks.map(r => r.responsable).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+            fill('filter-owner', 'filterAllOwners', owners.map(owner => [owner, owner]));
+        }
+
+        // Masque les lignes non retenues (registre, tableau récapitulatif) sans re-rendu.
+        // Complexité : O(n) — n = nombre de risques (ensemble des identifiants visibles).
+        function applyFilters() {
+            const active = isFilterActive();
+            const visible = new Set();
+            riskGroups.forEach(group => group.risks.forEach(risk => {
+                if (riskMatches(risk, group)) visible.add(risk.id);
+            }));
+            document.querySelectorAll('#risks-container tr[data-risk-id], #risk-table-body tr[data-risk-id]').forEach(row => {
+                row.classList.toggle('filtered-out', !visible.has(row.dataset.riskId));
+            });
+            document.querySelectorAll('#risks-container .remediation-row').forEach(row => {
+                row.classList.toggle('filtered-out', !visible.has(row.id.replace('remediation-row-', '')));
+            });
+            riskGroups.forEach(group => {
+                const content = document.getElementById(`group-content-${group.id}`);
+                if (content) content.closest('.risk-group').classList.toggle('filtered-out', !group.risks.some(r => visible.has(r.id)));
+            });
+            document.getElementById('risks-container').classList.toggle('filtering', active);
+
+            const cell = document.getElementById('filter-cell');
+            cell.hidden = !riskFilter.cell;
+            if (riskFilter.cell) {
+                const phase = t(riskFilter.cell.phase === 'Before' ? 'colBeforeShort' : 'colAfterShort');
+                cell.innerHTML = `${escapeHtml(t('filterCell', { p: riskFilter.cell.p, i: riskFilter.cell.i, phase }))} ${icon('close')}`;
+            }
+            document.getElementById('filter-appetite').classList.toggle('active', riskFilter.aboveAppetite);
+            document.querySelectorAll('.filter-select').forEach(select =>
+                select.classList.toggle('active', Boolean(riskFilter[select.id.replace('filter-', '')])));
+            document.getElementById('filter-clear').hidden = !active;
+            document.getElementById('filter-count').textContent = !active ? ''
+                : visible.size ? t('filterCount', { shown: visible.size, total: risks.length }) : t('filterNoMatch');
+            Object.values(Chart.instances).forEach(chart => chart.draw()); // contour de la case sélectionnée
+        }
+
+        // Clic sur une case d'une matrice : filtre le registre sur cette case (second clic : annule)
+        function selectMatrixCell(event, chart) {
+            const p = Math.round(chart.scales.x.getValueForPixel(event.x));
+            const i = Math.round(chart.scales.y.getValueForPixel(event.y));
+            if (p < 1 || p > 5 || i < 1 || i > 5) return;
+            const phase = chart.data.datasets[chart.data.datasets.length - 1].phase;
+            const current = riskFilter.cell;
+            const same = current && current.p === p && current.i === i && current.phase === phase;
+            setFilter('cell', same ? null : { phase, p, i });
+            if (!same) {
+                closeMatrixModal();
+                document.getElementById('risk-filters').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
         // Mise en page des matrices : 'split' (avant | après) ou 'trajectory' (une seule matrice)
         let matrixLayout = riskrStorage.getItem('matrix-layout') === 'trajectory' ? 'trajectory' : 'split';
         // Options d'affichage : préférences de l'utilisateur, comme la vue groupes / risques
@@ -7191,8 +7422,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (matrixLayout === 'trajectory') {
                 const { datasets, bubble } = matrixChartData('trajectory');
                 chartTrajectory = createRiskChart(document.getElementById('chartTrajectory'), datasets, bubble);
-                updateRiskTable(risks);
+                updateRiskTable();
                 updateGroupTable();
+                applyFilters();
                 return;
             }
 
@@ -7206,8 +7438,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before' }], bubble);
             chartAfter = createRiskChart(document.getElementById('chartAfter'), [{ data: after, phase: 'After' }], bubble);
 
-            updateRiskTable(risks);
+            updateRiskTable();
             updateGroupTable();
+            applyFilters();
         }
 
         // ========================================
@@ -7377,6 +7610,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.title = t('pageTitle');
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 element.textContent = t(element.dataset.i18n);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                element.placeholder = t(element.dataset.i18nPlaceholder);
             });
             document.querySelectorAll('[data-i18n-title]').forEach(element => {
                 element.title = t(element.dataset.i18nTitle);
