@@ -24,3 +24,6 @@ archive/
 
 # Données locales privées : jamais versionnées ni publiées
 riskr-data.local.js
+
+# Specs SpecKit : documentation locale, non publiée
+specs/

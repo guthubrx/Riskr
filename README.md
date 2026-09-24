@@ -33,6 +33,12 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   échéance facultatifs ; une simple chaîne de texte est aussi acceptée).
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
   `statusAccepted`.
+- `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid` ou `''`
+  (non définie) ; `assessmentTarget` est la cotation visée `[probabilité, impact]`
+  (`[0, 0]` = non définie).
+- `settings.riskAppetite` : score maximal acceptable (P × I, sur 25 ; `0` = aucun).
+  Par défaut 9, juste sous le seuil « élevé ». Tracé en pointillé sur les matrices ;
+  un risque résiduel au-delà est signalé dans le registre.
 - Les numéros (`1.1`, `1.2`…) suivent la position des risques et sont
   recalculés après chaque ajout, suppression ou déplacement.
 - Seuils de criticité par défaut : faible 1-4, modéré 5-9, élevé 10-14,

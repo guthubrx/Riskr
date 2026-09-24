@@ -3564,7 +3564,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     title: document.getElementById('main-title').textContent,
                     subtitle: document.getElementById('main-subtitle').textContent,
                     language: currentLanguage,
-                    storageNamespace: normalizedStorageNamespace
+                    storageNamespace: normalizedStorageNamespace,
+                    criticalityThresholds: CRITICALITY_THRESHOLDS
                 }
             }, serializeModel()); // risks[] + riskGroups[].riskIds
         }
@@ -3799,7 +3800,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const sheetData = [];
 
                 // En-têtes
-                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible')]);
+                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget')]);
 
                 // Données des risques
                 group.risks.forEach(risk => {
@@ -3828,7 +3829,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         critAfter,
                         reduction,
                         risk.statut ? t(risk.statut) : '',
-                        risk.responsable || ''
+                        risk.responsable || '',
+                        treatmentLabel(risk.traitement),
+                        calculateCriticality(...risk.assessmentTarget) || ''
                     ]);
                 });
 
@@ -3872,7 +3875,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             let csvContent = '';
 
             // En-têtes CSV
-            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible')].join(',') + '\n';
+            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget')].join(',') + '\n';
 
             // Données
             riskGroups.forEach(group => {
@@ -3912,7 +3915,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         critAfter,
                         reduction,
                         escapeCSV(risk.statut ? t(risk.statut) : ''),
-                        escapeCSV(risk.responsable || '')
+                        escapeCSV(risk.responsable || ''),
+                        escapeCSV(treatmentLabel(risk.traitement)),
+                        calculateCriticality(...risk.assessmentTarget) || ''
                     ].join(',') + '\n';
                 });
             });
@@ -4103,7 +4108,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "Après remédiation",
                 pdfNoRisk: "Aucun risque",
                 pdfColumns: "P.Av|I.Av|C.Av|P.Ap|I.Ap|C.Ap|Réd.",
-                exportColumns: "Prob. avant|Impact avant|Crit. avant|Prob. après|Impact après|Crit. après"
+                exportColumns: "Prob. avant|Impact avant|Crit. avant|Prob. après|Impact après|Crit. après",
+                colTreatment: "Traitement",
+                treatNone: "Non défini",
+                treatReduce: "Réduire",
+                treatAccept: "Accepter",
+                treatTransfer: "Transférer",
+                treatAvoid: "Éviter",
+                colTarget: "Cible",
+                targetHint: "Cotation visée une fois toutes les mesures en place",
+                aboveAppetite: "Au-dessus de l’appétence au risque (≤ {max})",
+                displayOptions: "Options d’affichage",
+                viewSideBySide: "Avant et après côte à côte",
+                viewTrajectory: "Trajectoire : de l’avant vers l’après",
+                matrixTrajectory: "Trajectoire des risques (avant → après)",
+                showCounts: "Nombre de risques par case",
+                showAppetite: "Ligne d’appétence au risque",
+                appetiteLabel: "Appétence au risque",
+                appetiteNone: "Aucune",
+                filterSearch: "Rechercher un risque, une mesure, un porteur…",
+                filterAllGroups: "Tous les groupes",
+                filterAllLevels: "Tous les niveaux",
+                filterAllTreatments: "Tous les traitements",
+                filterAllOwners: "Tous les porteurs",
+                filterAboveAppetite: "Au-dessus de l’appétence",
+                filterCell: "Case P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} risques",
+                filterClear: "Effacer les filtres",
+                filterNoMatch: "Aucun risque ne correspond aux filtres"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4258,7 +4290,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "After remediation",
                 pdfNoRisk: "No risk",
                 pdfColumns: "P.Bef|I.Bef|C.Bef|P.Aft|I.Aft|C.Aft|Red.",
-                exportColumns: "Prob. before|Impact before|Crit. before|Prob. after|Impact after|Crit. after"
+                exportColumns: "Prob. before|Impact before|Crit. before|Prob. after|Impact after|Crit. after",
+                colTreatment: "Treatment",
+                treatNone: "Not set",
+                treatReduce: "Reduce",
+                treatAccept: "Accept",
+                treatTransfer: "Transfer",
+                treatAvoid: "Avoid",
+                colTarget: "Target",
+                targetHint: "Rating aimed for once all measures are in place",
+                aboveAppetite: "Above risk appetite (≤ {max})",
+                displayOptions: "Display options",
+                viewSideBySide: "Before and after side by side",
+                viewTrajectory: "Trajectory: from before to after",
+                matrixTrajectory: "Risk trajectory (before → after)",
+                showCounts: "Number of risks per cell",
+                showAppetite: "Risk appetite line",
+                appetiteLabel: "Risk appetite",
+                appetiteNone: "None",
+                filterSearch: "Search a risk, a measure, an owner…",
+                filterAllGroups: "All groups",
+                filterAllLevels: "All levels",
+                filterAllTreatments: "All treatments",
+                filterAllOwners: "All owners",
+                filterAboveAppetite: "Above appetite",
+                filterCell: "Cell P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} risks",
+                filterClear: "Clear filters",
+                filterNoMatch: "No risk matches the filters"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -4413,7 +4472,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "Después de la remediación",
                 pdfNoRisk: "Ningún riesgo",
                 pdfColumns: "P.Ant|I.Ant|C.Ant|P.Des|I.Des|C.Des|Red.",
-                exportColumns: "Prob. antes|Impacto antes|Crit. antes|Prob. después|Impacto después|Crit. después"
+                exportColumns: "Prob. antes|Impacto antes|Crit. antes|Prob. después|Impacto después|Crit. después",
+                colTreatment: "Tratamiento",
+                treatNone: "Sin definir",
+                treatReduce: "Reducir",
+                treatAccept: "Aceptar",
+                treatTransfer: "Transferir",
+                treatAvoid: "Evitar",
+                colTarget: "Objetivo",
+                targetHint: "Calificación prevista una vez aplicadas todas las medidas",
+                aboveAppetite: "Por encima del apetito de riesgo (≤ {max})",
+                displayOptions: "Opciones de visualización",
+                viewSideBySide: "Antes y después lado a lado",
+                viewTrajectory: "Trayectoria: de antes a después",
+                matrixTrajectory: "Trayectoria de los riesgos (antes → después)",
+                showCounts: "Número de riesgos por casilla",
+                showAppetite: "Línea de apetito de riesgo",
+                appetiteLabel: "Apetito de riesgo",
+                appetiteNone: "Ninguno",
+                filterSearch: "Buscar un riesgo, una medida, un responsable…",
+                filterAllGroups: "Todos los grupos",
+                filterAllLevels: "Todos los niveles",
+                filterAllTreatments: "Todos los tratamientos",
+                filterAllOwners: "Todos los responsables",
+                filterAboveAppetite: "Por encima del apetito",
+                filterCell: "Casilla P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} riesgos",
+                filterClear: "Borrar los filtros",
+                filterNoMatch: "Ningún riesgo coincide con los filtros"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -4568,7 +4654,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "补救后",
                 pdfNoRisk: "无风险",
                 pdfColumns: "前P|前I|前C|后P|后I|后C|降低",
-                exportColumns: "补救前概率|补救前影响|补救前严重度|补救后概率|补救后影响|补救后严重度"
+                exportColumns: "补救前概率|补救前影响|补救前严重度|补救后概率|补救后影响|补救后严重度",
+                colTreatment: "处理策略",
+                treatNone: "未设定",
+                treatReduce: "降低",
+                treatAccept: "接受",
+                treatTransfer: "转移",
+                treatAvoid: "规避",
+                colTarget: "目标",
+                targetHint: "所有措施落实后的目标评级",
+                aboveAppetite: "超出风险偏好（≤ {max}）",
+                displayOptions: "显示选项",
+                viewSideBySide: "处理前后并排显示",
+                viewTrajectory: "轨迹：从处理前到处理后",
+                matrixTrajectory: "风险轨迹（处理前 → 处理后）",
+                showCounts: "每格风险数量",
+                showAppetite: "风险偏好线",
+                appetiteLabel: "风险偏好",
+                appetiteNone: "无",
+                filterSearch: "搜索风险、措施或负责人…",
+                filterAllGroups: "所有组",
+                filterAllLevels: "所有等级",
+                filterAllTreatments: "所有处理策略",
+                filterAllOwners: "所有负责人",
+                filterAboveAppetite: "超出风险偏好",
+                filterCell: "格 P{p} × I{i}（{phase}）",
+                filterCount: "{shown} / {total} 个风险",
+                filterClear: "清除筛选",
+                filterNoMatch: "没有符合筛选条件的风险"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -4723,7 +4836,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "بعد المعالجة",
                 pdfNoRisk: "لا يوجد خطر",
                 pdfColumns: "ا.قبل|ت.قبل|خ.قبل|ا.بعد|ت.بعد|خ.بعد|تخفيض",
-                exportColumns: "الاحتمال قبل|التأثير قبل|الخطورة قبل|الاحتمال بعد|التأثير بعد|الخطورة بعد"
+                exportColumns: "الاحتمال قبل|التأثير قبل|الخطورة قبل|الاحتمال بعد|التأثير بعد|الخطورة بعد",
+                colTreatment: "استراتيجية المعالجة",
+                treatNone: "غير محدد",
+                treatReduce: "تخفيض",
+                treatAccept: "قبول",
+                treatTransfer: "نقل",
+                treatAvoid: "تجنّب",
+                colTarget: "المستهدف",
+                targetHint: "التقييم المستهدف بعد تنفيذ جميع الإجراءات",
+                aboveAppetite: "أعلى من مستوى تقبّل المخاطر (≤ {max})",
+                displayOptions: "خيارات العرض",
+                viewSideBySide: "قبل وبعد جنبًا إلى جنب",
+                viewTrajectory: "المسار: من قبل إلى بعد",
+                matrixTrajectory: "مسار المخاطر (قبل → بعد)",
+                showCounts: "عدد المخاطر في كل خانة",
+                showAppetite: "خط مستوى تقبّل المخاطر",
+                appetiteLabel: "مستوى تقبّل المخاطر",
+                appetiteNone: "لا شيء",
+                filterSearch: "ابحث عن خطر أو إجراء أو مسؤول…",
+                filterAllGroups: "كل المجموعات",
+                filterAllLevels: "كل المستويات",
+                filterAllTreatments: "كل استراتيجيات المعالجة",
+                filterAllOwners: "كل المسؤولين",
+                filterAboveAppetite: "أعلى من مستوى التقبّل",
+                filterCell: "الخانة P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} مخاطر",
+                filterClear: "مسح عوامل التصفية",
+                filterNoMatch: "لا يوجد خطر مطابق لعوامل التصفية"
             }
         };
 
@@ -4968,6 +5108,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // alimente l'historique et sauvegarde le modèle complet dans le navigateur.
 
         const STATUS_KEYS = ['statusNotTreated', 'statusInProgress', 'statusTreated', 'statusAccepted'];
+        // Stratégie de traitement d'un risque ('' = non définie) → clé de traduction
+        const TREATMENTS = { reduce: 'treatReduce', accept: 'treatAccept', transfer: 'treatTransfer', avoid: 'treatAvoid' };
+        const treatmentLabel = key => t(TREATMENTS[key] || 'treatNone');
         const LEGACY_STATUS_LABELS = {
             'Non traité': 'statusNotTreated', 'En cours': 'statusInProgress',
             'Traité': 'statusTreated', 'Accepté': 'statusAccepted'
@@ -5021,7 +5164,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 statut: STATUS_KEYS.includes(raw.statut)
                     ? raw.statut
                     : (LEGACY_STATUS_LABELS[raw.statut] || 'statusNotTreated'),
-                responsable: String(raw.responsable || '')
+                responsable: String(raw.responsable || ''),
+                traitement: raw.traitement in TREATMENTS ? raw.traitement : '',
+                assessmentTarget: toAssessment(raw.assessmentTarget)
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -5063,7 +5208,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (groupedRisks.length < riskById.size) {
                 console.warn(`[Riskr] ${riskById.size - groupedRisks.length} risque(s) sans groupe ignoré(s)`);
             }
-            return { risks: groupedRisks, riskGroups: newGroups };
+            return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings) };
+        }
+
+        // Réglages de l'analyse, enregistrés avec le modèle (historique, navigateur, fichier).
+        // riskAppetite : score P × I maximal acceptable (0 = aucune appétence définie) ;
+        // par défaut juste sous le seuil « élevé ».
+        function normalizeSettings(raw) {
+            const appetite = raw && raw.riskAppetite;
+            return {
+                riskAppetite: Number.isInteger(appetite) && appetite >= 0 && appetite <= 25
+                    ? appetite
+                    : CRITICALITY_THRESHOLDS.high - 1
+            };
         }
 
         // Remplace le modèle en place (les tableaux gardent leur identité)
@@ -5072,12 +5229,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             risks.push(...model.risks);
             riskGroups.length = 0;
             riskGroups.push(...model.riskGroups);
+            Object.assign(settings, model.settings);
         }
 
         // Copie sérialisable au format canonique (risks[] + riskGroups[].riskIds)
         function serializeModel() {
             return JSON.parse(JSON.stringify({
                 risks,
+                settings,
                 riskGroups: riskGroups.map(({ risks: groupRisks, ...group }) =>
                     Object.assign(group, { riskIds: groupRisks.map(r => r.id) }))
             }));
@@ -5345,6 +5504,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Données des risques — peuvent être remplacées par window.RISKR_DATA
         const risks = [];
         const riskGroups = [];
+        const settings = {};
         if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
             applyModel(buildModel(window.RISKR_DATA));
             // Le script est en fin de page : le titre existe déjà dans le DOM
@@ -5383,8 +5543,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Champs d'un risque vierge (non évalué)
         function emptyAssessments() {
             return {
-                assessmentBefore: [0, 0], assessmentAfter: [0, 0],
-                mesures: [], statut: 'statusNotTreated', responsable: ''
+                assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
+                mesures: [], statut: 'statusNotTreated', responsable: '', traitement: ''
             };
         }
 
