@@ -927,72 +927,185 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-weight: 600;
         }
 
-        /* Plan d'actions : trois colonnes (à faire | en cours | faites) */
+        /* Plan d'actions : résumé, regroupements, colonnes de cartes */
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 16px;
+            margin-bottom: 18px;
+        }
+
+        .actions-summary {
+            display: flex;
+            flex: 1;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            min-width: 320px;
+            font-size: 15px;
+            color: var(--text-2);
+        }
+
+        .actions-summary b {
+            color: var(--text);
+        }
+
+        .progress-bar {
+            display: flex;
+            flex: 1;
+            min-width: 160px;
+            max-width: 500px;
+            height: 8px;
+            overflow: hidden;
+            border-radius: 4px;
+            background: var(--border);
+        }
+
+        .progress-bar span:nth-child(1) {
+            background: #34c759;
+        }
+
+        .progress-bar span:nth-child(2) {
+            background: #0a84ff;
+        }
+
+        .late-chip {
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: color-mix(in srgb, #ff3b30 12%, transparent);
+            color: #ff3b30;
+            font-size: 14px;
+        }
+
+        .actions-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .actions-me[hidden] {
+            display: none;
+        }
+
         .action-board {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
+            grid-auto-columns: minmax(290px, 1fr);
+            grid-auto-flow: column;
+            gap: 16px;
+            overflow-x: auto;
         }
 
         .action-column {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: 460px;
-            overflow-y: auto;
-            padding: 10px;
-            border-radius: 10px;
+            gap: 12px;
+            min-height: 420px;
+            padding: 16px;
+            border-radius: 16px;
             background: var(--surface-2);
         }
 
         .action-column-title {
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            font-size: 12px;
+            margin: 0 0 4px;
+            font-size: 16px;
             font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-2);
+            color: var(--text);
+        }
+
+        .action-column-title span:last-child {
+            min-width: 24px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--surface);
+            font-size: 12px;
+            color: var(--text-3);
+            text-align: center;
         }
 
         .action-card {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            padding: 8px 10px;
+            gap: 10px;
+            padding: 14px 16px;
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 12px;
             background: var(--surface);
-            font-size: 13px;
-            color: var(--text);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .action-card.is-late {
-            border-inline-start: 3px solid #ff3b30;
+            border-color: #ffb3ad;
+            box-shadow: inset 3px 0 0 #ff3b30;
+        }
+
+        .action-card-risk {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-2);
+            cursor: pointer;
+        }
+
+        .action-card-risk:hover {
+            color: var(--accent);
+        }
+
+        .action-card-risk .id-bubble {
+            width: 22px;
+            height: 22px;
+            font-size: 9px;
+        }
+
+        .action-card-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .action-card.is-done .action-card-text {
+            text-decoration: line-through;
+            color: var(--text-3);
         }
 
         .action-card-meta {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            gap: 4px 10px;
-            font-size: 12px;
+            gap: 10px;
+            font-size: 13px;
             color: var(--text-3);
         }
 
-        .action-risk {
-            font-weight: 600;
-            color: var(--accent);
+        .barrier-tag {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #0a84ff;
+        }
+
+        .barrier-tag.protection {
+            color: #8e5cf0;
+        }
+
+        .action-due {
+            margin-inline-start: auto;
         }
 
         .action-card.is-late .action-due {
             color: #ff3b30;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .action-moves {
             display: flex;
             gap: 2px;
-            margin-inline-start: auto;
         }
 
         .action-moves button {
@@ -1019,12 +1132,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             text-align: center;
             font-size: 12px;
             color: var(--text-3);
-        }
-
-        @media (max-width: 900px) {
-            .action-board {
-                grid-template-columns: 1fr;
-            }
         }
 
         /* Revues : frise | comparaison (compteurs, changements, courbe par groupe) */
@@ -4414,17 +4521,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         <!-- Plan d'actions : les mesures de tous les risques, par état -->
         <section class="tab-panel" data-panel="actions" role="tabpanel" hidden>
-        <div class="risk-table-container collapsible-section">
-            <h3 class="collapsible-header" onclick="toggleCollapse('action-plan-content')">
-                <span class="collapse-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
-                <span data-i18n="actionPlanTitle">Plan d’actions</span>
-                <span id="action-plan-summary" class="section-summary"></span>
-            </h3>
-            <div id="action-plan-content" class="collapsible-content">
-                <div id="action-board" class="action-board"></div>
+            <div class="actions-bar">
+                <div id="actions-summary" class="actions-summary"></div>
+                <div class="segmented labeled" id="actions-groupby" role="group" data-i18n-title="groupByLabel">
+                    <button type="button" class="segmented-btn" data-group="owner" onclick="setActionGrouping('owner')"><span data-i18n="groupByOwner">Par porteur</span></button>
+                    <button type="button" class="segmented-btn" data-group="state" onclick="setActionGrouping('state')"><span data-i18n="groupByState">Par état</span></button>
+                    <button type="button" class="segmented-btn" data-group="due" onclick="setActionGrouping('due')"><span data-i18n="groupByDue">Par échéance</span></button>
+                </div>
+                <div class="segmented labeled" id="actions-scope" role="group">
+                    <button type="button" class="segmented-btn" data-scope="all" onclick="setActionScope('all')"><span data-i18n="scopeAll">Tous</span></button>
+                    <button type="button" class="segmented-btn" data-scope="mine" onclick="setActionScope('mine')"><span data-i18n="scopeMine">Mes mesures</span></button>
+                </div>
+                <label id="actions-me" class="actions-me" hidden><span data-i18n="meLabel">Je suis</span> <select class="filter-select" onchange="setActionMe(this.value)"></select></label>
             </div>
-        </div>
-
+            <div id="action-board" class="action-board"></div>
         </section>
 
         <!-- Revues : photos datées des cotations, comparées à l'état actuel -->
@@ -5729,6 +5839,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                groupByLabel: "Regrouper les mesures",
+                groupByOwner: "Par porteur",
+                groupByState: "Par état",
+                groupByDue: "Par échéance",
+                scopeAll: "Tous",
+                scopeMine: "Mes mesures",
+                meLabel: "Je suis",
+                mePlaceholder: "choisir…",
+                dueLate: "En retard",
+                dueSoon: "Dans les 30 jours",
+                dueLater: "Plus tard",
+                dueNone: "Sans échéance",
+                lateOn: "En retard · {date}",
+                barrierPrevention: "Préventive",
+                barrierProtection: "Protection",
+                noOwner: "Sans porteur",
+                stateDonePlural: "Faites",
                 modeBefore: "Avant",
                 modeAfter: "Après",
                 modeTrajectory: "Trajectoire",
@@ -6030,6 +6157,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                groupByLabel: "Group the measures",
+                groupByOwner: "By owner",
+                groupByState: "By status",
+                groupByDue: "By due date",
+                scopeAll: "All",
+                scopeMine: "My measures",
+                meLabel: "I am",
+                mePlaceholder: "choose…",
+                dueLate: "Overdue",
+                dueSoon: "Within 30 days",
+                dueLater: "Later",
+                dueNone: "No due date",
+                lateOn: "Overdue · {date}",
+                barrierPrevention: "Preventive",
+                barrierProtection: "Protective",
+                noOwner: "No owner",
+                stateDonePlural: "Done",
                 modeBefore: "Before",
                 modeAfter: "After",
                 modeTrajectory: "Trajectory",
@@ -6331,6 +6475,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                groupByLabel: "Agrupar las medidas",
+                groupByOwner: "Por responsable",
+                groupByState: "Por estado",
+                groupByDue: "Por vencimiento",
+                scopeAll: "Todas",
+                scopeMine: "Mis medidas",
+                meLabel: "Soy",
+                mePlaceholder: "elegir…",
+                dueLate: "Retrasadas",
+                dueSoon: "En los próximos 30 días",
+                dueLater: "Más adelante",
+                dueNone: "Sin vencimiento",
+                lateOn: "Retrasada · {date}",
+                barrierPrevention: "Preventiva",
+                barrierProtection: "Protección",
+                noOwner: "Sin responsable",
+                stateDonePlural: "Hechas",
                 modeBefore: "Antes",
                 modeAfter: "Después",
                 modeTrajectory: "Trayectoria",
@@ -6632,6 +6793,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                groupByLabel: "措施分组",
+                groupByOwner: "按负责人",
+                groupByState: "按状态",
+                groupByDue: "按截止日期",
+                scopeAll: "全部",
+                scopeMine: "我的措施",
+                meLabel: "我是",
+                mePlaceholder: "选择…",
+                dueLate: "已逾期",
+                dueSoon: "30 天内",
+                dueLater: "以后",
+                dueNone: "无截止日期",
+                lateOn: "已逾期 · {date}",
+                barrierPrevention: "预防",
+                barrierProtection: "保护",
+                noOwner: "无负责人",
+                stateDonePlural: "已完成",
                 modeBefore: "处理前",
                 modeAfter: "处理后",
                 modeTrajectory: "轨迹",
@@ -6933,6 +7111,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                groupByLabel: "تجميع الإجراءات",
+                groupByOwner: "حسب المسؤول",
+                groupByState: "حسب الحالة",
+                groupByDue: "حسب الموعد",
+                scopeAll: "الكل",
+                scopeMine: "إجراءاتي",
+                meLabel: "أنا",
+                mePlaceholder: "اختر…",
+                dueLate: "متأخرة",
+                dueSoon: "خلال 30 يومًا",
+                dueLater: "لاحقًا",
+                dueNone: "دون موعد",
+                lateOn: "متأخر · {date}",
+                barrierPrevention: "وقائية",
+                barrierProtection: "حماية",
+                noOwner: "دون مسؤول",
+                stateDonePlural: "منجزة",
                 modeBefore: "قبل",
                 modeAfter: "بعد",
                 modeTrajectory: "المسار",
@@ -8476,44 +8671,91 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const MESURE_STATE_ORDER = Object.keys(MESURE_STATES);
 
         // Complexité : O(m log m), m = nombre de mesures (retards d'abord, puis échéance la plus proche)
+        // Regroupement (porteur | état | échéance) et périmètre (toutes | mes mesures), mémorisés dans le navigateur
+        const actionView = {
+            group: ['owner', 'state', 'due'].includes(riskrStorage.getItem('actions-group')) ? riskrStorage.getItem('actions-group') : 'state',
+            scope: riskrStorage.getItem('actions-scope') === 'mine' ? 'mine' : 'all',
+            me: riskrStorage.getItem('actions-me') || ''
+        };
+        const setActionGrouping = group => { actionView.group = group; riskrStorage.setItem('actions-group', group); renderActionPlan(); };
+        const setActionScope = scope => { actionView.scope = scope; riskrStorage.setItem('actions-scope', scope); renderActionPlan(); };
+        const setActionMe = me => { actionView.me = me; riskrStorage.setItem('actions-me', me); renderActionPlan(); };
+
+        // Porteur d'une mesure (sinon celui du risque) et ses entités (« Achats / Juridique » → Achats, Juridique)
+        const mesureOwner = item => item.mesure.porteur || item.risk.responsable;
+        const ownerParts = owner => owner.split('/').map(part => part.trim()).filter(Boolean);
+
+        // Complexité : O(m log m), m = nombre de mesures (tri : retards d'abord, puis échéance la plus proche)
         function renderActionPlan() {
             const board = document.getElementById('action-board');
             if (!board) return;
-            const items = risks.flatMap(risk => risk.mesures.map((mesure, index) => {
+            const all = risks.flatMap(risk => risk.mesures.map((mesure, index) => {
                 const due = mesureDueDate(mesure.echeance);
-                return { risk, mesure, index, late: isMesureLate(mesure), dueKey: due ? due.getTime() : Number.MAX_SAFE_INTEGER };
+                return { risk, mesure, index, late: isMesureLate(mesure), due, dueKey: due ? due.getTime() : Number.MAX_SAFE_INTEGER };
             })).filter(item => item.mesure.texte);
-            items.sort((a, b) => (b.late - a.late) || (a.dueKey - b.dueKey));
+            all.sort((a, b) => (b.late - a.late) || (a.dueKey - b.dueKey));
 
+            // Barre : identité et périmètre
+            const people = [...new Set(all.flatMap(item => ownerParts(mesureOwner(item))))].sort((a, b) => a.localeCompare(b));
+            document.querySelectorAll('#actions-groupby .segmented-btn').forEach(b => b.classList.toggle('active', b.dataset.group === actionView.group));
+            document.querySelectorAll('#actions-scope .segmented-btn').forEach(b => b.classList.toggle('active', b.dataset.scope === actionView.scope));
+            const meLabel = document.getElementById('actions-me');
+            meLabel.hidden = actionView.scope !== 'mine';
+            meLabel.querySelector('select').innerHTML = `<option value="">${t('mePlaceholder')}</option>` +
+                people.map(name => `<option ${name === actionView.me ? 'selected' : ''}>${escapeHtml(name)}</option>`).join('');
+            const items = actionView.scope === 'mine'
+                ? all.filter(item => actionView.me && ownerParts(mesureOwner(item)).includes(actionView.me))
+                : all;
+
+            // Résumé et progression
             const counts = { todo: 0, doing: 0, done: 0 };
             items.forEach(item => counts[item.mesure.etat]++);
             const late = items.filter(item => item.late).length;
-            document.getElementById('action-plan-summary').innerHTML = escapeHtml(t('actionSummary', { total: items.length, ...counts }))
-                + (late ? ` · <span class="late">${escapeHtml(t('actionLateCount', { count: late }))}</span>` : '');
+            const percent = key => items.length ? counts[key] / items.length * 100 : 0;
+            document.getElementById('actions-summary').innerHTML = `<span><b>${t('actionSummary', { total: items.length, ...counts }).replace(/^(\d+ [^·]+)/, '$1</b>')}</span>
+                <span class="progress-bar" aria-hidden="true"><span style="width:${percent('done')}%"></span><span style="width:${percent('doing')}%"></span></span>
+                ${late ? `<span class="late-chip">${escapeHtml(t('actionLateCount', { count: late }))}</span>` : ''}`;
+
+            // Colonnes selon le regroupement
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const soon = today.getTime() + 30 * 86400000;
+            const columns = actionView.group === 'state'
+                ? MESURE_STATE_ORDER.map(state => [t(state === 'done' ? 'stateDonePlural' : MESURE_STATES[state]), items.filter(item => item.mesure.etat === state)])
+                : actionView.group === 'due'
+                    ? [['dueLate', item => item.late], ['dueSoon', item => !item.late && item.due && item.dueKey <= soon],
+                        ['dueLater', item => !item.late && item.due && item.dueKey > soon], ['dueNone', item => !item.due]]
+                        .map(([key, keep]) => [t(key), items.filter(keep)])
+                    : [...new Set(items.map(mesureOwner))].sort((a, b) => a.localeCompare(b))
+                        .map(owner => [owner || t('noOwner'), items.filter(item => mesureOwner(item) === owner)]);
 
             const moveButton = (item, state, label, iconName) =>
                 `<button type="button" data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}" data-state="${state}" title="${t(label)}" aria-label="${t(label)}">${icon(iconName)}</button>`;
-            board.innerHTML = MESURE_STATE_ORDER.map((state, column) => {
-                const cards = items.filter(item => item.mesure.etat === state);
-                return `<section class="action-column">
-                    <h4 class="action-column-title"><span>${t(MESURE_STATES[state])}</span><span>${cards.length}</span></h4>
-                    ${cards.map(item => `
-                    <article class="action-card${item.late ? ' is-late' : ''}">
-                        <div>${escapeHtml(item.mesure.texte)}</div>
-                        <div class="action-card-meta">
-                            <span class="action-risk" title="${escapeHtml(item.risk.title)}">${escapeHtml(item.risk.id)}</span>
-                            ${item.mesure.porteur ? `<span>${escapeHtml(item.mesure.porteur)}</span>` : ''}
-                            ${item.mesure.echeance ? `<span class="action-due"${item.late ? ` title="${t('mesureLate')}"` : ''}>${escapeHtml(item.mesure.echeance)}</span>` : ''}
-                            <span class="action-moves">
-                                ${column > 0 ? moveButton(item, MESURE_STATE_ORDER[column - 1], 'movePrev', 'left') : ''}
-                                ${column < MESURE_STATE_ORDER.length - 1 ? moveButton(item, MESURE_STATE_ORDER[column + 1], 'moveNext', 'right') : ''}
-                            </span>
-                        </div>
-                    </article>`).join('') || `<p class="action-empty">${t('actionEmpty')}</p>`}
-                </section>`;
-            }).join('');
+            const card = item => {
+                const position = MESURE_STATE_ORDER.indexOf(item.mesure.etat);
+                const owner = mesureOwner(item);
+                return `<article class="action-card${item.late ? ' is-late' : ''}${item.mesure.etat === 'done' ? ' is-done' : ''}">
+                    <div class="action-card-risk" data-risk-uid="${escapeHtml(item.risk.uid)}" title="${t('openRiskSheet')}"><span class="id-bubble">${escapeHtml(item.risk.id)}</span>${escapeHtml(item.risk.title)}</div>
+                    <div class="action-card-text">${escapeHtml(item.mesure.texte)}</div>
+                    <div class="action-card-meta">
+                        <span class="barrier-tag ${item.mesure.barriere}">${t(item.mesure.barriere === 'protection' ? 'barrierProtection' : 'barrierPrevention')}</span>
+                        <span class="action-moves">
+                            ${position > 0 ? moveButton(item, MESURE_STATE_ORDER[position - 1], 'movePrev', 'left') : ''}
+                            ${position < MESURE_STATE_ORDER.length - 1 ? moveButton(item, MESURE_STATE_ORDER[position + 1], 'moveNext', 'right') : ''}
+                        </span>
+                        <span class="action-due">${item.mesure.echeance ? escapeHtml(item.late ? t('lateOn', { date: item.mesure.echeance }) : item.mesure.echeance) : ''}</span>
+                        ${owner ? `<span title="${escapeHtml(owner)}">${avatar(owner)}</span>` : ''}
+                    </div>
+                </article>`;
+            };
+            board.innerHTML = columns.map(([title, cards]) => `<section class="action-column">
+                <h4 class="action-column-title"><span>${escapeHtml(title)}</span><span>${cards.length}</span></h4>
+                ${cards.map(card).join('') || `<p class="action-empty">${t('actionEmpty')}</p>`}
+            </section>`).join('');
 
             board.onclick = event => {
+                const riskLink = event.target.closest('[data-risk-uid]');
+                if (riskLink) return openRiskSheet(riskLink.dataset.riskUid);
                 const button = event.target.closest('button[data-state]');
                 if (!button) return;
                 findRiskOf(button).mesures[Number(button.dataset.index)].etat = button.dataset.state;
