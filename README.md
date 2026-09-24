@@ -33,6 +33,12 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   échéance facultatifs ; une simple chaîne de texte est aussi acceptée).
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
   `statusAccepted`.
+- `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid` ou `''`
+  (non définie) ; `assessmentTarget` est la cotation visée `[probabilité, impact]`
+  (`[0, 0]` = non définie).
+- `settings.riskAppetite` : score maximal acceptable (P × I, sur 25 ; `0` = aucun).
+  Par défaut 9, juste sous le seuil « élevé ». Tracé en pointillé sur les matrices ;
+  un risque résiduel au-delà est signalé dans le registre.
 - Les numéros (`1.1`, `1.2`…) suivent la position des risques et sont
   recalculés après chaque ajout, suppression ou déplacement.
 - Seuils de criticité par défaut : faible 1-4, modéré 5-9, élevé 10-14,
@@ -69,10 +75,18 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Drag & drop** pour réorganiser les risques
 - **Numérotation automatique** selon la position (ajout, suppression, glisser-déposer)
 - **Mesures de remédiation** avec porteur et échéance facultative
+- **Stratégie de traitement** (réduire, accepter, transférer, éviter) et
+  **cotation cible** par risque
+- **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
+  risques au-dessus de l'appétence
 - **Catégorisation** par groupes thématiques
 
 ### Visualisation
 - **Matrices Before/After** avec Chart.js
+- **Vue trajectoire** : une seule matrice où chaque risque va de sa position avant
+  (bulle creuse) à sa position après (bulle pleine)
+- **Appétence au risque** tracée en pointillé, **nombre de risques par case**
+  (options d'affichage), clic sur une case pour filtrer le registre
 - Visualisation comparative de l'impact des remédiations
 - Moyennes par groupe de risques
 - Lecture et remédiation synthétiques par groupe

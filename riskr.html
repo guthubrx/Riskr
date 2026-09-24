@@ -659,12 +659,136 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             direction: ltr;
         }
 
+        /* Filtres du registre (recherche, listes, appétence, case de matrice) */
+        .risk-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin: 24px 0 8px;
+            scroll-margin-top: 16px;
+        }
+
+        .filter-search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1 1 260px;
+            max-width: 380px;
+            height: 36px;
+            padding: 0 12px;
+            color: var(--text-3);
+            background: var(--surface-2);
+            border-radius: 10px;
+        }
+
+        .filter-search input {
+            width: 100%;
+            font: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+
+        .filter-select,
+        .filter-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 36px;
+            padding: 0 12px;
+            font: inherit;
+            font-size: 13px;
+            color: var(--text-2);
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .filter-select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-inline-end: 30px;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+        }
+
+        .filter-select.active,
+        .filter-toggle.active {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 30px;
+            padding: 0 10px;
+            font: inherit;
+            font-size: 13px;
+            color: #ffffff;
+            background: var(--accent);
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .filter-chip[hidden],
+        .filter-toggle[hidden] {
+            display: none;
+        }
+
+        .filter-count {
+            margin-inline-start: auto;
+            font-size: 13px;
+            color: var(--text-3);
+        }
+
+        .filtered-out,
+        #risks-container.filtering .group-separator,
+        #risks-container.filtering .risk-separator-row {
+            display: none !important;
+        }
+
+        .chart-canvas canvas {
+            cursor: pointer; /* un clic sur une case filtre le registre */
+        }
+
+        /* Mise en page des matrices : avant | après, ou trajectoire seule (centrée) */
+        .charts-column:not(.trajectory) > #trajectory-wrapper,
+        .charts-column.trajectory > .chart-wrapper:not(#trajectory-wrapper) {
+            display: none;
+        }
+
+        .charts-column.trajectory > #trajectory-wrapper {
+            grid-column: 1 / -1;
+            justify-self: center;
+            width: min(100%, 720px);
+        }
+
+        .menu-label {
+            padding: 10px 10px 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-3);
+        }
+
         /* Menus déroulants de l'en-tête (export, langue) */
         .menu-anchor {
             position: relative;
         }
 
         .menu {
+            font-weight: 400;
+            text-align: start;
             position: absolute;
             top: calc(100% + 6px);
             inset-inline-end: 0;
@@ -913,6 +1037,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risks-table .risk-id {
             font-weight: 600;
             color: var(--text);
+        }
+
+        /* Plan de traitement d'un risque : stratégie et cotation cible, au-dessus des mesures */
+        .risk-plan {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 28px;
+            margin-bottom: 12px;
+        }
+
+        .risk-plan-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .risk-plan-field > span:first-child {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
+        .risks-table .plan-select {
+            width: auto;
+            min-width: 120px;
+            padding-inline-end: 22px;
+        }
+
+        /* Criticité résiduelle au-delà de l'appétence au risque */
+        .appetite-alert {
+            color: #ff9f0a;
+            vertical-align: middle;
+            margin-inline-start: 4px;
         }
 
         /* Mesures : une ligne par mesure (texte | porteur | échéance | suppression) */
@@ -1289,7 +1448,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             padding: 6px 4px;
         }
 
-        .risks-table .status-dropdown {
+        .risks-table .status-dropdown,
+        .risks-table .plan-select {
             width: 100%;
             padding: 5px 6px 5px 3px;
             border: 1px solid var(--border-strong);
@@ -1305,12 +1465,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background-size: 16px;
         }
 
-        .risks-table .status-dropdown:hover {
+        .risks-table .status-dropdown:hover,
+        .risks-table .plan-select:hover {
             border-color: var(--accent);
             background-color: var(--surface-2);
         }
 
-        .risks-table .status-dropdown:focus {
+        .risks-table .status-dropdown:focus,
+        .risks-table .plan-select:focus {
             outline: none;
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
@@ -2886,6 +3048,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <button id="view-btn-groups" class="segmented-btn active" onclick="setMatrixView('groups')" data-i18n-title="viewGroups"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
                             <button id="view-btn-risks" class="segmented-btn" onclick="setMatrixView('risks')" data-i18n-title="viewRisks"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="2"/><circle cx="11" cy="8" r="2"/><circle cx="17" cy="15" r="2"/><circle cx="18" cy="6" r="2"/></svg></button>
                         </div>
+                        <div class="segmented" role="group" data-i18n-title="displayOptions">
+                            <button id="layout-btn-split" class="segmented-btn" onclick="setMatrixLayout('split')" data-i18n-title="viewSideBySide"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg></button>
+                            <button id="layout-btn-trajectory" class="segmented-btn" onclick="setMatrixLayout('trajectory')" data-i18n-title="viewTrajectory"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3" fill="currentColor"/><path d="M14.8 9.2L9.5 14.5"/></svg></button>
+                        </div>
+                        <div class="menu-anchor">
+                            <button class="icon-toggle" onclick="toggleMenu('matrix-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="displayOptions"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
+                            <div id="matrix-menu" class="menu" role="menu" hidden></div>
+                        </div>
                         <button id="sticky-toggle-btn" class="icon-toggle" onclick="toggleSticky()" data-i18n-title="pinMatrices"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg></button>
                     </div>
                 </h3>
@@ -2916,6 +3086,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </div>
                                 <div class="chart-canvas">
                                     <canvas id="chartAfter"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper" id="trajectory-wrapper">
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn" onclick="copyMatrixImage('trajectory')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
+                                    <button class="chart-action-btn" onclick="openMatrixModal('trajectory')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
+                                </div>
+                                <div class="chart-header">
+                                    <h3 data-i18n="matrixTrajectory">Trajectoire des risques (avant → après)</h3>
+                                </div>
+                                <div class="chart-canvas">
+                                    <canvas id="chartTrajectory"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -2968,6 +3150,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </div>
         </div>
 
+        <div class="risk-filters" id="risk-filters">
+            <label class="filter-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input type="search" id="filter-text" data-i18n-placeholder="filterSearch" data-i18n-title="filterSearch" oninput="setFilter('text', this.value)"></label>
+            <select id="filter-group" class="filter-select" onchange="setFilter('group', this.value)"></select>
+            <select id="filter-level" class="filter-select" onchange="setFilter('level', this.value)"></select>
+            <select id="filter-treatment" class="filter-select" onchange="setFilter('treatment', this.value)"></select>
+            <select id="filter-owner" class="filter-select" onchange="setFilter('owner', this.value)"></select>
+            <button type="button" id="filter-appetite" class="filter-toggle" onclick="setFilter('aboveAppetite', !riskFilter.aboveAppetite)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="filterAboveAppetite">Au-dessus de l’appétence</span></button>
+            <button type="button" id="filter-cell" class="filter-chip" onclick="setFilter('cell', null)" hidden></button>
+            <span id="filter-count" class="filter-count"></span>
+            <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
+        </div>
         <div id="risks-container"></div>
     </div>
 
@@ -3476,6 +3670,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
         }
 
+        // Traitement et cotation cible (ligne dépliable du risque)
+        function initPlanEditing() {
+            document.querySelectorAll('.plan-select').forEach(select => {
+                if (select.dataset.listenerInitialized) return;
+                select.dataset.listenerInitialized = 'true';
+                select.addEventListener('change', () => {
+                    const risk = findRiskOf(select);
+                    if (!risk) return;
+                    if (select.dataset.field === 'traitement') {
+                        risk.traitement = select.value;
+                    } else {
+                        risk.assessmentTarget[Number(select.dataset.axis)] = parseInt(select.value, 10) || 0;
+                        select.parentElement.querySelector('.target-badge').innerHTML =
+                            getCriticalityBadge(...risk.assessmentTarget);
+                    }
+                    commitChange();
+                    showToast(t('changeSaved'));
+                });
+            });
+        }
+
         // ========================================
         // Édition inline du champ Responsable
         // ========================================
@@ -3564,7 +3779,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     title: document.getElementById('main-title').textContent,
                     subtitle: document.getElementById('main-subtitle').textContent,
                     language: currentLanguage,
-                    storageNamespace: normalizedStorageNamespace
+                    storageNamespace: normalizedStorageNamespace,
+                    criticalityThresholds: CRITICALITY_THRESHOLDS
                 }
             }, serializeModel()); // risks[] + riskGroups[].riskIds
         }
@@ -3661,7 +3877,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // l'arabe et le chinois utilisent donc l'anglais
         const pdfText = key => (currentLanguage === 'ar' || currentLanguage === 'zh') ? translations.en[key] : t(key);
 
+        // Le PDF présente les matrices avant / après côte à côte, même en vue trajectoire
         function exportToPDF() {
+            const trajectory = matrixLayout === 'trajectory';
+            if (trajectory) setMatrixLayout('split');
+            try {
+                exportPdfDocument();
+            } finally {
+                if (trajectory) setMatrixLayout('trajectory');
+            }
+        }
+
+        function exportPdfDocument() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -3799,7 +4026,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const sheetData = [];
 
                 // En-têtes
-                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible')]);
+                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget')]);
 
                 // Données des risques
                 group.risks.forEach(risk => {
@@ -3828,7 +4055,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         critAfter,
                         reduction,
                         risk.statut ? t(risk.statut) : '',
-                        risk.responsable || ''
+                        risk.responsable || '',
+                        treatmentLabel(risk.traitement),
+                        calculateCriticality(...risk.assessmentTarget) || ''
                     ]);
                 });
 
@@ -3872,7 +4101,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             let csvContent = '';
 
             // En-têtes CSV
-            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible')].join(',') + '\n';
+            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget')].join(',') + '\n';
 
             // Données
             riskGroups.forEach(group => {
@@ -3912,7 +4141,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         critAfter,
                         reduction,
                         escapeCSV(risk.statut ? t(risk.statut) : ''),
-                        escapeCSV(risk.responsable || '')
+                        escapeCSV(risk.responsable || ''),
+                        escapeCSV(treatmentLabel(risk.traitement)),
+                        calculateCriticality(...risk.assessmentTarget) || ''
                     ].join(',') + '\n';
                 });
             });
@@ -4103,7 +4334,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "Après remédiation",
                 pdfNoRisk: "Aucun risque",
                 pdfColumns: "P.Av|I.Av|C.Av|P.Ap|I.Ap|C.Ap|Réd.",
-                exportColumns: "Prob. avant|Impact avant|Crit. avant|Prob. après|Impact après|Crit. après"
+                exportColumns: "Prob. avant|Impact avant|Crit. avant|Prob. après|Impact après|Crit. après",
+                colTreatment: "Traitement",
+                treatNone: "Non défini",
+                treatReduce: "Réduire",
+                treatAccept: "Accepter",
+                treatTransfer: "Transférer",
+                treatAvoid: "Éviter",
+                colTarget: "Cible",
+                targetHint: "Cotation visée une fois toutes les mesures en place",
+                aboveAppetite: "Au-dessus de l’appétence au risque (≤ {max})",
+                displayOptions: "Options d’affichage",
+                viewSideBySide: "Avant et après côte à côte",
+                viewTrajectory: "Trajectoire : de l’avant vers l’après",
+                matrixTrajectory: "Trajectoire des risques (avant → après)",
+                showCounts: "Nombre de risques par case",
+                showAppetite: "Ligne d’appétence au risque",
+                appetiteLabel: "Appétence au risque",
+                appetiteNone: "Aucune",
+                filterSearch: "Rechercher un risque, une mesure, un porteur…",
+                filterAllGroups: "Tous les groupes",
+                filterAllLevels: "Tous les niveaux",
+                filterAllTreatments: "Tous les traitements",
+                filterAllOwners: "Tous les porteurs",
+                filterAboveAppetite: "Au-dessus de l’appétence",
+                filterCell: "Case P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} risques",
+                filterClear: "Effacer les filtres",
+                filterNoMatch: "Aucun risque ne correspond aux filtres"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4258,7 +4516,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "After remediation",
                 pdfNoRisk: "No risk",
                 pdfColumns: "P.Bef|I.Bef|C.Bef|P.Aft|I.Aft|C.Aft|Red.",
-                exportColumns: "Prob. before|Impact before|Crit. before|Prob. after|Impact after|Crit. after"
+                exportColumns: "Prob. before|Impact before|Crit. before|Prob. after|Impact after|Crit. after",
+                colTreatment: "Treatment",
+                treatNone: "Not set",
+                treatReduce: "Reduce",
+                treatAccept: "Accept",
+                treatTransfer: "Transfer",
+                treatAvoid: "Avoid",
+                colTarget: "Target",
+                targetHint: "Rating aimed for once all measures are in place",
+                aboveAppetite: "Above risk appetite (≤ {max})",
+                displayOptions: "Display options",
+                viewSideBySide: "Before and after side by side",
+                viewTrajectory: "Trajectory: from before to after",
+                matrixTrajectory: "Risk trajectory (before → after)",
+                showCounts: "Number of risks per cell",
+                showAppetite: "Risk appetite line",
+                appetiteLabel: "Risk appetite",
+                appetiteNone: "None",
+                filterSearch: "Search a risk, a measure, an owner…",
+                filterAllGroups: "All groups",
+                filterAllLevels: "All levels",
+                filterAllTreatments: "All treatments",
+                filterAllOwners: "All owners",
+                filterAboveAppetite: "Above appetite",
+                filterCell: "Cell P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} risks",
+                filterClear: "Clear filters",
+                filterNoMatch: "No risk matches the filters"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -4413,7 +4698,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "Después de la remediación",
                 pdfNoRisk: "Ningún riesgo",
                 pdfColumns: "P.Ant|I.Ant|C.Ant|P.Des|I.Des|C.Des|Red.",
-                exportColumns: "Prob. antes|Impacto antes|Crit. antes|Prob. después|Impacto después|Crit. después"
+                exportColumns: "Prob. antes|Impacto antes|Crit. antes|Prob. después|Impacto después|Crit. después",
+                colTreatment: "Tratamiento",
+                treatNone: "Sin definir",
+                treatReduce: "Reducir",
+                treatAccept: "Aceptar",
+                treatTransfer: "Transferir",
+                treatAvoid: "Evitar",
+                colTarget: "Objetivo",
+                targetHint: "Calificación prevista una vez aplicadas todas las medidas",
+                aboveAppetite: "Por encima del apetito de riesgo (≤ {max})",
+                displayOptions: "Opciones de visualización",
+                viewSideBySide: "Antes y después lado a lado",
+                viewTrajectory: "Trayectoria: de antes a después",
+                matrixTrajectory: "Trayectoria de los riesgos (antes → después)",
+                showCounts: "Número de riesgos por casilla",
+                showAppetite: "Línea de apetito de riesgo",
+                appetiteLabel: "Apetito de riesgo",
+                appetiteNone: "Ninguno",
+                filterSearch: "Buscar un riesgo, una medida, un responsable…",
+                filterAllGroups: "Todos los grupos",
+                filterAllLevels: "Todos los niveles",
+                filterAllTreatments: "Todos los tratamientos",
+                filterAllOwners: "Todos los responsables",
+                filterAboveAppetite: "Por encima del apetito",
+                filterCell: "Casilla P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} riesgos",
+                filterClear: "Borrar los filtros",
+                filterNoMatch: "Ningún riesgo coincide con los filtros"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -4568,7 +4880,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "补救后",
                 pdfNoRisk: "无风险",
                 pdfColumns: "前P|前I|前C|后P|后I|后C|降低",
-                exportColumns: "补救前概率|补救前影响|补救前严重度|补救后概率|补救后影响|补救后严重度"
+                exportColumns: "补救前概率|补救前影响|补救前严重度|补救后概率|补救后影响|补救后严重度",
+                colTreatment: "处理策略",
+                treatNone: "未设定",
+                treatReduce: "降低",
+                treatAccept: "接受",
+                treatTransfer: "转移",
+                treatAvoid: "规避",
+                colTarget: "目标",
+                targetHint: "所有措施落实后的目标评级",
+                aboveAppetite: "超出风险偏好（≤ {max}）",
+                displayOptions: "显示选项",
+                viewSideBySide: "处理前后并排显示",
+                viewTrajectory: "轨迹：从处理前到处理后",
+                matrixTrajectory: "风险轨迹（处理前 → 处理后）",
+                showCounts: "每格风险数量",
+                showAppetite: "风险偏好线",
+                appetiteLabel: "风险偏好",
+                appetiteNone: "无",
+                filterSearch: "搜索风险、措施或负责人…",
+                filterAllGroups: "所有组",
+                filterAllLevels: "所有等级",
+                filterAllTreatments: "所有处理策略",
+                filterAllOwners: "所有负责人",
+                filterAboveAppetite: "超出风险偏好",
+                filterCell: "格 P{p} × I{i}（{phase}）",
+                filterCount: "{shown} / {total} 个风险",
+                filterClear: "清除筛选",
+                filterNoMatch: "没有符合筛选条件的风险"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -4723,7 +5062,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 pdfAfter: "بعد المعالجة",
                 pdfNoRisk: "لا يوجد خطر",
                 pdfColumns: "ا.قبل|ت.قبل|خ.قبل|ا.بعد|ت.بعد|خ.بعد|تخفيض",
-                exportColumns: "الاحتمال قبل|التأثير قبل|الخطورة قبل|الاحتمال بعد|التأثير بعد|الخطورة بعد"
+                exportColumns: "الاحتمال قبل|التأثير قبل|الخطورة قبل|الاحتمال بعد|التأثير بعد|الخطورة بعد",
+                colTreatment: "استراتيجية المعالجة",
+                treatNone: "غير محدد",
+                treatReduce: "تخفيض",
+                treatAccept: "قبول",
+                treatTransfer: "نقل",
+                treatAvoid: "تجنّب",
+                colTarget: "المستهدف",
+                targetHint: "التقييم المستهدف بعد تنفيذ جميع الإجراءات",
+                aboveAppetite: "أعلى من مستوى تقبّل المخاطر (≤ {max})",
+                displayOptions: "خيارات العرض",
+                viewSideBySide: "قبل وبعد جنبًا إلى جنب",
+                viewTrajectory: "المسار: من قبل إلى بعد",
+                matrixTrajectory: "مسار المخاطر (قبل → بعد)",
+                showCounts: "عدد المخاطر في كل خانة",
+                showAppetite: "خط مستوى تقبّل المخاطر",
+                appetiteLabel: "مستوى تقبّل المخاطر",
+                appetiteNone: "لا شيء",
+                filterSearch: "ابحث عن خطر أو إجراء أو مسؤول…",
+                filterAllGroups: "كل المجموعات",
+                filterAllLevels: "كل المستويات",
+                filterAllTreatments: "كل استراتيجيات المعالجة",
+                filterAllOwners: "كل المسؤولين",
+                filterAboveAppetite: "أعلى من مستوى التقبّل",
+                filterCell: "الخانة P{p} × I{i} ({phase})",
+                filterCount: "{shown} / {total} مخاطر",
+                filterClear: "مسح عوامل التصفية",
+                filterNoMatch: "لا يوجد خطر مطابق لعوامل التصفية"
             }
         };
 
@@ -4875,6 +5241,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return 'low';
         }
 
+        // Pictogramme d'alerte si la cotation dépasse l'appétence au risque (0 = aucune)
+        function appetiteAlert([probability, impact]) {
+            const score = calculateCriticality(probability, impact);
+            if (!settings.riskAppetite || score === null || score <= settings.riskAppetite) return '';
+            const title = escapeHtml(t('aboveAppetite', { max: settings.riskAppetite }));
+            return `<span class="appetite-alert" title="${title}" aria-label="${title}">${icon('alert')}</span>`;
+        }
+
         // Génère le badge HTML de criticité
         function getCriticalityBadge(probability, impact) {
             const score = calculateCriticality(probability, impact);
@@ -4968,6 +5342,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // alimente l'historique et sauvegarde le modèle complet dans le navigateur.
 
         const STATUS_KEYS = ['statusNotTreated', 'statusInProgress', 'statusTreated', 'statusAccepted'];
+        // Stratégie de traitement d'un risque ('' = non définie) → clé de traduction
+        const TREATMENTS = { reduce: 'treatReduce', accept: 'treatAccept', transfer: 'treatTransfer', avoid: 'treatAvoid' };
+        const treatmentLabel = key => t(TREATMENTS[key] || 'treatNone');
         const LEGACY_STATUS_LABELS = {
             'Non traité': 'statusNotTreated', 'En cours': 'statusInProgress',
             'Traité': 'statusTreated', 'Accepté': 'statusAccepted'
@@ -5021,7 +5398,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 statut: STATUS_KEYS.includes(raw.statut)
                     ? raw.statut
                     : (LEGACY_STATUS_LABELS[raw.statut] || 'statusNotTreated'),
-                responsable: String(raw.responsable || '')
+                responsable: String(raw.responsable || ''),
+                traitement: raw.traitement in TREATMENTS ? raw.traitement : '',
+                assessmentTarget: toAssessment(raw.assessmentTarget)
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -5063,7 +5442,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (groupedRisks.length < riskById.size) {
                 console.warn(`[Riskr] ${riskById.size - groupedRisks.length} risque(s) sans groupe ignoré(s)`);
             }
-            return { risks: groupedRisks, riskGroups: newGroups };
+            return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings) };
+        }
+
+        // Réglages de l'analyse, enregistrés avec le modèle (historique, navigateur, fichier).
+        // riskAppetite : score P × I maximal acceptable (0 = aucune appétence définie) ;
+        // par défaut juste sous le seuil « élevé ».
+        function normalizeSettings(raw) {
+            const appetite = raw && raw.riskAppetite;
+            return {
+                riskAppetite: Number.isInteger(appetite) && appetite >= 0 && appetite <= 25
+                    ? appetite
+                    : CRITICALITY_THRESHOLDS.high - 1
+            };
         }
 
         // Remplace le modèle en place (les tableaux gardent leur identité)
@@ -5072,12 +5463,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             risks.push(...model.risks);
             riskGroups.length = 0;
             riskGroups.push(...model.riskGroups);
+            Object.assign(settings, model.settings);
         }
 
         // Copie sérialisable au format canonique (risks[] + riskGroups[].riskIds)
         function serializeModel() {
             return JSON.parse(JSON.stringify({
                 risks,
+                settings,
                 riskGroups: riskGroups.map(({ risks: groupRisks, ...group }) =>
                     Object.assign(group, { riskIds: groupRisks.map(r => r.id) }))
             }));
@@ -5345,6 +5738,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Données des risques — peuvent être remplacées par window.RISKR_DATA
         const risks = [];
         const riskGroups = [];
+        const settings = {};
         if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
             applyModel(buildModel(window.RISKR_DATA));
             // Le script est en fin de page : le titre existe déjà dans le DOM
@@ -5378,13 +5772,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         loadPersistedModel();
         validateRiskGroupNarratives(riskGroups);
 
-        let chartBefore, chartAfter;
+        let chartBefore, chartAfter, chartTrajectory;
 
         // Champs d'un risque vierge (non évalué)
         function emptyAssessments() {
             return {
-                assessmentBefore: [0, 0], assessmentAfter: [0, 0],
-                mesures: [], statut: 'statusNotTreated', responsable: ''
+                assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
+                mesures: [], statut: 'statusNotTreated', responsable: '', traitement: ''
             };
         }
 
@@ -5570,7 +5964,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
 
             if (critAfterCell) {
-                critAfterCell.innerHTML = getCriticalityBadge(probAfter, impactAfter);
+                critAfterCell.innerHTML = getCriticalityBadge(probAfter, impactAfter) + appetiteAlert([probAfter, impactAfter]);
             }
 
             if (reductionCell) {
@@ -5790,7 +6184,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-after-${index}">
-                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}
+                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}${appetiteAlert(risk.assessmentAfter)}
                             </td>
                             <td class="reduction-cell" id="reduction-${index}">
                                 ${getRiskReductionBadge(risk.assessmentBefore[0], risk.assessmentBefore[1], risk.assessmentAfter[0], risk.assessmentAfter[1])}
@@ -5816,6 +6210,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         remediationRow.id = `remediation-row-${risk.id}`;
                         remediationRow.innerHTML = `
                             <td colspan="11" class="remediation-cell-expanded">
+                                <div class="risk-plan">
+                                    <label class="risk-plan-field"><span>${t('colTreatment')}</span>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-field="traitement">
+                                            ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}
+                                        </select></label>
+                                    <div class="risk-plan-field" title="${escapeHtml(t('targetHint'))}"><span>${t('colTarget')}</span>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-field="target" data-axis="0" aria-label="${t('colProb')}">${generateOptions(getProbabilityScale(), risk.assessmentTarget[0])}</select>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-field="target" data-axis="1" aria-label="${t('colImpact')}">${generateOptions(getImpactScale(), risk.assessmentTarget[1])}</select>
+                                        <span class="target-badge">${getCriticalityBadge(...risk.assessmentTarget)}</span>
+                                    </div>
+                                </div>
                                 <div class="mesures-list">
                                     <div class="mesures-header">
                                         <span>${t('colRemediations')}</span>
@@ -5906,7 +6311,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             initRiskTitleEditing();
             initMesureEditing();
             initStatusDropdowns();
+            initPlanEditing();
             initResponsableEditing();
+            fillFilterOptions();
+            applyFilters();
         }
 
         // ========================================
@@ -6101,10 +6509,107 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     ctx.strokeRect(xStart, yStart, xEnd - xStart, yEnd - yStart);
                 });
 
+                const cell = riskFilter.cell;
+                if (cell && chart.data.datasets.some(dataset => dataset.phase === cell.phase)) {
+                    ctx.strokeStyle = themeColor('--accent');
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(x.getPixelForValue(cell.p - 0.5) + 1.5, y.getPixelForValue(cell.i + 0.5) + 1.5,
+                        x.getPixelForValue(cell.p + 0.5) - x.getPixelForValue(cell.p - 0.5) - 3,
+                        y.getPixelForValue(cell.i - 0.5) - y.getPixelForValue(cell.i + 0.5) - 3);
+                }
+
                 ctx.restore();
             }
         };
         
+        // Ligne d'appétence : frontière en escalier (bords des cases) de la zone P × I ≤ appétence
+        const appetitePlugin = {
+            id: 'riskAppetite',
+            beforeDatasetsDraw(chart) {
+                const max = settings.riskAppetite;
+                if (!matrixOptions.appetite || !max || max >= 25) return;
+                const { ctx, scales: { x, y } } = chart;
+                ctx.save();
+                ctx.beginPath();
+                let started = false;
+                for (let p = 1; p <= 5; p++) {
+                    const level = Math.min(5, Math.floor(max / p));
+                    const top = y.getPixelForValue(level + 0.5), left = x.getPixelForValue(p - 0.5), right = x.getPixelForValue(p + 0.5);
+                    if (level === 5) { ctx.moveTo(right, top); started = true; continue; } // bord supérieur : rien à tracer
+                    if (started) ctx.lineTo(left, top); else { ctx.moveTo(left, top); started = true; }
+                    ctx.lineTo(right, top);
+                }
+                ctx.setLineDash([7, 5]);
+                ctx.lineWidth = 2.5;
+                ctx.globalAlpha = 0.75;
+                ctx.strokeStyle = themeColor('--text');
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
+
+        // Trajectoire : flèche de la position avant (bulle creuse) vers la position après
+        const trajectoryPlugin = {
+            id: 'riskTrajectory',
+            beforeDatasetsDraw(chart) {
+                const [before, after] = chart.data.datasets;
+                if (!after) return;
+                const { ctx, scales: { x, y } } = chart;
+                const ends = new Map(after.data.map(point => [point.shortLabel, point]));
+                const radius = before.bubble.radius * cellSize(chart), head = radius * 0.55;
+                ctx.save();
+                ctx.strokeStyle = ctx.fillStyle = BUBBLE_COLOR;
+                ctx.globalAlpha = 0.55;
+                ctx.lineWidth = Math.max(1.5, radius * 0.12);
+                before.data.forEach(start => {
+                    const end = ends.get(start.shortLabel);
+                    if (!end) return;
+                    const x1 = x.getPixelForValue(start.x), y1 = y.getPixelForValue(start.y);
+                    const x2 = x.getPixelForValue(end.x), y2 = y.getPixelForValue(end.y);
+                    const length = Math.hypot(x2 - x1, y2 - y1);
+                    if (length < radius * 2 + head) return; // cotation inchangée : bulles voisines, pas de flèche
+                    const ux = (x2 - x1) / length, uy = (y2 - y1) / length;
+                    const tipX = x2 - ux * radius, tipY = y2 - uy * radius;
+                    ctx.beginPath();
+                    ctx.moveTo(x1 + ux * radius, y1 + uy * radius);
+                    ctx.lineTo(tipX - ux * head, tipY - uy * head);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(tipX, tipY);
+                    ctx.lineTo(tipX - ux * head - uy * head * 0.6, tipY - uy * head + ux * head * 0.6);
+                    ctx.lineTo(tipX - ux * head + uy * head * 0.6, tipY - uy * head - ux * head * 0.6);
+                    ctx.fill();
+                });
+                ctx.restore();
+            }
+        };
+
+        // Nombre de bulles par case (dernier jeu de données : « après » en trajectoire), coin supérieur
+        // droit de la case. Complexité : O(n) — n = nombre de bulles.
+        const cellCountsPlugin = {
+            id: 'cellCounts',
+            beforeDatasetsDraw(chart) {
+                if (!matrixOptions.counts) return;
+                const { ctx, scales: { x, y } } = chart;
+                const counts = new Map();
+                chart.data.datasets[chart.data.datasets.length - 1].data.forEach(point => {
+                    const key = `${Math.round(point.baseX)},${Math.round(point.baseY)}`;
+                    counts.set(key, (counts.get(key) || 0) + 1);
+                });
+                const size = cellSize(chart);
+                ctx.save();
+                ctx.font = `600 ${Math.max(9, Math.round(size * 0.11))}px Arial`;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'top';
+                counts.forEach((count, key) => {
+                    const [p, i] = key.split(',').map(Number);
+                    ctx.fillText(count, x.getPixelForValue(p + 0.5) - size * 0.06, y.getPixelForValue(i + 0.5) + size * 0.05);
+                });
+                ctx.restore();
+            }
+        };
+
         // Plugin pour afficher les numéros de groupes ou ID risques sur les points
         const riskLabelsPlugin = {
             id: 'riskLabels',
@@ -6118,19 +6623,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
-                data.datasets[0].data.forEach((point, index) => {
-                    const xPos = x.getPixelForValue(point.x);
-                    const yPos = y.getPixelForValue(point.y);
-
-                    // Utiliser le label court défini dans les données, sinon le numéro de groupe
-                    const label = point.shortLabel || (index + 1);
-
-                    // Ombre portée pour lisibilité sur toutes couleurs
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                    ctx.shadowBlur = 4;
-                    
-                    ctx.fillStyle = 'white';
-                    ctx.fillText(label, xPos, yPos);
+                data.datasets.forEach(dataset => {
+                    // Bulle pleine : numéro blanc ombré ; bulle creuse (avant, en trajectoire) : numéro bleu
+                    ctx.shadowColor = dataset.hollow ? 'transparent' : 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = dataset.hollow ? 0 : 4;
+                    ctx.fillStyle = dataset.hollow ? BUBBLE_COLOR : 'white';
+                    dataset.data.forEach(point => {
+                        ctx.fillText(point.shortLabel, x.getPixelForValue(point.x), y.getPixelForValue(point.y));
+                    });
                 });
 
                 ctx.restore();
@@ -6181,28 +6681,68 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const cellSize = chart => chart.chartArea ? chart.chartArea.width / 5 : 60;
         const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart);
 
-        // Créer un graphique de risque
-        function createRiskChart(ctx, data, title, bubble) {
-            return new Chart(ctx, {
+        const BUBBLE_COLOR = '#1F4E78';
+
+        // Points d'une phase ('Before' | 'After') selon la vue : un point par risque, ou la
+        // cotation moyenne de chaque groupe. Complexité : O(n) — n = nombre de risques.
+        function matrixPoints(phase) {
+            if (matrixViewMode === 'groups') {
+                return riskGroups.map(group => {
+                    const assessments = group.risks.map(risk => evaluatedAssessment(risk, phase)).filter(Boolean);
+                    if (!assessments.length) return null;
+                    const x = assessments.reduce((sum, a) => sum + a[0], 0) / assessments.length;
+                    const y = assessments.reduce((sum, a) => sum + a[1], 0) / assessments.length;
+                    return { x, y, baseX: x, baseY: y, label: t('groupLabel', { id: group.id }),
+                        shortLabel: `${group.id}`, groupName: group.name };
+                }).filter(Boolean);
+            }
+            return riskGroups.flatMap(group => group.risks.map(risk => {
+                const assessment = evaluatedAssessment(risk, phase);
+                if (!assessment) return null;
+                const [x, y] = assessment;
+                return { x, y, baseX: x, baseY: y, label: t('riskLabel', { id: risk.id }),
+                    shortLabel: risk.id, riskTitle: risk.title, groupName: group.name };
+            })).filter(Boolean);
+        }
+
+        // Jeux de données d'une matrice 'before' ou 'after', bulles rangées sans chevauchement
+        function matrixChartData(type) {
+            if (type === 'trajectory') {
+                // Avant et après sur la même matrice : bulles rangées ensemble, sans chevauchement
+                const before = matrixPoints('Before'), after = matrixPoints('After');
+                const all = [...before, ...after];
+                const bubble = bubbleRatios(all);
+                resolveCollisions(all, bubble.radius * 2);
+                return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After' }] };
+            }
+            const phase = type === 'before' ? 'Before' : 'After';
+            const data = matrixPoints(phase);
+            const bubble = bubbleRatios(data);
+            resolveCollisions(data, bubble.radius * 2);
+            return { bubble, datasets: [{ data, phase }] };
+        }
+
+        // Graphique d'une matrice : datasets = [{ data, phase, hollow }] (hollow = bulle creuse)
+        function createRiskChart(canvas, datasets, bubble) {
+            return new Chart(canvas, {
                 type: 'scatter',
                 data: {
-                    datasets: [{
-                        label: 'Risques',
-                        data: data,
-                        bubble: bubble,
-                        backgroundColor: '#1F4E78',
-                        borderColor: 'white',
-                        borderWidth: 1.5,
+                    datasets: datasets.map(({ data, phase, hollow = false }) => ({
+                        data, phase, hollow, bubble,
+                        backgroundColor: hollow ? '#ffffff' : BUBBLE_COLOR, // creuse : fond blanc, lisible dans les deux thèmes
+                        borderColor: hollow ? BUBBLE_COLOR : 'white',
+                        borderWidth: hollow ? 2 : 1.5,
                         pointRadius: bubbleRadius,
                         pointHoverRadius: context => bubbleRadius(context) * 1.1,
                         pointStyle: 'circle'
-                    }]
+                    }))
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
                     aspectRatio: 1, // Force le graphique à être carré
                     animation: false, // Désactiver toutes les animations
+                    onClick: (event, elements, chart) => selectMatrixCell(event, chart),
                     plugins: {
                         legend: {
                             display: false
@@ -6215,11 +6755,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             callbacks: {
                                 title: function(context) {
                                     const point = context[0].raw;
-                                    // Afficher l'ID complet et le titre
-                                    if (matrixViewMode === 'risks') {
-                                        return `${point.shortLabel} - ${point.riskTitle}`;
-                                    }
-                                    return point.label;
+                                    const title = matrixViewMode === 'risks' ? `${point.shortLabel} - ${point.riskTitle}` : point.label;
+                                    // En trajectoire, préciser s'il s'agit de la position avant ou après
+                                    if (context[0].chart.data.datasets.length < 2) return title;
+                                    return `${title} · ${t(context[0].dataset.phase === 'Before' ? 'colBeforeShort' : 'colAfterShort')}`;
                                 },
                                 label: function(context) {
                                     const point = context.raw;
@@ -6304,21 +6843,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         }
                     }
                 },
-                plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
+                plugins: [matrixBackgroundPlugin, appetitePlugin, cellCountsPlugin, trajectoryPlugin, riskLabelsPlugin]
             });
         }
         
         // Mettre à jour le tableau des risques individuels
-        function updateRiskTable(currentRisks) {
+        // Complexité : O(n) — n = nombre de risques
+        function updateRiskTable() {
             const tableBody = document.getElementById('risk-table-body');
             tableBody.innerHTML = '';
             
             riskGroups.forEach(group => {
-                group.risks.forEach(risk => {
-                    const currentRisk = currentRisks.find(r => r.id === risk.id);
-                    if (!currentRisk) return;
-                    
+                group.risks.forEach(currentRisk => {
                     const row = document.createElement('tr');
+                    row.dataset.riskId = currentRisk.id;
                     
                     const [avgProbBefore, avgImpactBefore] = evaluatedAssessment(currentRisk, 'Before') || [0, 0];
                     const avgCritBefore = avgProbBefore * avgImpactBefore;
@@ -6721,141 +7259,188 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         // Mettre à jour les graphiques
+        const MATRIX_TITLES = { before: 'matrixBefore', after: 'matrixAfter', trajectory: 'matrixTrajectory' };
+
+        // Filtres du registre (état d'affichage, non enregistré). cell = { phase, p, i } : case cliquée
+        const riskFilter = { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, cell: null };
+        const FILTER_LEVELS = { none: 'critNotEval', low: 'critLow', medium: 'critMedium', high: 'critHigh', critical: 'critCritical' };
+
+        const isFilterActive = () => Boolean(riskFilter.text || riskFilter.group || riskFilter.level ||
+            riskFilter.treatment || riskFilter.owner || riskFilter.aboveAppetite || riskFilter.cell);
+
+        function setFilter(name, value) {
+            riskFilter[name] = value;
+            applyFilters();
+        }
+
+        function clearFilters() {
+            Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, cell: null });
+            document.getElementById('filter-text').value = '';
+            fillFilterOptions();
+            applyFilters();
+        }
+
+        function riskMatches(risk, group) {
+            const f = riskFilter;
+            const after = evaluatedAssessment(risk, 'After');
+            const score = after ? after[0] * after[1] : null;
+            if (f.group && String(group.id) !== f.group) return false;
+            if (f.level && (score === null ? 'none' : getCriticalityLevel(score)) !== f.level) return false;
+            if (f.treatment && (risk.traitement || '-') !== f.treatment) return false;
+            if (f.owner && risk.responsable !== f.owner) return false;
+            if (f.aboveAppetite && !(settings.riskAppetite && score > settings.riskAppetite)) return false;
+            if (f.cell) {
+                const cell = evaluatedAssessment(risk, f.cell.phase);
+                if (!cell || cell[0] !== f.cell.p || cell[1] !== f.cell.i) return false;
+            }
+            if (f.text) {
+                const text = [risk.id, risk.title, risk.responsable, ...risk.mesures.flatMap(m => [m.texte, m.porteur])]
+                    .join(' ').toLocaleLowerCase();
+                if (!text.includes(f.text.trim().toLocaleLowerCase())) return false;
+            }
+            return true;
+        }
+
+        // Options des listes de filtres (traduites, porteurs présents dans l'analyse), valeur conservée
+        function fillFilterOptions() {
+            const fill = (id, allKey, options) => {
+                const select = document.getElementById(id);
+                const name = id.replace('filter-', '');
+                select.innerHTML = [['', t(allKey)], ...options]
+                    .map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join('');
+                select.value = riskFilter[name];
+                select.classList.toggle('active', Boolean(riskFilter[name]));
+            };
+            fill('filter-group', 'filterAllGroups', riskGroups.map(g => [String(g.id), `${g.id}. ${g.name}`]));
+            fill('filter-level', 'filterAllLevels', Object.entries(FILTER_LEVELS).map(([value, key]) => [value, t(key)]));
+            fill('filter-treatment', 'filterAllTreatments', [['-', t('treatNone')], ...Object.keys(TREATMENTS).map(key => [key, treatmentLabel(key)])]);
+            const owners = [...new Set(risks.map(r => r.responsable).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+            fill('filter-owner', 'filterAllOwners', owners.map(owner => [owner, owner]));
+        }
+
+        // Masque les lignes non retenues (registre, tableau récapitulatif) sans re-rendu.
+        // Complexité : O(n) — n = nombre de risques (ensemble des identifiants visibles).
+        function applyFilters() {
+            const active = isFilterActive();
+            const visible = new Set();
+            riskGroups.forEach(group => group.risks.forEach(risk => {
+                if (riskMatches(risk, group)) visible.add(risk.id);
+            }));
+            document.querySelectorAll('#risks-container tr[data-risk-id], #risk-table-body tr[data-risk-id]').forEach(row => {
+                row.classList.toggle('filtered-out', !visible.has(row.dataset.riskId));
+            });
+            document.querySelectorAll('#risks-container .remediation-row').forEach(row => {
+                row.classList.toggle('filtered-out', !visible.has(row.id.replace('remediation-row-', '')));
+            });
+            riskGroups.forEach(group => {
+                const content = document.getElementById(`group-content-${group.id}`);
+                if (content) content.closest('.risk-group').classList.toggle('filtered-out', !group.risks.some(r => visible.has(r.id)));
+            });
+            document.getElementById('risks-container').classList.toggle('filtering', active);
+
+            const cell = document.getElementById('filter-cell');
+            cell.hidden = !riskFilter.cell;
+            if (riskFilter.cell) {
+                const phase = t(riskFilter.cell.phase === 'Before' ? 'colBeforeShort' : 'colAfterShort');
+                cell.innerHTML = `${escapeHtml(t('filterCell', { p: riskFilter.cell.p, i: riskFilter.cell.i, phase }))} ${icon('close')}`;
+            }
+            document.getElementById('filter-appetite').classList.toggle('active', riskFilter.aboveAppetite);
+            document.querySelectorAll('.filter-select').forEach(select =>
+                select.classList.toggle('active', Boolean(riskFilter[select.id.replace('filter-', '')])));
+            document.getElementById('filter-clear').hidden = !active;
+            document.getElementById('filter-count').textContent = !active ? ''
+                : visible.size ? t('filterCount', { shown: visible.size, total: risks.length }) : t('filterNoMatch');
+            Object.values(Chart.instances).forEach(chart => chart.draw()); // contour de la case sélectionnée
+        }
+
+        // Clic sur une case d'une matrice : filtre le registre sur cette case (second clic : annule)
+        function selectMatrixCell(event, chart) {
+            const p = Math.round(chart.scales.x.getValueForPixel(event.x));
+            const i = Math.round(chart.scales.y.getValueForPixel(event.y));
+            if (p < 1 || p > 5 || i < 1 || i > 5) return;
+            const phase = chart.data.datasets[chart.data.datasets.length - 1].phase;
+            const current = riskFilter.cell;
+            const same = current && current.p === p && current.i === i && current.phase === phase;
+            setFilter('cell', same ? null : { phase, p, i });
+            if (!same) {
+                closeMatrixModal();
+                document.getElementById('risk-filters').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Mise en page des matrices : 'split' (avant | après) ou 'trajectory' (une seule matrice)
+        let matrixLayout = riskrStorage.getItem('matrix-layout') === 'trajectory' ? 'trajectory' : 'split';
+        // Options d'affichage : préférences de l'utilisateur, comme la vue groupes / risques
+        const matrixOptions = {
+            counts: riskrStorage.getItem('matrix-counts') !== 'false',
+            appetite: riskrStorage.getItem('matrix-appetite') !== 'false'
+        };
+
+        function setMatrixLayout(layout) {
+            matrixLayout = layout;
+            riskrStorage.setItem('matrix-layout', layout);
+            updateCharts();
+        }
+
+        function toggleMatrixOption(name) {
+            matrixOptions[name] = !matrixOptions[name];
+            riskrStorage.setItem(`matrix-${name}`, String(matrixOptions[name]));
+            updateCharts();
+        }
+
+        // L'appétence fait partie de l'analyse : historisée et enregistrée avec les données
+        function setRiskAppetite(max) {
+            settings.riskAppetite = max;
+            commitChange();
+            renderRisks();
+            updateCharts();
+            showToast(t('changeSaved'));
+        }
+
+        // Menu « Options d'affichage » : cases à cocher et niveaux d'appétence (libellés traduits)
+        function renderMatrixMenu() {
+            const item = (role, on, action, label) =>
+                `<button role="${role}" aria-checked="${on}" class="${on ? 'active' : ''}" onclick="${action}">${label}</button>`;
+            const levels = [[CRITICALITY_THRESHOLDS.medium - 1, 'critLow'], [CRITICALITY_THRESHOLDS.high - 1, 'critMedium'],
+                [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh']];
+            document.getElementById('matrix-menu').innerHTML =
+                item('menuitemcheckbox', matrixOptions.counts, "toggleMatrixOption('counts')", t('showCounts')) +
+                item('menuitemcheckbox', matrixOptions.appetite, "toggleMatrixOption('appetite')", t('showAppetite')) +
+                `<div class="menu-label">${t('appetiteLabel')}</div>` +
+                levels.map(([max, key]) => item('menuitemradio', settings.riskAppetite === max, `setRiskAppetite(${max})`, `${t(key)} (≤ ${max})`)).join('') +
+                item('menuitemradio', settings.riskAppetite === 0, 'setRiskAppetite(0)', t('appetiteNone'));
+        }
+
         function updateCharts() {
-            const currentRisks = risks;
-            
-            let beforeData = [];
-            let afterData = [];
+            document.querySelector('.charts-column').classList.toggle('trajectory', matrixLayout === 'trajectory');
+            document.getElementById('layout-btn-split').classList.toggle('active', matrixLayout === 'split');
+            document.getElementById('layout-btn-trajectory').classList.toggle('active', matrixLayout === 'trajectory');
+            renderMatrixMenu();
+            [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
+            chartBefore = chartAfter = chartTrajectory = null;
 
-            // --- MODE 1 : VUE PAR GROUPES (MOYENNES) ---
-            if (matrixViewMode === 'groups') {
-                riskGroups.forEach((group, groupIndex) => {
-                    let totalProbBefore = 0, totalImpactBefore = 0, countBefore = 0;
-                    let totalProbAfter = 0, totalImpactAfter = 0, countAfter = 0;
-
-                    group.risks.forEach(risk => {
-                        const before = evaluatedAssessment(risk, 'Before');
-                        if (before) {
-                            totalProbBefore += before[0];
-                            totalImpactBefore += before[1];
-                            countBefore++;
-                        }
-                        const after = evaluatedAssessment(risk, 'After');
-                        if (after) {
-                            totalProbAfter += after[0];
-                            totalImpactAfter += after[1];
-                            countAfter++;
-                        }
-                    });
-
-                    // Préparer données AVANT
-                    if (countBefore > 0) {
-                        const baseX = totalProbBefore / countBefore;
-                        const baseY = totalImpactBefore / countBefore;
-                        
-                        const point = {
-                            x: baseX, // Position initiale = position réelle
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('groupLabel', { id: group.id }),
-                            shortLabel: `${group.id}`,
-                            groupName: group.name,
-                            groupIndex: groupIndex
-                        };
-                        beforeData.push(point);
-                    }
-
-                    // Préparer données APRÈS
-                    if (countAfter > 0) {
-                        const baseX = totalProbAfter / countAfter;
-                        const baseY = totalImpactAfter / countAfter;
-
-                        const point = {
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('groupLabel', { id: group.id }),
-                            shortLabel: `${group.id}`,
-                            groupName: group.name,
-                            groupIndex: groupIndex
-                        };
-                        afterData.push(point);
-                    }
-                });
-            } 
-            // --- MODE 2 : VUE PAR RISQUES INDIVIDUELS ---
-            else {
-                // Ensuite, générer les points pour chaque risque
-                currentRisks.forEach((risk) => {
-                    // Trouver le nom du groupe
-                    const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
-                    const groupName = group ? group.name : 'Inconnu';
-
-                    // Before
-                    const before = evaluatedAssessment(risk, 'Before');
-                    if (before) {
-                        const [baseX, baseY] = before;
-                        
-                        beforeData.push({
-                            x: baseX, // Initialement à la vraie position
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('riskLabel', { id: risk.id }),
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-
-                    // After
-                    const after = evaluatedAssessment(risk, 'After');
-                    if (after) {
-                        const [baseX, baseY] = after;
-                        
-                        afterData.push({
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('riskLabel', { id: risk.id }),
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-                });
+            if (matrixLayout === 'trajectory') {
+                const { datasets, bubble } = matrixChartData('trajectory');
+                chartTrajectory = createRiskChart(document.getElementById('chartTrajectory'), datasets, bubble);
+                updateRiskTable();
+                updateGroupTable();
+                applyFilters();
+                return;
             }
 
-            // APPLIQUER L'ANTI-COLLISION
+            const before = matrixPoints('Before');
+            const after = matrixPoints('After');
             // Même taille de bulle sur les deux matrices
-            const bubble = bubbleRatios(beforeData, afterData);
-            resolveCollisions(beforeData, bubble.radius * 2);
-            resolveCollisions(afterData, bubble.radius * 2);
+            const bubble = bubbleRatios(before, after);
+            resolveCollisions(before, bubble.radius * 2);
+            resolveCollisions(after, bubble.radius * 2);
 
-            // Détruire les anciens graphiques
-            if (chartBefore) chartBefore.destroy();
-            if (chartAfter) chartAfter.destroy();
+            chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before' }], bubble);
+            chartAfter = createRiskChart(document.getElementById('chartAfter'), [{ data: after, phase: 'After' }], bubble);
 
-            // Créer les nouveaux graphiques
-            chartBefore = createRiskChart(
-                document.getElementById('chartBefore').getContext('2d'),
-                beforeData,
-                'Moyenne AVANT',
-                bubble
-            );
-
-            chartAfter = createRiskChart(
-                document.getElementById('chartAfter').getContext('2d'),
-                afterData,
-                'Moyenne APRÈS',
-                bubble
-            );
-            
-            updateRiskTable(currentRisks);
+            updateRiskTable();
             updateGroupTable();
+            applyFilters();
         }
 
         // ========================================
@@ -6867,192 +7452,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function openMatrixModal(type) {
             currentMatrixType = type;
-            const modal = document.getElementById('matrix-modal');
-            const title = document.getElementById('matrix-modal-title');
-            const canvas = document.getElementById('chartModal');
-
-            // Déterminer le titre et les données
-            title.textContent = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
-
-            // Afficher la modal
-            modal.classList.add('active');
+            document.getElementById('matrix-modal-title').textContent = t(MATRIX_TITLES[type]);
+            document.getElementById('matrix-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            // Détruire l'ancien graphique s'il existe
-            if (modalChartInstance) {
-                modalChartInstance.destroy();
-            }
-
-            // Récupérer les données actuelles
-            const currentRisks = risks;
-            let chartData = [];
-
-            // --- MODE 1 : VUE PAR GROUPES ---
-            if (matrixViewMode === 'groups') {
-                chartData = riskGroups.map((group, groupIndex) => {
-                    let totalProb = 0;
-                    let totalImpact = 0;
-                    let count = 0;
-
-                    group.risks.forEach(risk => {
-                        const riskData = currentRisks.find(r => r.id === risk.id);
-                        if (!riskData) return;
-
-                        const combined = evaluatedAssessment(riskData, type === 'before' ? 'Before' : 'After');
-                        if (!combined) return;
-
-                        totalProb += combined[0];
-                        totalImpact += combined[1];
-                        count++;
-                    });
-
-                    if (count === 0) return null;
-
-                    const avgProb = totalProb / count;
-                    const avgImpact = totalImpact / count;
-
-                    return {
-                        x: avgProb, // Pas d'offset initial, l'algo s'en charge
-                        y: avgImpact,
-                        baseX: avgProb,
-                        baseY: avgImpact,
-                        label: t('groupLabel', { id: group.id }),
-                        shortLabel: `${group.id}`,
-                        groupName: group.name
-                    };
-                }).filter(d => d !== null);
-            }
-            // --- MODE 2 : VUE PAR RISQUES ---
-            else {
-                currentRisks.forEach((risk) => {
-                    const combined = evaluatedAssessment(risk, type === 'before' ? 'Before' : 'After');
-                    if (combined) {
-                        const [baseX, baseY] = combined;
-                        
-                        const group = riskGroups.find(g => g.id == risk.id.split('.')[0]);
-                        const groupName = group ? group.name : 'Inconnu';
-
-                        chartData.push({
-                            x: baseX,
-                            y: baseY,
-                            baseX: baseX,
-                            baseY: baseY,
-                            label: t('riskLabel', { id: risk.id }),
-                            shortLabel: risk.id,
-                            riskTitle: risk.title,
-                            groupName: groupName
-                        });
-                    }
-                });
-            }
-
-            // APPLIQUER L'ANTI-COLLISION (bulles proportionnelles, cf. bubbleRatios)
-            const bubble = bubbleRatios(chartData);
-            resolveCollisions(chartData, bubble.radius * 2);
-
-            // Créer le graphique dans la modal
-            modalChartInstance = new Chart(canvas, {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        data: chartData,
-                        bubble: bubble,
-                        backgroundColor: 'rgba(0, 122, 255, 0.8)',
-                        borderColor: 'white',
-                        borderWidth: 1.5,
-                        pointRadius: bubbleRadius,
-                        pointHoverRadius: context => bubbleRadius(context) * 1.1,
-                        pointStyle: 'circle'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    aspectRatio: 1,
-                    animation: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            padding: 12,
-                            callbacks: {
-                                title: function(context) {
-                                    const point = context[0].raw;
-                                    if (matrixViewMode === 'risks') {
-                                        return `${point.shortLabel} - ${point.riskTitle}`;
-                                    }
-                                    return point.label;
-                                },
-                                label: function(context) {
-                                    const point = context.raw;
-                                    const realX = point.baseX || point.x;
-                                    const realY = point.baseY || point.y;
-                                    const criticality = realX * realY;
-                                    
-                                    if (matrixViewMode === 'risks') {
-                                        return [
-                                            `${t('colGroup')} : ${point.groupName}`,
-                                            `${t('tipProbability')} : ${realX}`,
-                                            `${t('tipImpact')} : ${realY}`,
-                                            `${t('colCriticality')} : ${criticality}`
-                                        ];
-                                    } else {
-                                        return [
-                                            `${point.groupName}`,
-                                        `${t('tipAvgProbability')} : ${realX.toFixed(2)}`,
-                                            `${t('tipAvgImpact')} : ${realY.toFixed(2)}`,
-                                            `${t('tipAvgCriticality')} : ${formatOutOf5(criticality)}`
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                color: axisColor,
-                                font: { size: 12 },
-                                callback: function(value) {
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: { display: false },
-                            title: {
-                                display: true,
-                                text: t('axisProb'),
-                                color: axisColor,
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
-                        y: {
-                            min: 0.5,
-                            max: 5.5,
-                            ticks: {
-                                stepSize: 1,
-                                color: axisColor,
-                                font: { size: 12 },
-                                callback: function(value) {
-                                    return (value >= 1 && value <= 5 && Number.isInteger(value)) ? value : '';
-                                }
-                            },
-                            grid: { display: false },
-                            title: {
-                                display: true,
-                                text: t('axisImpact'),
-                                color: axisColor,
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        }
-                    }
-                },
-                plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
-            });
+            if (modalChartInstance) modalChartInstance.destroy();
+            const { datasets, bubble } = matrixChartData(type);
+            modalChartInstance = createRiskChart(document.getElementById('chartModal'), datasets, bubble);
         }
 
         // Les copies et exports sont destinés à Word, PowerPoint, un PDF… : les matrices y sont
@@ -7078,8 +7484,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const padding = 24 * scale;
             const lineHeight = 22 * scale;
             const font = size => `${size * scale}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif`;
-            const dataset = chart.data.datasets[0];
-            const entries = [...new Map(dataset.data.map(point =>
+            const entries = [...new Map(chart.data.datasets.flatMap(set => set.data).map(point =>
                 [point.shortLabel, point.riskTitle || point.groupName])).entries()]
                 .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }));
 
@@ -7106,7 +7511,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const cy = y + lineHeight / 2;
                 ctx.beginPath();
                 ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-                ctx.fillStyle = dataset.backgroundColor;
+                ctx.fillStyle = BUBBLE_COLOR;
                 ctx.fill();
                 ctx.fillStyle = '#ffffff';
                 ctx.font = `700 ${font(label.length > 2 ? 8 : 10)}`;
@@ -7125,12 +7530,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Copie une matrice en image dans le presse-papier (à coller dans Word,
         // PowerPoint, un mail…). Sans copie d'image possible : téléchargement du PNG.
         async function copyMatrixImage(type) {
-            const chart = type === 'before' ? chartBefore : chartAfter;
+            // Depuis la loupe : la matrice agrandie (meilleure résolution)
+            const chart = document.getElementById('matrix-modal').classList.contains('active')
+                ? modalChartInstance
+                : { before: chartBefore, after: chartAfter, trajectory: chartTrajectory }[type];
             if (!chart || !chart.width) {
                 showToast(t('showMatricesToCopy'), 'error');
                 return;
             }
-            const title = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
+            const title = t(MATRIX_TITLES[type]);
             const blob = new Promise(resolve => buildMatrixImage(chart, title).toBlob(resolve, 'image/png'));
             try {
                 // La promesse est passée telle quelle : Safari exige l'écriture pendant le clic
@@ -7169,14 +7577,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Navigation entre les matrices (cycle)
         function navigateMatrix(direction) {
-            if (direction === 'next') {
-                // Cycle: before → after → before
-                currentMatrixType = currentMatrixType === 'before' ? 'after' : 'before';
-            } else {
-                // Cycle: after → before → after
-                currentMatrixType = currentMatrixType === 'after' ? 'before' : 'after';
-            }
-            openMatrixModal(currentMatrixType);
+            // Cycle : avant → après → trajectoire → avant
+            const types = Object.keys(MATRIX_TITLES);
+            const step = direction === 'next' ? 1 : types.length - 1;
+            openMatrixModal(types[(types.indexOf(currentMatrixType) + step) % types.length]);
         }
 
         // Gestion du clavier pour la modal (Échap, flèches gauche/droite)
@@ -7206,6 +7610,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.title = t('pageTitle');
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 element.textContent = t(element.dataset.i18n);
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                element.placeholder = t(element.dataset.i18nPlaceholder);
             });
             document.querySelectorAll('[data-i18n-title]').forEach(element => {
                 element.title = t(element.dataset.i18nTitle);
