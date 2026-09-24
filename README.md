@@ -95,6 +95,13 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
   risques au-dessus de l'appétence
 - **Catégorisation** par groupes thématiques
+- **Nœud papillon** par risque : causes, barrières préventives, événement redouté,
+  barrières de protection, conséquences (les barrières sont les mesures du risque)
+- **Bibliothèque de risques types** intégrée (hors ligne, 6 thèmes, 5 langues) :
+  ajout en quelques clics, avec ou sans les mesures suggérées
+- **Vue comité** : synthèse d'une page (indicateurs, trajectoire, 5 risques
+  résiduels les plus élevés, traitements, exposition par revue, décisions attendues),
+  copiable dans Word ou PowerPoint et exportable en PDF d'une page
 
 ### Visualisation
 - **Matrices Before/After** avec Chart.js
