@@ -77,6 +77,13 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 
 ## ✨ Fonctionnalités
 
+### Organisation en onglets
+- **Matrices** (matrices, moyennes par groupe, tableau récapitulatif), **Registre**
+  (filtres et risques), **Plan d'actions**, **Revues**, **Vue comité** ; l'onglet
+  choisi est mémorisé. Un clic sur une case de matrice ouvre le registre filtré.
+- L'ancienne version sur une seule page reste disponible via l'étiquette Git
+  `v-une-page`.
+
 ### Gestion des Risques
 - **Édition inline** de tous les champs (titres, descriptions, catégories)
 - **Ajout/suppression** de risques et de groupes de risques
@@ -99,7 +106,7 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   barrières de protection, conséquences (les barrières sont les mesures du risque)
 - **Bibliothèque de risques types** intégrée (hors ligne, 6 thèmes, 5 langues) :
   ajout en quelques clics, avec ou sans les mesures suggérées
-- **Vue comité** : synthèse d'une page (indicateurs, trajectoire, 5 risques
+- **Vue comité** (onglet) : synthèse d'une page (indicateurs, trajectoire, 5 risques
   résiduels les plus élevés, traitements, exposition par revue, décisions attendues),
   copiable dans Word ou PowerPoint et exportable en PDF d'une page
 
