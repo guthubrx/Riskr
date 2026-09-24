@@ -1960,6 +1960,84 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background: var(--surface-2);
         }
 
+        /* Fiche : fenêtre de premier plan (vue comité, nœud papillon, bibliothèque) */
+        .sheet-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 4vh 16px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+        }
+
+        .sheet-modal[hidden] {
+            display: none;
+        }
+
+        .sheet {
+            width: min(1180px, 100%);
+            padding: 24px 28px;
+            border-radius: 16px;
+            background: var(--surface);
+            color: var(--text);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .sheet-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .sheet-head h2 {
+            flex: 1;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .sheet-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sheet-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border: none;
+            border-radius: 9px;
+            background: var(--surface-2);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .sheet-btn:hover {
+            background: var(--border);
+        }
+
+        .sheet-btn.primary {
+            background: var(--primary-bg);
+            color: var(--primary-fg);
+        }
+
+        .sheet-btn.primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .sheet-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
         .matrix-modal {
             display: none;
             position: fixed;
@@ -3375,6 +3453,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 </div>
             </div>
 
+            <!-- Fiche : vue comité, nœud papillon, bibliothèque -->
+            <div id="sheet-modal" class="sheet-modal" hidden onclick="if (event.target === this) closeSheet()">
+                <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+                    <div class="sheet-head">
+                        <h2 id="sheet-title"></h2>
+                        <div id="sheet-actions" class="sheet-actions"></div>
+                        <button class="icon-btn" onclick="closeSheet()" data-i18n-title="closeEsc"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                    </div>
+                    <div id="sheet-body"></div>
+                </div>
+            </div>
+
             <!-- Modal d'agrandissement de matrice -->
             <div id="matrix-modal" class="matrix-modal" onclick="closeMatrixModal(event)">
                 <!-- Commandes hors de la zone blanche : la capture d'écran reste propre -->
@@ -3616,6 +3706,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Re-rendre l'interface
             renderRisks();
             updateCharts();
+            refreshSheet();
         }
 
         // Fonction Undo
@@ -3923,7 +4014,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function addMesure(risk) {
-            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo' });
+            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo', barriere: 'prevention' });
             renderRisks();
             // Ouvre directement la saisie du texte de la nouvelle mesure
             document.querySelector(`.editable-mesure[data-risk-id="${risk.id}"][data-index="${risk.mesures.length - 1}"][data-field="texte"]`).click();
@@ -4690,7 +4781,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "Aucun changement de cotation",
                 reviewExposure: "Exposition moyenne après remédiation (/5)",
                 colTrend: "Tendance",
-                trendTitle: "Criticité après remédiation, revue par revue"
+                trendTitle: "Criticité après remédiation, revue par revue",
+                committeeOpen: "Vue comité : synthèse d’une page",
+                committeeTitle: "Synthèse pour le comité",
+                kpiExposure: "Exposition moyenne",
+                kpiExposureDelta: "{delta} % grâce aux mesures",
+                kpiHighRisks: "Risques élevés ou critiques",
+                kpiHighDelta: "avant → après remédiation",
+                kpiAboveAppetite: "Au-dessus de l’appétence",
+                kpiLate: "Mesures en retard",
+                committeeTop: "Les 5 risques résiduels les plus élevés",
+                committeeTreatments: "Stratégies de traitement",
+                committeeReviews: "Exposition par revue (/5)",
+                committeeDecisions: "Décisions attendues",
+                decisionHint: "arbitrer le traitement ou accepter formellement le risque résiduel ({score})",
+                committeeNoDecision: "Aucun risque au-dessus de l’appétence",
+                committeeCopy: "Copier pour Word ou PowerPoint",
+                committeePdf: "PDF une page",
+                committeeCopied: "Synthèse copiée",
+                bowtieOpen: "Nœud papillon",
+                bowtieCauses: "Causes",
+                bowtiePrevention: "Barrières préventives",
+                bowtieEvent: "Événement redouté",
+                bowtieProtection: "Barrières de protection",
+                bowtieConsequences: "Conséquences",
+                bowtieAddCause: "Ajouter une cause",
+                bowtieAddConsequence: "Ajouter une conséquence",
+                bowtieNoBarrier: "Aucune barrière — à définir",
+                bowtieSwap: "Changer de côté",
+                bowtieHint: "Les barrières sont les mesures du risque : ⇄ les fait passer d’un côté à l’autre.",
+                bowtieItemPlaceholder: "Décrire…",
+                libraryOpen: "Bibliothèque de risques types",
+                librarySearch: "Rechercher un risque type…",
+                libraryAll: "Tous les thèmes",
+                libraryOffline: "Intégrée au fichier : fonctionne hors ligne.",
+                libraryTarget: "Ajouter dans",
+                libraryNewGroup: "Nouveau groupe",
+                libraryWithMesures: "avec les mesures suggérées",
+                libraryAdd: "Ajouter la sélection ({count})",
+                libraryAdded: "Risques ajoutés : {count}",
+                libraryEmpty: "Aucun risque type ne correspond"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4903,7 +5033,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "No rating change",
                 reviewExposure: "Average exposure after remediation (/5)",
                 colTrend: "Trend",
-                trendTitle: "Criticality after remediation, review by review"
+                trendTitle: "Criticality after remediation, review by review",
+                committeeOpen: "Committee view: one-page summary",
+                committeeTitle: "Committee summary",
+                kpiExposure: "Average exposure",
+                kpiExposureDelta: "{delta}% thanks to the measures",
+                kpiHighRisks: "High or critical risks",
+                kpiHighDelta: "before → after remediation",
+                kpiAboveAppetite: "Above appetite",
+                kpiLate: "Overdue measures",
+                committeeTop: "The 5 highest residual risks",
+                committeeTreatments: "Treatment strategies",
+                committeeReviews: "Exposure per review (/5)",
+                committeeDecisions: "Decisions required",
+                decisionHint: "decide on the treatment or formally accept the residual risk ({score})",
+                committeeNoDecision: "No risk above appetite",
+                committeeCopy: "Copy for Word or PowerPoint",
+                committeePdf: "One-page PDF",
+                committeeCopied: "Summary copied",
+                bowtieOpen: "Bow-tie",
+                bowtieCauses: "Causes",
+                bowtiePrevention: "Preventive barriers",
+                bowtieEvent: "Feared event",
+                bowtieProtection: "Protective barriers",
+                bowtieConsequences: "Consequences",
+                bowtieAddCause: "Add a cause",
+                bowtieAddConsequence: "Add a consequence",
+                bowtieNoBarrier: "No barrier — to be defined",
+                bowtieSwap: "Switch side",
+                bowtieHint: "Barriers are the risk’s measures: ⇄ moves them from one side to the other.",
+                bowtieItemPlaceholder: "Describe…",
+                libraryOpen: "Library of standard risks",
+                librarySearch: "Search a standard risk…",
+                libraryAll: "All themes",
+                libraryOffline: "Built into the file: works offline.",
+                libraryTarget: "Add to",
+                libraryNewGroup: "New group",
+                libraryWithMesures: "with the suggested measures",
+                libraryAdd: "Add selection ({count})",
+                libraryAdded: "Risks added: {count}",
+                libraryEmpty: "No standard risk matches"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -5116,7 +5285,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "Ningún cambio de calificación",
                 reviewExposure: "Exposición media tras la remediación (/5)",
                 colTrend: "Tendencia",
-                trendTitle: "Criticidad tras la remediación, revisión a revisión"
+                trendTitle: "Criticidad tras la remediación, revisión a revisión",
+                committeeOpen: "Vista comité: síntesis de una página",
+                committeeTitle: "Síntesis para el comité",
+                kpiExposure: "Exposición media",
+                kpiExposureDelta: "{delta} % gracias a las medidas",
+                kpiHighRisks: "Riesgos altos o críticos",
+                kpiHighDelta: "antes → después de la remediación",
+                kpiAboveAppetite: "Por encima del apetito",
+                kpiLate: "Medidas retrasadas",
+                committeeTop: "Los 5 riesgos residuales más altos",
+                committeeTreatments: "Estrategias de tratamiento",
+                committeeReviews: "Exposición por revisión (/5)",
+                committeeDecisions: "Decisiones esperadas",
+                decisionHint: "decidir el tratamiento o aceptar formalmente el riesgo residual ({score})",
+                committeeNoDecision: "Ningún riesgo por encima del apetito",
+                committeeCopy: "Copiar para Word o PowerPoint",
+                committeePdf: "PDF de una página",
+                committeeCopied: "Síntesis copiada",
+                bowtieOpen: "Pajarita",
+                bowtieCauses: "Causas",
+                bowtiePrevention: "Barreras preventivas",
+                bowtieEvent: "Evento temido",
+                bowtieProtection: "Barreras de protección",
+                bowtieConsequences: "Consecuencias",
+                bowtieAddCause: "Añadir una causa",
+                bowtieAddConsequence: "Añadir una consecuencia",
+                bowtieNoBarrier: "Ninguna barrera — por definir",
+                bowtieSwap: "Cambiar de lado",
+                bowtieHint: "Las barreras son las medidas del riesgo: ⇄ las pasa de un lado al otro.",
+                bowtieItemPlaceholder: "Describir…",
+                libraryOpen: "Biblioteca de riesgos tipo",
+                librarySearch: "Buscar un riesgo tipo…",
+                libraryAll: "Todos los temas",
+                libraryOffline: "Integrada en el archivo: funciona sin conexión.",
+                libraryTarget: "Añadir en",
+                libraryNewGroup: "Nuevo grupo",
+                libraryWithMesures: "con las medidas sugeridas",
+                libraryAdd: "Añadir la selección ({count})",
+                libraryAdded: "Riesgos añadidos: {count}",
+                libraryEmpty: "Ningún riesgo tipo coincide"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -5329,7 +5537,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "评级无变化",
                 reviewExposure: "处理后平均暴露（/5）",
                 colTrend: "趋势",
-                trendTitle: "各次评审的处理后严重度"
+                trendTitle: "各次评审的处理后严重度",
+                committeeOpen: "委员会视图：一页摘要",
+                committeeTitle: "委员会摘要",
+                kpiExposure: "平均暴露",
+                kpiExposureDelta: "措施带来 {delta}%",
+                kpiHighRisks: "高或严重风险",
+                kpiHighDelta: "处理前 → 处理后",
+                kpiAboveAppetite: "超出风险偏好",
+                kpiLate: "逾期措施",
+                committeeTop: "剩余风险最高的 5 项",
+                committeeTreatments: "处理策略",
+                committeeReviews: "各次评审的暴露（/5）",
+                committeeDecisions: "待决事项",
+                decisionHint: "决定处理方式或正式接受剩余风险（{score}）",
+                committeeNoDecision: "没有超出风险偏好的风险",
+                committeeCopy: "复制到 Word 或 PowerPoint",
+                committeePdf: "单页 PDF",
+                committeeCopied: "摘要已复制",
+                bowtieOpen: "蝴蝶结图",
+                bowtieCauses: "原因",
+                bowtiePrevention: "预防屏障",
+                bowtieEvent: "顶上事件",
+                bowtieProtection: "保护屏障",
+                bowtieConsequences: "后果",
+                bowtieAddCause: "添加原因",
+                bowtieAddConsequence: "添加后果",
+                bowtieNoBarrier: "无屏障 — 待定义",
+                bowtieSwap: "切换位置",
+                bowtieHint: "屏障即该风险的措施：⇄ 可在两侧之间切换。",
+                bowtieItemPlaceholder: "描述…",
+                libraryOpen: "标准风险库",
+                librarySearch: "搜索标准风险…",
+                libraryAll: "所有主题",
+                libraryOffline: "内置于文件中：可离线使用。",
+                libraryTarget: "添加到",
+                libraryNewGroup: "新组",
+                libraryWithMesures: "包含建议措施",
+                libraryAdd: "添加所选（{count}）",
+                libraryAdded: "已添加风险：{count}",
+                libraryEmpty: "没有匹配的标准风险"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -5542,7 +5789,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 diffNoChange: "لا يوجد تغيير في التقييم",
                 reviewExposure: "متوسط التعرض بعد المعالجة (/5)",
                 colTrend: "الاتجاه",
-                trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى"
+                trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى",
+                committeeOpen: "عرض اللجنة: ملخص من صفحة واحدة",
+                committeeTitle: "ملخص للجنة",
+                kpiExposure: "متوسط التعرض",
+                kpiExposureDelta: "{delta}٪ بفضل الإجراءات",
+                kpiHighRisks: "المخاطر المرتفعة أو الحرجة",
+                kpiHighDelta: "قبل → بعد المعالجة",
+                kpiAboveAppetite: "أعلى من مستوى التقبّل",
+                kpiLate: "إجراءات متأخرة",
+                committeeTop: "أعلى 5 مخاطر متبقية",
+                committeeTreatments: "استراتيجيات المعالجة",
+                committeeReviews: "التعرض لكل مراجعة (/5)",
+                committeeDecisions: "القرارات المطلوبة",
+                decisionHint: "البتّ في المعالجة أو القبول الرسمي بالخطر المتبقي ({score})",
+                committeeNoDecision: "لا يوجد خطر أعلى من مستوى التقبّل",
+                committeeCopy: "نسخ إلى Word أو PowerPoint",
+                committeePdf: "ملف PDF من صفحة واحدة",
+                committeeCopied: "تم نسخ الملخص",
+                bowtieOpen: "مخطط ربطة العنق",
+                bowtieCauses: "الأسباب",
+                bowtiePrevention: "الحواجز الوقائية",
+                bowtieEvent: "الحدث المخشي",
+                bowtieProtection: "حواجز الحماية",
+                bowtieConsequences: "العواقب",
+                bowtieAddCause: "إضافة سبب",
+                bowtieAddConsequence: "إضافة عاقبة",
+                bowtieNoBarrier: "لا يوجد حاجز — يجب تحديده",
+                bowtieSwap: "تغيير الجانب",
+                bowtieHint: "الحواجز هي إجراءات الخطر: ⇄ ينقلها من جانب إلى آخر.",
+                bowtieItemPlaceholder: "صِف…",
+                libraryOpen: "مكتبة المخاطر النموذجية",
+                librarySearch: "ابحث عن خطر نموذجي…",
+                libraryAll: "كل المواضيع",
+                libraryOffline: "مدمجة في الملف: تعمل دون اتصال.",
+                libraryTarget: "إضافة إلى",
+                libraryNewGroup: "مجموعة جديدة",
+                libraryWithMesures: "مع الإجراءات المقترحة",
+                libraryAdd: "إضافة المحدد ({count})",
+                libraryAdded: "المخاطر المضافة: {count}",
+                libraryEmpty: "لا يوجد خطر نموذجي مطابق"
             }
         };
 
@@ -5827,9 +6113,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 texte: String(mesure.texte || ''),
                 porteur: String(mesure.porteur || ''),
                 echeance: String(mesure.echeance || ''),
-                etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo'
+                etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo',
+                // Côté de la barrière dans le nœud papillon
+                barriere: mesure.barriere === 'protection' ? 'protection' : 'prevention'
             };
         }
+
+        const stringList = value => (Array.isArray(value) ? value : []).map(String);
 
         // Échéance saisie librement : date reconnue (AAAA-MM-JJ ou JJ/MM/AAAA), sinon null
         function mesureDueDate(text) {
@@ -5876,7 +6166,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     : (LEGACY_STATUS_LABELS[raw.statut] || 'statusNotTreated'),
                 responsable: String(raw.responsable || ''),
                 traitement: raw.traitement in TREATMENTS ? raw.traitement : '',
-                assessmentTarget: toAssessment(raw.assessmentTarget)
+                assessmentTarget: toAssessment(raw.assessmentTarget),
+                causes: stringList(raw.causes),
+                consequences: stringList(raw.consequences)
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -6274,7 +6566,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return {
                 uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
-                mesures: [], statut: 'statusNotTreated', responsable: '', traitement: ''
+                mesures: [], statut: 'statusNotTreated', responsable: '', traitement: '',
+                causes: [], consequences: []
             };
         }
 
@@ -8307,6 +8600,45 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             openMatrixModal(types[(types.indexOf(currentMatrixType) + step) % types.length]);
         }
 
+        // ========================================
+        // Fiche générique : vue comité, nœud papillon, bibliothèque
+        // ========================================
+        // `render()` renvoie { title, actions, body, mount } ; la fiche est reconstruite
+        // après chaque modification (annulation et changement de langue compris).
+
+        let sheetRender = null;
+        let sheetChart = null;
+
+        function openSheet(render) {
+            sheetRender = render;
+            document.getElementById('sheet-modal').hidden = false;
+            document.body.style.overflow = 'hidden';
+            refreshSheet();
+        }
+
+        function refreshSheet() {
+            if (!sheetRender) return;
+            if (sheetChart) sheetChart.destroy();
+            sheetChart = null;
+            const { title, actions = '', body, mount } = sheetRender();
+            document.getElementById('sheet-title').textContent = title;
+            document.getElementById('sheet-actions').innerHTML = actions;
+            document.getElementById('sheet-body').innerHTML = body;
+            if (mount) mount(document.getElementById('sheet-body'));
+        }
+
+        function closeSheet() {
+            if (sheetChart) sheetChart.destroy();
+            sheetChart = null;
+            sheetRender = null;
+            document.getElementById('sheet-modal').hidden = true;
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && sheetRender && !document.activeElement.isContentEditable) closeSheet();
+        });
+
         // Gestion du clavier pour la modal (Échap, flèches gauche/droite)
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('matrix-modal');
@@ -8357,6 +8689,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             applyTranslations();
             renderRisks();
             updateCharts();
+            refreshSheet();
             if (document.getElementById('matrix-modal').classList.contains('active')) {
                 openMatrixModal(currentMatrixType);
             }
