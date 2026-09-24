@@ -80,7 +80,14 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Ajout/suppression** de risques et de groupes de risques
 - **Drag & drop** pour réorganiser les risques
 - **Numérotation automatique** selon la position (ajout, suppression, glisser-déposer)
-- **Mesures de remédiation** avec porteur et échéance facultative
+- **Mesures de remédiation** avec porteur, échéance facultative et état
+  (à faire, en cours, faite) ; échéance dépassée signalée en rouge
+- **Plan d'actions** : toutes les mesures en trois colonnes par état, retards en
+  tête, flèches pour faire avancer une mesure
+- **Revues** : photo datée des cotations (« Figer une revue »), comparaison d'une
+  revue avec l'état actuel (en baisse, en hausse, nouveaux, clos), graphique de
+  l'exposition moyenne résiduelle par revue et tendance par risque dans le
+  tableau récapitulatif
 - **Stratégie de traitement** (réduire, accepter, transférer, éviter) et
   **cotation cible** par risque
 - **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
