@@ -75,10 +75,18 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Drag & drop** pour réorganiser les risques
 - **Numérotation automatique** selon la position (ajout, suppression, glisser-déposer)
 - **Mesures de remédiation** avec porteur et échéance facultative
+- **Stratégie de traitement** (réduire, accepter, transférer, éviter) et
+  **cotation cible** par risque
+- **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
+  risques au-dessus de l'appétence
 - **Catégorisation** par groupes thématiques
 
 ### Visualisation
 - **Matrices Before/After** avec Chart.js
+- **Vue trajectoire** : une seule matrice où chaque risque va de sa position avant
+  (bulle creuse) à sa position après (bulle pleine)
+- **Appétence au risque** tracée en pointillé, **nombre de risques par case**
+  (options d'affichage), clic sur une case pour filtrer le registre
 - Visualisation comparative de l'impact des remédiations
 - Moyennes par groupe de risques
 - Lecture et remédiation synthétiques par groupe
