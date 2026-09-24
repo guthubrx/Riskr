@@ -33,8 +33,15 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   échéance facultatifs ; `etat` vaut `todo`, `doing` ou `done` ; une simple chaîne
   de texte est aussi acceptée). Une échéance au format `AAAA-MM-JJ` ou
   `JJ/MM/AAAA` passée sur une mesure non faite la signale en retard.
-- `causes`, `consequences` : listes de textes du nœud papillon ; chaque mesure
-  porte aussi `barriere` (`prevention` ou `protection`), son côté dans le nœud.
+- `causes` : textes du nœud papillon ; `consequences` : `{ texte, chiffrage }`
+  (une simple chaîne est aussi acceptée). Chaque mesure porte aussi `barriere`
+  (`prevention` ou `protection`), son côté dans le nœud, et `efficacite` (0 à 5).
+- `velocite` : vitesse de survenue du risque (1 à 5, 0 = non évaluée), utilisée
+  par l'option « Taille = vélocité » des matrices.
+- `notes` : notes de revue `{ date, auteur, texte }` ; `liens` : pièces et liens
+  `{ libelle, url }`.
+- `settings.templates` : « Mes modèles » de la bibliothèque `{ titre, description,
+  cotation, mesures }`.
 - `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
   permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
 - `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
@@ -78,9 +85,15 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 ## ✨ Fonctionnalités
 
 ### Organisation en onglets
-- **Matrices** (matrices, moyennes par groupe, tableau récapitulatif), **Registre**
-  (filtres et risques), **Plan d'actions**, **Revues**, **Vue comité** ; l'onglet
-  choisi est mémorisé. Un clic sur une case de matrice ouvre le registre filtré.
+- **Matrices** (matrices, panneau latéral, moyennes par groupe, tableau
+  récapitulatif), **Registre** (tableau compact, cartes ou édition complète),
+  **Plan d'actions**, **Revues**, **Vue comité** ; l'onglet choisi est mémorisé et
+  figure dans l'adresse (`riskr.html#revues`). Un clic sur une case de matrice
+  filtre le registre et le panneau latéral.
+- **Fiche du risque** (clic sur un risque, adresse `riskr.html#fiche:<uid>`) :
+  cotations avant → après → cible, traitement, porteur, vélocité, nœud papillon
+  relié (efficacité des barrières, chiffrage des conséquences), évolution de la
+  cotation, notes de revue, pièces et liens, « Enregistrer comme modèle ».
 - L'ancienne version sur une seule page reste disponible via l'étiquette Git
   `v-une-page`.
 
@@ -91,12 +104,13 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Numérotation automatique** selon la position (ajout, suppression, glisser-déposer)
 - **Mesures de remédiation** avec porteur, échéance facultative et état
   (à faire, en cours, faite) ; échéance dépassée signalée en rouge
-- **Plan d'actions** : toutes les mesures en trois colonnes par état, retards en
-  tête, flèches pour faire avancer une mesure
-- **Revues** : photo datée des cotations (« Figer une revue »), comparaison d'une
-  revue avec l'état actuel (en baisse, en hausse, nouveaux, clos), graphique de
-  l'exposition moyenne résiduelle par revue et tendance par risque dans le
-  tableau récapitulatif
+- **Plan d'actions** : progression, mesures regroupées par état, porteur ou
+  échéance, « Mes mesures », étiquette préventive / protection, retards en tête,
+  flèches pour faire avancer une mesure
+- **Revues** : photo datée des cotations (« Figer une nouvelle revue », auteur ou
+  instance), frise, comparaison de deux revues ou d'une revue avec l'état actuel
+  (compteurs, changements triés par écart), courbe d'exposition moyenne par
+  groupe et tendance par risque
 - **Stratégie de traitement** (réduire, accepter, transférer, éviter) et
   **cotation cible** par risque
 - **Filtres** : recherche, groupe, niveau résiduel, traitement, porteur,
@@ -104,16 +118,20 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Catégorisation** par groupes thématiques
 - **Nœud papillon** par risque : causes, barrières préventives, événement redouté,
   barrières de protection, conséquences (les barrières sont les mesures du risque)
-- **Bibliothèque de risques types** intégrée (hors ligne, 6 thèmes, 5 langues) :
-  ajout en quelques clics, avec ou sans les mesures suggérées
+- **Bibliothèque de risques types** intégrée (hors ligne, 6 thèmes, 5 langues,
+  description et cotation type) et « Mes modèles » : ajout en quelques clics,
+  avec ou sans les mesures suggérées
 - **Vue comité** (onglet) : synthèse d'une page (indicateurs, trajectoire, 5 risques
   résiduels les plus élevés, traitements, exposition par revue, décisions attendues),
   copiable dans Word ou PowerPoint et exportable en PDF d'une page
 
 ### Visualisation
 - **Matrices Before/After** avec Chart.js
-- **Vue trajectoire** : une seule matrice où chaque risque va de sa position avant
-  (bulle creuse) à sa position après (bulle pleine)
+- **Matrices Avant, Après, côte à côte ou Trajectoire** : en trajectoire, chaque
+  risque va de sa position avant (bulle creuse) à sa position après (bulle pleine)
+- **Panneau latéral** : options (nombre par case, appétence, cible en losange vert,
+  taille des bulles selon la vélocité), légende, risques de la case cliquée,
+  risques au-dessus de l'appétence
 - **Appétence au risque** tracée en pointillé, **nombre de risques par case**
   (options d'affichage), clic sur une case pour filtrer le registre
 - Visualisation comparative de l'impact des remédiations
