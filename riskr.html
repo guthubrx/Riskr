@@ -1074,10 +1074,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             margin-inline-start: 4px;
         }
 
-        /* Mesures : une ligne par mesure (texte | porteur | échéance | suppression) */
+        /* Mesures : une ligne par mesure (texte | porteur | échéance | état | suppression) */
         .mesures-list {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 180px 160px 36px;
+            grid-template-columns: minmax(0, 1fr) 170px 130px 130px 36px;
             gap: 4px 12px;
             align-items: center;
             font-size: 14px;
@@ -1114,6 +1114,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .editable-group-note:focus {
             outline: 2px solid var(--accent);
             background: var(--surface);
+        }
+
+        .risks-table .mesure-row .plan-select {
+            min-width: 0;
+        }
+
+        /* Mesure faite : texte barré ; échéance dépassée : en rouge */
+        .mesure-row.is-done .editable-mesure[data-field="texte"] {
+            text-decoration: line-through;
+            color: var(--text-3);
+        }
+
+        .mesure-row.is-late .editable-mesure[data-field="echeance"] {
+            color: #ff3b30;
+            font-weight: 600;
         }
 
         .mesure-delete {
@@ -3610,7 +3625,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const index = Number(element.dataset.index);
                 const field = element.dataset.field;
                 makeInlineEditable(element, value => {
-                    findRiskOf(element).mesures[index][field] = value;
+                    const mesure = findRiskOf(element).mesures[index];
+                    mesure[field] = value;
+                    refreshMesureRow(element.parentElement, mesure);
                     commitChange();
                     showToast(t('changeSaved'));
                 }, {
@@ -3626,6 +3643,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.querySelectorAll('.mesure-add').forEach(button => {
                 button.onclick = () => addMesure(findRiskOf(button));
             });
+        }
+
+        // Classes d'une ligne de mesure : faite, en retard
+        const mesureRowClasses = mesure =>
+            (mesure.etat === 'done' ? ' is-done' : '') + (isMesureLate(mesure) ? ' is-late' : '');
+
+        function refreshMesureRow(row, mesure) {
+            row.classList.toggle('is-done', mesure.etat === 'done');
+            row.classList.toggle('is-late', isMesureLate(mesure));
+            row.querySelector('[data-field="echeance"]').title = isMesureLate(mesure) ? t('mesureLate') : '';
         }
 
         function addMesure(risk) {
@@ -3680,6 +3707,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     if (!risk) return;
                     if (select.dataset.field === 'traitement') {
                         risk.traitement = select.value;
+                    } else if (select.dataset.field === 'etat') {
+                        const mesure = risk.mesures[Number(select.dataset.index)];
+                        mesure.etat = select.value;
+                        refreshMesureRow(select.parentElement, mesure);
                     } else {
                         risk.assessmentTarget[Number(select.dataset.axis)] = parseInt(select.value, 10) || 0;
                         select.parentElement.querySelector('.target-badge').innerHTML =
@@ -5554,7 +5585,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Texte d'une mesure pour les exports : « texte (porteur, échéance) »
         function formatMesure(mesure) {
-            const details = [mesure.porteur, mesure.echeance].filter(Boolean).join(', ');
+            const state = mesure.etat === 'todo' ? '' : t(MESURE_STATES[mesure.etat]);
+            const details = [mesure.porteur, mesure.echeance, state].filter(Boolean).join(', ');
             return details ? `${mesure.texte} (${details})` : mesure.texte;
         }
 
@@ -6422,13 +6454,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                         <span>${t('colRemediations')}</span>
                                         <span>${t('mesureOwner')}</span>
                                         <span>${t('mesureDueDate')}</span>
+                                        <span>${t('mesureState')}</span>
                                         <span></span>
                                     </div>
                                     ${risk.mesures.map((mesure, mesureIndex) => `
-                                    <div class="mesure-row">
+                                    <div class="mesure-row${mesureRowClasses(mesure)}">
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="texte" data-placeholder="${t('mesureTextPlaceholder')}">${escapeHtml(mesure.texte)}</span>
                                         <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="porteur" data-placeholder="—">${escapeHtml(mesure.porteur)}</span>
-                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="echeance" data-placeholder="—">${escapeHtml(mesure.echeance)}</span>
+                                        <span class="editable-mesure" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="echeance" data-placeholder="—" title="${isMesureLate(mesure) ? t('mesureLate') : ''}">${escapeHtml(mesure.echeance)}</span>
+                                        <select class="plan-select" data-risk-id="${risk.id}" data-index="${mesureIndex}" data-field="etat" aria-label="${t('mesureState')}">
+                                            ${Object.entries(MESURE_STATES).map(([key, label]) => `<option value="${key}" ${key === mesure.etat ? 'selected' : ''}>${t(label)}</option>`).join('')}
+                                        </select>
                                         <button class="mesure-delete" data-risk-id="${risk.id}" data-index="${mesureIndex}" title="${t('mesureDelete')}">${icon('trash')}</button>
                                     </div>`).join('')}
                                     <button class="mesure-add" data-risk-id="${risk.id}">${icon('plus')} ${t('mesureAdd')}</button>
