@@ -3629,7 +3629,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function addMesure(risk) {
-            risk.mesures.push({ texte: '', porteur: '', echeance: '' });
+            risk.mesures.push({ texte: '', porteur: '', echeance: '', etat: 'todo' });
             renderRisks();
             // Ouvre directement la saisie du texte de la nouvelle mesure
             document.querySelector(`.editable-mesure[data-risk-id="${risk.id}"][data-index="${risk.mesures.length - 1}"][data-field="texte"]`).click();
@@ -4361,7 +4361,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "Case P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} risques",
                 filterClear: "Effacer les filtres",
-                filterNoMatch: "Aucun risque ne correspond aux filtres"
+                filterNoMatch: "Aucun risque ne correspond aux filtres",
+                mesureState: "État",
+                stateTodo: "À faire",
+                stateDoing: "En cours",
+                stateDone: "Faite",
+                mesureLate: "En retard",
+                actionPlanTitle: "Plan d’actions",
+                actionSummary: "{total} mesures · {done} faites · {doing} en cours · {todo} à faire",
+                actionLateCount: "{count} en retard",
+                actionEmpty: "Aucune mesure",
+                movePrev: "Étape précédente",
+                moveNext: "Étape suivante",
+                reviewsTitle: "Revues",
+                reviewFreeze: "Figer une revue",
+                reviewFreezeHint: "Enregistre une photo datée des cotations de tous les risques",
+                reviewLabel: "Revue n°{n}",
+                reviewSaved: "Revue enregistrée",
+                reviewDelete: "Supprimer cette revue",
+                confirmDeleteReview: "Supprimer la revue « {name} » ?",
+                reviewNone: "Aucune revue pour l’instant : figez-en une pour garder une trace de l’état actuel.",
+                reviewCurrent: "État actuel",
+                reviewCompare: "Comparer",
+                reviewRisks: "{count} risques",
+                diffDown: "En baisse",
+                diffUp: "En hausse",
+                diffSame: "Stables",
+                diffNew: "Nouveaux",
+                diffClosed: "Clos",
+                diffNoChange: "Aucun changement de cotation",
+                reviewExposure: "Exposition moyenne après remédiation (/5)",
+                colTrend: "Tendance",
+                trendTitle: "Criticité après remédiation, revue par revue"
             },
             en: {
                 pageTitle: "Riskr - Interactive Risk Analysis",
@@ -4543,7 +4574,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "Cell P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} risks",
                 filterClear: "Clear filters",
-                filterNoMatch: "No risk matches the filters"
+                filterNoMatch: "No risk matches the filters",
+                mesureState: "Status",
+                stateTodo: "To do",
+                stateDoing: "In progress",
+                stateDone: "Done",
+                mesureLate: "Overdue",
+                actionPlanTitle: "Action plan",
+                actionSummary: "{total} measures · {done} done · {doing} in progress · {todo} to do",
+                actionLateCount: "{count} overdue",
+                actionEmpty: "No measure",
+                movePrev: "Previous step",
+                moveNext: "Next step",
+                reviewsTitle: "Reviews",
+                reviewFreeze: "Record a review",
+                reviewFreezeHint: "Saves a dated snapshot of all risk ratings",
+                reviewLabel: "Review #{n}",
+                reviewSaved: "Review recorded",
+                reviewDelete: "Delete this review",
+                confirmDeleteReview: "Delete the review \"{name}\"?",
+                reviewNone: "No review yet: record one to keep track of the current state.",
+                reviewCurrent: "Current state",
+                reviewCompare: "Compare",
+                reviewRisks: "{count} risks",
+                diffDown: "Down",
+                diffUp: "Up",
+                diffSame: "Stable",
+                diffNew: "New",
+                diffClosed: "Closed",
+                diffNoChange: "No rating change",
+                reviewExposure: "Average exposure after remediation (/5)",
+                colTrend: "Trend",
+                trendTitle: "Criticality after remediation, review by review"
             },
             es: {
                 pageTitle: "Riskr - Análisis de Riesgos Interactivo",
@@ -4725,7 +4787,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "Casilla P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} riesgos",
                 filterClear: "Borrar los filtros",
-                filterNoMatch: "Ningún riesgo coincide con los filtros"
+                filterNoMatch: "Ningún riesgo coincide con los filtros",
+                mesureState: "Estado",
+                stateTodo: "Por hacer",
+                stateDoing: "En curso",
+                stateDone: "Hecha",
+                mesureLate: "Retrasada",
+                actionPlanTitle: "Plan de acción",
+                actionSummary: "{total} medidas · {done} hechas · {doing} en curso · {todo} por hacer",
+                actionLateCount: "{count} retrasadas",
+                actionEmpty: "Ninguna medida",
+                movePrev: "Paso anterior",
+                moveNext: "Paso siguiente",
+                reviewsTitle: "Revisiones",
+                reviewFreeze: "Registrar una revisión",
+                reviewFreezeHint: "Guarda una instantánea fechada de las calificaciones de todos los riesgos",
+                reviewLabel: "Revisión n.º {n}",
+                reviewSaved: "Revisión registrada",
+                reviewDelete: "Eliminar esta revisión",
+                confirmDeleteReview: "¿Eliminar la revisión «{name}»?",
+                reviewNone: "Aún no hay revisiones: registre una para conservar el estado actual.",
+                reviewCurrent: "Estado actual",
+                reviewCompare: "Comparar",
+                reviewRisks: "{count} riesgos",
+                diffDown: "A la baja",
+                diffUp: "Al alza",
+                diffSame: "Estables",
+                diffNew: "Nuevos",
+                diffClosed: "Cerrados",
+                diffNoChange: "Ningún cambio de calificación",
+                reviewExposure: "Exposición media tras la remediación (/5)",
+                colTrend: "Tendencia",
+                trendTitle: "Criticidad tras la remediación, revisión a revisión"
             },
             zh: {
                 pageTitle: "Riskr - 交互式风险分析",
@@ -4907,7 +5000,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "格 P{p} × I{i}（{phase}）",
                 filterCount: "{shown} / {total} 个风险",
                 filterClear: "清除筛选",
-                filterNoMatch: "没有符合筛选条件的风险"
+                filterNoMatch: "没有符合筛选条件的风险",
+                mesureState: "状态",
+                stateTodo: "待办",
+                stateDoing: "进行中",
+                stateDone: "已完成",
+                mesureLate: "已逾期",
+                actionPlanTitle: "行动计划",
+                actionSummary: "{total} 项措施 · {done} 已完成 · {doing} 进行中 · {todo} 待办",
+                actionLateCount: "{count} 项逾期",
+                actionEmpty: "暂无措施",
+                movePrev: "上一步",
+                moveNext: "下一步",
+                reviewsTitle: "评审",
+                reviewFreeze: "记录一次评审",
+                reviewFreezeHint: "保存所有风险评级的带日期快照",
+                reviewLabel: "第 {n} 次评审",
+                reviewSaved: "评审已记录",
+                reviewDelete: "删除此评审",
+                confirmDeleteReview: "删除评审“{name}”？",
+                reviewNone: "暂无评审：记录一次以保存当前状态。",
+                reviewCurrent: "当前状态",
+                reviewCompare: "比较",
+                reviewRisks: "{count} 个风险",
+                diffDown: "下降",
+                diffUp: "上升",
+                diffSame: "持平",
+                diffNew: "新增",
+                diffClosed: "已关闭",
+                diffNoChange: "评级无变化",
+                reviewExposure: "处理后平均暴露（/5）",
+                colTrend: "趋势",
+                trendTitle: "各次评审的处理后严重度"
             },
             ar: {
                 pageTitle: "Riskr - تحليل المخاطر التفاعلي",
@@ -5089,7 +5213,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterCell: "الخانة P{p} × I{i} ({phase})",
                 filterCount: "{shown} / {total} مخاطر",
                 filterClear: "مسح عوامل التصفية",
-                filterNoMatch: "لا يوجد خطر مطابق لعوامل التصفية"
+                filterNoMatch: "لا يوجد خطر مطابق لعوامل التصفية",
+                mesureState: "الحالة",
+                stateTodo: "للتنفيذ",
+                stateDoing: "قيد التنفيذ",
+                stateDone: "منجز",
+                mesureLate: "متأخر",
+                actionPlanTitle: "خطة العمل",
+                actionSummary: "{total} إجراءات · {done} منجزة · {doing} قيد التنفيذ · {todo} للتنفيذ",
+                actionLateCount: "{count} متأخرة",
+                actionEmpty: "لا توجد إجراءات",
+                movePrev: "الخطوة السابقة",
+                moveNext: "الخطوة التالية",
+                reviewsTitle: "المراجعات",
+                reviewFreeze: "تسجيل مراجعة",
+                reviewFreezeHint: "يحفظ لقطة مؤرخة لتقييمات جميع المخاطر",
+                reviewLabel: "المراجعة رقم {n}",
+                reviewSaved: "تم تسجيل المراجعة",
+                reviewDelete: "حذف هذه المراجعة",
+                confirmDeleteReview: "حذف المراجعة «{name}»؟",
+                reviewNone: "لا توجد مراجعات بعد: سجّل واحدة للاحتفاظ بالحالة الحالية.",
+                reviewCurrent: "الحالة الحالية",
+                reviewCompare: "مقارنة",
+                reviewRisks: "{count} مخاطر",
+                diffDown: "في انخفاض",
+                diffUp: "في ارتفاع",
+                diffSame: "مستقرة",
+                diffNew: "جديدة",
+                diffClosed: "مغلقة",
+                diffNoChange: "لا يوجد تغيير في التقييم",
+                reviewExposure: "متوسط التعرض بعد المعالجة (/5)",
+                colTrend: "الاتجاه",
+                trendTitle: "الخطورة بعد المعالجة، مراجعة تلو أخرى"
             }
         };
 
@@ -5366,15 +5521,36 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return candidates.map(toAssessment).find(a => a[0] > 0 && a[1] > 0) || [0, 0];
         }
 
-        // Une mesure : texte + porteur + échéance facultative (anciennement une simple chaîne)
+        // Une mesure : texte + porteur + échéance facultative + état (anciennement une simple chaîne)
+        const MESURE_STATES = { todo: 'stateTodo', doing: 'stateDoing', done: 'stateDone' };
         function normalizeMesure(raw) {
             const mesure = typeof raw === 'string' ? { texte: raw } : (raw || {});
             return {
                 texte: String(mesure.texte || ''),
                 porteur: String(mesure.porteur || ''),
-                echeance: String(mesure.echeance || '')
+                echeance: String(mesure.echeance || ''),
+                etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo'
             };
         }
+
+        // Échéance saisie librement : date reconnue (AAAA-MM-JJ ou JJ/MM/AAAA), sinon null
+        function mesureDueDate(text) {
+            const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text.trim());
+            const fr = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(text.trim());
+            const [year, month, day] = iso ? [iso[1], iso[2], iso[3]] : fr ? [fr[3], fr[2], fr[1]] : [];
+            return year ? new Date(Number(year), Number(month) - 1, Number(day)) : null;
+        }
+
+        // En retard : mesure non faite dont l'échéance est passée (la veille ou avant)
+        function isMesureLate(mesure) {
+            const due = mesureDueDate(mesure.echeance);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return mesure.etat !== 'done' && due !== null && due < today;
+        }
+
+        // Identifiant interne stable d'un risque (les numéros changent à chaque déplacement)
+        const newUid = () => `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
 
         // Texte d'une mesure pour les exports : « texte (porteur, échéance) »
         function formatMesure(mesure) {
@@ -5389,6 +5565,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (!SAFE_ID.test(id)) throw new Error(t('invalidRiskId', { id }));
             const risk = Object.assign({}, raw, {
                 id,
+                uid: typeof raw.uid === 'string' && raw.uid ? raw.uid : newUid(),
                 title: String(raw.title || ''),
                 assessmentBefore: firstEvaluated(raw.assessmentBefore, raw.assessmentBBefore,
                     raw.gcBefore, raw.assessmentABefore, raw.dtuBefore),
@@ -5442,7 +5619,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (groupedRisks.length < riskById.size) {
                 console.warn(`[Riskr] ${riskById.size - groupedRisks.length} risque(s) sans groupe ignoré(s)`);
             }
-            return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings) };
+            return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings),
+                reviews: normalizeReviews(data.reviews) };
+        }
+
+        // Revues figées : photo datée des cotations, repérées par l'identifiant stable du risque
+        function normalizeReviews(raw) {
+            return (Array.isArray(raw) ? raw : []).filter(review => review && Array.isArray(review.risks)).map(review => ({
+                id: String(review.id || newUid()),
+                date: String(review.date || ''),
+                label: String(review.label || ''),
+                risks: review.risks.filter(r => r && r.uid).map(r => ({
+                    uid: String(r.uid), id: String(r.id || ''), title: String(r.title || ''),
+                    before: toAssessment(r.before), after: toAssessment(r.after)
+                }))
+            }));
         }
 
         // Réglages de l'analyse, enregistrés avec le modèle (historique, navigateur, fichier).
@@ -5464,6 +5655,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             riskGroups.length = 0;
             riskGroups.push(...model.riskGroups);
             Object.assign(settings, model.settings);
+            reviews.length = 0;
+            reviews.push(...model.reviews);
         }
 
         // Copie sérialisable au format canonique (risks[] + riskGroups[].riskIds)
@@ -5471,6 +5664,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return JSON.parse(JSON.stringify({
                 risks,
                 settings,
+                reviews,
                 riskGroups: riskGroups.map(({ risks: groupRisks, ...group }) =>
                     Object.assign(group, { riskIds: groupRisks.map(r => r.id) }))
             }));
@@ -5739,6 +5933,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const risks = [];
         const riskGroups = [];
         const settings = {};
+        const reviews = [];
         if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
             applyModel(buildModel(window.RISKR_DATA));
             // Le script est en fin de page : le titre existe déjà dans le DOM
@@ -5777,6 +5972,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Champs d'un risque vierge (non évalué)
         function emptyAssessments() {
             return {
+                uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
                 mesures: [], statut: 'statusNotTreated', responsable: '', traitement: ''
             };

@@ -29,8 +29,14 @@ Chaque risque porte **une cotation** avant et après remédiation :
 (1 à 5 ; `[0, 0]` = non évalué). La criticité vaut probabilité × impact (sur 25) ;
 elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices.
 
-- `mesures` : liste de mesures `{ texte, porteur, echeance }` (porteur et
-  échéance facultatifs ; une simple chaîne de texte est aussi acceptée).
+- `mesures` : liste de mesures `{ texte, porteur, echeance, etat }` (porteur et
+  échéance facultatifs ; `etat` vaut `todo`, `doing` ou `done` ; une simple chaîne
+  de texte est aussi acceptée). Une échéance au format `AAAA-MM-JJ` ou
+  `JJ/MM/AAAA` passée sur une mesure non faite la signale en retard.
+- `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
+  permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
+- `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
+  before, after }] }`, photos datées des cotations servant aux comparaisons.
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
   `statusAccepted`.
 - `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid` ou `''`
