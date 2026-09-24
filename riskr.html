@@ -659,12 +659,35 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             direction: ltr;
         }
 
+        /* Mise en page des matrices : avant | après, ou trajectoire seule (centrée) */
+        .charts-column:not(.trajectory) > #trajectory-wrapper,
+        .charts-column.trajectory > .chart-wrapper:not(#trajectory-wrapper) {
+            display: none;
+        }
+
+        .charts-column.trajectory > #trajectory-wrapper {
+            grid-column: 1 / -1;
+            justify-self: center;
+            width: min(100%, 720px);
+        }
+
+        .menu-label {
+            padding: 10px 10px 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--text-3);
+        }
+
         /* Menus déroulants de l'en-tête (export, langue) */
         .menu-anchor {
             position: relative;
         }
 
         .menu {
+            font-weight: 400;
+            text-align: start;
             position: absolute;
             top: calc(100% + 6px);
             inset-inline-end: 0;
@@ -2924,6 +2947,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <button id="view-btn-groups" class="segmented-btn active" onclick="setMatrixView('groups')" data-i18n-title="viewGroups"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
                             <button id="view-btn-risks" class="segmented-btn" onclick="setMatrixView('risks')" data-i18n-title="viewRisks"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="17" r="2"/><circle cx="11" cy="8" r="2"/><circle cx="17" cy="15" r="2"/><circle cx="18" cy="6" r="2"/></svg></button>
                         </div>
+                        <div class="segmented" role="group" data-i18n-title="displayOptions">
+                            <button id="layout-btn-split" class="segmented-btn" onclick="setMatrixLayout('split')" data-i18n-title="viewSideBySide"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/></svg></button>
+                            <button id="layout-btn-trajectory" class="segmented-btn" onclick="setMatrixLayout('trajectory')" data-i18n-title="viewTrajectory"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="17" cy="7" r="3"/><circle cx="7" cy="17" r="3" fill="currentColor"/><path d="M14.8 9.2L9.5 14.5"/></svg></button>
+                        </div>
+                        <div class="menu-anchor">
+                            <button class="icon-toggle" onclick="toggleMenu('matrix-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="displayOptions"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
+                            <div id="matrix-menu" class="menu" role="menu" hidden></div>
+                        </div>
                         <button id="sticky-toggle-btn" class="icon-toggle" onclick="toggleSticky()" data-i18n-title="pinMatrices"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3z"/></svg></button>
                     </div>
                 </h3>
@@ -2954,6 +2985,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </div>
                                 <div class="chart-canvas">
                                     <canvas id="chartAfter"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-wrapper" id="trajectory-wrapper">
+                                <div class="chart-actions">
+                                    <button class="chart-action-btn" onclick="copyMatrixImage('trajectory')" data-i18n-title="copyMatrixImage"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></button>
+                                    <button class="chart-action-btn" onclick="openMatrixModal('trajectory')" data-i18n-title="zoomMatrix"><svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4M11 8v6M8 11h6"/></svg></button>
+                                </div>
+                                <div class="chart-header">
+                                    <h3 data-i18n="matrixTrajectory">Trajectoire des risques (avant → après)</h3>
+                                </div>
+                                <div class="chart-canvas">
+                                    <canvas id="chartTrajectory"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -3721,7 +3764,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // l'arabe et le chinois utilisent donc l'anglais
         const pdfText = key => (currentLanguage === 'ar' || currentLanguage === 'zh') ? translations.en[key] : t(key);
 
+        // Le PDF présente les matrices avant / après côte à côte, même en vue trajectoire
         function exportToPDF() {
+            const trajectory = matrixLayout === 'trajectory';
+            if (trajectory) setMatrixLayout('split');
+            try {
+                exportPdfDocument();
+            } finally {
+                if (trajectory) setMatrixLayout('trajectory');
+            }
+        }
+
+        function exportPdfDocument() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -5605,7 +5659,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         loadPersistedModel();
         validateRiskGroupNarratives(riskGroups);
 
-        let chartBefore, chartAfter;
+        let chartBefore, chartAfter, chartTrajectory;
 
         // Champs d'un risque vierge (non évalué)
         function emptyAssessments() {
@@ -6344,6 +6398,94 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         };
         
+        // Ligne d'appétence : frontière en escalier (bords des cases) de la zone P × I ≤ appétence
+        const appetitePlugin = {
+            id: 'riskAppetite',
+            beforeDatasetsDraw(chart) {
+                const max = settings.riskAppetite;
+                if (!matrixOptions.appetite || !max || max >= 25) return;
+                const { ctx, scales: { x, y } } = chart;
+                ctx.save();
+                ctx.beginPath();
+                let started = false;
+                for (let p = 1; p <= 5; p++) {
+                    const level = Math.min(5, Math.floor(max / p));
+                    const top = y.getPixelForValue(level + 0.5), left = x.getPixelForValue(p - 0.5), right = x.getPixelForValue(p + 0.5);
+                    if (level === 5) { ctx.moveTo(right, top); started = true; continue; } // bord supérieur : rien à tracer
+                    if (started) ctx.lineTo(left, top); else { ctx.moveTo(left, top); started = true; }
+                    ctx.lineTo(right, top);
+                }
+                ctx.setLineDash([7, 5]);
+                ctx.lineWidth = 2.5;
+                ctx.globalAlpha = 0.75;
+                ctx.strokeStyle = themeColor('--text');
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
+
+        // Trajectoire : flèche de la position avant (bulle creuse) vers la position après
+        const trajectoryPlugin = {
+            id: 'riskTrajectory',
+            beforeDatasetsDraw(chart) {
+                const [before, after] = chart.data.datasets;
+                if (!after) return;
+                const { ctx, scales: { x, y } } = chart;
+                const ends = new Map(after.data.map(point => [point.shortLabel, point]));
+                const radius = before.bubble.radius * cellSize(chart), head = radius * 0.55;
+                ctx.save();
+                ctx.strokeStyle = ctx.fillStyle = BUBBLE_COLOR;
+                ctx.globalAlpha = 0.55;
+                ctx.lineWidth = Math.max(1.5, radius * 0.12);
+                before.data.forEach(start => {
+                    const end = ends.get(start.shortLabel);
+                    if (!end) return;
+                    const x1 = x.getPixelForValue(start.x), y1 = y.getPixelForValue(start.y);
+                    const x2 = x.getPixelForValue(end.x), y2 = y.getPixelForValue(end.y);
+                    const length = Math.hypot(x2 - x1, y2 - y1);
+                    if (length < radius * 2 + head) return; // cotation inchangée : bulles voisines, pas de flèche
+                    const ux = (x2 - x1) / length, uy = (y2 - y1) / length;
+                    const tipX = x2 - ux * radius, tipY = y2 - uy * radius;
+                    ctx.beginPath();
+                    ctx.moveTo(x1 + ux * radius, y1 + uy * radius);
+                    ctx.lineTo(tipX - ux * head, tipY - uy * head);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(tipX, tipY);
+                    ctx.lineTo(tipX - ux * head - uy * head * 0.6, tipY - uy * head + ux * head * 0.6);
+                    ctx.lineTo(tipX - ux * head + uy * head * 0.6, tipY - uy * head - ux * head * 0.6);
+                    ctx.fill();
+                });
+                ctx.restore();
+            }
+        };
+
+        // Nombre de bulles par case (dernier jeu de données : « après » en trajectoire), coin supérieur
+        // droit de la case. Complexité : O(n) — n = nombre de bulles.
+        const cellCountsPlugin = {
+            id: 'cellCounts',
+            beforeDatasetsDraw(chart) {
+                if (!matrixOptions.counts) return;
+                const { ctx, scales: { x, y } } = chart;
+                const counts = new Map();
+                chart.data.datasets[chart.data.datasets.length - 1].data.forEach(point => {
+                    const key = `${Math.round(point.baseX)},${Math.round(point.baseY)}`;
+                    counts.set(key, (counts.get(key) || 0) + 1);
+                });
+                const size = cellSize(chart);
+                ctx.save();
+                ctx.font = `600 ${Math.max(9, Math.round(size * 0.11))}px Arial`;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'top';
+                counts.forEach((count, key) => {
+                    const [p, i] = key.split(',').map(Number);
+                    ctx.fillText(count, x.getPixelForValue(p + 0.5) - size * 0.06, y.getPixelForValue(i + 0.5) + size * 0.05);
+                });
+                ctx.restore();
+            }
+        };
+
         // Plugin pour afficher les numéros de groupes ou ID risques sur les points
         const riskLabelsPlugin = {
             id: 'riskLabels',
@@ -6441,6 +6583,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Jeux de données d'une matrice 'before' ou 'after', bulles rangées sans chevauchement
         function matrixChartData(type) {
+            if (type === 'trajectory') {
+                // Avant et après sur la même matrice : bulles rangées ensemble, sans chevauchement
+                const before = matrixPoints('Before'), after = matrixPoints('After');
+                const all = [...before, ...after];
+                const bubble = bubbleRatios(all);
+                resolveCollisions(all, bubble.radius * 2);
+                return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After' }] };
+            }
             const phase = type === 'before' ? 'Before' : 'After';
             const data = matrixPoints(phase);
             const bubble = bubbleRatios(data);
@@ -6455,7 +6605,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 data: {
                     datasets: datasets.map(({ data, phase, hollow = false }) => ({
                         data, phase, hollow, bubble,
-                        backgroundColor: hollow ? () => themeColor('--surface') : BUBBLE_COLOR,
+                        backgroundColor: hollow ? '#ffffff' : BUBBLE_COLOR, // creuse : fond blanc, lisible dans les deux thèmes
                         borderColor: hollow ? BUBBLE_COLOR : 'white',
                         borderWidth: hollow ? 2 : 1.5,
                         pointRadius: bubbleRadius,
@@ -6480,11 +6630,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             callbacks: {
                                 title: function(context) {
                                     const point = context[0].raw;
-                                    // Afficher l'ID complet et le titre
-                                    if (matrixViewMode === 'risks') {
-                                        return `${point.shortLabel} - ${point.riskTitle}`;
-                                    }
-                                    return point.label;
+                                    const title = matrixViewMode === 'risks' ? `${point.shortLabel} - ${point.riskTitle}` : point.label;
+                                    // En trajectoire, préciser s'il s'agit de la position avant ou après
+                                    if (context[0].chart.data.datasets.length < 2) return title;
+                                    return `${title} · ${t(context[0].dataset.phase === 'Before' ? 'colBeforeShort' : 'colAfterShort')}`;
                                 },
                                 label: function(context) {
                                     const point = context.raw;
@@ -6569,7 +6718,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         }
                     }
                 },
-                plugins: [matrixBackgroundPlugin, riskLabelsPlugin]
+                plugins: [matrixBackgroundPlugin, appetitePlugin, cellCountsPlugin, trajectoryPlugin, riskLabelsPlugin]
             });
         }
         
@@ -6986,7 +7135,67 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         // Mettre à jour les graphiques
+        const MATRIX_TITLES = { before: 'matrixBefore', after: 'matrixAfter', trajectory: 'matrixTrajectory' };
+
+        // Mise en page des matrices : 'split' (avant | après) ou 'trajectory' (une seule matrice)
+        let matrixLayout = riskrStorage.getItem('matrix-layout') === 'trajectory' ? 'trajectory' : 'split';
+        // Options d'affichage : préférences de l'utilisateur, comme la vue groupes / risques
+        const matrixOptions = {
+            counts: riskrStorage.getItem('matrix-counts') !== 'false',
+            appetite: riskrStorage.getItem('matrix-appetite') !== 'false'
+        };
+
+        function setMatrixLayout(layout) {
+            matrixLayout = layout;
+            riskrStorage.setItem('matrix-layout', layout);
+            updateCharts();
+        }
+
+        function toggleMatrixOption(name) {
+            matrixOptions[name] = !matrixOptions[name];
+            riskrStorage.setItem(`matrix-${name}`, String(matrixOptions[name]));
+            updateCharts();
+        }
+
+        // L'appétence fait partie de l'analyse : historisée et enregistrée avec les données
+        function setRiskAppetite(max) {
+            settings.riskAppetite = max;
+            commitChange();
+            renderRisks();
+            updateCharts();
+            showToast(t('changeSaved'));
+        }
+
+        // Menu « Options d'affichage » : cases à cocher et niveaux d'appétence (libellés traduits)
+        function renderMatrixMenu() {
+            const item = (role, on, action, label) =>
+                `<button role="${role}" aria-checked="${on}" class="${on ? 'active' : ''}" onclick="${action}">${label}</button>`;
+            const levels = [[CRITICALITY_THRESHOLDS.medium - 1, 'critLow'], [CRITICALITY_THRESHOLDS.high - 1, 'critMedium'],
+                [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh']];
+            document.getElementById('matrix-menu').innerHTML =
+                item('menuitemcheckbox', matrixOptions.counts, "toggleMatrixOption('counts')", t('showCounts')) +
+                item('menuitemcheckbox', matrixOptions.appetite, "toggleMatrixOption('appetite')", t('showAppetite')) +
+                `<div class="menu-label">${t('appetiteLabel')}</div>` +
+                levels.map(([max, key]) => item('menuitemradio', settings.riskAppetite === max, `setRiskAppetite(${max})`, `${t(key)} (≤ ${max})`)).join('') +
+                item('menuitemradio', settings.riskAppetite === 0, 'setRiskAppetite(0)', t('appetiteNone'));
+        }
+
         function updateCharts() {
+            document.querySelector('.charts-column').classList.toggle('trajectory', matrixLayout === 'trajectory');
+            document.getElementById('layout-btn-split').classList.toggle('active', matrixLayout === 'split');
+            document.getElementById('layout-btn-trajectory').classList.toggle('active', matrixLayout === 'trajectory');
+            renderMatrixMenu();
+            [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
+            chartBefore = chartAfter = chartTrajectory = null;
+
+            if (matrixLayout === 'trajectory') {
+                const { datasets, bubble } = matrixChartData('trajectory');
+                chartTrajectory = createRiskChart(document.getElementById('chartTrajectory'), datasets, bubble);
+                updateRiskTable(risks);
+                updateGroupTable();
+                return;
+            }
+
             const before = matrixPoints('Before');
             const after = matrixPoints('After');
             // Même taille de bulle sur les deux matrices
@@ -6994,8 +7203,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             resolveCollisions(before, bubble.radius * 2);
             resolveCollisions(after, bubble.radius * 2);
 
-            if (chartBefore) chartBefore.destroy();
-            if (chartAfter) chartAfter.destroy();
             chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before' }], bubble);
             chartAfter = createRiskChart(document.getElementById('chartAfter'), [{ data: after, phase: 'After' }], bubble);
 
@@ -7012,7 +7219,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function openMatrixModal(type) {
             currentMatrixType = type;
-            document.getElementById('matrix-modal-title').textContent = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
+            document.getElementById('matrix-modal-title').textContent = t(MATRIX_TITLES[type]);
             document.getElementById('matrix-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
 
@@ -7044,8 +7251,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const padding = 24 * scale;
             const lineHeight = 22 * scale;
             const font = size => `${size * scale}px -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif`;
-            const dataset = chart.data.datasets[0];
-            const entries = [...new Map(dataset.data.map(point =>
+            const entries = [...new Map(chart.data.datasets.flatMap(set => set.data).map(point =>
                 [point.shortLabel, point.riskTitle || point.groupName])).entries()]
                 .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true }));
 
@@ -7072,7 +7278,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const cy = y + lineHeight / 2;
                 ctx.beginPath();
                 ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-                ctx.fillStyle = dataset.backgroundColor;
+                ctx.fillStyle = BUBBLE_COLOR;
                 ctx.fill();
                 ctx.fillStyle = '#ffffff';
                 ctx.font = `700 ${font(label.length > 2 ? 8 : 10)}`;
@@ -7091,12 +7297,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Copie une matrice en image dans le presse-papier (à coller dans Word,
         // PowerPoint, un mail…). Sans copie d'image possible : téléchargement du PNG.
         async function copyMatrixImage(type) {
-            const chart = type === 'before' ? chartBefore : chartAfter;
+            // Depuis la loupe : la matrice agrandie (meilleure résolution)
+            const chart = document.getElementById('matrix-modal').classList.contains('active')
+                ? modalChartInstance
+                : { before: chartBefore, after: chartAfter, trajectory: chartTrajectory }[type];
             if (!chart || !chart.width) {
                 showToast(t('showMatricesToCopy'), 'error');
                 return;
             }
-            const title = t(type === 'before' ? 'matrixBefore' : 'matrixAfter');
+            const title = t(MATRIX_TITLES[type]);
             const blob = new Promise(resolve => buildMatrixImage(chart, title).toBlob(resolve, 'image/png'));
             try {
                 // La promesse est passée telle quelle : Safari exige l'écriture pendant le clic
@@ -7135,14 +7344,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Navigation entre les matrices (cycle)
         function navigateMatrix(direction) {
-            if (direction === 'next') {
-                // Cycle: before → after → before
-                currentMatrixType = currentMatrixType === 'before' ? 'after' : 'before';
-            } else {
-                // Cycle: after → before → after
-                currentMatrixType = currentMatrixType === 'after' ? 'before' : 'after';
-            }
-            openMatrixModal(currentMatrixType);
+            // Cycle : avant → après → trajectoire → avant
+            const types = Object.keys(MATRIX_TITLES);
+            const step = direction === 'next' ? 1 : types.length - 1;
+            openMatrixModal(types[(types.indexOf(currentMatrixType) + step) % types.length]);
         }
 
         // Gestion du clavier pour la modal (Échap, flèches gauche/droite)
