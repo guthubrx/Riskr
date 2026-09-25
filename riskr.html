@@ -1521,6 +1521,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             grid-template-columns: minmax(0, 1fr) 400px;
         }
 
+        /* Étiquette d'une bulle survolée (hors du canevas, jamais sous le curseur) */
+        .matrix-tip {
+            position: fixed;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            max-width: 260px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            background: rgba(29, 29, 31, 0.92);
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.35;
+            pointer-events: none;
+        }
+
+        .matrix-tip[hidden] {
+            display: none;
+        }
+
+        .matrix-tip small {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
         /* Panneau latéral des matrices : affichage, légende, case sélectionnée, appétence */
         .matrix-panel {
             display: flex;
@@ -6041,11 +6066,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 invalidGroupId: "Identifiant de groupe invalide : « {id} »",
                 groupLabel: "Groupe {id}",
                 riskLabel: "Risque {id}",
-                tipProbability: "Probabilité",
-                tipImpact: "Impact",
-                tipAvgProbability: "Probabilité moyenne",
-                tipAvgImpact: "Impact moyen",
-                tipAvgCriticality: "Criticité moyenne",
                 pdfMatricesTitle: "Matrices de risques",
                 pdfBefore: "Avant remédiation",
                 pdfAfter: "Après remédiation",
@@ -6382,11 +6402,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 invalidGroupId: "Invalid group identifier: \"{id}\"",
                 groupLabel: "Group {id}",
                 riskLabel: "Risk {id}",
-                tipProbability: "Probability",
-                tipImpact: "Impact",
-                tipAvgProbability: "Average probability",
-                tipAvgImpact: "Average impact",
-                tipAvgCriticality: "Average criticality",
                 pdfMatricesTitle: "Risk matrices",
                 pdfBefore: "Before remediation",
                 pdfAfter: "After remediation",
@@ -6723,11 +6738,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 invalidGroupId: "Identificador de grupo no válido: «{id}»",
                 groupLabel: "Grupo {id}",
                 riskLabel: "Riesgo {id}",
-                tipProbability: "Probabilidad",
-                tipImpact: "Impacto",
-                tipAvgProbability: "Probabilidad media",
-                tipAvgImpact: "Impacto medio",
-                tipAvgCriticality: "Criticidad media",
                 pdfMatricesTitle: "Matrices de riesgos",
                 pdfBefore: "Antes de la remediación",
                 pdfAfter: "Después de la remediación",
@@ -7064,11 +7074,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 invalidGroupId: "无效的组标识：“{id}”",
                 groupLabel: "第 {id} 组",
                 riskLabel: "风险 {id}",
-                tipProbability: "概率",
-                tipImpact: "影响",
-                tipAvgProbability: "平均概率",
-                tipAvgImpact: "平均影响",
-                tipAvgCriticality: "平均严重度",
                 pdfMatricesTitle: "风险矩阵",
                 pdfBefore: "补救前",
                 pdfAfter: "补救后",
@@ -7405,11 +7410,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 invalidGroupId: "معرّف مجموعة غير صالح: «{id}»",
                 groupLabel: "المجموعة {id}",
                 riskLabel: "الخطر {id}",
-                tipProbability: "الاحتمال",
-                tipImpact: "التأثير",
-                tipAvgProbability: "متوسط الاحتمال",
-                tipAvgImpact: "متوسط التأثير",
-                tipAvgCriticality: "متوسط الخطورة",
                 pdfMatricesTitle: "مصفوفات المخاطر",
                 pdfBefore: "قبل المعالجة",
                 pdfAfter: "بعد المعالجة",
@@ -9564,6 +9564,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const velocityScale = velocity => !matrixOptions.velocity ? 1 : velocity ? 0.6 + 0.08 * velocity : 0.84;
         const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart) * (context.raw?.scale ?? 1);
 
+        // Étiquette d'une bulle survolée : compacte, placée au-dessus de la bulle (en dessous si la place manque)
+        function renderMatrixTip({ chart, tooltip }) {
+            let tip = document.getElementById('matrix-tip');
+            if (!tip) {
+                tip = document.createElement('div');
+                tip.id = 'matrix-tip';
+                tip.className = 'matrix-tip';
+                document.body.appendChild(tip);
+            }
+            const item = tooltip.dataPoints && tooltip.dataPoints[0];
+            if (!tooltip.opacity || !item) {
+                tip.hidden = true;
+                return;
+            }
+            const point = item.raw;
+            const p = point.baseX, i = point.baseY;
+            const phase = { Before: 'colBeforeShort', After: 'colAfterShort', Target: 'colTarget' }[item.dataset.phase];
+            const figures = matrixViewMode === 'risks'
+                ? `P${p} × I${i} = ${p * i}`
+                : `P ${p.toFixed(1)} × I ${i.toFixed(1)} · ${formatOutOf5(p * i)}`;
+            tip.innerHTML = `<b>${escapeHtml(matrixViewMode === 'risks' ? `${point.shortLabel} · ${point.riskTitle}` : point.label)}</b>
+                <span>${escapeHtml(figures)}${phase ? ` · ${t(phase)}` : ''}</span>
+                <small>${escapeHtml(point.groupName || '')}</small>`;
+            tip.hidden = false;
+            const box = chart.canvas.getBoundingClientRect();
+            const element = item.element;
+            const radius = element.options.radius || 10;
+            const x = box.left + element.x, y = box.top + element.y;
+            const width = tip.offsetWidth, height = tip.offsetHeight;
+            const gap = radius + 8;
+            const top = y - gap - height >= 4 ? y - gap - height : y + gap;
+            tip.style.left = `${Math.min(Math.max(4, x - width / 2), window.innerWidth - width - 4)}px`;
+            tip.style.top = `${top}px`;
+        }
+
         const BUBBLE_COLOR = '#1F4E78';
         const TARGET_COLOR = '#1f8a3c';
         const mainDataset = chart => chart.data.datasets.find(dataset => dataset.main) || chart.data.datasets[chart.data.datasets.length - 1];
@@ -9638,44 +9673,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         legend: {
                             display: false
                         },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleFont: { size: 14, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            padding: 12,
-                            callbacks: {
-                                title: function(context) {
-                                    const point = context[0].raw;
-                                    const title = matrixViewMode === 'risks' ? `${point.shortLabel} - ${point.riskTitle}` : point.label;
-                                    // En trajectoire, préciser s'il s'agit de la position avant ou après
-                                    if (context[0].chart.data.datasets.length < 2) return title;
-                                    return `${title} · ${t(context[0].dataset.phase === 'Before' ? 'colBeforeShort' : 'colAfterShort')}`;
-                                },
-                                label: function(context) {
-                                    const point = context.raw;
-                                    // Utiliser les valeurs de base (sans jitter) pour l'affichage
-                                    const realX = point.baseX || point.x;
-                                    const realY = point.baseY || point.y;
-                                    const criticality = realX * realY;
-                                    
-                                    if (matrixViewMode === 'risks') {
-                                        return [
-                                            `${t('colGroup')} : ${point.groupName}`,
-                                            `${t('tipProbability')} : ${realX}`,
-                                            `${t('tipImpact')} : ${realY}`,
-                                            `${t('colCriticality')} : ${criticality}`
-                                        ];
-                                    } else {
-                                        return [
-                                            `${point.groupName}`,
-                                            `${t('tipAvgProbability')} : ${realX.toFixed(2)}`,
-                                            `${t('tipAvgImpact')} : ${realY.toFixed(2)}`,
-                                            `${t('tipAvgCriticality')} : ${formatOutOf5(criticality)}`
-                                        ];
-                                    }
-                                }
-                            }
-                        }
+                        // Étiquette HTML au-dessus de la bulle : ni coupée par le bord du graphique, ni sous le curseur
+                        tooltip: { enabled: false, external: renderMatrixTip }
                     },
                     scales: {
                         x: {
