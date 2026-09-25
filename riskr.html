@@ -3031,10 +3031,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         /* Titres expliqués au survol */
-        .bt-head[title],
-        .sheet-score-label[title],
-        .eff span[title] {
+        .bt-head[data-tip],
+        .sheet-score-label[data-tip],
+        .eff span[data-tip] {
             cursor: help;
+        }
+
+        /* Infobulle d'explication : même corps de texte que les barrières */
+        .hint-tip {
+            position: fixed;
+            z-index: 3000;
+            max-width: 320px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.45;
+            letter-spacing: normal;
+            text-transform: none;
+            pointer-events: none;
+        }
+
+        .hint-tip[hidden] {
+            display: none;
         }
 
         .bt-head {
@@ -11153,7 +11176,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
 
         // Vélocité 1 (lente) → 5 (immédiate) : du bleu au rouge
-        const VELOCITY_COLORS = ['#0a84ff', '#30b0c7', '#c9a300', '#ff9f0a', '#ff3b30'];
+        const VELOCITY_COLORS = ['#0a84ff', '#34c759', '#c9a300', '#ff9f0a', '#ff3b30'];
+        // Pastilles des menus déroulants (les menus natifs ignorent les couleurs : seuls les emoji restent colorés)
+        const LEVEL_DOTS = ['', '🟢', '🟡', '🟠', '🔴', '🟥'];
+        const VELOCITY_DOTS = ['', '🔵', '🟢', '🟡', '🟠', '🔴'];
+        const TREATMENT_DOTS = { reduce: '🔵', transfer: '🟣', accept: '🟠', avoid: '🟢', '': '⚪' };
+
+        // Infobulle des éléments [data-tip], placée sous l'élément (au-dessus si la place manque)
+        function showHintTip(element) {
+            let tip = document.getElementById('hint-tip');
+            if (!tip) {
+                tip = document.createElement('div');
+                tip.id = 'hint-tip';
+                tip.className = 'hint-tip';
+                document.body.appendChild(tip);
+            }
+            tip.textContent = element.dataset.tip;
+            tip.hidden = false;
+            const box = element.getBoundingClientRect();
+            const top = box.bottom + 8 + tip.offsetHeight <= window.innerHeight ? box.bottom + 8 : box.top - 8 - tip.offsetHeight;
+            tip.style.top = `${top}px`;
+            tip.style.left = `${Math.min(Math.max(4, box.left + box.width / 2 - tip.offsetWidth / 2), window.innerWidth - tip.offsetWidth - 4)}px`;
+        }
+        const hideHintTip = () => { const tip = document.getElementById('hint-tip'); if (tip) tip.hidden = true; };
+        document.addEventListener('mouseover', event => {
+            const element = event.target.closest?.('[data-tip]');
+            if (element) showHintTip(element); else hideHintTip();
+        });
+        ['mousedown', 'scroll', 'keydown'].forEach(type => document.addEventListener(type, hideHintTip, true));
         const safeUrl = url => /^\s*(javascript|data|vbscript):/i.test(url) ? '#' : url;
         const todayIso = () => { const d = new Date(); return [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-'); };
         const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit' }) : date; };
@@ -11168,9 +11218,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const history = reviews.filter(r => r.risks.some(entry => entry.uid === risk.uid));
             const lastReview = history[history.length - 1];
             const axisOptions = (scale, value, prefix) => scale.map(item =>
-                `<option value="${item.value}" ${item.value === value ? 'selected' : ''} title="${escapeHtml(item.label)}">${item.value ? prefix + item.value : '–'}</option>`).join('');
+                `<option value="${item.value}" ${item.value === value ? 'selected' : ''} title="${escapeHtml(item.label)}">${item.value ? `${LEVEL_DOTS[item.value]} ${prefix}${item.value}` : '–'}</option>`).join('');
             const NOTIONS = { assessmentBefore: 'notionBefore', assessmentAfter: 'notionAfter', assessmentTarget: 'notionTarget' };
-            const cotation = (field, label, target = false) => `<div class="sheet-score"><span class="sheet-score-label" title="${t(NOTIONS[field])}">${t(label)}</span>
+            const cotation = (field, label, target = false) => `<div class="sheet-score"><span class="sheet-score-label" data-tip="${t(NOTIONS[field])}">${t(label)}</span>
                 ${scoreChip(risk[field], target)}
                 <span class="sheet-score-edit">
                     <select data-assess="${field}" data-axis="0" aria-label="${t(label)} · ${t('colProb')}">${axisOptions(getProbabilityScale(), risk[field][0], 'P')}</select>
@@ -11185,7 +11235,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 .filter(({ mesure }) => mesure.barriere === side)
                 .map(({ mesure, index }) => `<div class="bt-node barrier ${side}">
                     ${editable(`data-mesure="${index}"`, mesure.texte)}
-                    <span class="eff">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="eff-dot${n <= mesure.efficacite ? ' on' : ''}" data-mesure="${index}" data-eff="${n}" aria-label="${t('efficacyLabel')} ${n}/5"></button>`).join('')} <span title="${t('notionEfficacy')}">${t('efficacyLabel')}</span></span>
+                    <span class="eff">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="eff-dot${n <= mesure.efficacite ? ' on' : ''}" data-mesure="${index}" data-eff="${n}" aria-label="${t('efficacyLabel')} ${n}/5"></button>`).join('')} <span data-tip="${t('notionEfficacy')}">${t('efficacyLabel')}</span></span>
                     <span class="bt-sub">${t(MESURE_STATES[mesure.etat])}${mesure.porteur ? ` · ${escapeHtml(mesure.porteur)}` : ''}${mesure.echeance ? ` · ${escapeHtml(mesure.echeance)}` : ''}</span>
                     ${tools(`<button type="button" data-swap="${index}" title="${t('bowtieSwap')}" aria-label="${t('bowtieSwap')}">${icon('swap')}</button>`)}
                 </div>`).join('') || `<div class="bt-node missing">${t('bowtieNoBarrier')}</div>`;
@@ -11202,12 +11252,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <div>
                         <h2 class="sheet-risk-title"><span class="id-bubble big">${escapeHtml(risk.id)}</span>${editable('data-field="title"', risk.title, t('newRisk'))}</h2>
                         <div class="sheet-facts">
-                            <select class="chip-select" data-field="traitement" style="--c:${TREATMENT_COLORS[risk.traitement]}" title="${t('notionTreatment')}" aria-label="${t('colTreatment')}">
-                                ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}</select>
+                            <select class="chip-select" data-field="traitement" style="--c:${TREATMENT_COLORS[risk.traitement]}" data-tip="${t('notionTreatment')}" aria-label="${t('colTreatment')}">
+                                ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${TREATMENT_DOTS[key]} ${treatmentLabel(key)}</option>`).join('')}</select>
                             <span class="owner">${avatar(risk.responsable || '?')}${editable('data-field="responsable"', risk.responsable, t('mesureOwner'))}</span>
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
-                            <select class="chip-select" data-field="velocite" style="--c:${risk.velocite ? VELOCITY_COLORS[risk.velocite - 1] : '#8e8e93'}" title="${t('velocityHint')}" aria-label="${t('colVelocity')}">
-                                ${[0, 1, 2, 3, 4, 5].map(v => `<option value="${v}" ${v === risk.velocite ? 'selected' : ''}>${t(v ? `velocity${v}` : 'velocityNone')}</option>`).join('')}</select>
+                            <select class="chip-select" data-field="velocite" style="--c:${risk.velocite ? VELOCITY_COLORS[risk.velocite - 1] : '#8e8e93'}" data-tip="${t('velocityHint')}" aria-label="${t('colVelocity')}">
+                                ${[0, 1, 2, 3, 4, 5].map(v => `<option value="${v}" ${v === risk.velocite ? 'selected' : ''}>${v ? `${VELOCITY_DOTS[v]} ` : ''}${t(v ? `velocity${v}` : 'velocityNone')}</option>`).join('')}</select>
                             ${lastReview ? `<span class="sheet-muted">${t('reviewedOn', { date: formatReviewDate(lastReview.date) })}</span>` : ''}
                         </div>
                     </div>
@@ -11217,7 +11267,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <svg class="bowtie-links" aria-hidden="true"></svg>
                     ${[['bowtieCauses', 'notionCauses'], ['bowtiePrevention', 'notionPrevention'], ['bowtieEvent', 'notionEvent'],
                         ['bowtieProtection', 'notionProtection'], ['bowtieConsequences', 'notionConsequences']]
-                        .map(([label, notion]) => `<div class="bt-head" title="${t(notion)}">${t(label)}</div>`).join('')}
+                        .map(([label, notion]) => `<div class="bt-head" data-tip="${t(notion)}">${t(label)}</div>`).join('')}
                     <div class="bt-col" data-col="causes">${risk.causes.map((cause, index) => `<div class="bt-node cause">
                         ${editable(`data-list="causes" data-index="${index}"`, cause)}${tools(del(`data-del-list="causes" data-index="${index}"`))}</div>`).join('')}
                         ${add('data-add="causes"', 'bowtieAddCause')}</div>
