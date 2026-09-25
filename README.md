@@ -11,37 +11,61 @@
 ## 🖼️ Captures d'écran
 
 Captures réalisées avec les données de démonstration de `riskr-data.js`,
-entièrement fictives (projet imaginaire de modernisation d'un système d'information).
+entièrement fictives (projet imaginaire de modernisation d'un système d'information),
+affichées en thème clair ou sombre selon celui de GitHub. Pour les régénérer après
+une évolution de l'interface : `node docs/captures/generer-captures.mjs` (Chrome requis).
 
 **Matrices** : trajectoire avant → après, cible (pastille en losange bleu = cible
 atteinte, losange blanc = cible visée), appétence, état à la date d'une revue.
 
-![Matrices : trajectoire des risques, options d'affichage et risques au-dessus de l'appétence](docs/captures/matrices.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/matrices.png">
+  <img src="docs/captures/clair/matrices.png" alt="Matrices : trajectoire des risques, options d'affichage et risques au-dessus de l'appétence">
+</picture>
 
-![Matrice après remédiation par groupe, cibles atteintes en losange bleu](docs/captures/matrices-groupes.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/matrices-groupes.png">
+  <img src="docs/captures/clair/matrices-groupes.png" alt="Matrice après remédiation par groupe, cibles atteintes en losange bleu">
+</picture>
 
 **Registre** : cotations avant → après · cible, tendance sur les revues, traitement,
 porteur, prochaine échéance et mesures.
 
-![Registre des risques](docs/captures/registre.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/registre.png">
+  <img src="docs/captures/clair/registre.png" alt="Registre des risques">
+</picture>
 
 **Fiche du risque** : nœud papillon (causes, barrières et leur efficacité,
 conséquences chiffrées), évolution de la cotation, notes de revue, pièces et liens.
 
-![Fiche d'un risque avec son nœud papillon](docs/captures/fiche.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/fiche.png">
+  <img src="docs/captures/clair/fiche.png" alt="Fiche d'un risque avec son nœud papillon">
+</picture>
 
-**Plan d'actions** : mesures par état, porteur ou échéance, retards en évidence.
+**Plan d'actions** : mesures par état, porteur ou échéance, retards en évidence ;
+en vue par état, une mesure se glisse d'une colonne à l'autre pour changer d'état.
 
-![Plan d'actions](docs/captures/plan-actions.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/plan-actions.png">
+  <img src="docs/captures/clair/plan-actions.png" alt="Plan d'actions">
+</picture>
 
 **Revues** : frise des revues figées, comparaison au choix, changements de
 cotation et exposition moyenne par groupe.
 
-![Revues et comparaison](docs/captures/revues.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/revues.png">
+  <img src="docs/captures/clair/revues.png" alt="Revues et comparaison">
+</picture>
 
 **Vue comité** : synthèse d'une page, copiable dans Word ou PowerPoint et exportable en PDF.
 
-![Vue comité](docs/captures/comite.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/comite.png">
+  <img src="docs/captures/clair/comite.png" alt="Vue comité">
+</picture>
 
 ## 📦 Données séparées (riskr-data.js)
 
@@ -141,7 +165,7 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   (à faire, en cours, faite) ; échéance dépassée signalée en rouge
 - **Plan d'actions** : progression, mesures regroupées par état, porteur ou
   échéance, « Mes mesures », étiquette préventive / protection, retards en tête,
-  flèches pour faire avancer une mesure
+  glisser-déposer d'une colonne à l'autre (vue par état) pour changer l'état d'une mesure
 - **Revues** : photo datée des cotations (« Figer une nouvelle revue », auteur ou
   instance), frise, comparaison de deux revues ou d'une revue avec l'état actuel
   (compteurs, changements triés par écart), courbe d'exposition moyenne par
