@@ -175,7 +175,9 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 ### Organisation en onglets
 - **Matrices** (matrices, panneau latéral, moyennes par groupe, tableau
   récapitulatif), **Registre** (tableau compact, cartes ou édition complète),
-  **Plan d'actions**, **Revues**, **Vue comité**, **Paramètres** ; l'onglet choisi est mémorisé et
+  **Plan d'actions**, **Revues**, **Vue comité**, **Paramètres**, **Nouveautés**
+  (historique des évolutions depuis la première version, avec liens vers les
+  commits) ; l'onglet choisi est mémorisé et
   figure dans l'adresse (`riskr.html#revues`, `riskr.html#fiche:…`) ; les boutons
   Précédent / Suivant du navigateur passent d'un onglet ou d'une fiche à l'autre,
   sans quitter la page. Un clic sur une case de matrice

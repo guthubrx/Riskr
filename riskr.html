@@ -3476,6 +3476,54 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             width: fit-content;
         }
 
+        .changelog-entry h3 {
+            text-transform: none;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .changelog-entry time {
+            color: var(--text-3);
+            font-weight: 500;
+        }
+
+        .changelog-entry ul {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 14px;
+        }
+
+        .changelog-entry li {
+            display: grid;
+            grid-template-columns: 80px minmax(0, 1fr);
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .changelog-kind {
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .changelog-kind.new {
+            color: var(--accent);
+        }
+
+        .changelog-commits {
+            margin: 12px 0 0;
+            font-size: 12px;
+        }
+
+        .changelog-commits a {
+            margin-inline-end: 8px;
+            color: var(--text-3);
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
         .settings-hint {
             margin: 0 0 12px;
             font-size: 13px;
@@ -5536,6 +5584,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <button type="button" class="view-tab" role="tab" data-tab="revues" onclick="showTab('revues')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="reviewsTitle">Revues</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="comite" onclick="showTab('comite')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-i18n="tabCommittee">Vue comité</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="parametres" onclick="showTab('parametres')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg><span data-i18n="tabSettings">Paramètres</span></button>
+            <button type="button" class="view-tab" role="tab" data-tab="nouveautes" onclick="showTab('nouveautes')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span data-i18n="tabChangelog">Nouveautés</span></button>
         </nav>
 
         <section class="tab-panel" data-panel="matrices" role="tabpanel">
@@ -5714,6 +5763,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <!-- Paramètres communs à l'analyse -->
         <section class="tab-panel" data-panel="parametres" role="tabpanel" hidden>
             <div id="settings-page" class="settings-page"></div>
+        </section>
+
+        <!-- Nouveautés : historique des évolutions -->
+        <section class="tab-panel" data-panel="nouveautes" role="tabpanel" hidden>
+            <div id="changelog-page" class="settings-page changelog-page"></div>
         </section>
     </div>
 
@@ -7255,6 +7309,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                tabChangelog: "Nouveautés",
+                changelogTitle: "Nouveautés de Riskr",
+                changelogIntro: "Les évolutions de l'application, de la plus récente à la plus ancienne. Chaque identifiant renvoie au commit correspondant.",
+                changelogNew: "Nouveau",
+                changelogImproved: "Amélioré",
+                changelogFixed: "Corrigé",
                 tabSettings: "Paramètres",
                 settingsTitle: "Paramètres de l'analyse",
                 settingsIntro: "Réglages communs à tous les risques, enregistrés avec les données de l'analyse.",
@@ -7789,6 +7849,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                tabChangelog: "What's new",
+                changelogTitle: "What's new in Riskr",
+                changelogIntro: "Changes to the application, from newest to oldest. Each identifier links to the matching commit.",
+                changelogNew: "New",
+                changelogImproved: "Improved",
+                changelogFixed: "Fixed",
                 tabSettings: "Settings",
                 settingsTitle: "Analysis settings",
                 settingsIntro: "Settings shared by all risks, saved with the analysis data.",
@@ -8323,6 +8389,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                tabChangelog: "Novedades",
+                changelogTitle: "Novedades de Riskr",
+                changelogIntro: "Cambios de la aplicación, del más reciente al más antiguo (textos en inglés). Cada identificador enlaza con el commit correspondiente.",
+                changelogNew: "Nuevo",
+                changelogImproved: "Mejorado",
+                changelogFixed: "Corregido",
                 tabSettings: "Parámetros",
                 settingsTitle: "Parámetros del análisis",
                 settingsIntro: "Ajustes comunes a todos los riesgos, guardados con los datos del análisis.",
@@ -8857,6 +8929,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                tabChangelog: "更新内容",
+                changelogTitle: "Riskr 更新内容",
+                changelogIntro: "应用的更新，从最新到最早（英文说明）。每个标识符链接到对应的提交。",
+                changelogNew: "新增",
+                changelogImproved: "改进",
+                changelogFixed: "修复",
                 tabSettings: "设置",
                 settingsTitle: "分析设置",
                 settingsIntro: "所有风险共用的设置，随分析数据一起保存。",
@@ -9391,6 +9469,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                tabChangelog: "المستجدات",
+                changelogTitle: "مستجدات Riskr",
+                changelogIntro: "تطورات التطبيق من الأحدث إلى الأقدم (النصوص بالإنجليزية). يرتبط كل معرّف بالتعديل المقابل.",
+                changelogNew: "جديد",
+                changelogImproved: "محسّن",
+                changelogFixed: "مُصلح",
                 tabSettings: "الإعدادات",
                 settingsTitle: "إعدادات التحليل",
                 settingsIntro: "إعدادات مشتركة بين جميع المخاطر، تُحفظ مع بيانات التحليل.",
@@ -12754,6 +12838,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             chartBefore = chartAfter = chartTrajectory = null;
             renderReviews();
             renderSettings();
+            renderChangelog();
             withCurrentState(renderCommitteeTab);
             renderRegister();
 
@@ -13749,6 +13834,110 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             };
         }
 
+        // Nouveautés, de la plus récente à la plus ancienne : [type, français, anglais] ; les autres langues
+        // affichent l'anglais. À compléter à chaque évolution (commits : dépôt GitHub).
+        const CHANGELOG = [
+            { date: "2026-09-25", commits: [], title: ["Onglet Nouveautés", "What's new tab"], items: [
+                ["new", "Onglet Nouveautés : l'historique des évolutions de Riskr depuis la première version, avec les liens vers les commits.", "What's new tab: the history of Riskr's changes since the first version, with links to the commits."]] },
+            { date: "2026-09-25", commits: ["650c029"], title: ["Affichage et navigation", "Display and navigation"], items: [
+                ["new", "Les boutons Précédent et Suivant du navigateur passent d'un onglet ou d'une fiche à l'autre, sans quitter la page.", "The browser Back and Forward buttons move between tabs and risk sheets without leaving the page."],
+                ["improved", "Légende et options d'affichage sur une seule ligne sous les matrices ; le niveau d'appétence figure dans l'option.", "Legend and display options on a single line below the matrices; the appetite level is shown in the option."]] },
+            { date: "2026-09-25", commits: ["19c0225"], title: ["Onglet Paramètres", "Settings tab"], items: [
+                ["new", "Onglet Paramètres : appétence au risque, cadence de revue et échelle d'impact en euros au même endroit, avec un lien « modifier » là où ils servent.", "Settings tab: risk appetite, review cadence and impact scale in euros in one place, with a \"change\" link where they are used."],
+                ["fixed", "Les champs numériques ne sont plus masqués par les flèches de saisie.", "Number fields are no longer hidden by the spin arrows."]] },
+            { date: "2026-09-25", commits: ["bf90827", "8f979a2"], title: ["Provision pour risques en langage courant", "Risk contingency in plain language"], items: [
+                ["new", "Montant à prévoir avec et sans les mesures : l'écart est l'économie apportée par le plan d'actions.", "Amount to set aside with and without the measures: the difference is what the action plan saves."],
+                ["new", "Texte généré à partir des données : cas normal, gros risques, effet de leurs mesures (prévention ou protection) et avancement, sans vocabulaire statistique.", "Text generated from the data: normal case, big risks, effect of their measures (prevention or protection) and progress, with no statistical jargon."],
+                ["new", "Champ facultatif « Sans protections » dans le chiffrage d'un risque.", "Optional \"Without protections\" field in a risk's costing."]] },
+            { date: "2026-09-25", commits: ["b1a9f12"], title: ["Détecteur d'incohérences", "Inconsistency detector"], items: [
+                ["new", "Alertes « à vérifier » quand une probabilité, un coût, un indicateur ou les cotations se contredisent ; compteur et filtre dans le registre.", "\"To check\" alerts when a probability, a cost, an indicator or the ratings contradict each other; counter and filter in the register."]] },
+            { date: "2026-09-25", commits: ["f11a3c0", "6e61746", "e1460f5", "ab570d6"], title: ["Infobulles explicatives", "Explanatory tooltips"], items: [
+                ["new", "Explications au survol des indicateurs et colonnes du comité, du registre, du plan d'actions, des revues et de la fiche.", "Hover explanations for the indicators and columns of the committee view, register, action plan, reviews and risk sheet."],
+                ["improved", "Un seul style d'infobulle, au corps du texte, ancré sur le texte des titres.", "A single tooltip style, at body text size, anchored on the heading text."],
+                ["fixed", "Le champ de recherche de la bibliothèque garde sa hauteur.", "The library search field keeps its height."]] },
+            { date: "2026-09-25", commits: ["2716676", "a0f5503", "8aff5bc", "3fd1fb8", "0b88978", "c947a84", "75d36f4"], title: ["Suivi dans la durée", "Ongoing monitoring"], items: [
+                ["new", "Identité déclarée (pastille en haut à droite) et journal des modifications signées ; export sans journal.", "Declared identity (badge at the top right) and a log of signed changes; export without the log."],
+                ["new", "Cadence de revue, risques à revoir et rappels exportables en .ics.", "Review cadence, risks due for review and reminders exportable as .ics."],
+                ["new", "Indicateurs clés de risque (KRI) : seuils d'alerte et critique, relevés datés, mini-courbe.", "Key risk indicators (KRI): alert and critical thresholds, dated readings, sparkline."],
+                ["new", "Chiffrage des risques en euros et provision pour risques par simulation.", "Risk costing in euros and risk contingency by simulation."],
+                ["new", "Fusion de deux fichiers d'analyse, avec bilan et arbitrage par le journal.", "Merge of two analysis files, with a summary and arbitration by the log."],
+                ["fixed", "Le nom est redemandé aux utilisateurs anonymes à chaque session.", "Anonymous users are asked for their name again at each session."]] },
+            { date: "2026-09-25", commits: ["eeab2e4", "0b386d5", "b0aa56e", "e15c58c"], title: ["Porteur et apparence", "Owner and appearance"], items: [
+                ["new", "Porteur modifiable depuis sa pastille dans le registre et le plan d'actions.", "Owner editable from their badge in the register and the action plan."],
+                ["improved", "Coins moins arrondis sur les cartes, panneaux, champs et boutons.", "Less rounded corners on cards, panels, fields and buttons."]] },
+            { date: "2026-09-25", commits: ["8b19f2c", "1eca493", "c90e562"], title: ["Plan d'actions", "Action plan"], items: [
+                ["new", "Glisser-déposer des mesures : ordre conservé, changement d'état ou de porteur.", "Drag and drop of measures: order kept, change of status or owner."],
+                ["improved", "Style allégé, sans liserés ni couleurs vives ; vue comité allégée.", "Lighter style, without side borders or bright colours; lighter committee view."]] },
+            { date: "2026-09-25", commits: ["c1b13c8", "26a7b61"], title: ["Démonstration", "Demo"], items: [
+                ["new", "Données de démonstration entièrement fictives et captures d'écran en thèmes clair et sombre dans le README.", "Fully fictitious demo data and screenshots in light and dark themes in the README."]] },
+            { date: "2026-09-25", commits: ["b9ddbaf", "b760436", "e5b720b", "2e8ac5f", "a06c49f"], title: ["Matrices et revues", "Matrices and reviews"], items: [
+                ["new", "Matrices affichées à la date d'une revue, avec les changements depuis la dernière.", "Matrices shown as of a review date, with the changes since the last one."],
+                ["improved", "Cible atteinte : pastille en losange bleu.", "Target reached: blue diamond badge."],
+                ["fixed", "Étiquette compacte au-dessus de la bulle survolée, au lieu d'une infobulle qui masquait la matrice.", "Compact label above the hovered bubble, instead of a tooltip that hid the matrix."],
+                ["fixed", "Comparaison par défaut avec la revue précédente quand rien n'a bougé depuis la dernière.", "Default comparison with the previous review when nothing has changed since the last one."]] },
+            { date: "2026-09-25", commits: ["f9bf4d1", "d28e5dc", "0636b3f", "d8e8190", "31afb29", "8d0a774", "3cf7fab", "5ead354", "4abc530", "bceb005", "c92e93c"], title: ["Fiche du risque", "Risk sheet"], items: [
+                ["new", "Passage au risque précédent ou suivant depuis la fiche, en conservant le défilement.", "Move to the previous or next risk from the sheet, keeping the scroll position."],
+                ["new", "Contrôles directs : segments de cotation, jauge de vélocité, traitement segmenté.", "Direct controls: rating segments, velocity gauge, segmented treatment."],
+                ["new", "Porteur choisi parmi les porteurs existants, avec leur pastille, ou créé.", "Owner picked from existing owners, with their badge, or created."],
+                ["improved", "Explication des notions du nœud papillon et des cotations au survol des titres.", "Bow-tie and rating concepts explained when hovering the headings."],
+                ["improved", "Causes et conséquences marquées d'un point de couleur.", "Causes and consequences marked with a colour dot."]] },
+            { date: "2026-09-24", commits: ["fa2ea4e", "5af01b2", "c04567a", "99deff9", "99f6716", "cf7e3af", "5469b1d", "f28bd7d"], title: ["Registre, fiche et revues refondus", "Register, sheet and reviews redesigned"], items: [
+                ["new", "Registre compact en tableau, en cartes ou en édition complète, avec un résumé.", "Compact register as a table, cards or full editing, with a summary."],
+                ["new", "Fiche du risque en page : nœud papillon relié, efficacité des barrières, chiffrage des conséquences, évolution, notes et liens.", "Risk sheet as a page: linked bow-tie, barrier effectiveness, consequence costing, trend, notes and links."],
+                ["new", "Revues refondues : frise, comparaison au choix, compteurs, écarts, courbe par groupe, auteur.", "Redesigned reviews: timeline, free comparison, counters, changes, curve per group, author."],
+                ["new", "Matrices avant, après et trajectoire, avec un panneau latéral (options, légende, case sélectionnée, cible, vélocité).", "Before, after and trajectory matrices, with a side panel (options, legend, selected cell, target, velocity)."],
+                ["new", "Plan d'actions : progression, regroupements, « mes mesures », étiquettes de barrière.", "Action plan: progress, groupings, \"my measures\", barrier tags."],
+                ["new", "Bibliothèque : descriptions, cotations types et « Mes modèles ».", "Library: descriptions, typical ratings and \"My templates\"."]] },
+            { date: "2026-09-24", commits: ["ff11bc0", "f90efaf", "85a52fd"], title: ["Organisation en onglets", "Tabbed layout"], items: [
+                ["new", "Page organisée en onglets (matrices, registre, plan d'actions, revues, vue comité) ; l'onglet figure dans l'adresse.", "Page organised in tabs (matrices, register, action plan, reviews, committee view); the tab is part of the address."],
+                ["new", "Un clic sur une case de matrice ouvre le registre filtré.", "Clicking a matrix cell opens the filtered register."]] },
+            { date: "2026-09-24", commits: ["e0dc19f", "12503d8", "17a35c5", "fce66c5", "132295b"], title: ["Comité, nœud papillon et bibliothèque", "Committee, bow-tie and library"], items: [
+                ["new", "Vue comité d'une page, copiable dans Word ou PowerPoint et exportable en PDF.", "One-page committee view, copyable into Word or PowerPoint and exportable to PDF."],
+                ["new", "Nœud papillon de chaque risque : causes, barrières de prévention et de protection, conséquences.", "Bow-tie for each risk: causes, prevention and protection barriers, consequences."],
+                ["new", "Bibliothèque hors ligne de risques types en 5 langues.", "Offline library of typical risks in 5 languages."]] },
+            { date: "2026-09-24", commits: ["409f950", "031d1e9", "3329a62", "c4354e2", "c831759"], title: ["Plan d'actions et revues", "Action plan and reviews"], items: [
+                ["new", "Mesures avec état (à faire, en cours, faite), échéance et retard.", "Measures with status (to do, in progress, done), due date and delay."],
+                ["new", "Plan d'actions : mesures par état, retards en tête.", "Action plan: measures by status, overdue first."],
+                ["new", "Revues figées, comparées à l'état actuel, avec la tendance de chaque risque.", "Frozen reviews, compared with the current state, with each risk's trend."]] },
+            { date: "2026-09-24", commits: ["97b1c48", "48def44", "961d522", "992ac54", "0c71a83", "0992336"], title: ["Trajectoire, appétence et filtres", "Trajectory, appetite and filters"], items: [
+                ["new", "Stratégie de traitement (réduire, transférer, accepter, éviter) et cotation cible par risque.", "Treatment strategy (reduce, transfer, accept, avoid) and target rating per risk."],
+                ["new", "Appétence au risque : ligne sur les matrices et alerte sur les risques au-dessus.", "Risk appetite: line on the matrices and alert on the risks above it."],
+                ["new", "Vue trajectoire avant → après et nombre de risques par case.", "Before → after trajectory view and number of risks per cell."],
+                ["new", "Filtres du registre : recherche, groupe, niveau, traitement, porteur, appétence, case de matrice.", "Register filters: search, group, level, treatment, owner, appetite, matrix cell."]] },
+            { date: "2026-09-24", commits: ["d907570", "7fcf8f7", "9276ba2", "00463c9"], title: ["Modernisation", "Modernisation"], items: [
+                ["new", "Données séparées dans riskr-data.js et stockage distinct pour chaque analyse.", "Data kept separately in riskr-data.js and separate storage for each analysis."],
+                ["new", "Interface modernisée : icônes, thème clair ou sombre, traduction en 5 langues.", "Modernised interface: icons, light or dark theme, translation into 5 languages."],
+                ["new", "Notes de synthèse par groupe et copie pour Word.", "Summary notes per group and copy for Word."],
+                ["improved", "Moyennes sur 5 et bulles adaptatives dans les matrices.", "Averages out of 5 and adaptive bubbles in the matrices."],
+                ["fixed", "Sauvegarde fiable, cotation unique, numérotation, seuils et échelles unifiés, mesures structurées, enregistrement dans un fichier.", "Reliable saving, single rating, numbering, unified thresholds and scales, structured measures, saving to a file."]] },
+            { date: "2026-06-11", commits: ["748e855", "8ddd10d"], title: ["Documentation", "Documentation"], items: [
+                ["fixed", "Dépôt rétabli sur l'application Riskr.", "Repository restored to the Riskr application."],
+                ["improved", "Documentation du format riskr-data.js et du fonctionnement hors ligne.", "Documentation of the riskr-data.js format and offline use."]] },
+            { date: "2026-01-12", commits: ["ad034a5"], title: ["Visualisation et données", "Visualisation and data"], items: [
+                ["new", "Import et export JSON de toutes les données.", "JSON import and export of all data."],
+                ["new", "Matrices par risque ou par groupe.", "Matrices by risk or by group."],
+                ["improved", "Points des matrices écartés pour rester lisibles, étiquettes agrandies, réglages d'affichage mémorisés.", "Matrix points spread out to stay readable, larger labels, display settings remembered."]] },
+            { date: "2025-11-21", commits: ["c138b8b", "e27abc9", "f02a1e3", "371ad86", "6e269ea", "56ebb2c", "bd624dd"], title: ["Première version", "First version"], items: [
+                ["new", "Matrices 5 × 5 avant et après remédiation, moyennes par groupe de risques.", "5 × 5 matrices before and after remediation, averages per risk group."],
+                ["new", "Édition directe des risques et des groupes, glisser-déposer, renumérotation automatique.", "Inline editing of risks and groups, drag and drop, automatic renumbering."],
+                ["new", "Annuler et rétablir (50 étapes), sauvegarde automatique dans le navigateur, import et export.", "Undo and redo (50 steps), automatic saving in the browser, import and export."],
+                ["improved", "Tableau de bord aux icônes épurées, logo et icône de l'application.", "Dashboard with clean icons, application logo and icon."]] }
+        ];
+        const CHANGELOG_COMMIT_URL = 'https://github.com/guthubrx/Riskr/commit/';
+
+        function renderChangelog() {
+            const page = document.getElementById('changelog-page');
+            if (!page || activeTab !== 'nouveautes') return;
+            const text = ([fr, en]) => currentLanguage === 'fr' ? fr : en;
+            const kinds = { new: 'changelogNew', improved: 'changelogImproved', fixed: 'changelogFixed' };
+            const day = date => new Date(`${date}T12:00:00`).toLocaleDateString(currentLanguage, { day: 'numeric', month: 'long', year: 'numeric' });
+            page.innerHTML = `<div class="sheet-head"><h2>${t('changelogTitle')}</h2></div><p class="committee-sub">${t('changelogIntro')}</p>
+                ${CHANGELOG.map(entry => `<section class="committee-card changelog-entry"><h3><time datetime="${entry.date}">${escapeHtml(day(entry.date))}</time> · ${escapeHtml(text(entry.title))}</h3>
+                    <ul>${entry.items.map(([kind, ...texts]) => `<li><span class="changelog-kind ${kind}">${t(kinds[kind])}</span><span>${escapeHtml(text(texts))}</span></li>`).join('')}</ul>
+                    ${entry.commits.length ? `<p class="changelog-commits">${entry.commits.map(hash =>
+                        `<a href="${CHANGELOG_COMMIT_URL}${hash}" target="_blank" rel="noopener">${hash}</a>`).join(' ')}</p>` : ''}</section>`).join('')}`;
+        }
+
         // Ouvre l'onglet Paramètres sur un réglage et le met en évidence
         function gotoSetting(name) {
             if (openRiskUid) closeRiskSheet({ hash: false });
@@ -14155,7 +14344,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Onglets de vues
         // ========================================
 
-        const VIEW_TABS = ['matrices', 'registre', 'actions', 'revues', 'comite', 'parametres'];
+        const VIEW_TABS = ['matrices', 'registre', 'actions', 'revues', 'comite', 'parametres', 'nouveautes'];
         // Onglet de l'adresse (riskr.html#revues), sinon le dernier utilisé
         // Adresse d'une fiche : riskr.html#fiche:<identifiant stable du risque>
         const tabFromHash = location.hash.startsWith('#fiche:') ? 'registre' : location.hash.slice(1);
