@@ -3434,6 +3434,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-size: 13px;
         }
 
+        .link-btn {
+            padding: 0;
+            border: none;
+            background: none;
+            color: var(--accent);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .cadence-setting.flash {
+            outline: 2px solid var(--accent);
+            outline-offset: 6px;
+            border-radius: 6px;
+        }
+
         .review-due-tag {
             color: #b35c00;
         }
@@ -3443,7 +3458,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             flex-wrap: wrap;
             align-items: center;
             gap: 8px;
-            margin-top: 16px;
+            margin: 16px 0;
             font-size: 13px;
             color: var(--text-2);
         }
@@ -5536,8 +5551,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <div class="reviews-page">
                 <aside>
                     <button type="button" class="big-btn" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="reviewNewFreeze">Figer une nouvelle revue</span></button>
-                    <ol id="review-timeline" class="review-timeline"></ol>
                     <div class="cadence-setting"><span data-i18n="cadenceLabel">Revue des risques tous les</span><div id="cadence-options" class="segmented labeled" role="radiogroup"></div></div>
+                    <ol id="review-timeline" class="review-timeline"></ol>
                     <p class="reviews-hint" data-i18n="reviewsHint"></p>
                     <section class="journal-recent"><h3 data-i18n="journalRecent">Dernières modifications</h3><div id="journal-recent"></div></section>
                 </aside>
@@ -6817,6 +6832,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterToReview: "À revoir",
                 cadenceLabel: "Revue des risques tous les",
                 cadenceDays: "{n} j",
+                cadenceEvery: "(tous les {n} j)",
                 exportIcsHint: "Rappels de revue",
                 icsSummary: "Revue du risque {id} — {title}",
                 journalReviewed: "Revu le",
@@ -7267,6 +7283,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterToReview: "Review due",
                 cadenceLabel: "Review risks every",
                 cadenceDays: "{n} d",
+                cadenceEvery: "(every {n} d)",
                 exportIcsHint: "Review reminders",
                 icsSummary: "Review of risk {id} — {title}",
                 journalReviewed: "Reviewed on",
@@ -7720,6 +7737,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterToReview: "Por revisar",
                 cadenceLabel: "Revisar los riesgos cada",
                 cadenceDays: "{n} d",
+                cadenceEvery: "(cada {n} d)",
                 exportIcsHint: "Recordatorios de revisión",
                 icsSummary: "Revisión del riesgo {id} — {title}",
                 journalReviewed: "Revisado el",
@@ -8170,6 +8188,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterToReview: "待评审",
                 cadenceLabel: "风险评审周期",
                 cadenceDays: "{n} 天",
+                cadenceEvery: "（每 {n} 天）",
                 exportIcsHint: "评审提醒",
                 icsSummary: "风险 {id} 评审 — {title}",
                 journalReviewed: "评审于",
@@ -8620,6 +8639,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 filterToReview: "يحتاج مراجعة",
                 cadenceLabel: "مراجعة المخاطر كل",
                 cadenceDays: "{n} يوم",
+                cadenceEvery: "(كل {n} يوم)",
                 exportIcsHint: "تذكيرات المراجعة",
                 icsSummary: "مراجعة الخطر {id} — {title}",
                 journalReviewed: "رُوجع في",
@@ -9623,7 +9643,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
         // Nom facultatif, gardé dans ce navigateur et commun à toutes les analyses (comme le thème) :
         // il signe le journal et pré-remplit l'auteur des notes et des revues. Aucun contrôle : c'est déclaratif.
-        const USER_KEY = 'riskr-user', USER_ASKED_KEY = 'riskr-user-asked';
+        const USER_KEY = 'riskr-user';
         const readLocal = key => { try { return localStorage.getItem(key) || ''; } catch { return ''; } };
         const writeLocal = (key, value) => { try { localStorage.setItem(key, value); } catch { /* stockage bloqué : nom gardé pour la session */ } };
         let currentUser = readLocal(USER_KEY);
@@ -9632,7 +9652,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function setCurrentUser(name) {
             currentUser = name.trim();
             writeLocal(USER_KEY, currentUser);
-            writeLocal(USER_ASKED_KEY, '1');
             renderUserChip();
             renderActionPlan();
             refreshSheet();
@@ -9647,10 +9666,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             button.setAttribute('aria-label', tip);
         }
 
-        // Demandé une seule fois, à la première modification : la simple consultation n'est jamais interrompue
+        // Anonyme : nom demandé à la première modification de chaque session (chargement de la page), jamais à la
+        // simple consultation. « Rester anonyme » en réponse à la question la fait taire jusqu'au prochain chargement ;
+        // redevenir anonyme depuis la pastille la fait revenir à la modification suivante.
+        let identityAsked = false;
         function askIdentityOnce() {
-            if (currentUser || readLocal(USER_ASKED_KEY)) return;
-            writeLocal(USER_ASKED_KEY, '1');
+            if (currentUser || identityAsked) return;
+            identityAsked = true;
             setTimeout(() => openIdentity(document.getElementById('user-button'), true), 300);
         }
 
@@ -9674,6 +9696,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // À la première demande, la modification qui l'a déclenchée est signée du nom saisi
             const save = name => {
                 setCurrentUser(name);
+                if (!first && !currentUser) identityAsked = false; // anonyme choisi depuis la pastille : redemander
                 const last = journal[journal.length - 1];
                 if (first && currentUser && last) {
                     journal.filter(entry => !entry.auteur && entry.date === last.date).forEach(entry => { entry.auteur = currentUser; });
@@ -13141,6 +13164,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <span class="vel-text">${risk.velocite ? t(`velocity${risk.velocite}`).split(' · ').pop() : '–'}</span></span>
                             <span class="review-cadence${cadence.due ? ' due' : ''}"><span>${cadence.last ? t('reviewedOn', { date: formatReviewDate(cadence.last) }) : t('reviewNever')}</span>
                                 <label>${t('reviewNextLabel')} <input type="date" class="review-date" value="${escapeHtml(cadence.next)}"></label>
+                                <button type="button" class="link-btn" data-action="goto-cadence" title="${t('cadenceLabel')}">${t('cadenceEvery', { n: settings.cadenceRevue })}</button>
                                 <button type="button" class="sheet-btn" data-action="mark-reviewed">${icon('check')} ${t('markReviewed')}</button></span>
                         </div>
                     </div>
@@ -13317,6 +13341,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     risk.kri.push(normalizeKri({ nom: t('kriNew') }));
                     renderRegister();
                     sheet.querySelector(`[data-kri-name="${risk.kri.length - 1}"]`).click();
+                } else if (action === 'goto-cadence') {
+                    closeRiskSheet();
+                    showTab('revues');
+                    const setting = document.querySelector('.cadence-setting');
+                    setting.scrollIntoView({ block: 'center' });
+                    setting.classList.add('flash');
+                    setTimeout(() => setting.classList.remove('flash'), 1600);
                 } else if (action === 'mark-reviewed') {
                     risk.revuLe = todayIso();
                     risk.prochaineRevue = ''; // la prochaine revue repart de la cadence

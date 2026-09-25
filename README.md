@@ -188,8 +188,9 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   glisser-déposer des cartes : ordre dans la colonne conservé, changement d'état
   (vue par état) ou de porteur (vue par porteur)
 - **Identité déclarative** : pastille en haut à droite (initiales, couleur stable
-  par nom, « — » si anonyme). Le nom est facultatif, demandé une seule fois à la
-  première modification, gardé dans le navigateur : il signe le journal et
+  par nom, « — » si anonyme). Le nom est facultatif ; tant qu'on est anonyme, il
+  est demandé à la première modification de chaque session (jamais à la simple
+  consultation) ; il est gardé dans le navigateur, signe le journal et
   pré-remplit l'auteur des notes et des revues. Aucun contrôle : c'est déclaratif.
 - **Journal des modifications** : qui a changé quoi et quand (cotations,
   traitement, porteur, mesures, notes…), dans la fiche du risque et, pour toute
@@ -204,7 +205,8 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   10 000 simulations Monte-Carlo (loi triangulaire, résultats stables) : espérance,
   médiane, provision à 80 % et 90 %, courbe cumulée et principaux contributeurs
 - **Cadence de revue** : chaque risque a une prochaine revue (date choisie, sinon
-  dernière revue + cadence de 30, 60, 90 ou 180 jours réglée dans l'onglet Revues) ;
+  dernière revue + cadence de 30, 60, 90 ou 180 jours réglée en haut de l'onglet
+  Revues, sous « Figer une nouvelle revue », et rappelée dans la fiche) ;
   « Marquer comme revu » dans la fiche ; les risques à revoir sont signalés et
   filtrables dans le registre ; export des rappels en `.ics` (Outlook, Google
   Agenda, Calendrier)
