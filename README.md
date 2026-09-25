@@ -112,10 +112,11 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   releves: [{ date, valeur, auteur }] }` ; `sens` vaut `hausse` (plus la valeur
   monte, plus c'est grave) ou `baisse` ; le dernier relevé donne le statut
   (vert, orange au seuil d'alerte, rouge au seuil critique).
-- `cout` : chiffrage `{ min, probable, max, probabilite }` — coût en euros si le
-  risque survient (une seule valeur suffit) et probabilité en % ; vide, la
-  probabilité découle de la cotation P après remédiation (P1 à P5 : 5, 15, 35, 60,
-  85 %).
+- `cout` : chiffrage `{ min, probable, max, probabilite, sansProtection }` — coût
+  en euros si le risque survient (une seule valeur suffit) et probabilité en % ;
+  vide, la probabilité découle de la cotation P après remédiation (P1 à P5 : 5, 15,
+  35, 60, 85 %). `sansProtection` (facultatif) : coût probable si le risque se
+  réalisait sans les mesures de protection.
 - `revuLe` / `prochaineRevue` (facultatifs, `AAAA-MM-JJ`) : dernière revue
   déclarée et prochaine revue choisie ; `settings.cadenceRevue` : revue des risques
   tous les N jours (90 par défaut).
@@ -202,11 +203,14 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   attendues de la vue comité
 - **Chiffrage et provision pour risques** : fourchette de coût par risque dans la
   fiche (et coût pondéré pour les comparer), et dans la vue comité (et le PDF) le
-  **montant à provisionner**, qui suffit 8 fois sur 10, présenté en langage courant :
-  le cas le plus probable, le montant à provisionner, la provision prudente, ce qui
-  explique l'écart, et les leviers (baisse de la provision si tel risque était
-  maîtrisé). Calcul par 10 000 simulations Monte-Carlo (loi triangulaire, résultats
-  stables)
+  **montant à prévoir**, avec et sans les mesures : l'écart est l'économie apportée
+  par le plan d'actions, à condition de réaliser les mesures restantes. Le texte est
+  généré automatiquement à partir des cotations, des coûts et des mesures, sans
+  vocabulaire statistique : cas normal (aucun gros risque ne se réalise), puis pour
+  chaque gros risque son coût s'il se réalise, l'effet de ses mesures (probabilité
+  « 1 chance sur 3 → 1 chance sur 7 » pour la prévention, coût réduit pour la
+  protection) et leur avancement. Calcul par 10 000 simulations Monte-Carlo (loi
+  triangulaire, résultats stables)
 - **Détecteur d'incohérences** : alertes « à vérifier » (rien n'est bloqué) quand
   une probabilité saisie sort de la tranche de la cotation P, qu'un coût ne
   correspond pas à la cotation d'impact selon l'échelle en euros de l'analyse

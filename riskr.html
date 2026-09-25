@@ -3364,7 +3364,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .provision-body {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.3fr);
+            grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
             gap: 24px;
             align-items: start;
         }
@@ -3381,8 +3381,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-size: 32px;
         }
 
-        .provision-headline p,
-        .provision-why {
+        .provision-headline p {
             margin: 0;
             font-size: 13px;
             color: var(--text-2);
@@ -3403,17 +3402,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: var(--text-3);
         }
 
-        .provision-top {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin: 0;
-            padding-inline-start: 18px;
-            font-size: 13px;
+        .provision-headline .provision-savings {
+            margin-top: 10px;
+            color: var(--text);
+            font-weight: 500;
         }
 
-        .provision-top span {
-            float: inline-end;
+        .provision-card > .review-meta {
+            margin-top: 16px;
+        }
+
+        .provision-normal {
+            margin: 0 0 14px;
+            font-size: 14px;
+        }
+
+        .provision-scenarios small {
+            display: block;
+            margin-top: 2px;
+            font-size: 13px;
             color: var(--text-2);
         }
 
@@ -6928,7 +6935,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costProbabilityDefault: "auto : {pct} % d'après P{p}",
                 costExpected: "Coût pondéré",
                 provisionTitle: "Provision pour risques",
-                provisionCaption: "{count} risques chiffrés · calcul par 10 000 simulations, probabilités après remédiation",
+                provisionCaption: "{count} risques chiffrés · montants arrondis, calculés à partir des cotations, des coûts et des mesures",
                 summaryExpectedCost: "de coût pondéré par la probabilité",
                 tipKpiExposure: "Criticité moyenne des risques (probabilité × impact, ramenée sur 5), avant puis après les mesures.",
                 tipKpiHigh: "Nombre de risques de niveau élevé ou critique (score d'au moins 10 sur 25), avant puis après les mesures.",
@@ -6939,7 +6946,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "Répartition des risques par stratégie : réduire (mesures), transférer (contrat, assurance), accepter (risque assumé), éviter (renoncer à l'activité).",
                 tipExposureReviews: "Criticité moyenne après remédiation, sur 5, à chaque revue figée puis aujourd'hui : la barre raccourcit quand l'exposition baisse.",
                 tipDecisions: "Arbitrages à demander au comité : risques au-dessus de l'appétence et indicateurs (KRI) en zone critique.",
-                tipProvision: "Somme à mettre de côté pour faire face aux risques chiffrés. Riskr simule 10 000 déroulements possibles du projet : dans chacun, chaque risque se réalise ou non selon sa probabilité ; le montant retenu suffit dans 8 déroulements sur 10.",
+                tipProvision: "Somme à mettre de côté pour les risques chiffrés. Riskr rejoue 10 000 fois le projet : chaque risque se réalise ou non selon sa probabilité ; le montant retenu couvre la grande majorité de ces déroulements. Sans les mesures : même calcul avec les cotations avant remédiation.",
                 summaryAboveTip: "Risques dont la criticité après remédiation dépasse le seuil d'appétence : ils demandent une décision.",
                 summaryUpTip: "Risques dont la cotation après remédiation a augmenté depuis la dernière revue figée.",
                 summaryLateTip: "Mesures non faites dont l'échéance est dépassée.",
@@ -6973,16 +6980,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "Coût si le risque survient, en euros : une seule valeur suffit ; min et max donnent la fourchette de la simulation.",
                 tipCostProbability: "Probabilité que le risque survienne ; vide, elle découle de la cotation P après remédiation (P1 à P5 : 5, 15, 35, 60, 85 %).",
                 tipCostExpected: "Probabilité × coût moyen : sert à comparer les risques entre eux, ce n'est pas un budget.",
-                provisionAmount: "Montant à provisionner",
-                provisionLead: "Avec cette somme de côté, il y a 8 chances sur 10 qu'elle suffise à couvrir les risques qui se réaliseront.",
-                provisionLikelyLine: "Le plus probable (1 chance sur 2) : le coût des risques reste sous {amount}.",
-                provisionRecommendedLine: "À provisionner (8 chances sur 10 de suffire) : {amount}.",
-                provisionPrudentLine: "Prudent (9 chances sur 10) : {amount}.",
-                provisionWhy: "Pourquoi un tel écart : {risks} sont peu probables mais coûteux ; si l'un d'eux se réalise, la facture change d'échelle.",
-                provisionLevers: "Ce qui ferait baisser la provision",
-                provisionLeverGain: "−{amount} si ce risque est maîtrisé",
-                tipProvisionLevers: "Pour chaque risque, de combien le montant à provisionner baisserait s'il était entièrement maîtrisé : c'est là que les mesures rapportent le plus. Chaque baisse est calculée seule : elles ne s'additionnent pas.",
-                provisionPdf: "{amount} à provisionner (8 chances sur 10 de suffire)",
+                costWithoutProtection: "Sans protections",
+                tipCostWithoutProtection: "Facultatif : coût probable si le risque se réalisait sans les mesures de protection. Sert à montrer ce que les protections font économiser.",
+                provisionAmountLine: "Avec le plan d'actions réalisé",
+                provisionWithout: " ({amount} sans les mesures).",
+                provisionSavings: "Le plan d'actions fait économiser environ {amount}",
+                provisionCondition: ", à condition de réaliser les {count} mesures restantes",
+                provisionConditionLate: " (dont {late} en retard)",
+                provisionNormal: "Cas normal, aucun gros risque ne se réalise : environ {amount} pour les {count} autres risques chiffrés.",
+                provisionBigTitle: "Les gros risques",
+                provisionBigCost: "{amount} s'il se réalise",
+                provisionNoBig: "Aucun risque ne pèse à lui seul la moitié du montant : la somme couvre une accumulation de petits aléas.",
+                provisionEffectPrevention: "Ses mesures font passer la probabilité de {before} à {after}.",
+                provisionEffectProtection: "Probabilité inchangée ({after}) : ses mesures sont surtout des protections, elles réduisent le coût s'il se réalise.",
+                provisionEffectBoth: "Ses mesures font passer la probabilité de {before} à {after} et réduisent le coût s'il se réalise.",
+                provisionEffectNone: "Probabilité : {after} ; ses mesures ne changent pas la cotation.",
+                provisionProtectionGain: " Sans les protections, il coûterait {amount}.",
+                provisionMesures: "Mesures faites : {done} sur {total}",
+                provisionMesuresLate: ", dont {late} en retard",
+                chanceOneIn: "1 chance sur {n}",
+                chanceMoreThanHalf: "plus d'une chance sur deux",
+                provisionAmount: "Montant à prévoir",
+                provisionPdf: "{amount} à prévoir ({without} sans les mesures : le plan d'actions fait économiser environ {savings})",
                 issuesTitle: "À vérifier",
                 issueProbability: "Probabilité de {prob} % incohérente avec P{p} (attendu entre {min} et {max} %) : ajuster la probabilité ou la cotation.",
                 issueCostHigh: "Coût probable de {cost} : l'échelle d'impact le situe en I{level} alors que le risque est coté I{i}. Impact sous-coté ?",
@@ -7442,7 +7461,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costProbabilityDefault: "auto: {pct} % from P{p}",
                 costExpected: "Weighted cost",
                 provisionTitle: "Risk contingency",
-                provisionCaption: "{count} costed risks · computed from 10,000 simulations, residual probabilities",
+                provisionCaption: "{count} costed risks · rounded amounts, computed from ratings, costs and measures",
                 summaryExpectedCost: "of probability-weighted cost",
                 tipKpiExposure: "Average risk criticality (probability × impact, scaled to 5), before and after the measures.",
                 tipKpiHigh: "Number of high or critical risks (score of 10 out of 25 or more), before and after the measures.",
@@ -7453,7 +7472,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "Risks by strategy: reduce (measures), transfer (contract, insurance), accept (risk taken on), avoid (give up the activity).",
                 tipExposureReviews: "Average residual criticality, out of 5, at each frozen review and today: the bar shortens as exposure falls.",
                 tipDecisions: "Decisions to ask the committee for: risks above appetite and key risk indicators (KRI) in the critical zone.",
-                tipProvision: "Amount to set aside to face the costed risks. Riskr simulates 10,000 possible courses of the project: in each, every risk materialises or not according to its probability; the amount chosen is enough in 8 courses out of 10.",
+                tipProvision: "Sum to set aside for the costed risks. Riskr replays the project 10,000 times: each risk occurs or not according to its probability; the amount covers the vast majority of these runs. Without the measures: same calculation with the ratings before remediation.",
                 summaryAboveTip: "Risks whose residual criticality exceeds the appetite threshold: they need a decision.",
                 summaryUpTip: "Risks whose residual rating has risen since the last frozen review.",
                 summaryLateTip: "Unfinished measures past their due date.",
@@ -7487,16 +7506,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "Cost if the risk occurs, in euros: one value is enough; min and max give the simulation range.",
                 tipCostProbability: "Probability that the risk occurs; if empty, it follows from the residual P rating (P1 to P5: 5, 15, 35, 60, 85 %).",
                 tipCostExpected: "Probability × average cost: used to compare risks with each other, not a budget.",
+                costWithoutProtection: "Without protections",
+                tipCostWithoutProtection: "Optional: likely cost if the risk occurred without the protection measures. Shows what the protections save.",
+                provisionAmountLine: "With the action plan completed",
+                provisionWithout: " ({amount} without the measures).",
+                provisionSavings: "The action plan saves about {amount}",
+                provisionCondition: ", provided the {count} remaining measures are carried out",
+                provisionConditionLate: " ({late} of them overdue)",
+                provisionNormal: "Normal case, no big risk occurs: about {amount} for the {count} other costed risks.",
+                provisionBigTitle: "The big risks",
+                provisionBigCost: "{amount} if it occurs",
+                provisionNoBig: "No single risk weighs half of the amount: the sum covers an accumulation of small setbacks.",
+                provisionEffectPrevention: "Its measures bring the probability from {before} down to {after}.",
+                provisionEffectProtection: "Probability unchanged ({after}): its measures are mainly protections, they reduce the cost if it occurs.",
+                provisionEffectBoth: "Its measures bring the probability from {before} down to {after} and reduce the cost if it occurs.",
+                provisionEffectNone: "Probability: {after}; its measures do not change the rating.",
+                provisionProtectionGain: " Without the protections, it would cost {amount}.",
+                provisionMesures: "Measures done: {done} of {total}",
+                provisionMesuresLate: ", {late} overdue",
+                chanceOneIn: "1 chance in {n}",
+                chanceMoreThanHalf: "more than one chance in two",
                 provisionAmount: "Amount to set aside",
-                provisionLead: "With this amount set aside, there is an 8 in 10 chance that it will cover the risks that materialise.",
-                provisionLikelyLine: "Most likely (1 chance in 2): the cost of the risks stays below {amount}.",
-                provisionRecommendedLine: "To set aside (8 in 10 chance of being enough): {amount}.",
-                provisionPrudentLine: "Prudent (9 in 10 chance): {amount}.",
-                provisionWhy: "Why such a gap: {risks} are unlikely but costly; if one of them materialises, the bill changes scale.",
-                provisionLevers: "What would lower the contingency",
-                provisionLeverGain: "−{amount} if this risk is under control",
-                tipProvisionLevers: "For each risk, how much the amount to set aside would fall if it were fully under control: this is where measures pay off most. Each reduction is computed on its own: they do not add up.",
-                provisionPdf: "{amount} to set aside (8 in 10 chance of being enough)",
+                provisionPdf: "{amount} to set aside ({without} without the measures: the action plan saves about {savings})",
                 issuesTitle: "To check",
                 issueProbability: "A {prob} % probability is inconsistent with P{p} (expected {min} to {max} %): adjust the probability or the rating.",
                 issueCostHigh: "Likely cost of {cost}: the impact scale places it at I{level} while the risk is rated I{i}. Impact underrated?",
@@ -7959,7 +7990,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costProbabilityDefault: "auto: {pct} % según P{p}",
                 costExpected: "Coste ponderado",
                 provisionTitle: "Provisión para riesgos",
-                provisionCaption: "{count} riesgos cuantificados · cálculo con 10 000 simulaciones, probabilidades residuales",
+                provisionCaption: "{count} riesgos cuantificados · importes redondeados, calculados a partir de las valoraciones, los costes y las medidas",
                 summaryExpectedCost: "de coste ponderado por la probabilidad",
                 tipKpiExposure: "Criticidad media de los riesgos (probabilidad × impacto, sobre 5), antes y después de las medidas.",
                 tipKpiHigh: "Número de riesgos altos o críticos (puntuación de al menos 10 sobre 25), antes y después de las medidas.",
@@ -7970,7 +8001,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "Riesgos por estrategia: reducir (medidas), transferir (contrato, seguro), aceptar (riesgo asumido), evitar (renunciar a la actividad).",
                 tipExposureReviews: "Criticidad residual media, sobre 5, en cada revisión fijada y hoy: la barra se acorta cuando baja la exposición.",
                 tipDecisions: "Decisiones que pedir al comité: riesgos por encima del apetito e indicadores (KRI) en zona crítica.",
-                tipProvision: "Importe a reservar para afrontar los riesgos cuantificados. Riskr simula 10 000 desarrollos posibles del proyecto: en cada uno, cada riesgo se materializa o no según su probabilidad; el importe elegido basta en 8 de cada 10.",
+                tipProvision: "Suma a reservar para los riesgos cuantificados. Riskr simula el proyecto 10 000 veces: cada riesgo se materializa o no según su probabilidad; el importe cubre la gran mayoría de esos desarrollos. Sin las medidas: mismo cálculo con las valoraciones antes de la remediación.",
                 summaryAboveTip: "Riesgos cuya criticidad residual supera el umbral de apetito: requieren una decisión.",
                 summaryUpTip: "Riesgos cuya calificación residual ha subido desde la última revisión fijada.",
                 summaryLateTip: "Medidas no realizadas con la fecha límite vencida.",
@@ -8004,16 +8035,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "Coste si el riesgo ocurre, en euros: basta un valor; mín. y máx. dan la horquilla de la simulación.",
                 tipCostProbability: "Probabilidad de que el riesgo ocurra; si está vacía, resulta de la calificación P residual (P1 a P5: 5, 15, 35, 60, 85 %).",
                 tipCostExpected: "Probabilidad × coste medio: sirve para comparar los riesgos entre sí, no es un presupuesto.",
-                provisionAmount: "Importe a provisionar",
-                provisionLead: "Con este importe reservado, hay 8 posibilidades sobre 10 de que baste para cubrir los riesgos que se materialicen.",
-                provisionLikelyLine: "Lo más probable (1 posibilidad sobre 2): el coste de los riesgos queda por debajo de {amount}.",
-                provisionRecommendedLine: "A provisionar (8 posibilidades sobre 10 de bastar): {amount}.",
-                provisionPrudentLine: "Prudente (9 posibilidades sobre 10): {amount}.",
-                provisionWhy: "Por qué tanta diferencia: {risks} son poco probables pero costosos; si uno se materializa, la factura cambia de escala.",
-                provisionLevers: "Qué reduciría la provisión",
-                provisionLeverGain: "−{amount} si este riesgo se controla",
-                tipProvisionLevers: "Para cada riesgo, cuánto bajaría el importe a provisionar si estuviera totalmente controlado: ahí es donde las medidas rinden más. Cada reducción se calcula por separado: no se suman.",
-                provisionPdf: "{amount} a provisionar (8 posibilidades sobre 10 de bastar)",
+                costWithoutProtection: "Sin protecciones",
+                tipCostWithoutProtection: "Opcional: coste probable si el riesgo se materializara sin las medidas de protección. Muestra lo que ahorran las protecciones.",
+                provisionAmountLine: "Con el plan de acción realizado",
+                provisionWithout: " ({amount} sin las medidas).",
+                provisionSavings: "El plan de acción ahorra unos {amount}",
+                provisionCondition: ", siempre que se realicen las {count} medidas pendientes",
+                provisionConditionLate: " ({late} de ellas con retraso)",
+                provisionNormal: "Caso normal, no se materializa ningún riesgo grande: unos {amount} para los otros {count} riesgos cuantificados.",
+                provisionBigTitle: "Los riesgos grandes",
+                provisionBigCost: "{amount} si se materializa",
+                provisionNoBig: "Ningún riesgo pesa por sí solo la mitad del importe: la suma cubre una acumulación de pequeños imprevistos.",
+                provisionEffectPrevention: "Sus medidas bajan la probabilidad de {before} a {after}.",
+                provisionEffectProtection: "Probabilidad sin cambios ({after}): sus medidas son sobre todo protecciones, reducen el coste si se materializa.",
+                provisionEffectBoth: "Sus medidas bajan la probabilidad de {before} a {after} y reducen el coste si se materializa.",
+                provisionEffectNone: "Probabilidad: {after}; sus medidas no cambian la valoración.",
+                provisionProtectionGain: " Sin las protecciones, costaría {amount}.",
+                provisionMesures: "Medidas realizadas: {done} de {total}",
+                provisionMesuresLate: ", {late} con retraso",
+                chanceOneIn: "1 posibilidad entre {n}",
+                chanceMoreThanHalf: "más de una posibilidad entre dos",
+                provisionAmount: "Importe a prever",
+                provisionPdf: "{amount} a prever ({without} sin las medidas: el plan de acción ahorra unos {savings})",
                 issuesTitle: "Por verificar",
                 issueProbability: "Probabilidad del {prob} % incoherente con P{p} (esperado entre {min} y {max} %): ajuste la probabilidad o la calificación.",
                 issueCostHigh: "Coste probable de {cost}: la escala de impacto lo sitúa en I{level} y el riesgo está calificado I{i}. ¿Impacto infravalorado?",
@@ -8473,7 +8516,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costProbabilityDefault: "自动：按 P{p} 为 {pct}%",
                 costExpected: "加权成本",
                 provisionTitle: "风险准备金",
-                provisionCaption: "{count} 项已估算风险 · 基于 10000 次模拟，采用处理后概率",
+                provisionCaption: "{count} 个已估算风险 · 金额已取整，根据评级、成本和措施计算",
                 summaryExpectedCost: "按概率加权的成本",
                 tipKpiExposure: "风险平均严重度（概率 × 影响，折算为 5 分制），措施实施前与实施后。",
                 tipKpiHigh: "高或严重风险的数量（得分不低于 10/25），措施实施前与实施后。",
@@ -8484,7 +8527,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "按策略划分的风险：降低（措施）、转移（合同、保险）、接受（承担风险）、规避（放弃该活动）。",
                 tipExposureReviews: "每次冻结评审及当前的处理后平均严重度（满分 5）：敞口下降时条形变短。",
                 tipDecisions: "需提请委员会决策的事项：超出风险偏好的风险，以及处于临界区的关键风险指标（KRI）。",
-                tipProvision: "为应对已估算风险而预留的金额。Riskr 模拟项目的 10000 种可能进程：每种进程中各风险按其概率发生或不发生；所选金额在十分之八的进程中足够。",
+                tipProvision: "为已估算风险预留的金额。Riskr 将项目重演 10 000 次：每个风险按其概率发生或不发生；该金额可覆盖绝大多数情形。没有措施时：使用整改前的评级进行同样的计算。",
                 summaryAboveTip: "处理后严重度超过风险偏好阈值的风险：需要决策。",
                 summaryUpTip: "自上次冻结评审以来处理后评级上升的风险。",
                 summaryLateTip: "已过截止日期但尚未完成的措施。",
@@ -8518,16 +8561,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "风险发生时的成本（欧元）：填一个值即可；最低和最高值构成模拟区间。",
                 tipCostProbability: "风险发生的概率；留空则按处理后 P 评级推算（P1 至 P5：5、15、35、60、85%）。",
                 tipCostExpected: "概率 × 平均成本：用于比较风险之间的轻重，并非预算。",
-                provisionAmount: "建议计提金额",
-                provisionLead: "预留这笔金额，有十分之八的把握足以覆盖将发生的风险。",
-                provisionLikelyLine: "最可能情况（二分之一）：风险成本低于 {amount}。",
-                provisionRecommendedLine: "建议计提（十分之八足够）：{amount}。",
-                provisionPrudentLine: "审慎（十分之九）：{amount}。",
-                provisionWhy: "差距为何如此之大：{risks} 发生概率低但代价高；一旦其中之一发生，成本将成倍增加。",
-                provisionLevers: "可降低准备金的因素",
-                provisionLeverGain: "若控制该风险，可减少 {amount}",
-                tipProvisionLevers: "每项风险若完全受控，建议计提金额将减少多少：在这些风险上采取措施收益最大。每项减少额单独计算：不可相加。",
-                provisionPdf: "建议计提 {amount}（十分之八足够）",
+                costWithoutProtection: "无防护措施",
+                tipCostWithoutProtection: "可选：若在没有防护措施的情况下风险发生的可能成本，用于显示防护措施节省的金额。",
+                provisionAmountLine: "在行动计划完成的情况下",
+                provisionWithout: "（没有措施时为 {amount}）。",
+                provisionSavings: "行动计划约节省 {amount}",
+                provisionCondition: "，前提是完成剩余的 {count} 项措施",
+                provisionConditionLate: "（其中 {late} 项已逾期）",
+                provisionNormal: "正常情况（没有大风险发生）：其余 {count} 个已估算风险约需 {amount}。",
+                provisionBigTitle: "大风险",
+                provisionBigCost: "若发生则为 {amount}",
+                provisionNoBig: "没有任何单一风险占到金额的一半：这笔钱用于应对多个小意外的累积。",
+                provisionEffectPrevention: "其措施将概率从{before}降到{after}。",
+                provisionEffectProtection: "概率不变（{after}）：其措施主要是防护措施，可降低风险发生时的成本。",
+                provisionEffectBoth: "其措施将概率从{before}降到{after}，并降低风险发生时的成本。",
+                provisionEffectNone: "概率：{after}；其措施不改变评级。",
+                provisionProtectionGain: "若无防护措施，将花费 {amount}。",
+                provisionMesures: "已完成措施：{done}/{total}",
+                provisionMesuresLate: "，{late} 项逾期",
+                chanceOneIn: "{n} 分之一的可能",
+                chanceMoreThanHalf: "超过二分之一的可能",
+                provisionAmount: "应预留金额",
+                provisionPdf: "应预留 {amount}（没有措施时为 {without}：行动计划约节省 {savings}）",
                 issuesTitle: "待核实",
                 issueProbability: "概率 {prob}% 与 P{p} 不一致（应在 {min}% 至 {max}% 之间）：请调整概率或评级。",
                 issueCostHigh: "最可能成本 {cost}：按影响刻度应为 I{level}，而风险评为 I{i}。影响是否被低估？",
@@ -8987,7 +9042,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costProbabilityDefault: "تلقائي: {pct} % حسب P{p}",
                 costExpected: "الكلفة المرجحة بالاحتمال",
                 provisionTitle: "احتياطي المخاطر",
-                provisionCaption: "{count} مخاطر مقدّرة · حساب بعشرة آلاف محاكاة، باحتمالات ما بعد المعالجة",
+                provisionCaption: "{count} مخاطر مقدّرة · مبالغ مقرّبة، محسوبة من التقييمات والتكاليف والتدابير",
                 summaryExpectedCost: "كلفة مرجحة بالاحتمال",
                 tipKpiExposure: "متوسط خطورة المخاطر (الاحتمال × الأثر، على 5) قبل الإجراءات وبعدها.",
                 tipKpiHigh: "عدد المخاطر العالية أو الحرجة (درجة 10 من 25 أو أكثر) قبل الإجراءات وبعدها.",
@@ -8998,7 +9053,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "المخاطر حسب الاستراتيجية: التخفيض (إجراءات)، النقل (عقد، تأمين)، القبول (خطر مُتحمَّل)، التجنب (التخلي عن النشاط).",
                 tipExposureReviews: "متوسط الخطورة بعد المعالجة، على 5، في كل مراجعة مثبّتة واليوم: يقصر الشريط عندما ينخفض التعرّض.",
                 tipDecisions: "قرارات يُطلب من اللجنة اتخاذها: مخاطر فوق مستوى التقبّل ومؤشرات (KRI) في المنطقة الحرجة.",
-                tipProvision: "المبلغ الواجب تجنيبه لمواجهة المخاطر المقدّرة. يحاكي Riskr عشرة آلاف مسار ممكن للمشروع: في كل مسار يقع كل خطر أو لا حسب احتماله؛ والمبلغ المختار يكفي في 8 مسارات من 10.",
+                tipProvision: "المبلغ الواجب رصده للمخاطر المقدّرة. يعيد Riskr تشغيل المشروع 10 000 مرة: يقع كل خطر أو لا بحسب احتماله؛ ويغطي المبلغ الغالبية العظمى من هذه السيناريوهات. دون التدابير: الحساب نفسه بتقييمات ما قبل المعالجة.",
                 summaryAboveTip: "مخاطر تتجاوز خطورتها بعد المعالجة عتبة التقبّل: تتطلب قرارًا.",
                 summaryUpTip: "مخاطر ارتفع تقييمها بعد المعالجة منذ آخر مراجعة مثبّتة.",
                 summaryLateTip: "إجراءات غير منجزة تجاوزت موعدها النهائي.",
@@ -9032,16 +9087,28 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "الكلفة إذا وقع الخطر، باليورو: تكفي قيمة واحدة؛ الأدنى والأقصى يحددان نطاق المحاكاة.",
                 tipCostProbability: "احتمال وقوع الخطر؛ إن كان فارغًا فهو مستمد من تقييم P بعد المعالجة (P1 إلى P5: 5، 15، 35، 60، 85 %).",
                 tipCostExpected: "الاحتمال × متوسط الكلفة: للمقارنة بين المخاطر، وليس ميزانية.",
-                provisionAmount: "المبلغ الواجب تجنيبه",
-                provisionLead: "بتجنيب هذا المبلغ، هناك 8 فرص من 10 أن يكفي لتغطية المخاطر التي ستقع.",
-                provisionLikelyLine: "الأرجح (فرصة من 2): تبقى كلفة المخاطر دون {amount}.",
-                provisionRecommendedLine: "للتجنيب (8 فرص من 10 أن يكفي): {amount}.",
-                provisionPrudentLine: "حذر (9 فرص من 10): {amount}.",
-                provisionWhy: "لماذا هذا الفارق: {risks} قليلة الاحتمال لكنها مكلفة؛ إذا وقع أحدها تغيّر حجم الفاتورة.",
-                provisionLevers: "ما الذي يخفّض الاحتياطي",
-                provisionLeverGain: "−{amount} إذا تمت السيطرة على هذا الخطر",
-                tipProvisionLevers: "لكل خطر، بكم ينخفض المبلغ الواجب تجنيبه لو تمت السيطرة عليه كليًا: هنا تكون الإجراءات أجدى. تُحسب كل نسبة خفض على حدة: لا تُجمع.",
-                provisionPdf: "{amount} للتجنيب (8 فرص من 10 أن يكفي)",
+                costWithoutProtection: "دون تدابير الحماية",
+                tipCostWithoutProtection: "اختياري: التكلفة المرجحة إذا وقع الخطر دون تدابير الحماية. يبيّن ما توفره تدابير الحماية.",
+                provisionAmountLine: "مع تنفيذ خطة العمل",
+                provisionWithout: " ({amount} دون التدابير).",
+                provisionSavings: "توفر خطة العمل نحو {amount}",
+                provisionCondition: "، بشرط تنفيذ التدابير المتبقية وعددها {count}",
+                provisionConditionLate: " (منها {late} متأخرة)",
+                provisionNormal: "الحالة العادية، لا يقع أي خطر كبير: نحو {amount} للمخاطر المقدّرة الأخرى وعددها {count}.",
+                provisionBigTitle: "المخاطر الكبيرة",
+                provisionBigCost: "{amount} إذا وقع",
+                provisionNoBig: "لا يمثل أي خطر بمفرده نصف المبلغ: المبلغ يغطي تراكم حوادث صغيرة.",
+                provisionEffectPrevention: "تخفض تدابيره الاحتمال من {before} إلى {after}.",
+                provisionEffectProtection: "الاحتمال دون تغيير ({after}): تدابيره في الغالب تدابير حماية تخفض التكلفة إذا وقع.",
+                provisionEffectBoth: "تخفض تدابيره الاحتمال من {before} إلى {after} وتخفض التكلفة إذا وقع.",
+                provisionEffectNone: "الاحتمال: {after}؛ لا تغيّر تدابيره التقييم.",
+                provisionProtectionGain: " دون تدابير الحماية، ستبلغ تكلفته {amount}.",
+                provisionMesures: "التدابير المنفذة: {done} من {total}",
+                provisionMesuresLate: "، منها {late} متأخرة",
+                chanceOneIn: "فرصة واحدة من {n}",
+                chanceMoreThanHalf: "أكثر من فرصة من اثنتين",
+                provisionAmount: "المبلغ الواجب رصده",
+                provisionPdf: "{amount} يجب رصدها ({without} دون التدابير: توفر خطة العمل نحو {savings})",
                 issuesTitle: "للتحقق",
                 issueProbability: "احتمال {prob} % لا يتسق مع P{p} (المتوقع بين {min} و{max} %): عدّل الاحتمال أو التقييم.",
                 issueCostHigh: "الكلفة المرجحة {cost}: يضعها سلّم الأثر في I{level} بينما قُيّم الخطر I{i}. هل الأثر مقدَّر بأقل من حقيقته؟",
@@ -9812,7 +9879,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Chiffrage : fourchette de coût en euros si le risque survient, probabilité en % (vide : déduite de la cotation)
         const normalizeCout = raw => ({ min: toNumber(raw?.min), probable: toNumber(raw?.probable), max: toNumber(raw?.max),
-            probabilite: toNumber(raw?.probabilite) });
+            probabilite: toNumber(raw?.probabilite), sansProtection: toNumber(raw?.sansProtection) });
 
         const isIsoDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
@@ -9954,7 +10021,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 });
                 listChanges(old.notes.map(n => n.texte), risk.notes.map(n => n.texte)).forEach(([a, b]) => add(risk, 'note', a, b));
                 listChanges(old.liens.map(l => l.libelle), risk.liens.map(l => l.libelle)).forEach(([a, b]) => add(risk, 'lien', a, b));
-                ['min', 'probable', 'max', 'probabilite'].forEach(field => {
+                ['min', 'probable', 'max', 'probabilite', 'sansProtection'].forEach(field => {
                     if (journalText(old.cout[field]) !== journalText(risk.cout[field])) add(risk, `cout.${field}`, old.cout[field], risk.cout[field]);
                 });
                 listChanges(old.kri.map(k => k.nom), risk.kri.map(k => k.nom)).forEach(([a, b]) => add(risk, 'kri', a, b));
@@ -9984,7 +10051,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             'mesure.efficacite': 'journalEfficacy', note: 'journalNote', lien: 'journalLink', created: 'journalCreated',
             deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview',
             kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds', merge: 'journalMerge',
-            'cout.min': 'costMin', 'cout.probable': 'costLikely', 'cout.max': 'costMax', 'cout.probabilite': 'costProbability' };
+            'cout.min': 'costMin', 'cout.probable': 'costLikely', 'cout.max': 'costMax', 'cout.probabilite': 'costProbability', 'cout.sansProtection': 'costWithoutProtection' };
         const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review', 'kri', 'kri.releve']);
         function journalValue(champ, value) {
             if (value === '') return '';
@@ -12816,10 +12883,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Contenu de la vue comité : titre, boutons, corps et montage du graphique de trajectoire
         function committeeContent() {
             const stats = committeeStats();
-            const provision = simulateProvision();
-            // Gros risques peu probables qui expliquent l'écart entre le cas le plus probable et le montant à provisionner
-            const bigRisks = provision && provision.p80 >= 2 * provision.p50 ? provision.items.filter(item => item.p < 0.5 && item.range[2] >= 2 * provision.p50)
-                .sort((a, b) => b.range[2] - a.range[2]).slice(0, 2).map(item => item.risk) : [];
+            const provision = provisionSummary();
             const kpi = (label, value, detail = '', tone = '', tip = '') => `<div class="committee-kpi">
                 <span class="kpi-label"${tip ? ` data-tip="${escapeHtml(t(tip))}"` : ''}>${label}</span><span class="kpi-value">${value}</span>
                 <span class="kpi-detail ${tone}">${detail}</span></div>`;
@@ -12865,16 +12929,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>
                     ${provision ? `<section class="committee-card provision-card"><h3 data-tip="${t('tipProvision')}">${t('provisionTitle')}</h3>
                         <div class="provision-body">
-                            <div class="provision-headline"><span>${t('provisionAmount')}</span><b>${escapeHtml(formatMoney(provision.p80))}</b><p>${t('provisionLead')}</p></div>
-                            <div><ul class="provision-scenarios">
-                                <li>${escapeHtml(t('provisionLikelyLine', { amount: formatMoney(provision.p50) }))}</li>
-                                <li><b>${escapeHtml(t('provisionRecommendedLine', { amount: formatMoney(provision.p80) }))}</b></li>
-                                <li>${escapeHtml(t('provisionPrudentLine', { amount: formatMoney(provision.p90) }))}</li></ul>
-                                ${bigRisks.length ? `<p class="provision-why">${escapeHtml(t('provisionWhy', { risks: bigRisks.map(risk => `${risk.id} ${risk.title}`).join(' ; ') }))}</p>` : ''}</div>
-                            <div><h4 data-tip="${t('tipProvisionLevers')}">${t('provisionLevers')}</h4><ol class="provision-top">${provisionLevers(provision)
-                                .map(({ risk, gain }) => `<li><b>${escapeHtml(risk.id)}</b> ${escapeHtml(risk.title)} <span>${escapeHtml(t('provisionLeverGain', { amount: formatMoney(gain) }))}</span></li>`).join('')}</ol></div>
+                            <div class="provision-headline"><span>${t('provisionAmount')}</span><b>${escapeHtml(approxMoney(provision.amount))}</b>
+                                <p>${escapeHtml(t('provisionAmountLine'))}${provision.savings > 0 ? escapeHtml(t('provisionWithout', { amount: approxMoney(provision.without) })) : '.'}</p>
+                                ${provision.savings > 0 ? `<p class="provision-savings">${escapeHtml(t('provisionSavings', { amount: approxMoney(provision.savings) }))}${provision.pending
+                                    ? escapeHtml(t('provisionCondition', { count: provision.pending }) + (provision.late ? t('provisionConditionLate', { late: provision.late }) : '')) : ''}.</p>` : ''}</div>
+                            <div>
+                                ${provision.big.length ? `<p class="provision-normal">${escapeHtml(t('provisionNormal', { amount: approxMoney(provision.normal), count: provision.normalCount }))}</p>
+                                <h4>${t('provisionBigTitle')}</h4>
+                                <ul class="provision-scenarios">${provision.big.map(risk => `<li><b>${escapeHtml(risk.id)} ${escapeHtml(risk.title)}</b> : ${escapeHtml(t('provisionBigCost', { amount: approxMoney(costRange(risk)[1]) }))}
+                                    <small>${escapeHtml(measureEffectText(risk))}</small></li>`).join('')}</ul>` : `<p class="provision-normal">${escapeHtml(t('provisionNoBig'))}</p>`}
+                            </div>
                         </div>
-                        <p class="review-meta">${t('provisionCaption', { count: provision.items.length })}</p></section>` : ''}`,
+                        <p class="review-meta">${t('provisionCaption', { count: provision.count })}</p></section>` : ''}`,
                 mount: body => {
                     const { datasets, bubble } = matrixChartData('trajectory');
                     committeeChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
@@ -12971,9 +13037,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ...stats.kriCritical.map(({ risk, kri }) => `${risk.id} · ${t('kriDecision', { name: kri.nom, value: formatKri(kri) })}`)];
             if (!decisions.length) decisions.push(pdfText('committeeNoDecision'));
             // Montants : espaces fines insécables remplacées (non gérées par la police du PDF)
-            const provision = simulateProvision();
-            const pdfMoney = value => formatMoney(value, false).replace(/[\u202f\u00a0]/g, ' ');
-            if (provision) decisions.push(`${pdfText('provisionTitle')} : ${t('provisionPdf', { amount: pdfMoney(provision.p80) })}`);
+            const provision = provisionSummary();
+            const pdfMoney = value => approxMoney(value).replace(/[\u202f\u00a0]/g, ' ');
+            if (provision) decisions.push(`${pdfText('provisionTitle')} : ${t('provisionPdf', { amount: pdfMoney(provision.amount),
+                without: pdfMoney(provision.without), savings: pdfMoney(Math.max(0, provision.savings)) })}`);
             decisions.slice(0, 8).forEach(line => {
                 y += 6;
                 doc.text(doc.splitTextToSize(line, 265)[0], 14, y);
@@ -13405,6 +13472,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const likely = risk.cout.probable ?? known[Math.floor(known.length / 2)];
             return [risk.cout.min ?? likely, likely, risk.cout.max ?? likely].sort((a, b) => a - b);
         }
+        // Sans les mesures : probabilité de la cotation P avant (jamais inférieure à celle d'après) et coût sans les
+        // protections s'il est renseigné (la fourchette est alors agrandie dans la même proportion)
+        const riskProbabilityBefore = risk => Math.max(DEFAULT_PROBABILITY[risk.assessmentBefore[0]] ?? 0, riskProbability(risk));
+        function costRangeBefore(risk) {
+            const range = costRange(risk);
+            if (!range) return null;
+            const factor = risk.cout.sansProtection > range[1] ? risk.cout.sansProtection / range[1] : 1;
+            return range.map(value => value * factor);
+        }
         const expectedCost = risk => { const range = costRange(risk); return range ? riskProbability(risk) / 100 * (range[0] + range[1] + range[2]) / 3 : 0; };
         const formatMoney = (value, compact = true) => new Intl.NumberFormat(currentLanguage, { style: 'currency', currency: 'EUR',
             maximumFractionDigits: compact ? 1 : 0, notation: compact ? 'compact' : 'standard' }).format(value);
@@ -13412,8 +13488,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Provision pour risques : T tirages ; à chaque tirage, chaque risque chiffré survient avec sa probabilité
         // et coûte alors une valeur tirée dans sa fourchette (loi triangulaire). Générateur à graine fixe
         // (mulberry32) : mêmes résultats à chaque affichage. Complexité : O(T·r + T log T), r = risques chiffrés.
-        function simulateProvision(trials = 10000, excluded = null) {
-            const items = risks.filter(risk => risk !== excluded).map(risk => ({ risk, p: riskProbability(risk) / 100, range: costRange(risk) }))
+        function simulateProvision(trials = 10000, { excluded = new Set(), before = false } = {}) {
+            const items = risks.filter(risk => !excluded.has(risk)).map(risk => ({ risk,
+                p: (before ? riskProbabilityBefore(risk) : riskProbability(risk)) / 100, range: before ? costRangeBefore(risk) : costRange(risk) }))
                 .filter(item => item.range && item.p > 0);
             if (!items.length) return null;
             let seed = 20260925;
@@ -13439,12 +13516,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 p50: quantile(0.5), p80: quantile(0.8), p90: quantile(0.9) };
         }
 
-        // Leviers : baisse du montant à provisionner si un risque était entièrement maîtrisé (retiré de la simulation).
-        // Limité aux 6 risques au coût pondéré le plus fort : O(6 · T · r).
-        function provisionLevers(provision) {
-            return [...provision.items].sort((a, b) => expectedCost(b.risk) - expectedCost(a.risk)).slice(0, 6)
-                .map(({ risk }) => ({ risk, gain: provision.p80 - (simulateProvision(10000, risk)?.p80 ?? 0) }))
-                .filter(lever => lever.gain > provision.p80 * 0.02).sort((a, b) => b.gain - a.gain).slice(0, 4);
+        // Montant arrondi à deux chiffres significatifs (« environ 760 k€ »)
+        const approxMoney = value => {
+            if (value <= 0) return formatMoney(0);
+            const step = 10 ** (Math.floor(Math.log10(value)) - 1);
+            return formatMoney(Math.round(value / step) * step);
+        };
+        // « 1 chance sur 3 » : lecture d'une probabilité en % sans vocabulaire statistique
+        const chanceText = percent => percent >= 50 ? t('chanceMoreThanHalf') : t('chanceOneIn', { n: Math.max(2, Math.round(100 / percent)) });
+
+        // Provision présentée en situations : montant à prévoir avec et sans les mesures, cas normal, gros risques
+        // (coût probable d'au moins la moitié du montant à prévoir, 3 au plus) et effet de leurs mesures.
+        // Tout est calculé à partir des cotations, des coûts et des mesures. Complexité : O(T · r) (trois simulations).
+        function provisionSummary() {
+            const withMeasures = simulateProvision();
+            if (!withMeasures) return null;
+            const withoutMeasures = simulateProvision(10000, { before: true });
+            const big = withMeasures.items.filter(item => item.range[1] >= withMeasures.p80 / 2)
+                .sort((a, b) => b.range[1] - a.range[1]).slice(0, 3).map(item => item.risk);
+            const normal = big.length ? simulateProvision(10000, { excluded: new Set(big) }) : withMeasures;
+            // Mesures restantes des risques dont la cotation est censée baisser grâce aux mesures
+            const pending = risks.filter(risk => costRange(risk) && assessmentScore(risk.assessmentAfter) < assessmentScore(risk.assessmentBefore))
+                .flatMap(risk => risk.mesures).filter(mesure => mesure.texte && mesure.etat !== 'done');
+            return { amount: withMeasures.p80, without: withoutMeasures.p80, savings: withoutMeasures.p80 - withMeasures.p80,
+                normal: normal ? normal.p50 : 0, normalCount: withMeasures.items.length - big.length, big,
+                pending: pending.length, late: pending.filter(isMesureLate).length, count: withMeasures.items.length };
+        }
+
+        // Phrase automatique sur l'effet des mesures d'un gros risque : prévention (probabilité), protection (coût)
+        function measureEffectText(risk) {
+            const [pBefore, pAfter] = [riskProbabilityBefore(risk), riskProbability(risk)];
+            const probabilityDown = pAfter < pBefore, impactDown = risk.assessmentAfter[1] < risk.assessmentBefore[1];
+            const key = probabilityDown && impactDown ? 'provisionEffectBoth' : probabilityDown ? 'provisionEffectPrevention'
+                : impactDown ? 'provisionEffectProtection' : 'provisionEffectNone';
+            const range = costRange(risk);
+            const protection = risk.cout.sansProtection > range[1] ? t('provisionProtectionGain', { amount: approxMoney(risk.cout.sansProtection) }) : '';
+            const done = risk.mesures.filter(mesure => mesure.texte && mesure.etat === 'done').length;
+            const total = risk.mesures.filter(mesure => mesure.texte).length;
+            const late = risk.mesures.filter(mesure => mesure.texte && isMesureLate(mesure)).length;
+            return `${t(key, { before: chanceText(pBefore), after: chanceText(pAfter) })}${protection} `
+                + `${t('provisionMesures', { done, total })}${late ? t('provisionMesuresLate', { late }) : ''}.`;
         }
 
         // Détecteur d'incohérences : alertes « à vérifier », rien n'est bloqué. Complexité : O(k) par risque (k = KRI)
@@ -13628,6 +13739,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <section class="committee-card sheet-cost"><h3 data-tip="${t('costHint')}">${t('costTitle')}</h3>
                     <div class="cost-fields">${[['min', 'costMin'], ['probable', 'costLikely'], ['max', 'costMax']].map(([field, label]) =>
                         `<label data-tip="${t('tipCostRange')}">${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input${flagged('cout')}" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
+                        <label data-tip="${t('tipCostWithoutProtection')}">${t('costWithoutProtection')} <input type="number" min="0" step="any" class="kri-input cost-input${flagged('cout')}" data-cost-field="sansProtection" value="${risk.cout.sansProtection ?? ''}"> €</label>
                         <label data-tip="${t('tipCostProbability')}">${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input${flagged('probabilite')}" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
                             placeholder="${t('costAuto')}"> %</label>
                         ${risk.cout.probabilite === null && risk.assessmentAfter[0] ? `<small>${t('costProbabilityDefault', { p: risk.assessmentAfter[0], pct: DEFAULT_PROBABILITY[risk.assessmentAfter[0]] })}</small>` : ''}
