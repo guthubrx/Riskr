@@ -2936,21 +2936,161 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: var(--text-2);
         }
 
-        .chip-select {
-            padding: 4px 26px 4px 12px;
+        /* Contrôles de la fiche : segments de niveau, jauge de vélocité, traitement segmenté, porteur */
+        .level-bar {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .level-letter {
+            width: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-3);
+        }
+
+        .seg,
+        .vbar {
+            padding: 0;
+            border: none;
+            background: var(--border);
+            cursor: pointer;
+        }
+
+        .seg {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .vbar {
+            width: 6px;
+            height: var(--h);
+            border-radius: 2px;
+        }
+
+        .seg.on,
+        .vbar.on {
+            background: var(--c);
+        }
+
+        .seg:hover,
+        .vbar:hover {
+            outline: 1.5px solid var(--text-3);
+            outline-offset: 1px;
+        }
+
+        .velocity-field {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-2);
+        }
+
+        .vel-bars {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 20px;
+        }
+
+        .vel-text {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .seg-control {
+            display: inline-flex;
+            gap: 2px;
+            padding: 3px;
+            border-radius: 999px;
+            background: var(--surface-2);
+        }
+
+        .seg-opt {
+            padding: 4px 12px;
             border: none;
             border-radius: 999px;
-            background-color: color-mix(in srgb, var(--c) 14%, transparent);
-            color: var(--c);
-            font-size: 14px;
+            background: none;
+            color: var(--text-2);
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
         }
 
-        .owner-select {
-            --c: var(--text-2);
+        .seg-opt:hover {
             color: var(--text);
         }
+
+        .seg-opt.on {
+            background: color-mix(in srgb, var(--c) 16%, var(--surface));
+            color: var(--c);
+        }
+
+        .owner-field,
+        .owner-input {
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+        }
+
+        .owner-field {
+            border: 1px solid transparent;
+            background: none;
+            cursor: text;
+        }
+
+        .owner-field:hover {
+            border-color: var(--border);
+        }
+
+        .owner-input {
+            width: 200px;
+            border: 1px solid var(--accent);
+            background: var(--surface);
+            outline: none;
+        }
+
+        /* Suggestions du champ porteur */
+        .picker {
+            position: fixed;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            padding: 4px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+        }
+
+        .picker button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 6px;
+            background: none;
+            color: var(--text);
+            font-size: 13px;
+            text-align: start;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .picker button:hover,
+        .picker button.on {
+            background: var(--surface-2);
+        }
+
+        .picker button.on {
+            font-weight: 600;
+        }
+
 
         .appetite-pill {
             padding: 4px 12px;
@@ -2962,15 +3102,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .sheet-muted {
             color: var(--text-3);
-        }
-
-        .sheet-score-edit select {
-            padding: 2px 4px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--surface);
-            color: var(--text-2);
-            font-size: 12px;
         }
 
         .sheet-scores {
@@ -3008,6 +3139,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .sheet-score-edit {
             display: flex;
+            flex-direction: column;
             gap: 4px;
         }
 
@@ -6220,8 +6352,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
-                newOwner: "＋ Nouveau porteur…",
-                newOwnerPrompt: "Nom du nouveau porteur",
+                createOwner: "Créer « {name} »",
                 prevRisk: "Risque précédent",
                 nextRisk: "Risque suivant",
                 notionCauses: "Causes : ce qui peut déclencher l’événement redouté (situation, faiblesse, dépendance). Un risque a rarement une seule origine.",
@@ -6577,8 +6708,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
-                newOwner: "＋ New owner…",
-                newOwnerPrompt: "Name of the new owner",
+                createOwner: "Create “{name}”",
                 prevRisk: "Previous risk",
                 nextRisk: "Next risk",
                 notionCauses: "Causes: what can trigger the feared event (situation, weakness, dependency). A risk rarely has a single origin.",
@@ -6934,8 +7064,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
-                newOwner: "＋ Nuevo responsable…",
-                newOwnerPrompt: "Nombre del nuevo responsable",
+                createOwner: "Crear «{name}»",
                 prevRisk: "Riesgo anterior",
                 nextRisk: "Riesgo siguiente",
                 notionCauses: "Causas: lo que puede desencadenar el evento temido (situación, debilidad, dependencia). Un riesgo rara vez tiene un solo origen.",
@@ -7291,8 +7420,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
-                newOwner: "＋ 新负责人…",
-                newOwnerPrompt: "新负责人姓名",
+                createOwner: "新建“{name}”",
                 prevRisk: "上一个风险",
                 nextRisk: "下一个风险",
                 notionCauses: "原因：可能引发所担心事件的因素（情形、弱点、依赖）。风险很少只有一个来源。",
@@ -7648,8 +7776,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
-                newOwner: "＋ مسؤول جديد…",
-                newOwnerPrompt: "اسم المسؤول الجديد",
+                createOwner: "إنشاء «{name}»",
                 prevRisk: "الخطر السابق",
                 nextRisk: "الخطر التالي",
                 notionCauses: "الأسباب: ما قد يؤدي إلى الحدث المخشي (وضع، ضعف، تبعية). نادرًا ما يكون للخطر مصدر واحد.",
@@ -11192,10 +11319,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Vélocité 1 (lente) → 5 (immédiate) : du bleu au rouge
         const VELOCITY_COLORS = ['#0a84ff', '#34c759', '#c9a300', '#ff9f0a', '#ff3b30'];
-        // Pastilles des menus déroulants (les menus natifs ignorent les couleurs : seuls les emoji restent colorés)
-        const LEVEL_DOTS = ['', '🟢', '🟡', '🟠', '🔴', '🟥'];
-        const VELOCITY_DOTS = ['', '🔵', '🟢', '🟡', '🟠', '🔴'];
-        const TREATMENT_DOTS = { reduce: '🔵', transfer: '🟣', accept: '🟠', avoid: '🟢', '': '⚪' };
+        // Probabilité et impact 1 → 5 : du vert au rouge sombre
+        const LEVEL_COLORS = ['', '#34c759', '#ffcc00', '#ff9f0a', '#ff3b30', '#b3261e'];
+
 
         // Porteurs déjà utilisés dans l'analyse (risques et mesures), triés. O(n + m)
         const knownOwners = () => [...new Set(risks.flatMap(risk => [risk.responsable, ...risk.mesures.map(mesure => mesure.porteur)]).filter(Boolean))]
@@ -11236,14 +11362,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const above = settings.riskAppetite && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
             const history = reviews.filter(r => r.risks.some(entry => entry.uid === risk.uid));
             const lastReview = history[history.length - 1];
-            const axisOptions = (scale, value, prefix) => scale.map(item =>
-                `<option value="${item.value}" ${item.value === value ? 'selected' : ''} title="${escapeHtml(item.label)}">${item.value ? `${LEVEL_DOTS[item.value]} ${prefix}${item.value}` : '–'}</option>`).join('');
+            // 5 segments cliquables ; cliquer le niveau actuel le remet à « non évalué »
+            const levelBar = (field, axis, letter, scale, name) => {
+                const value = risk[field][axis];
+                return `<span class="level-bar" role="radiogroup" aria-label="${escapeHtml(name)}"><span class="level-letter">${letter}</span>${scale.slice(1).map(item =>
+                    `<button type="button" class="seg${item.value <= value ? ' on' : ''}" style="--c:${LEVEL_COLORS[value] || 'transparent'}" role="radio" aria-checked="${item.value === value}"
+                        data-assess="${field}" data-axis="${axis}" data-level="${item.value}" data-tip="${letter}${item.value} · ${escapeHtml(item.label)}" aria-label="${letter}${item.value} · ${escapeHtml(item.label)}"></button>`).join('')}</span>`;
+            };
             const NOTIONS = { assessmentBefore: 'notionBefore', assessmentAfter: 'notionAfter', assessmentTarget: 'notionTarget' };
             const cotation = (field, label, target = false) => `<div class="sheet-score"><span class="sheet-score-label" data-tip="${t(NOTIONS[field])}">${t(label)}</span>
                 ${scoreChip(risk[field], target)}
                 <span class="sheet-score-edit">
-                    <select data-assess="${field}" data-axis="0" aria-label="${t(label)} · ${t('colProb')}">${axisOptions(getProbabilityScale(), risk[field][0], 'P')}</select>
-                    <select data-assess="${field}" data-axis="1" aria-label="${t(label)} · ${t('colImpact')}">${axisOptions(getImpactScale(), risk[field][1], 'I')}</select>
+                    ${levelBar(field, 0, 'P', getProbabilityScale(), `${t(label)} · ${t('colProb')}`)}
+                    ${levelBar(field, 1, 'I', getImpactScale(), `${t(label)} · ${t('colImpact')}`)}
                 </span></div>`;
             const editable = (attributes, text, placeholder = t('bowtieItemPlaceholder')) =>
                 `<span class="editable-sheet" ${attributes} data-placeholder="${escapeHtml(placeholder)}">${escapeHtml(text)}</span>`;
@@ -11271,15 +11402,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <div>
                         <h2 class="sheet-risk-title"><span class="id-bubble big">${escapeHtml(risk.id)}</span>${editable('data-field="title"', risk.title, t('newRisk'))}</h2>
                         <div class="sheet-facts">
-                            <select class="chip-select" data-field="traitement" style="--c:${TREATMENT_COLORS[risk.traitement]}" data-tip="${t('notionTreatment')}" aria-label="${t('colTreatment')}">
-                                ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${TREATMENT_DOTS[key]} ${treatmentLabel(key)}</option>`).join('')}</select>
-                            <span class="owner">${avatar(risk.responsable || '?')}<select class="chip-select owner-select" data-field="responsable" aria-label="${t('mesureOwner')}">
-                                <option value="" ${risk.responsable ? '' : 'selected'}>${t('noOwner')}</option>
-                                ${knownOwners().map(owner => `<option ${owner === risk.responsable ? 'selected' : ''}>${escapeHtml(owner)}</option>`).join('')}
-                                <option value="__new__">${t('newOwner')}</option></select></span>
+                            <span class="seg-control" role="radiogroup" aria-label="${t('colTreatment')}" data-tip="${t('notionTreatment')}">${Object.keys(TREATMENTS).map(key =>
+                                `<button type="button" class="seg-opt${key === risk.traitement ? ' on' : ''}" style="--c:${TREATMENT_COLORS[key]}" role="radio" aria-checked="${key === risk.traitement}" data-treatment="${key}">${treatmentLabel(key)}</button>`).join('')}</span>
+                            <span class="owner">${avatar(risk.responsable || '?')}<button type="button" class="owner-field" data-action="edit-owner">${escapeHtml(risk.responsable || t('noOwner'))}</button></span>
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
-                            <select class="chip-select" data-field="velocite" style="--c:${risk.velocite ? VELOCITY_COLORS[risk.velocite - 1] : '#8e8e93'}" data-tip="${t('velocityHint')}" aria-label="${t('colVelocity')}">
-                                ${[0, 1, 2, 3, 4, 5].map(v => `<option value="${v}" ${v === risk.velocite ? 'selected' : ''}>${v ? `${VELOCITY_DOTS[v]} ` : ''}${t(v ? `velocity${v}` : 'velocityNone')}</option>`).join('')}</select>
+                            <span class="velocity-field"><span data-tip="${t('velocityHint')}">${t('colVelocity')}</span>
+                                <span class="vel-bars" role="radiogroup" aria-label="${t('colVelocity')}">${[1, 2, 3, 4, 5].map(v =>
+                                    `<button type="button" class="vbar${v <= risk.velocite ? ' on' : ''}" style="--h:${6 + v * 3}px;--c:${VELOCITY_COLORS[risk.velocite - 1] || 'transparent'}" role="radio" aria-checked="${v === risk.velocite}"
+                                        data-velocity="${v}" data-tip="${t(`velocity${v}`)}" aria-label="${t(`velocity${v}`)}"></button>`).join('')}</span>
+                                <span class="vel-text">${risk.velocite ? t(`velocity${risk.velocite}`).split(' · ').pop() : '–'}</span></span>
                             ${lastReview ? `<span class="sheet-muted">${t('reviewedOn', { date: formatReviewDate(lastReview.date) })}</span>` : ''}
                         </div>
                     </div>
@@ -11343,19 +11474,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     save(field || mesure !== undefined ? 'all' : 'sheet');
                 } });
             });
-            sheet.onchange = event => {
-                const select = event.target;
-                if (select.dataset.assess) risk[select.dataset.assess][Number(select.dataset.axis)] = Number(select.value);
-                else if (select.dataset.field === 'velocite') risk.velocite = Number(select.value);
-                else if (select.dataset.field === 'traitement') risk.traitement = select.value;
-                else if (select.dataset.field === 'responsable') {
-                    const owner = select.value === '__new__' ? (prompt(t('newOwnerPrompt')) || '').trim() : select.value;
-                    if (select.value === '__new__' && !owner) return renderRegister(); // saisie annulée : revenir au porteur actuel
-                    risk.responsable = owner;
-                }
-                else return;
-                save('all');
-            };
             sheet.onclick = event => {
                 const target = event.target.closest('button, a[data-action]');
                 if (!target) return;
@@ -11363,6 +11481,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (action === 'close') {
                     event.preventDefault();
                     closeRiskSheet();
+                } else if (target.dataset.level) {
+                    // Second clic sur le niveau actuel : non évalué
+                    const assessment = risk[target.dataset.assess], axis = Number(target.dataset.axis), level = Number(target.dataset.level);
+                    assessment[axis] = assessment[axis] === level ? 0 : level;
+                    save('all');
+                } else if (target.dataset.velocity) {
+                    const velocity = Number(target.dataset.velocity);
+                    risk.velocite = risk.velocite === velocity ? 0 : velocity;
+                    save('all');
+                } else if (target.dataset.treatment) {
+                    risk.traitement = risk.traitement === target.dataset.treatment ? '' : target.dataset.treatment;
+                    save('all');
+                } else if (action === 'edit-owner') {
+                    editOwner(target, risk, save);
                 } else if (target.dataset.goto) {
                     openRiskSheet(target.dataset.goto, true);
                 } else if (add) {
@@ -11442,6 +11574,59 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
 
             requestAnimationFrame(() => drawBowtieLinks(sheet.querySelector('.bowtie2')));
+        }
+
+        // Champ porteur : saisie avec suggestions parmi les porteurs existants, ou création d'un nouveau
+        function editOwner(button, risk, save) {
+            const input = document.createElement('input');
+            input.className = 'owner-input';
+            input.value = risk.responsable;
+            input.placeholder = t('mesureOwner');
+            input.setAttribute('aria-label', t('mesureOwner'));
+            button.replaceWith(input);
+            const list = document.createElement('div');
+            list.className = 'picker';
+            list.setAttribute('role', 'listbox');
+            document.body.appendChild(list);
+            let done = false;
+            const finish = value => {
+                if (done) return;
+                done = true;
+                list.remove();
+                if (value !== null && value !== risk.responsable) {
+                    risk.responsable = value;
+                    save('all');
+                } else renderRegister();
+            };
+            const render = () => {
+                const query = input.value.trim();
+                const lower = query.toLocaleLowerCase();
+                const owners = knownOwners().filter(owner => owner.toLocaleLowerCase().includes(lower));
+                const exact = owners.some(owner => owner.toLocaleLowerCase() === lower);
+                list.innerHTML = owners.map(owner => `<button type="button" role="option" class="${owner === risk.responsable ? 'on' : ''}" data-owner="${escapeHtml(owner)}">${escapeHtml(owner)}</button>`).join('')
+                    + (query && !exact ? `<button type="button" role="option" data-owner="${escapeHtml(query)}">${escapeHtml(t('createOwner', { name: query }))}</button>` : '');
+                list.hidden = !list.innerHTML;
+                const box = input.getBoundingClientRect();
+                list.style.top = `${box.bottom + 4}px`;
+                list.style.left = `${box.left}px`;
+                list.style.minWidth = `${box.width}px`;
+            };
+            list.onmousedown = event => event.preventDefault(); // garder le focus dans le champ
+            list.onclick = event => { const choice = event.target.closest('[data-owner]'); if (choice) finish(choice.dataset.owner); };
+            input.oninput = render;
+            input.onkeydown = event => {
+                if (event.key === 'Enter') {
+                    // Porteur existant de même nom (casse près), sinon le texte tapé
+                    event.preventDefault();
+                    const typed = input.value.trim();
+                    finish(knownOwners().find(owner => owner.toLocaleLowerCase() === typed.toLocaleLowerCase()) ?? typed);
+                }
+                if (event.key === 'Escape') finish(null);
+            };
+            input.onblur = () => finish(input.value.trim());
+            input.focus();
+            input.select();
+            render();
         }
 
         // Liaisons du nœud papillon : causes → barrières préventives → événement → barrières de protection → conséquences
