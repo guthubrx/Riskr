@@ -2981,9 +2981,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             outline-offset: 1px;
         }
 
+        /* Le pied des barres repose sur la ligne de base du texte */
         .velocity-field {
             display: inline-flex;
-            align-items: center;
+            align-items: baseline;
             gap: 8px;
             font-size: 14px;
             color: var(--text-2);
@@ -2993,7 +2994,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             display: inline-flex;
             align-items: flex-end;
             gap: 3px;
-            height: 20px;
         }
 
         .vel-text {
@@ -11414,7 +11414,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
                             <span class="velocity-field"><span data-tip="${t('velocityHint')}">${t('colVelocity')}</span>
                                 <span class="vel-bars" role="radiogroup" aria-label="${t('colVelocity')}">${[1, 2, 3, 4, 5].map(v =>
-                                    `<button type="button" class="vbar${v <= risk.velocite ? ' on' : ''}" style="--h:${6 + v * 3}px;--c:${VELOCITY_COLORS[risk.velocite - 1] || 'transparent'}" role="radio" aria-checked="${v === risk.velocite}"
+                                    `<button type="button" class="vbar${v <= risk.velocite ? ' on' : ''}" style="--h:${4 + v * 2}px;--c:${VELOCITY_COLORS[risk.velocite - 1] || 'transparent'}" role="radio" aria-checked="${v === risk.velocite}"
                                         data-velocity="${v}" data-tip="${t(`velocity${v}`)}" aria-label="${t(`velocity${v}`)}"></button>`).join('')}</span>
                                 <span class="vel-text">${risk.velocite ? t(`velocity${risk.velocite}`).split(' · ').pop() : '–'}</span></span>
                             ${lastReview ? `<span class="sheet-muted">${t('reviewedOn', { date: formatReviewDate(lastReview.date) })}</span>` : ''}
