@@ -13889,7 +13889,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Nouveautés, de la plus récente à la plus ancienne : [type, français, anglais] ; les autres langues
         // affichent l'anglais. À compléter à chaque évolution (commits : dépôt GitHub).
         const CHANGELOG = [
-            { date: "2026-09-25", commits: [], title: ["Provision : cas normal", "Contingency: normal case"], items: [
+            { date: "2026-09-25", commits: [], title: ["Dates des revues", "Review dates"], items: [
+                ["fixed", "Dates courtes des revues avec l'année (frise des matrices, évolution de la cotation dans la fiche).", "Short review dates include the year (matrix timeline, rating trend in the risk sheet)."]] },
+            { date: "2026-09-25", commits: ["5aab9ff"], title: ["Provision : cas normal", "Contingency: normal case"], items: [
                 ["fixed", "Provision : « le plus souvent, aucun des autres risques ne se réalise » au lieu d'un montant de 0 €.", "Contingency: \"most of the time, none of the other risks occurs\" instead of an amount of €0."]] },
             { date: "2026-09-25", commits: ["66dcd41", "ce755c4"], title: ["Icônes et documentation", "Icons and documentation"], items: [
                 ["fixed", "Icônes d'import et d'export remises dans le bon sens (flèche entrante pour importer, sortante pour exporter).", "Import and export icons the right way round (inward arrow to import, outward arrow to export)."],
@@ -14016,7 +14018,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             card.classList.add('flash');
             setTimeout(() => card.classList.remove('flash'), 1600);
         }
-        const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit' }) : date; };
+        // Date courte d'une revue, avec l'année : les revues s'étalent souvent sur plusieurs années (15/01/25)
+        const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit', year: '2-digit' }) : date; };
 
         // Liste de journal : les `visible` plus récentes, le reste dépliable. Complexité : O(n)
         const journalList = (entries, visible, withRisk = false) => !entries.length ? `<p class="review-empty">${t('journalEmpty')}</p>`
