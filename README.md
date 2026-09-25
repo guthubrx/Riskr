@@ -71,7 +71,8 @@ pour risques par simulation Monte-Carlo), copiable dans Word ou PowerPoint et ex
 </picture>
 
 **Paramètres** : réglages communs à toute l'analyse (appétence au risque, cadence de
-revue, échelle d'impact en euros), rappelés avec un lien « modifier » là où ils servent.
+revue, effet de la vélocité sur la taille des bulles, échelle d'impact en euros),
+rappelés avec un lien « modifier » là où ils servent.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/parametres.png">
@@ -272,7 +273,8 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   PDF restent sur l'état actuel.
 - **Affichage** : une ligne sous les matrices, où chaque option porte son symbole de
   légende (nombre par case, appétence avec son niveau réglé dans l'onglet
-  Paramètres, cible en losange vert, taille des bulles selon la vélocité ;
+  Paramètres, cible en losange vert, taille des bulles selon la vélocité, avec un
+  effet discret, marqué ou fort réglé dans Paramètres ;
   explication au survol)
 - **Panneau latéral** : risques de la case cliquée et ceux au-dessus de l'appétence
 - **Cible** : pastille en losange bleu = cible atteinte ; losange blanc à contour vert,

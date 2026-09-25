@@ -7309,6 +7309,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                settingsVelocityTitle: "Effet de la vélocité sur la taille des bulles",
+                settingsVelocityHint: "Taille d'une bulle de vélocité 1 (la plus lente) par rapport à une bulle de vélocité 5. L'option « Taille = vélocité » sous les matrices allume ou éteint l'effet.",
+                velocityEffect_discret: "Discret",
+                velocityEffect_marque: "Marqué",
+                velocityEffect_fort: "Fort",
                 tabChangelog: "Nouveautés",
                 changelogTitle: "Nouveautés de Riskr",
                 changelogIntro: "Les évolutions de l'application, de la plus récente à la plus ancienne. Chaque identifiant renvoie au commit correspondant.",
@@ -7849,6 +7854,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                settingsVelocityTitle: "Effect of velocity on bubble size",
+                settingsVelocityHint: "Size of a velocity 1 bubble (the slowest) compared with a velocity 5 bubble. The \"Size = velocity\" option below the matrices turns the effect on or off.",
+                velocityEffect_discret: "Subtle",
+                velocityEffect_marque: "Marked",
+                velocityEffect_fort: "Strong",
                 tabChangelog: "What's new",
                 changelogTitle: "What's new in Riskr",
                 changelogIntro: "Changes to the application, from newest to oldest. Each identifier links to the matching commit.",
@@ -8389,6 +8399,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                settingsVelocityTitle: "Efecto de la velocidad en el tamaño de las burbujas",
+                settingsVelocityHint: "Tamaño de una burbuja de velocidad 1 (la más lenta) respecto a una de velocidad 5. La opción «Tamaño = velocidad» bajo las matrices activa o desactiva el efecto.",
+                velocityEffect_discret: "Discreto",
+                velocityEffect_marque: "Marcado",
+                velocityEffect_fort: "Fuerte",
                 tabChangelog: "Novedades",
                 changelogTitle: "Novedades de Riskr",
                 changelogIntro: "Cambios de la aplicación, del más reciente al más antiguo (textos en inglés). Cada identificador enlaza con el commit correspondiente.",
@@ -8929,6 +8944,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                settingsVelocityTitle: "速度对气泡大小的影响",
+                settingsVelocityHint: "速度为 1（最慢）的气泡相对于速度为 5 的气泡的大小。矩阵下方的“大小 = 速度”选项用于开启或关闭该效果。",
+                velocityEffect_discret: "轻微",
+                velocityEffect_marque: "明显",
+                velocityEffect_fort: "强烈",
                 tabChangelog: "更新内容",
                 changelogTitle: "Riskr 更新内容",
                 changelogIntro: "应用的更新，从最新到最早（英文说明）。每个标识符链接到对应的提交。",
@@ -9469,6 +9489,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                settingsVelocityTitle: "أثر السرعة على حجم الفقاعات",
+                settingsVelocityHint: "حجم فقاعة السرعة 1 (الأبطأ) مقارنة بفقاعة السرعة 5. يشغّل خيار «الحجم = السرعة» أسفل المصفوفات هذا الأثر أو يوقفه.",
+                velocityEffect_discret: "خفيف",
+                velocityEffect_marque: "واضح",
+                velocityEffect_fort: "قوي",
                 tabChangelog: "المستجدات",
                 changelogTitle: "مستجدات Riskr",
                 changelogIntro: "تطورات التطبيق من الأحدث إلى الأقدم (النصوص بالإنجليزية). يرتبط كل معرّف بالتعديل المقابل.",
@@ -10053,6 +10078,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         const isIsoDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
+        // Effet de la vélocité : taille d'une bulle de vélocité 1 par rapport à une bulle de vélocité 5
+        const VELOCITY_EFFECTS = { discret: 0.68, marque: 0.5, fort: 0.4 };
+
         function normalizeSettings(raw) {
             const appetite = raw && raw.riskAppetite;
             const cadence = raw && raw.cadenceRevue;
@@ -10061,6 +10089,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 echelleImpact: Array.isArray(raw?.echelleImpact) && raw.echelleImpact.length === 4
                     && raw.echelleImpact.every((v, i, a) => Number.isFinite(v) && v > 0 && (!i || v > a[i - 1]))
                     ? raw.echelleImpact : [10000, 50000, 250000, 1000000],
+                // Effet de la vélocité sur la taille des bulles (option « Taille = vélocité »)
+                effetVelocite: raw?.effetVelocite in VELOCITY_EFFECTS ? raw.effetVelocite : 'discret',
                 // Revue des risques tous les N jours (90 par défaut)
                 cadenceRevue: Number.isInteger(cadence) && cadence > 0 && cadence <= 3650 ? cadence : 90,
                 riskAppetite: Number.isInteger(appetite) && appetite >= 0 && appetite <= 25
@@ -11922,9 +11952,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const axisColor = () => themeColor('--text-2');
 
         const cellSize = chart => chart.chartArea ? chart.chartArea.width / 5 : 60;
-        // Option « Taille = vélocité » : la bulle (et son numéro) rétrécit jusqu'à 68 % pour une vélocité de 1 ;
-        // elle ne grossit jamais, donc les bulles ne se chevauchent pas. Vélocité non évaluée : taille médiane.
-        const velocityScale = velocity => !matrixOptions.velocity ? 1 : velocity ? 0.6 + 0.08 * velocity : 0.84;
+        // Option « Taille = vélocité » : la bulle (et son numéro) rétrécit pour une vélocité de 1 jusqu'à la taille
+        // fixée par l'effet choisi dans les paramètres ; elle ne grossit jamais, donc les bulles ne se chevauchent pas.
+        // Vélocité non évaluée : taille médiane.
+        function velocityScale(velocity) {
+            if (!matrixOptions.velocity) return 1;
+            const min = VELOCITY_EFFECTS[settings.effetVelocite];
+            return velocity ? min + (1 - min) * (velocity - 1) / 4 : (min + 1) / 2;
+        }
         const bubbleRadius = context => context.dataset.bubble.radius * cellSize(context.chart) * (context.raw?.scale ?? 1);
 
         // Étiquette d'une bulle survolée : compacte, placée au-dessus de la bulle (en dessous si la place manque)
@@ -13808,12 +13843,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (!page) return;
             const choices = (options, current, handler) => `<div class="segmented labeled" role="radiogroup">${options.map(([value, label, tip]) =>
                 `<button type="button" class="segmented-btn${current === value ? ' active' : ''}" role="radio" aria-checked="${current === value}"
-                    ${tip ? `data-tip="${tip}"` : ''} onclick="${handler}(${value})">${label}</button>`).join('')}</div>`;
+                    ${tip ? `data-tip="${tip}"` : ''} onclick="${handler}(${typeof value === 'string' ? `'${value}'` : value})">${label}</button>`).join('')}</div>`;
             page.innerHTML = `<div class="sheet-head"><h2>${t('settingsTitle')}</h2></div><p class="committee-sub">${t('settingsIntro')}</p>
                 <section class="committee-card" data-setting="appetite"><h3>${t('appetiteLabel')}</h3><p class="settings-hint">${t('settingsAppetiteHint')}</p>
                     ${choices(APPETITE_LEVELS.map(([max, key]) => [max, t(key), max ? `≤ ${max}` : '']), settings.riskAppetite, 'setRiskAppetite')}</section>
                 <section class="committee-card" data-setting="cadence"><h3>${t('settingsCadenceTitle')}</h3><p class="settings-hint">${t('tipCadence')}</p>
                     ${choices([30, 60, 90, 180].map(days => [days, t('cadenceDays', { n: days })]), settings.cadenceRevue, 'setReviewCadence')}</section>
+                <section class="committee-card" data-setting="velocity"><h3>${t('settingsVelocityTitle')}</h3><p class="settings-hint">${t('settingsVelocityHint')}</p>
+                    ${choices(Object.entries(VELOCITY_EFFECTS).map(([effect, min]) => [effect, t(`velocityEffect_${effect}`), `${Math.round(min * 100)} %`]), settings.effetVelocite, 'setVelocityEffect')}</section>
                 <section class="committee-card" data-setting="impact"><h3>${t('settingsImpactTitle')}</h3><p class="settings-hint">${t('settingsImpactHint')}</p>
                     <div class="impact-scale">${settings.echelleImpact.map((limit, index) =>
                         `<label>${t('impactScaleFrom', { n: index + 2 })} <input type="number" min="0" step="any" class="kri-input cost-input" data-impact-limit="${index}" value="${limit}"> €</label>`).join('')}</div></section>`;
@@ -13837,7 +13874,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Nouveautés, de la plus récente à la plus ancienne : [type, français, anglais] ; les autres langues
         // affichent l'anglais. À compléter à chaque évolution (commits : dépôt GitHub).
         const CHANGELOG = [
-            { date: "2026-09-25", commits: [], title: ["Onglet Nouveautés", "What's new tab"], items: [
+            { date: "2026-09-25", commits: [], title: ["Effet de la vélocité", "Velocity effect"], items: [
+                ["new", "Paramètres : effet de la vélocité sur la taille des bulles (discret, marqué ou fort).", "Settings: effect of velocity on bubble size (subtle, marked or strong)."]] },
+            { date: "2026-09-25", commits: ["9f08509", "c5de3f8"], title: ["Onglet Nouveautés", "What's new tab"], items: [
                 ["new", "Onglet Nouveautés : l'historique des évolutions de Riskr depuis la première version, avec les liens vers les commits.", "What's new tab: the history of Riskr's changes since the first version, with links to the commits."]] },
             { date: "2026-09-25", commits: ["650c029"], title: ["Affichage et navigation", "Display and navigation"], items: [
                 ["new", "Les boutons Précédent et Suivant du navigateur passent d'un onglet ou d'une fiche à l'autre, sans quitter la page.", "The browser Back and Forward buttons move between tabs and risk sheets without leaving the page."],
@@ -13936,6 +13975,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <ul>${entry.items.map(([kind, ...texts]) => `<li><span class="changelog-kind ${kind}">${t(kinds[kind])}</span><span>${escapeHtml(text(texts))}</span></li>`).join('')}</ul>
                     ${entry.commits.length ? `<p class="changelog-commits">${entry.commits.map(hash =>
                         `<a href="${CHANGELOG_COMMIT_URL}${hash}" target="_blank" rel="noopener">${hash}</a>`).join(' ')}</p>` : ''}</section>`).join('')}`;
+        }
+
+        // Choisir un effet l'affiche : l'option « Taille = vélocité » est allumée si besoin
+        function setVelocityEffect(effect) {
+            settings.effetVelocite = effect;
+            commitChange();
+            if (matrixOptions.velocity) updateCharts();
+            else toggleMatrixOption('velocity');
+            showToast(t('changeSaved'));
         }
 
         // Ouvre l'onglet Paramètres sur un réglage et le met en évidence
