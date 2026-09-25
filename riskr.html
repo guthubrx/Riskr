@@ -3234,12 +3234,26 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: var(--text);
         }
 
-        .bt-node.cause {
-            box-shadow: inset 4px 0 0 #ff9f0a;
+        /* Causes et conséquences : carte neutre, simple point de couleur devant la première ligne */
+        .bt-node.cause,
+        .bt-node.consequence {
+            padding-inline-start: 28px;
         }
 
-        .bt-node.consequence {
-            box-shadow: inset -4px 0 0 #ff3b30;
+        .bt-node.cause::before,
+        .bt-node.consequence::before {
+            content: '';
+            position: absolute;
+            top: 23.5px; /* centre de la première ligne : bordure, marges et demi-interligne (texte en 14 px) */
+            inset-inline-start: 13px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ff9f0a;
+        }
+
+        .bt-node.consequence::before {
+            background: #ff3b30;
         }
 
         .bt-node.barrier {
