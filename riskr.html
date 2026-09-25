@@ -3644,12 +3644,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .bt-head[data-tip],
         .sheet-score-label[data-tip],
         .eff span[data-tip],
-        h3[data-tip] {
+        h3[data-tip],
+        h4[data-tip],
+        .kpi-label[data-tip],
+        .register-summary [data-tip],
+        th[data-tip],
+        .review-kpi[data-tip],
+        .barrier-tag[data-tip],
+        .cadence-setting span[data-tip],
+        .provision-kpis span[data-tip],
+        .provision-card [data-tip] {
             cursor: help;
         }
 
         /* Titre de section expliqué : la zone de survol se limite au texte */
-        h3[data-tip] {
+        h3[data-tip],
+        h4[data-tip] {
             width: fit-content;
         }
 
@@ -5541,13 +5551,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <div class="actions-bar">
                 <div id="actions-summary" class="actions-summary"></div>
                 <div class="segmented labeled" id="actions-groupby" role="group" data-i18n-title="groupByLabel">
-                    <button type="button" class="segmented-btn" data-group="owner" onclick="setActionGrouping('owner')"><span data-i18n="groupByOwner">Par porteur</span></button>
-                    <button type="button" class="segmented-btn" data-group="state" onclick="setActionGrouping('state')"><span data-i18n="groupByState">Par état</span></button>
-                    <button type="button" class="segmented-btn" data-group="due" onclick="setActionGrouping('due')"><span data-i18n="groupByDue">Par échéance</span></button>
+                    <button type="button" class="segmented-btn" data-group="owner" data-i18n-tip="tipGroupOwner" onclick="setActionGrouping('owner')"><span data-i18n="groupByOwner">Par porteur</span></button>
+                    <button type="button" class="segmented-btn" data-group="state" data-i18n-tip="tipGroupState" onclick="setActionGrouping('state')"><span data-i18n="groupByState">Par état</span></button>
+                    <button type="button" class="segmented-btn" data-group="due" data-i18n-tip="tipGroupDue" onclick="setActionGrouping('due')"><span data-i18n="groupByDue">Par échéance</span></button>
                 </div>
                 <div class="segmented labeled" id="actions-scope" role="group">
                     <button type="button" class="segmented-btn" data-scope="all" onclick="setActionScope('all')"><span data-i18n="scopeAll">Tous</span></button>
-                    <button type="button" class="segmented-btn" data-scope="mine" onclick="setActionScope('mine')"><span data-i18n="scopeMine">Mes mesures</span></button>
+                    <button type="button" class="segmented-btn" data-scope="mine" data-i18n-tip="tipScopeMine" onclick="setActionScope('mine')"><span data-i18n="scopeMine">Mes mesures</span></button>
                 </div>
                 <label id="actions-me" class="actions-me" hidden><span data-i18n="meLabel">Je suis</span> <select class="filter-select" onchange="setActionMe(this.value)"></select></label>
             </div>
@@ -5559,17 +5569,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <div class="reviews-page">
                 <aside>
                     <button type="button" class="big-btn" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="reviewNewFreeze">Figer une nouvelle revue</span></button>
-                    <div class="cadence-setting"><span data-i18n="cadenceLabel">Revue des risques tous les</span><div id="cadence-options" class="segmented labeled" role="radiogroup"></div></div>
+                    <div class="cadence-setting"><span data-i18n="cadenceLabel" data-i18n-tip="tipCadence">Revue des risques tous les</span><div id="cadence-options" class="segmented labeled" role="radiogroup"></div></div>
                     <ol id="review-timeline" class="review-timeline"></ol>
                     <p class="reviews-hint" data-i18n="reviewsHint"></p>
-                    <section class="journal-recent"><h3 data-i18n="journalRecent">Dernières modifications</h3><div id="journal-recent"></div></section>
+                    <section class="journal-recent"><h3 data-i18n="journalRecent" data-i18n-tip="tipJournalRecent">Dernières modifications</h3><div id="journal-recent"></div></section>
                 </aside>
                 <div class="reviews-main">
                     <div id="compare-bar" class="compare-bar"></div>
                     <div id="review-kpis" class="review-kpis"></div>
                     <div class="reviews-grid">
-                        <section class="committee-card"><h3 data-i18n="changesTitle">Changements de cotation résiduelle</h3><div id="review-changes"></div></section>
-                        <section class="committee-card"><h3 data-i18n="exposureByGroup">Exposition moyenne par groupe (/5)</h3><div class="reviews-chart"><canvas id="chartReviews"></canvas></div></section>
+                        <section class="committee-card"><h3 data-i18n="changesTitle" data-i18n-tip="tipChanges">Changements de cotation résiduelle</h3><div id="review-changes"></div></section>
+                        <section class="committee-card"><h3 data-i18n="exposureByGroup" data-i18n-tip="tipExposureGroup">Exposition moyenne par groupe (/5)</h3><div class="reviews-chart"><canvas id="chartReviews"></canvas></div></section>
                     </div>
                 </div>
             </div>
@@ -5584,8 +5594,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <select id="filter-level" class="filter-select" onchange="setFilter('level', this.value)"></select>
             <select id="filter-treatment" class="filter-select" onchange="setFilter('treatment', this.value)"></select>
             <select id="filter-owner" class="filter-select" onchange="setFilter('owner', this.value)"></select>
-            <button type="button" id="filter-appetite" class="filter-toggle" onclick="setFilter('aboveAppetite', !riskFilter.aboveAppetite)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="filterAboveAppetite">Au-dessus de l’appétence</span></button>
-            <button type="button" id="filter-review" class="filter-toggle" onclick="setFilter('toReview', !riskFilter.toReview)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="filterToReview">À revoir</span></button>
+            <button type="button" id="filter-appetite" class="filter-toggle" data-i18n-tip="tipFilterAppetite" onclick="setFilter('aboveAppetite', !riskFilter.aboveAppetite)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="filterAboveAppetite">Au-dessus de l’appétence</span></button>
+            <button type="button" id="filter-review" class="filter-toggle" data-i18n-tip="tipFilterReview" onclick="setFilter('toReview', !riskFilter.toReview)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="filterToReview">À revoir</span></button>
             <button type="button" id="filter-cell" class="filter-chip" onclick="setFilter('cell', null)" hidden></button>
             <span id="filter-count" class="filter-count"></span>
             <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
@@ -6880,6 +6890,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "Probabilité que le coût total reste sous chaque montant (pointillé : provision à 80 %)",
                 provisionCaption: "{count} risques chiffrés · 10 000 simulations Monte-Carlo · probabilités après remédiation",
                 summaryExpectedCost: "d'exposition financière attendue",
+                tipKpiExposure: "Criticité moyenne des risques (probabilité × impact, ramenée sur 5), avant puis après les mesures.",
+                tipKpiHigh: "Nombre de risques de niveau élevé ou critique (score d'au moins 10 sur 25), avant puis après les mesures.",
+                tipKpiAppetite: "Risques dont la criticité après remédiation dépasse le seuil d'appétence : ils demandent une décision du comité.",
+                tipKpiLate: "Mesures non faites dont l'échéance est dépassée, sur l'ensemble des mesures du plan d'actions.",
+                tipTrajectory: "Chaque flèche relie la cotation d'un risque avant les mesures (cercle creux) à sa cotation après (bulle pleine) ; losange : cible.",
+                tipTop5: "Les cinq risques dont la criticité reste la plus forte après les mesures.",
+                tipTreatments: "Répartition des risques par stratégie : réduire (mesures), transférer (contrat, assurance), accepter (risque assumé), éviter (renoncer à l'activité).",
+                tipExposureReviews: "Criticité moyenne après remédiation, sur 5, à chaque revue figée puis aujourd'hui : la barre raccourcit quand l'exposition baisse.",
+                tipDecisions: "Arbitrages à demander au comité : risques au-dessus de l'appétence et indicateurs (KRI) en zone critique.",
+                tipProvision: "Somme à mettre de côté pour les risques chiffrés, estimée par 10 000 simulations : chaque risque survient ou non selon sa probabilité et coûte alors une valeur tirée dans sa fourchette.",
+                provisionExpectedTip: "Coût moyen si l'on rejouait le projet un grand nombre de fois : somme, pour chaque risque, de sa probabilité × son coût moyen.",
+                provisionP50Tip: "Une chance sur deux que le coût total des risques reste en dessous de ce montant.",
+                provisionP80Tip: "Montant recommandé à provisionner : huit chances sur dix que le coût total des risques reste en dessous.",
+                provisionP90Tip: "Provision prudente : neuf chances sur dix que le coût total des risques reste en dessous.",
+                tipCurve: "Lecture : pour un montant (axe horizontal), la hauteur de la courbe donne la probabilité que le coût total reste en dessous. Pointillé vertical : provision à 80 %.",
+                tipTopCost: "Risques dont le coût attendu (probabilité × coût moyen) est le plus élevé : c'est là que les mesures rapportent le plus.",
+                summaryAboveTip: "Risques dont la criticité après remédiation dépasse le seuil d'appétence : ils demandent une décision.",
+                summaryUpTip: "Risques dont la cotation après remédiation a augmenté depuis la dernière revue figée.",
+                summaryLateTip: "Mesures non faites dont l'échéance est dépassée.",
+                summaryToReviewTip: "Risques dont la date de prochaine revue est dépassée, ou jamais revus (cadence réglée dans l'onglet Revues).",
+                summaryKriAlertTip: "Indicateurs clés de risque dont le dernier relevé atteint le seuil d'alerte ou le seuil critique.",
+                summaryExpectedCostTip: "Somme des coûts attendus des risques chiffrés (probabilité × coût moyen) ; la provision détaillée est dans la vue comité.",
+                tipColScores: "Criticité (probabilité × impact, sur 25) avant les mesures → après les mesures ; cadre pointillé : cible visée.",
+                tipColTrend: "Évolution de la cotation après remédiation, revue par revue jusqu'à aujourd'hui.",
+                tipColNextDue: "Échéance la plus proche parmi les mesures non faites ; en rouge si elle est dépassée.",
+                tipColMesures: "Mesures faites sur le total des mesures du risque.",
+                tipFilterAppetite: "N'afficher que les risques dont la criticité après remédiation dépasse l'appétence.",
+                tipFilterReview: "N'afficher que les risques dont la revue est due.",
+                tipGroupOwner: "Une colonne par porteur : glisser une carte vers une autre colonne la réattribue.",
+                tipGroupState: "Colonnes À faire, En cours, Faites : glisser une carte change l'état de la mesure et son ordre.",
+                tipGroupDue: "Mesures classées par échéance : en retard, dans les 30 jours, plus tard, sans date.",
+                tipScopeMine: "Mesures dont vous êtes porteur, d'après le nom déclaré dans la pastille en haut à droite.",
+                tipLateChip: "Mesures non faites dont l'échéance est dépassée.",
+                tipDiffDown: "Risques dont la cotation après remédiation a baissé entre les deux états comparés.",
+                tipDiffUp: "Risques dont la cotation après remédiation a augmenté entre les deux états comparés.",
+                tipDiffSame: "Risques dont la cotation n'a pas changé.",
+                tipDiffNewClosed: "Risques apparus depuis le premier état · risques retirés depuis.",
+                tipChanges: "Risque par risque, la cotation après remédiation dans l'état de départ → l'état d'arrivée, et l'écart.",
+                tipExposureGroup: "Criticité moyenne après remédiation de chaque groupe, sur 5, à chaque revue ; pointillé : appétence.",
+                tipCadence: "Fréquence de revue des risques : la prochaine revue d'un risque = dernière revue + ce délai, sauf date choisie dans sa fiche.",
+                tipJournalRecent: "Dernières lignes du journal des modifications de toute l'analyse ; un clic ouvre la fiche du risque.",
+                tipNextReview: "Date choisie pour la prochaine revue ; vide, elle découle de la dernière revue + la cadence.",
+                tipMarkReviewed: "Enregistre la revue du risque aujourd'hui (tracée dans le journal) ; la prochaine revue repart de la cadence.",
+                tipKriSense: "Sens de lecture : ↑ si la situation empire quand la valeur monte (retards), ↓ si elle empire quand elle baisse (disponibilité).",
+                tipKriAlert: "Seuil d'alerte : à partir de cette valeur, le point passe à l'orange.",
+                tipKriCritical: "Seuil critique : à partir de cette valeur, le point passe au rouge et le KRI remonte dans les décisions du comité.",
+                tipCostRange: "Coût si le risque survient, en euros : une seule valeur suffit ; min et max donnent la fourchette de la simulation.",
+                tipCostProbability: "Probabilité que le risque survienne ; vide, elle découle de la cotation P après remédiation (P1 à P5 : 5, 15, 35, 60, 85 %).",
+                tipCostExpected: "Probabilité × coût moyen de la fourchette : la part de ce risque dans la provision.",
                 importReplace: "Remplacer par un fichier…",
                 importMerge: "Fusionner un fichier…",
                 importMergeHint: "Garder les deux",
@@ -7331,6 +7390,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "Probability that the total cost stays below each amount (dashed: contingency at 80 %)",
                 provisionCaption: "{count} costed risks · 10,000 Monte Carlo simulations · residual probabilities",
                 summaryExpectedCost: "expected financial exposure",
+                tipKpiExposure: "Average risk criticality (probability × impact, scaled to 5), before and after the measures.",
+                tipKpiHigh: "Number of high or critical risks (score of 10 out of 25 or more), before and after the measures.",
+                tipKpiAppetite: "Risks whose residual criticality exceeds the appetite threshold: they need a committee decision.",
+                tipKpiLate: "Unfinished measures past their due date, out of all measures in the action plan.",
+                tipTrajectory: "Each arrow links a risk's rating before the measures (hollow circle) to its rating after (filled bubble); diamond: target.",
+                tipTop5: "The five risks whose criticality remains highest after the measures.",
+                tipTreatments: "Risks by strategy: reduce (measures), transfer (contract, insurance), accept (risk taken on), avoid (give up the activity).",
+                tipExposureReviews: "Average residual criticality, out of 5, at each frozen review and today: the bar shortens as exposure falls.",
+                tipDecisions: "Decisions to ask the committee for: risks above appetite and key risk indicators (KRI) in the critical zone.",
+                tipProvision: "Amount to set aside for the costed risks, estimated from 10,000 simulations: each risk occurs or not according to its probability and then costs a value drawn from its range.",
+                provisionExpectedTip: "Average cost if the project were replayed many times: for each risk, its probability × its average cost.",
+                provisionP50Tip: "A one-in-two chance that the total cost of the risks stays below this amount.",
+                provisionP80Tip: "Recommended contingency: an eight-in-ten chance that the total cost of the risks stays below it.",
+                provisionP90Tip: "Prudent contingency: a nine-in-ten chance that the total cost of the risks stays below it.",
+                tipCurve: "How to read it: for an amount (horizontal axis), the height of the curve gives the probability that the total cost stays below it. Vertical dashes: contingency at 80 %.",
+                tipTopCost: "Risks with the highest expected cost (probability × average cost): this is where measures pay off most.",
+                summaryAboveTip: "Risks whose residual criticality exceeds the appetite threshold: they need a decision.",
+                summaryUpTip: "Risks whose residual rating has risen since the last frozen review.",
+                summaryLateTip: "Unfinished measures past their due date.",
+                summaryToReviewTip: "Risks whose next review date has passed, or never reviewed (cadence set in the Reviews tab).",
+                summaryKriAlertTip: "Key risk indicators whose latest reading reaches the alert or critical threshold.",
+                summaryExpectedCostTip: "Sum of the expected costs of costed risks (probability × average cost); the detailed contingency is in the committee view.",
+                tipColScores: "Criticality (probability × impact, out of 25) before → after the measures; dashed box: target.",
+                tipColTrend: "Change in the residual rating, review by review up to today.",
+                tipColNextDue: "Nearest due date among unfinished measures; red if overdue.",
+                tipColMesures: "Measures done out of the risk's total measures.",
+                tipFilterAppetite: "Show only risks whose residual criticality exceeds the appetite.",
+                tipFilterReview: "Show only risks due for review.",
+                tipGroupOwner: "One column per owner: dragging a card to another column reassigns it.",
+                tipGroupState: "To do, In progress, Done columns: dragging a card changes the measure's state and order.",
+                tipGroupDue: "Measures sorted by due date: overdue, within 30 days, later, no date.",
+                tipScopeMine: "Measures you own, based on the name declared in the badge at the top right.",
+                tipLateChip: "Unfinished measures past their due date.",
+                tipDiffDown: "Risks whose residual rating fell between the two compared states.",
+                tipDiffUp: "Risks whose residual rating rose between the two compared states.",
+                tipDiffSame: "Risks whose rating did not change.",
+                tipDiffNewClosed: "Risks added since the first state · risks removed since.",
+                tipChanges: "Risk by risk, the residual rating in the starting state → the end state, and the difference.",
+                tipExposureGroup: "Average residual criticality of each group, out of 5, at each review; dashes: appetite.",
+                tipCadence: "Risk review frequency: a risk's next review = last review + this interval, unless a date is set in its sheet.",
+                tipJournalRecent: "Latest lines of the change log for the whole analysis; a click opens the risk sheet.",
+                tipNextReview: "Date chosen for the next review; if empty, it follows from the last review + the cadence.",
+                tipMarkReviewed: "Records the risk review today (logged); the next review restarts from the cadence.",
+                tipKriSense: "Direction: ↑ if things worsen as the value rises (delays), ↓ if they worsen as it falls (availability).",
+                tipKriAlert: "Alert threshold: from this value, the dot turns orange.",
+                tipKriCritical: "Critical threshold: from this value, the dot turns red and the KRI appears in the committee's decisions.",
+                tipCostRange: "Cost if the risk occurs, in euros: one value is enough; min and max give the simulation range.",
+                tipCostProbability: "Probability that the risk occurs; if empty, it follows from the residual P rating (P1 to P5: 5, 15, 35, 60, 85 %).",
+                tipCostExpected: "Probability × average cost of the range: this risk's share of the contingency.",
                 importReplace: "Replace with a file…",
                 importMerge: "Merge a file…",
                 importMergeHint: "Keep both",
@@ -7785,6 +7893,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "Probabilidad de que el coste total quede por debajo de cada importe (discontinua: provisión al 80 %)",
                 provisionCaption: "{count} riesgos cuantificados · 10 000 simulaciones Monte Carlo · probabilidades residuales",
                 summaryExpectedCost: "de exposición financiera esperada",
+                tipKpiExposure: "Criticidad media de los riesgos (probabilidad × impacto, sobre 5), antes y después de las medidas.",
+                tipKpiHigh: "Número de riesgos altos o críticos (puntuación de al menos 10 sobre 25), antes y después de las medidas.",
+                tipKpiAppetite: "Riesgos cuya criticidad residual supera el umbral de apetito: requieren una decisión del comité.",
+                tipKpiLate: "Medidas no realizadas con la fecha límite vencida, sobre el total de medidas del plan de acción.",
+                tipTrajectory: "Cada flecha une la calificación de un riesgo antes de las medidas (círculo hueco) con la de después (burbuja llena); rombo: objetivo.",
+                tipTop5: "Los cinco riesgos cuya criticidad sigue siendo la más alta tras las medidas.",
+                tipTreatments: "Riesgos por estrategia: reducir (medidas), transferir (contrato, seguro), aceptar (riesgo asumido), evitar (renunciar a la actividad).",
+                tipExposureReviews: "Criticidad residual media, sobre 5, en cada revisión fijada y hoy: la barra se acorta cuando baja la exposición.",
+                tipDecisions: "Decisiones que pedir al comité: riesgos por encima del apetito e indicadores (KRI) en zona crítica.",
+                tipProvision: "Importe a reservar para los riesgos cuantificados, estimado con 10 000 simulaciones: cada riesgo ocurre o no según su probabilidad y cuesta entonces un valor de su horquilla.",
+                provisionExpectedTip: "Coste medio si el proyecto se repitiera muchas veces: suma, para cada riesgo, de su probabilidad × su coste medio.",
+                provisionP50Tip: "Una probabilidad entre dos de que el coste total de los riesgos quede por debajo de este importe.",
+                provisionP80Tip: "Provisión recomendada: ocho probabilidades entre diez de que el coste total quede por debajo.",
+                provisionP90Tip: "Provisión prudente: nueve probabilidades entre diez de que el coste total quede por debajo.",
+                tipCurve: "Lectura: para un importe (eje horizontal), la altura de la curva da la probabilidad de que el coste total quede por debajo. Línea vertical: provisión al 80 %.",
+                tipTopCost: "Riesgos con el mayor coste esperado (probabilidad × coste medio): ahí es donde las medidas rinden más.",
+                summaryAboveTip: "Riesgos cuya criticidad residual supera el umbral de apetito: requieren una decisión.",
+                summaryUpTip: "Riesgos cuya calificación residual ha subido desde la última revisión fijada.",
+                summaryLateTip: "Medidas no realizadas con la fecha límite vencida.",
+                summaryToReviewTip: "Riesgos cuya próxima revisión ha vencido, o nunca revisados (cadencia en la pestaña Revisiones).",
+                summaryKriAlertTip: "Indicadores clave cuyo último valor alcanza el umbral de alerta o crítico.",
+                summaryExpectedCostTip: "Suma de los costes esperados de los riesgos cuantificados (probabilidad × coste medio); la provisión detallada está en la vista comité.",
+                tipColScores: "Criticidad (probabilidad × impacto, sobre 25) antes → después de las medidas; recuadro discontinuo: objetivo.",
+                tipColTrend: "Evolución de la calificación residual, revisión a revisión hasta hoy.",
+                tipColNextDue: "Fecha límite más próxima entre las medidas no realizadas; en rojo si ha vencido.",
+                tipColMesures: "Medidas realizadas sobre el total de medidas del riesgo.",
+                tipFilterAppetite: "Mostrar solo los riesgos cuya criticidad residual supera el apetito.",
+                tipFilterReview: "Mostrar solo los riesgos pendientes de revisión.",
+                tipGroupOwner: "Una columna por responsable: arrastrar una tarjeta a otra columna la reasigna.",
+                tipGroupState: "Columnas Por hacer, En curso, Hechas: arrastrar una tarjeta cambia el estado y el orden.",
+                tipGroupDue: "Medidas ordenadas por fecha límite: retrasadas, en 30 días, más tarde, sin fecha.",
+                tipScopeMine: "Medidas de las que es responsable, según el nombre declarado en la insignia arriba a la derecha.",
+                tipLateChip: "Medidas no realizadas con la fecha límite vencida.",
+                tipDiffDown: "Riesgos cuya calificación residual bajó entre los dos estados comparados.",
+                tipDiffUp: "Riesgos cuya calificación residual subió entre los dos estados comparados.",
+                tipDiffSame: "Riesgos cuya calificación no cambió.",
+                tipDiffNewClosed: "Riesgos añadidos desde el primer estado · riesgos retirados desde entonces.",
+                tipChanges: "Riesgo a riesgo, la calificación residual en el estado inicial → el final, y la diferencia.",
+                tipExposureGroup: "Criticidad residual media de cada grupo, sobre 5, en cada revisión; discontinua: apetito.",
+                tipCadence: "Frecuencia de revisión: la próxima revisión de un riesgo = última revisión + este plazo, salvo fecha fijada en su ficha.",
+                tipJournalRecent: "Últimas líneas del registro de cambios de todo el análisis; un clic abre la ficha del riesgo.",
+                tipNextReview: "Fecha elegida para la próxima revisión; si está vacía, resulta de la última revisión + la cadencia.",
+                tipMarkReviewed: "Registra la revisión del riesgo hoy (en el registro); la próxima revisión parte de la cadencia.",
+                tipKriSense: "Sentido: ↑ si empeora cuando el valor sube (retrasos), ↓ si empeora cuando baja (disponibilidad).",
+                tipKriAlert: "Umbral de alerta: a partir de este valor, el punto se vuelve naranja.",
+                tipKriCritical: "Umbral crítico: a partir de este valor, el punto se vuelve rojo y el KRI aparece en las decisiones del comité.",
+                tipCostRange: "Coste si el riesgo ocurre, en euros: basta un valor; mín. y máx. dan la horquilla de la simulación.",
+                tipCostProbability: "Probabilidad de que el riesgo ocurra; si está vacía, resulta de la calificación P residual (P1 a P5: 5, 15, 35, 60, 85 %).",
+                tipCostExpected: "Probabilidad × coste medio de la horquilla: la parte de este riesgo en la provisión.",
                 importReplace: "Reemplazar por un archivo…",
                 importMerge: "Fusionar un archivo…",
                 importMergeHint: "Conservar ambos",
@@ -8236,6 +8393,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "总成本低于各金额的概率（虚线：80% 准备金）",
                 provisionCaption: "{count} 项已估算风险 · 10000 次蒙特卡罗模拟 · 处理后概率",
                 summaryExpectedCost: "预期财务敞口",
+                tipKpiExposure: "风险平均严重度（概率 × 影响，折算为 5 分制），措施实施前与实施后。",
+                tipKpiHigh: "高或严重风险的数量（得分不低于 10/25），措施实施前与实施后。",
+                tipKpiAppetite: "处理后严重度超过风险偏好阈值的风险：需要委员会决策。",
+                tipKpiLate: "已过截止日期但尚未完成的措施，占行动计划全部措施的比例。",
+                tipTrajectory: "每个箭头连接风险在措施前（空心圆）与措施后（实心气泡）的评级；菱形：目标。",
+                tipTop5: "措施实施后严重度仍最高的五项风险。",
+                tipTreatments: "按策略划分的风险：降低（措施）、转移（合同、保险）、接受（承担风险）、规避（放弃该活动）。",
+                tipExposureReviews: "每次冻结评审及当前的处理后平均严重度（满分 5）：敞口下降时条形变短。",
+                tipDecisions: "需提请委员会决策的事项：超出风险偏好的风险，以及处于临界区的关键风险指标（KRI）。",
+                tipProvision: "为已估算风险预留的金额，基于 10000 次模拟：每项风险按其概率发生或不发生，发生时的成本取自其区间。",
+                provisionExpectedTip: "若项目重复多次的平均成本：各风险概率 × 平均成本之和。",
+                provisionP50Tip: "风险总成本低于此金额的概率为二分之一。",
+                provisionP80Tip: "建议计提的准备金：风险总成本低于此金额的概率为十分之八。",
+                provisionP90Tip: "审慎准备金：风险总成本低于此金额的概率为十分之九。",
+                tipCurve: "读法：对横轴上的某一金额，曲线高度即总成本低于该金额的概率。竖直虚线：80% 准备金。",
+                tipTopCost: "期望成本（概率 × 平均成本）最高的风险：在这些风险上采取措施收益最大。",
+                summaryAboveTip: "处理后严重度超过风险偏好阈值的风险：需要决策。",
+                summaryUpTip: "自上次冻结评审以来处理后评级上升的风险。",
+                summaryLateTip: "已过截止日期但尚未完成的措施。",
+                summaryToReviewTip: "下次评审日期已过或从未评审的风险（周期在“评审”标签中设置）。",
+                summaryKriAlertTip: "最新读数达到预警或临界阈值的关键风险指标。",
+                summaryExpectedCostTip: "已估算风险期望成本之和（概率 × 平均成本）；详细准备金见委员会视图。",
+                tipColScores: "严重度（概率 × 影响，满分 25）：措施前 → 措施后；虚线框：目标。",
+                tipColTrend: "处理后评级在各次评审直至今天的变化。",
+                tipColNextDue: "未完成措施中最近的截止日期；逾期显示为红色。",
+                tipColMesures: "已完成措施数 / 该风险措施总数。",
+                tipFilterAppetite: "仅显示处理后严重度超过风险偏好的风险。",
+                tipFilterReview: "仅显示待评审的风险。",
+                tipGroupOwner: "每位负责人一列：将卡片拖到另一列即重新分配。",
+                tipGroupState: "待办、进行中、已完成三列：拖动卡片即可更改措施状态和顺序。",
+                tipGroupDue: "按截止日期分类：逾期、30 天内、之后、无日期。",
+                tipScopeMine: "您负责的措施，依据右上角徽章中声明的姓名。",
+                tipLateChip: "已过截止日期但尚未完成的措施。",
+                tipDiffDown: "两个对比状态之间处理后评级下降的风险。",
+                tipDiffUp: "两个对比状态之间处理后评级上升的风险。",
+                tipDiffSame: "评级未变化的风险。",
+                tipDiffNewClosed: "自第一个状态以来新增的风险 · 已移除的风险。",
+                tipChanges: "逐项风险：起始状态 → 结束状态的处理后评级及差值。",
+                tipExposureGroup: "各组在每次评审时的处理后平均严重度（满分 5）；虚线：风险偏好。",
+                tipCadence: "风险评审频率：下次评审 = 上次评审 + 此间隔，除非在风险卡片中指定了日期。",
+                tipJournalRecent: "整个分析的最新修改日志；点击打开风险卡片。",
+                tipNextReview: "为下次评审选择的日期；留空则按上次评审 + 周期计算。",
+                tipMarkReviewed: "记录今天已评审该风险（写入日志）；下次评审按周期重新计算。",
+                tipKriSense: "方向：↑ 数值越高越差（延迟），↓ 数值越低越差（可用性）。",
+                tipKriAlert: "预警阈值：达到该值时圆点变为橙色。",
+                tipKriCritical: "临界阈值：达到该值时圆点变红，KRI 进入委员会待决事项。",
+                tipCostRange: "风险发生时的成本（欧元）：填一个值即可；最低和最高值构成模拟区间。",
+                tipCostProbability: "风险发生的概率；留空则按处理后 P 评级推算（P1 至 P5：5、15、35、60、85%）。",
+                tipCostExpected: "概率 × 区间平均成本：该风险在准备金中的份额。",
                 importReplace: "用文件替换…",
                 importMerge: "合并文件…",
                 importMergeHint: "保留两者",
@@ -8687,6 +8893,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "احتمال بقاء الكلفة الإجمالية دون كل مبلغ (الخط المتقطع: احتياطي 80 %)",
                 provisionCaption: "{count} مخاطر مقدّرة · 10000 محاكاة مونت كارلو · احتمالات ما بعد المعالجة",
                 summaryExpectedCost: "تعرّض مالي متوقع",
+                tipKpiExposure: "متوسط خطورة المخاطر (الاحتمال × الأثر، على 5) قبل الإجراءات وبعدها.",
+                tipKpiHigh: "عدد المخاطر العالية أو الحرجة (درجة 10 من 25 أو أكثر) قبل الإجراءات وبعدها.",
+                tipKpiAppetite: "مخاطر تتجاوز خطورتها بعد المعالجة عتبة التقبّل: تتطلب قرارًا من اللجنة.",
+                tipKpiLate: "إجراءات غير منجزة تجاوزت موعدها النهائي، من مجموع إجراءات خطة العمل.",
+                tipTrajectory: "يصل كل سهم تقييم الخطر قبل الإجراءات (دائرة مجوفة) بتقييمه بعدها (فقاعة ممتلئة)؛ المعيّن: الهدف.",
+                tipTop5: "المخاطر الخمسة التي تبقى خطورتها الأعلى بعد الإجراءات.",
+                tipTreatments: "المخاطر حسب الاستراتيجية: التخفيض (إجراءات)، النقل (عقد، تأمين)، القبول (خطر مُتحمَّل)، التجنب (التخلي عن النشاط).",
+                tipExposureReviews: "متوسط الخطورة بعد المعالجة، على 5، في كل مراجعة مثبّتة واليوم: يقصر الشريط عندما ينخفض التعرّض.",
+                tipDecisions: "قرارات يُطلب من اللجنة اتخاذها: مخاطر فوق مستوى التقبّل ومؤشرات (KRI) في المنطقة الحرجة.",
+                tipProvision: "مبلغ يُجنَّب للمخاطر المقدّرة، محسوب من 10000 محاكاة: يقع كل خطر أو لا حسب احتماله، ويكلّف عندها قيمة من نطاقه.",
+                provisionExpectedTip: "متوسط الكلفة لو أُعيد المشروع مرات كثيرة: مجموع احتمال كل خطر × متوسط كلفته.",
+                provisionP50Tip: "احتمال واحد من اثنين أن تبقى الكلفة الإجمالية للمخاطر دون هذا المبلغ.",
+                provisionP80Tip: "الاحتياطي الموصى به: ثمانية احتمالات من عشرة أن تبقى الكلفة الإجمالية دونه.",
+                provisionP90Tip: "احتياطي حذر: تسعة احتمالات من عشرة أن تبقى الكلفة الإجمالية دونه.",
+                tipCurve: "القراءة: لمبلغ على المحور الأفقي، يعطي ارتفاع المنحنى احتمال بقاء الكلفة الإجمالية دونه. الخط العمودي المتقطع: احتياطي 80 %.",
+                tipTopCost: "المخاطر ذات الكلفة المتوقعة الأعلى (الاحتمال × متوسط الكلفة): هنا تكون الإجراءات أجدى.",
+                summaryAboveTip: "مخاطر تتجاوز خطورتها بعد المعالجة عتبة التقبّل: تتطلب قرارًا.",
+                summaryUpTip: "مخاطر ارتفع تقييمها بعد المعالجة منذ آخر مراجعة مثبّتة.",
+                summaryLateTip: "إجراءات غير منجزة تجاوزت موعدها النهائي.",
+                summaryToReviewTip: "مخاطر تجاوزت موعد مراجعتها القادمة أو لم تُراجع قط (الوتيرة في تبويب المراجعات).",
+                summaryKriAlertTip: "مؤشرات مخاطر رئيسية بلغت قراءتها الأخيرة عتبة التنبيه أو العتبة الحرجة.",
+                summaryExpectedCostTip: "مجموع الكلف المتوقعة للمخاطر المقدّرة (الاحتمال × متوسط الكلفة)؛ الاحتياطي المفصل في عرض اللجنة.",
+                tipColScores: "الخطورة (الاحتمال × الأثر، من 25) قبل ← بعد الإجراءات؛ الإطار المتقطع: الهدف.",
+                tipColTrend: "تطور التقييم بعد المعالجة، مراجعة بعد مراجعة حتى اليوم.",
+                tipColNextDue: "أقرب موعد نهائي بين الإجراءات غير المنجزة؛ بالأحمر إذا تجاوزته.",
+                tipColMesures: "الإجراءات المنجزة من مجموع إجراءات الخطر.",
+                tipFilterAppetite: "عرض المخاطر التي تتجاوز خطورتها بعد المعالجة مستوى التقبّل فقط.",
+                tipFilterReview: "عرض المخاطر المستحقة للمراجعة فقط.",
+                tipGroupOwner: "عمود لكل مسؤول: سحب بطاقة إلى عمود آخر يعيد إسنادها.",
+                tipGroupState: "أعمدة للتنفيذ، قيد التنفيذ، منجزة: سحب البطاقة يغيّر حالة الإجراء وترتيبه.",
+                tipGroupDue: "إجراءات مرتبة حسب الموعد: متأخرة، خلال 30 يومًا، لاحقًا، بلا تاريخ.",
+                tipScopeMine: "الإجراءات التي أنت مسؤول عنها، وفق الاسم المصرّح به في الشارة أعلى اليمين.",
+                tipLateChip: "إجراءات غير منجزة تجاوزت موعدها النهائي.",
+                tipDiffDown: "مخاطر انخفض تقييمها بعد المعالجة بين الحالتين المقارنتين.",
+                tipDiffUp: "مخاطر ارتفع تقييمها بعد المعالجة بين الحالتين المقارنتين.",
+                tipDiffSame: "مخاطر لم يتغير تقييمها.",
+                tipDiffNewClosed: "مخاطر أضيفت منذ الحالة الأولى · مخاطر أزيلت منذئذ.",
+                tipChanges: "خطرًا بخطر: التقييم بعد المعالجة في الحالة الأولى ← الأخيرة، والفرق.",
+                tipExposureGroup: "متوسط الخطورة بعد المعالجة لكل مجموعة، على 5، في كل مراجعة؛ المتقطع: التقبّل.",
+                tipCadence: "وتيرة مراجعة المخاطر: المراجعة القادمة = آخر مراجعة + هذه المدة، ما لم يُحدَّد تاريخ في بطاقته.",
+                tipJournalRecent: "آخر أسطر سجل التعديلات للتحليل كله؛ النقر يفتح بطاقة الخطر.",
+                tipNextReview: "التاريخ المختار للمراجعة القادمة؛ إن كان فارغًا فهو آخر مراجعة + الوتيرة.",
+                tipMarkReviewed: "يسجّل مراجعة الخطر اليوم (في السجل)؛ تعود المراجعة القادمة إلى الوتيرة.",
+                tipKriSense: "الاتجاه: ↑ إذا ساء الوضع بارتفاع القيمة (التأخير)، ↓ إذا ساء بانخفاضها (التوفر).",
+                tipKriAlert: "عتبة التنبيه: من هذه القيمة تصبح النقطة برتقالية.",
+                tipKriCritical: "العتبة الحرجة: من هذه القيمة تصبح النقطة حمراء ويظهر المؤشر في قرارات اللجنة.",
+                tipCostRange: "الكلفة إذا وقع الخطر، باليورو: تكفي قيمة واحدة؛ الأدنى والأقصى يحددان نطاق المحاكاة.",
+                tipCostProbability: "احتمال وقوع الخطر؛ إن كان فارغًا فهو مستمد من تقييم P بعد المعالجة (P1 إلى P5: 5، 15، 35، 60، 85 %).",
+                tipCostExpected: "الاحتمال × متوسط كلفة النطاق: حصة هذا الخطر في الاحتياطي.",
                 importReplace: "الاستبدال بملف…",
                 importMerge: "دمج ملف…",
                 importMergeHint: "الاحتفاظ بالاثنين",
@@ -10678,7 +10933,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ['up', t('diffUp'), count(c => c.delta > 0)],
                 ['', t('diffSame'), count(c => c.delta === 0)],
                 ['', t('diffNewClosed'), `${count(c => c.kind === 'new')} · ${count(c => c.kind === 'closed')}`]
-            ].map(([tone, label, value]) => `<div class="review-kpi ${tone}">${label}<b>${value}</b></div>`).join('');
+            ].map(([tone, label, value], index) => `<div class="review-kpi ${tone}" data-tip="${t(['tipDiffDown', 'tipDiffUp', 'tipDiffSame', 'tipDiffNewClosed'][index])}">${label}<b>${value}</b></div>`).join('');
 
             changes.sort((a, b) => (a.delta ?? 99) - (b.delta ?? 99) || a.risk.id.localeCompare(b.risk.id, undefined, { numeric: true }));
             const deltaHtml = change => change.kind === 'new' ? t('diffNew') : change.kind === 'closed' ? t('diffClosed')
@@ -10785,7 +11040,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const percent = key => items.length ? counts[key] / items.length * 100 : 0;
             document.getElementById('actions-summary').innerHTML = `<span><b>${t('actionSummary', { total: items.length, ...counts }).replace(/^(\d+ [^·]+)/, '$1</b>')}</span>
                 <span class="progress-bar" aria-hidden="true"><span style="width:${percent('done')}%"></span><span style="width:${percent('doing')}%"></span></span>
-                ${late ? `<span class="late-chip">${escapeHtml(t('actionLateCount', { count: late }))}</span>` : ''}`;
+                ${late ? `<span class="late-chip" data-tip="${escapeHtml(t('tipLateChip'))}">${escapeHtml(t('actionLateCount', { count: late }))}</span>` : ''}`;
 
             // Colonnes selon le regroupement
             const today = new Date();
@@ -10809,7 +11064,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <div class="action-card-risk" data-risk-uid="${escapeHtml(item.risk.uid)}" title="${t('openRiskSheet')}"><span class="id-bubble">${escapeHtml(item.risk.id)}</span>${escapeHtml(item.risk.title)}</div>
                     <div class="action-card-text">${escapeHtml(item.mesure.texte)}</div>
                     <div class="action-card-meta">
-                        <span class="barrier-tag ${item.mesure.barriere}">${t(item.mesure.barriere === 'protection' ? 'barrierProtection' : 'barrierPrevention')}</span>
+                        <span class="barrier-tag ${item.mesure.barriere}" data-tip="${t(item.mesure.barriere === 'protection' ? 'notionProtection' : 'notionPrevention')}">${t(item.mesure.barriere === 'protection' ? 'barrierProtection' : 'barrierPrevention')}</span>
                         <span class="action-due">${item.mesure.echeance ? escapeHtml(item.late ? t('lateOn', { date: item.mesure.echeance }) : item.mesure.echeance) : ''}</span>
                         <button type="button" class="owner-avatar" data-edit-owner data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}"
                             title="${escapeHtml(owner ? `${owner} · ${t('changeOwner')}` : t('changeOwner'))}">${owner ? avatar(owner) : '<span class="avatar empty" aria-hidden="true">+</span>'}</button>
@@ -12440,8 +12695,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function committeeContent() {
             const stats = committeeStats();
             const provision = simulateProvision();
-            const kpi = (label, value, detail = '', tone = '') => `<div class="committee-kpi">
-                <span class="kpi-label">${label}</span><span class="kpi-value">${value}</span>
+            const kpi = (label, value, detail = '', tone = '', tip = '') => `<div class="committee-kpi">
+                <span class="kpi-label"${tip ? ` data-tip="${escapeHtml(t(tip))}"` : ''}>${label}</span><span class="kpi-value">${value}</span>
                 <span class="kpi-detail ${tone}">${detail}</span></div>`;
             const totalRisks = risks.length || 1;
             return {
@@ -12451,15 +12706,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 body: `<p class="committee-sub">${escapeHtml(stats.subtitle)}</p>
                     <div class="committee-kpis">
                         ${kpi(t('kpiExposure'), `${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} <small>/5</small>`,
-                            stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '')}
-                        ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'))}
+                            stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '', 'tipKpiExposure')}
+                        ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'), '', 'tipKpiHigh')}
                         ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${risks.length}</small>`,
-                            escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good')}
-                        ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good')}
+                            escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good', 'tipKpiAppetite')}
+                        ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good', 'tipKpiLate')}
                     </div>
                     <div class="committee-grid">
-                        <section class="committee-card"><h3>${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
-                        <section class="committee-card"><h3>${t('committeeTop')}</h3>
+                        <section class="committee-card"><h3 data-tip="${t('tipTrajectory')}">${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
+                        <section class="committee-card"><h3 data-tip="${t('tipTop5')}">${t('committeeTop')}</h3>
                             <table class="committee-table">
                                 <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
                                 <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
@@ -12468,27 +12723,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             </table></section>
                     </div>
                     <div class="committee-grid thirds">
-                        <section class="committee-card"><h3>${t('committeeTreatments')}</h3>
+                        <section class="committee-card"><h3 data-tip="${t('tipTreatments')}">${t('committeeTreatments')}</h3>
                             <div class="stack-bar">${Object.entries(stats.treatments).filter(([, count]) => count).map(([key, count]) =>
                                 `<span style="width:${count / totalRisks * 100}%;background:${treatmentShade(key)}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
                             <div class="stack-legend">${Object.entries(stats.treatments).map(([key, count]) =>
                                 `<span><i style="background:${treatmentShade(key)}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
-                        <section class="committee-card"><h3>${t('committeeReviews')}</h3>
+                        <section class="committee-card"><h3 data-tip="${t('tipExposureReviews')}">${t('committeeReviews')}</h3>
                             ${stats.exposures.map(({ label, value }) => `<div class="exposure-row"><span>${escapeHtml(label)}</span>
                                 <b style="width:${(value || 0) / 5 * 100}%"></b>
                                 <span>${formatExposure(value)}</span></div>`).join('')}</section>
-                        <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
+                        <section class="committee-card"><h3 data-tip="${t('tipDecisions')}">${t('committeeDecisions')}</h3>
                             <ul class="committee-list">${[...stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
                                 ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`),
                                 ...stats.kriCritical.map(({ risk, kri }) => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(t('kriDecision', { name: kri.nom, value: formatKri(kri) }))}</li>`)]
                                 .join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
                     </div>
-                    ${provision ? `<section class="committee-card provision-card"><h3 data-tip="${t('costHint')}">${t('provisionTitle')}</h3>
+                    ${provision ? `<section class="committee-card provision-card"><h3 data-tip="${t('tipProvision')}">${t('provisionTitle')}</h3>
                         <div class="provision-body">
                             <div class="provision-kpis">${[['provisionExpected', provision.expected], ['provisionP50', provision.p50], ['provisionP80', provision.p80], ['provisionP90', provision.p90]]
-                                .map(([key, value]) => `<div><span>${t(key)}</span><b>${escapeHtml(formatMoney(value))}</b></div>`).join('')}</div>
-                            <div>${provisionCurve(provision)}<p class="review-meta">${t('provisionCurve')}</p></div>
-                            <div><h4>${t('provisionTop')}</h4><ol class="provision-top">${[...provision.items].sort((a, b) => expectedCost(b.risk) - expectedCost(a.risk)).slice(0, 5)
+                                .map(([key, value]) => `<div><span data-tip="${t(`${key}Tip`)}">${t(key)}</span><b>${escapeHtml(formatMoney(value))}</b></div>`).join('')}</div>
+                            <div data-tip="${t('tipCurve')}">${provisionCurve(provision)}<p class="review-meta">${t('provisionCurve')}</p></div>
+                            <div><h4 data-tip="${t('tipTopCost')}">${t('provisionTop')}</h4><ol class="provision-top">${[...provision.items].sort((a, b) => expectedCost(b.risk) - expectedCost(a.risk)).slice(0, 5)
                                 .map(({ risk }) => `<li><b>${escapeHtml(risk.id)}</b> ${escapeHtml(risk.title)} <span>${escapeHtml(formatMoney(expectedCost(risk)))}</span></li>`).join('')}</ol></div>
                         </div>
                         <p class="review-meta">${t('provisionCaption', { count: provision.items.length })}</p></section>` : ''}`,
@@ -12845,7 +13100,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 [risks.flatMap(risk => risk.kri).filter(kri => ['alert', 'critical'].includes(kriStatus(kri))).length, 'summaryKriAlert'],
                 ...(risks.some(costRange) ? [[escapeHtml(formatMoney(risks.reduce((sum, risk) => sum + expectedCost(risk), 0))), 'summaryExpectedCost']] : [])
             ];
-            document.getElementById('register-summary').innerHTML = summary.map(([count, key]) => `<span><b>${count}</b> ${t(key)}</span>`).join('');
+            document.getElementById('register-summary').innerHTML = summary.map(([count, key]) =>
+                `<span${key === 'summaryRisks' ? '' : ` data-tip="${escapeHtml(t(`${key}Tip`))}"`}><b>${count}</b> ${t(key)}</span>`).join('');
             if (registerMode === 'edit') return;
 
             const reviewScores = reviews.map(review => new Map(review.risks.map(r => [r.uid, residualScore(r.after)])));
@@ -12859,9 +13115,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             view.innerHTML = registerMode === 'table'
                 ? `<table class="register-table">
-                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeAfterTarget')}</th>
-                        <th>${t('colTrendReviews', { count: reviews.length + 1 })}</th><th>${t('colTreatment')}</th><th>${t('mesureOwner')}</th>
-                        <th>${t('colNextDue')}</th><th>${t('colMesures')}</th></tr></thead>
+                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th data-tip="${t('tipColScores')}">${t('colBeforeAfterTarget')}</th>
+                        <th data-tip="${t('tipColTrend')}">${t('colTrendReviews', { count: reviews.length + 1 })}</th><th data-tip="${t('tipTreatments')}">${t('colTreatment')}</th><th>${t('mesureOwner')}</th>
+                        <th data-tip="${t('tipColNextDue')}">${t('colNextDue')}</th><th data-tip="${t('tipColMesures')}">${t('colMesures')}</th></tr></thead>
                     <tbody>${riskGroups.map((group, index) => `
                         <tr class="register-group" data-group-id="${escapeHtml(String(group.id))}"><td colspan="8">${index + 1} · ${escapeHtml(group.name)}</td></tr>
                         ${group.risks.map(risk => `<tr class="register-row${isAbove(risk) ? ' above' : ''}" ${attributes(risk)}>
@@ -13176,9 +13432,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                         data-velocity="${v}" data-tip="${t(`velocity${v}`)}" aria-label="${t(`velocity${v}`)}"></button>`).join('')}</span>
                                 <span class="vel-text">${risk.velocite ? t(`velocity${risk.velocite}`).split(' · ').pop() : '–'}</span></span>
                             <span class="review-cadence${cadence.due ? ' due' : ''}"><span>${cadence.last ? t('reviewedOn', { date: formatReviewDate(cadence.last) }) : t('reviewNever')}</span>
-                                <label>${t('reviewNextLabel')} <input type="date" class="review-date" value="${escapeHtml(cadence.next)}"></label>
+                                <label data-tip="${t('tipNextReview')}">${t('reviewNextLabel')} <input type="date" class="review-date" value="${escapeHtml(cadence.next)}"></label>
                                 <button type="button" class="link-btn" data-action="goto-cadence" title="${t('cadenceLabel')}">${t('cadenceEvery', { n: settings.cadenceRevue })}</button>
-                                <button type="button" class="sheet-btn" data-action="mark-reviewed">${icon('check')} ${t('markReviewed')}</button></span>
+                                <button type="button" class="sheet-btn" data-action="mark-reviewed" data-tip="${t('tipMarkReviewed')}">${icon('check')} ${t('markReviewed')}</button></span>
                         </div>
                     </div>
                     <div class="sheet-scores">${cotation('assessmentBefore', 'colBeforeShort')}<span class="sheet-arrow">→</span>${cotation('assessmentAfter', 'colAfterShort')}<span class="sheet-arrow">→</span>${cotation('assessmentTarget', 'colTarget', true)}</div>
@@ -13207,9 +13463,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <div class="kri-value"><b>${escapeHtml(formatKri(kri))}</b>${last ? `<small>${escapeHtml(formatReviewDate(last.date))}${last.auteur ? ` · ${escapeHtml(last.auteur)}` : ''}</small>` : `<small>${t('kriNoValue')}</small>`}</div>
                         ${kriSparkline(kri)}
                         <div class="kri-settings">
-                            <button type="button" class="kri-sense" data-kri-sens="${index}">${t(kri.sens === 'baisse' ? 'kriLowerWorse' : 'kriHigherWorse')}</button>
-                            <label>${t('kriAlert')} <input type="number" class="kri-input" data-kri="${index}" data-kri-field="alerte" value="${kri.alerte ?? ''}"></label>
-                            <label>${t('kriCritical')} <input type="number" class="kri-input" data-kri="${index}" data-kri-field="critique" value="${kri.critique ?? ''}"></label>
+                            <button type="button" class="kri-sense" data-kri-sens="${index}" data-tip="${t('tipKriSense')}">${t(kri.sens === 'baisse' ? 'kriLowerWorse' : 'kriHigherWorse')}</button>
+                            <label data-tip="${t('tipKriAlert')}">${t('kriAlert')} <input type="number" class="kri-input" data-kri="${index}" data-kri-field="alerte" value="${kri.alerte ?? ''}"></label>
+                            <label data-tip="${t('tipKriCritical')}">${t('kriCritical')} <input type="number" class="kri-input" data-kri="${index}" data-kri-field="critique" value="${kri.critique ?? ''}"></label>
                             <label>${t('kriUnit')} <input class="kri-input" data-kri="${index}" data-kri-field="unite" value="${escapeHtml(kri.unite)}"></label>
                         </div>
                         <div class="kri-add"><input type="number" step="any" class="kri-input" data-kri-value="${index}" placeholder="${t('kriValuePlaceholder')}">
@@ -13218,11 +13474,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <button type="button" class="bowtie-add" data-action="add-kri">${icon('plus')} ${t('kriAdd')}</button></section>
                 <section class="committee-card sheet-cost"><h3 data-tip="${t('costHint')}">${t('costTitle')}</h3>
                     <div class="cost-fields">${[['min', 'costMin'], ['probable', 'costLikely'], ['max', 'costMax']].map(([field, label]) =>
-                        `<label>${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
-                        <label>${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
+                        `<label data-tip="${t('tipCostRange')}">${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
+                        <label data-tip="${t('tipCostProbability')}">${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
                             placeholder="${DEFAULT_PROBABILITY[risk.assessmentAfter[0]] ?? ''}"> %</label>
                         ${risk.cout.probabilite === null && risk.assessmentAfter[0] ? `<small>${t('costProbabilityDefault', { p: risk.assessmentAfter[0], pct: DEFAULT_PROBABILITY[risk.assessmentAfter[0]] })}</small>` : ''}
-                        <span class="cost-expected">${t('costExpected')} : <b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div></section>
+                        <span class="cost-expected" data-tip="${t('tipCostExpected')}">${t('costExpected')} : <b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div></section>
                 <div class="sheet-cards">
                     <section class="committee-card"><h3>${t('evolutionTitle')}</h3><div class="sheet-evolution"><canvas></canvas></div>
                         <p class="review-meta">${history.length ? t('evolutionCaption', { dates: history.map(r => shortDate(r.date)).join(', ') }) : ''}</p></section>
@@ -13599,6 +13855,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
                 element.placeholder = t(element.dataset.i18nPlaceholder);
             });
+            document.querySelectorAll('[data-i18n-tip]').forEach(element => { element.dataset.tip = t(element.dataset.i18nTip); });
             document.querySelectorAll('[data-i18n-title]').forEach(element => {
                 element.title = t(element.dataset.i18nTitle);
                 element.setAttribute('aria-label', element.title);
