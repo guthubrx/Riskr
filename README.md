@@ -176,7 +176,9 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Matrices** (matrices, panneau latéral, moyennes par groupe, tableau
   récapitulatif), **Registre** (tableau compact, cartes ou édition complète),
   **Plan d'actions**, **Revues**, **Vue comité**, **Paramètres** ; l'onglet choisi est mémorisé et
-  figure dans l'adresse (`riskr.html#revues`). Un clic sur une case de matrice
+  figure dans l'adresse (`riskr.html#revues`, `riskr.html#fiche:…`) ; les boutons
+  Précédent / Suivant du navigateur passent d'un onglet ou d'une fiche à l'autre,
+  sans quitter la page. Un clic sur une case de matrice
   filtre le registre et le panneau latéral.
 - **Fiche du risque** (clic sur un risque, adresse `riskr.html#fiche:<uid>`) :
   cotations avant → après → cible, traitement, porteur, vélocité, nœud papillon
@@ -266,11 +268,11 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   (« 1 changement depuis la revue n°5 ») ou n'importe quelle revue passée, en
   lecture seule ; matrices, panneau et tableaux suivent. La vue comité et l'export
   PDF restent sur l'état actuel.
-- **Panneau latéral** : une carte compacte « Affichage » où chaque option porte son
-  symbole de légende (nombre par case, appétence, cible en losange vert, taille des
-  bulles selon la vélocité ; explication au survol) et le rappel du seuil d'appétence
-  (réglé dans l'onglet Paramètres), puis les
-  risques de la case cliquée et ceux au-dessus de l'appétence
+- **Affichage** : une ligne sous les matrices, où chaque option porte son symbole de
+  légende (nombre par case, appétence avec son niveau réglé dans l'onglet
+  Paramètres, cible en losange vert, taille des bulles selon la vélocité ;
+  explication au survol)
+- **Panneau latéral** : risques de la case cliquée et ceux au-dessus de l'appétence
 - **Cible** : pastille en losange bleu = cible atteinte ; losange blanc à contour vert,
   à sa cotation = cible visée, pas encore atteinte
 - **Appétence au risque** tracée en pointillé, **nombre de risques par case**
