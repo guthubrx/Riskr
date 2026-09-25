@@ -3292,6 +3292,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cursor: pointer;
         }
 
+        /* Fusion de fichiers : bilan à valider */
+        .merge-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        .merge-dialog {
+            width: min(520px, 92vw);
+            max-height: 80vh;
+            overflow: auto;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+        }
+
+        .merge-dialog h3 {
+            margin: 0 0 8px;
+        }
+
+        .merge-dialog h4 {
+            margin: 12px 0 4px;
+            font-size: 13px;
+        }
+
+        .merge-dialog ul {
+            margin: 0;
+            padding-inline-start: 18px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
         /* Chiffrage et provision pour risques */
         .sheet-cost {
             margin-top: 16px;
@@ -5313,13 +5350,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </div>
 
             <div class="app-controls">
-                <input type="file" id="import-file" hidden accept=".json" onchange="importFromJSON(this)">
+                <input type="file" id="import-file" hidden accept=".json,.js" onchange="importFromJSON(this)">
+                <input type="file" id="merge-file" hidden accept=".json,.js" onchange="mergeFromFile(this)">
                 <button class="icon-btn" onclick="openLibrary()" data-i18n-title="libraryOpen">
                     <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h13"/><path d="M9 7h6"/></svg>
                 </button>
-                <button class="icon-btn" onclick="document.getElementById('import-file').click()" data-i18n-title="importTooltip">
-                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
-                </button>
+                <div class="menu-anchor">
+                    <button class="icon-btn" onclick="toggleMenu('import-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="importTooltip">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M7 8l5-5 5 5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+                    </button>
+                    <div id="import-menu" class="menu" role="menu" hidden>
+                        <button role="menuitem" onclick="document.getElementById('import-file').click()"><span data-i18n="importReplace">Remplacer par un fichier…</span></button>
+                        <button role="menuitem" onclick="document.getElementById('merge-file').click()" data-i18n-title="mergeRule"><span data-i18n="importMerge">Fusionner un fichier…</span> <span class="menu-hint" data-i18n="importMergeHint">Garder les deux</span></button>
+                    </div>
+                </div>
                 <div class="menu-anchor">
                     <button class="icon-btn" onclick="toggleMenu('export-menu', this)" aria-haspopup="menu" aria-expanded="false" data-i18n-title="exportBtn">
                         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
@@ -6182,6 +6226,122 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             downloadTextFile(buildDataFileContent(buildCanonicalData()), dataFileName, 'text/javascript');
         }
 
+        // Fusion d'une autre copie de l'analyse dans `base` (copie de travail, l'analyse affichée n'est pas touchée).
+        // Risques rapprochés par identifiant stable (uid). Nouveau : ajouté dans son groupe (même nom, créé si absent).
+        // Présent des deux côtés et différent : la version dont la dernière modification (journal) est la plus
+        // récente l'emporte ; à égalité (ou sans journal), la version locale est gardée et le conflit signalé.
+        // Notes, liens, KRI et relevés, revues et journal : réunis sans doublon (rien n'est supprimé).
+        // Complexité : O(r + l + j) — r risques, l éléments de listes, j lignes de journal (index Map).
+        function mergeInto(base, incoming) {
+            const report = { added: [], updated: [], conflicts: [], reviews: 0, journal: 0 };
+            const lastChange = entries => entries.reduce((last, e) => (e.uid && (last.get(e.uid) || '') < e.date ? last.set(e.uid, e.date) : last), new Map());
+            const localLast = lastChange(base.journal), incomingLast = lastChange(incoming.journal);
+            const union = (target, source, key) => {
+                const seen = new Set(target.map(key));
+                source.forEach(item => { if (!seen.has(key(item))) { seen.add(key(item)); target.push(item); } });
+            };
+            // Comparaison hors id (position, recalculée) et hors listes réunies (notes, liens, relevés) :
+            // une simple note ajoutée d'un côté n'est pas un conflit
+            const comparable = risk => JSON.stringify({ ...risk, id: undefined, notes: undefined, liens: undefined,
+                kri: risk.kri.map(({ releves, ...kri }) => kri) });
+            const localByUid = new Map(base.risks.map(risk => [risk.uid, risk]));
+            incoming.riskGroups.forEach(group => group.risks.forEach(theirs => {
+                const mine = localByUid.get(theirs.uid);
+                if (!mine) {
+                    let target = base.riskGroups.find(g => g.name === group.name);
+                    if (!target) base.riskGroups.push(target = { ...group, risks: [] });
+                    target.risks.push(theirs);
+                    base.risks.push(theirs);
+                    return report.added.push(theirs);
+                }
+                const [mineDate, theirsDate] = [localLast.get(mine.uid) || '', incomingLast.get(theirs.uid) || ''];
+                const differs = comparable(mine) !== comparable(theirs);
+                const other = differs && theirsDate > mineDate ? { ...mine } : theirs; // version écartée, dont on reprend les listes
+                if (!differs) { /* seules les listes diffèrent : réunion ci-dessous */ }
+                else if (theirsDate > mineDate) {
+                    Object.assign(mine, theirs); // garde l'objet en place dans son groupe
+                    report.updated.push(mine);
+                } else if (theirsDate === mineDate) report.conflicts.push(mine);
+                union(mine.notes, other.notes, n => `${n.date}|${n.texte}`);
+                union(mine.liens, other.liens, l => l.url);
+                const kriById = new Map(mine.kri.map(k => [k.id, k]));
+                other.kri.forEach(kri => {
+                    const kept = kriById.get(kri.id);
+                    if (kept) union(kept.releves, kri.releves, r => `${r.date}|${r.valeur}`);
+                    else mine.kri.push(kri);
+                });
+                mine.kri.forEach(kri => kri.releves.sort((a, b) => a.date.localeCompare(b.date)));
+            }));
+            const reviewCount = base.reviews.length, journalCount = base.journal.length;
+            union(base.reviews, incoming.reviews, r => r.id);
+            base.reviews.sort((a, b) => a.date.localeCompare(b.date));
+            union(base.journal, incoming.journal, e => e.id);
+            base.journal.sort((a, b) => a.date.localeCompare(b.date));
+            if (base.journal.length > JOURNAL_MAX) base.journal.splice(0, base.journal.length - JOURNAL_MAX);
+            report.reviews = base.reviews.length - reviewCount;
+            report.journal = base.journal.length - journalCount;
+            return report;
+        }
+
+        // Bilan de fusion à valider : rien n'est appliqué avant « Fusionner »
+        function showMergeDialog(report, name, apply) {
+            const overlay = document.createElement('div');
+            overlay.className = 'merge-overlay';
+            const list = (items, key) => items.length ? `<h4>${t(key, { count: items.length })}</h4><ul>${items.slice(0, 10)
+                .map(risk => `<li>${escapeHtml(risk.title)}</li>`).join('')}${items.length > 10 ? '<li>…</li>' : ''}</ul>` : '';
+            overlay.innerHTML = `<div class="merge-dialog" role="dialog" aria-modal="true"><h3>${escapeHtml(t('mergeTitle', { name }))}</h3>
+                <p>${t('mergeSummary', { added: report.added.length, updated: report.updated.length, conflicts: report.conflicts.length,
+                    reviews: report.reviews, journal: report.journal })}</p>
+                ${list(report.added, 'mergeAdded')}${list(report.updated, 'mergeUpdated')}${list(report.conflicts, 'mergeConflicts')}
+                <p class="review-meta">${t('mergeRule')}</p>
+                <div class="identity-actions"><button type="button" class="sheet-btn" data-cancel>${t('cancel')}</button>
+                    <button type="button" class="sheet-btn primary" data-apply>${t('mergeApply')}</button></div></div>`;
+            document.body.appendChild(overlay);
+            overlay.onclick = event => {
+                if (event.target.closest('[data-apply]')) { overlay.remove(); apply(); }
+                else if (event.target === overlay || event.target.closest('[data-cancel]')) overlay.remove();
+            };
+        }
+
+        function mergeFromFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = event => {
+                try {
+                    const incoming = buildModel(parseRiskrFile(event.target.result)); // valide avant toute fusion
+                    const base = buildModel(serializeModel()); // copie de travail indépendante
+                    const report = mergeInto(base, incoming);
+                    showMergeDialog(report, file.name, () => {
+                        applyModel(base);
+                        // Une ligne « Fusion » : les changements repris gardent leurs propres lignes et auteurs
+                        journal.push({ id: newUid(), date: new Date().toISOString(), auteur: currentUser, uid: '', risque: '', champ: 'merge', detail: '',
+                            avant: '', apres: `${file.name} · ${t('mergeSummaryShort', { added: report.added.length, updated: report.updated.length, conflicts: report.conflicts.length })}` });
+                        commitChange({ journal: false });
+                        renderRisks();
+                        updateCharts();
+                        showToast(t('mergeDone'));
+                    });
+                } catch (error) {
+                    console.error('[Riskr] Fusion impossible :', error);
+                    alert(`${t('importError')}\n${error.message}`);
+                } finally {
+                    input.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Données d'un fichier Riskr : JSON, ou riskr-data.js (objet window.RISKR_DATA écrit en JSON).
+        // Le fichier est lu comme des données, jamais exécuté.
+        function parseRiskrFile(text) {
+            if (text.trim().startsWith('{')) return JSON.parse(text);
+            const marker = text.indexOf('RISKR_DATA');
+            const start = text.indexOf('{', marker), end = text.lastIndexOf('}');
+            if (marker < 0 || start < 0 || end < start) throw new Error(t('mergeUnreadable'));
+            return JSON.parse(text.slice(start, end + 1));
+        }
+
         function importFromJSON(input) {
             const file = input.files[0];
             if (!file) return;
@@ -6190,7 +6350,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             
             reader.onload = function(e) {
                 try {
-                    const data = JSON.parse(e.target.result);
+                    const data = parseRiskrFile(e.target.result);
 
                     // 1. Valider et normaliser AVANT de toucher aux données en cours.
                     // Accepte le format canonique (riskr-data.js), les anciens exports
@@ -6693,6 +6853,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "Probabilité que le coût total reste sous chaque montant (pointillé : provision à 80 %)",
                 provisionCaption: "{count} risques chiffrés · 10 000 simulations Monte-Carlo · probabilités après remédiation",
                 summaryExpectedCost: "d'exposition financière attendue",
+                importReplace: "Remplacer par un fichier…",
+                importMerge: "Fusionner un fichier…",
+                importMergeHint: "Garder les deux",
+                mergeTitle: "Fusionner « {name} »",
+                mergeSummary: "Ajoutés : {added} · mis à jour : {updated} · conflits : {conflicts} · revues reprises : {reviews} · lignes de journal reprises : {journal}.",
+                mergeSummaryShort: "ajoutés {added}, mis à jour {updated}, conflits {conflicts}",
+                mergeAdded: "Ajoutés ({count})",
+                mergeUpdated: "Mis à jour avec la version la plus récente ({count})",
+                mergeConflicts: "Conflits : version locale gardée ({count})",
+                mergeRule: "Pour un risque modifié des deux côtés, la version dont la dernière modification (journal) est la plus récente l'emporte ; sans journal pour trancher, la version locale est gardée. Notes, liens, relevés, revues et journal sont réunis : rien n'est supprimé, un élément retiré d'un seul côté peut donc réapparaître.",
+                mergeApply: "Fusionner",
+                mergeDone: "Fusion effectuée",
+                mergeUnreadable: "Fichier non reconnu : JSON ou riskr-data.js attendu",
+                journalMerge: "Fusion",
                 mesureDueDate: "Échéance (facultatif)",
                 mesureTextPlaceholder: "Décrire la mesure",
                 mesureAdd: "Ajouter une mesure",
@@ -6702,7 +6876,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 copyForWordUnavailable: "La copie n’a pas abouti. Autorisez le presse-papiers puis réessayez.",
 
                 // Interface complète (en-tête, messages, exports)
-                importTooltip: "Importer un fichier JSON",
+                importTooltip: "Importer ou fusionner un fichier",
                 exportHtmlHint: "Page web",
                 exportJsonHint: "Données",
                 exportDataJsHint: "Rechargeable",
@@ -7129,6 +7303,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "Probability that the total cost stays below each amount (dashed: contingency at 80 %)",
                 provisionCaption: "{count} costed risks · 10,000 Monte Carlo simulations · residual probabilities",
                 summaryExpectedCost: "expected financial exposure",
+                importReplace: "Replace with a file…",
+                importMerge: "Merge a file…",
+                importMergeHint: "Keep both",
+                mergeTitle: "Merge “{name}”",
+                mergeSummary: "Added: {added} · updated: {updated} · conflicts: {conflicts} · reviews brought in: {reviews} · log lines brought in: {journal}.",
+                mergeSummaryShort: "added {added}, updated {updated}, conflicts {conflicts}",
+                mergeAdded: "Added ({count})",
+                mergeUpdated: "Updated with the most recent version ({count})",
+                mergeConflicts: "Conflicts: local version kept ({count})",
+                mergeRule: "For a risk changed on both sides, the version with the most recent change (log) wins; with no log to decide, the local version is kept. Notes, links, readings, reviews and log are combined: nothing is deleted, so an item removed on one side only may reappear.",
+                mergeApply: "Merge",
+                mergeDone: "Merge complete",
+                mergeUnreadable: "Unrecognised file: JSON or riskr-data.js expected",
+                journalMerge: "Merge",
                 mesureDueDate: "Due date (optional)",
                 mesureTextPlaceholder: "Describe the measure",
                 mesureAdd: "Add a measure",
@@ -7138,7 +7326,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 copyForWordUnavailable: "Copy failed. Allow clipboard access and try again.",
 
                 // Interface complète (en-tête, messages, exports)
-                importTooltip: "Import a JSON file",
+                importTooltip: "Import or merge a file",
                 exportHtmlHint: "Web page",
                 exportJsonHint: "Data",
                 exportDataJsHint: "Reloadable",
@@ -7568,13 +7756,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "Probabilidad de que el coste total quede por debajo de cada importe (discontinua: provisión al 80 %)",
                 provisionCaption: "{count} riesgos cuantificados · 10 000 simulaciones Monte Carlo · probabilidades residuales",
                 summaryExpectedCost: "de exposición financiera esperada",
+                importReplace: "Reemplazar por un archivo…",
+                importMerge: "Fusionar un archivo…",
+                importMergeHint: "Conservar ambos",
+                mergeTitle: "Fusionar «{name}»",
+                mergeSummary: "Añadidos: {added} · actualizados: {updated} · conflictos: {conflicts} · revisiones incorporadas: {reviews} · líneas de registro incorporadas: {journal}.",
+                mergeSummaryShort: "añadidos {added}, actualizados {updated}, conflictos {conflicts}",
+                mergeAdded: "Añadidos ({count})",
+                mergeUpdated: "Actualizados con la versión más reciente ({count})",
+                mergeConflicts: "Conflictos: versión local conservada ({count})",
+                mergeRule: "Para un riesgo modificado en ambos lados, gana la versión cuyo último cambio (registro) es más reciente; sin registro para decidir, se conserva la versión local. Notas, enlaces, mediciones, revisiones y registro se combinan: no se elimina nada, por lo que un elemento quitado en un solo lado puede reaparecer.",
+                mergeApply: "Fusionar",
+                mergeDone: "Fusión realizada",
+                mergeUnreadable: "Archivo no reconocido: se espera JSON o riskr-data.js",
+                journalMerge: "Fusión",
                 mesureDueDate: "Plazo (opcional)",
                 mesureTextPlaceholder: "Describir la medida",
                 mesureAdd: "Añadir una medida",
                 mesureDelete: "Eliminar la medida",
                 assessmentNotePlaceholder: "Añadir una lectura de la categoría (30 palabras máx.)",
                 remediationNotePlaceholder: "Añadir la remediación prevista (30 palabras máx.)",
-                importTooltip: "Importar un archivo JSON",
+                importTooltip: "Importar o fusionar un archivo",
                 exportHtmlHint: "Página web",
                 exportJsonHint: "Datos",
                 exportDataJsHint: "Recargable",
@@ -8004,13 +8206,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "总成本低于各金额的概率（虚线：80% 准备金）",
                 provisionCaption: "{count} 项已估算风险 · 10000 次蒙特卡罗模拟 · 处理后概率",
                 summaryExpectedCost: "预期财务敞口",
+                importReplace: "用文件替换…",
+                importMerge: "合并文件…",
+                importMergeHint: "保留两者",
+                mergeTitle: "合并“{name}”",
+                mergeSummary: "新增 {added} 项风险 · 更新 {updated} 项 · 冲突 {conflicts} 项 · 并入 {reviews} 次评审和 {journal} 条日志。",
+                mergeSummaryShort: "新增 {added}，更新 {updated}，冲突 {conflicts}",
+                mergeAdded: "新增（{count}）",
+                mergeUpdated: "以最新版本更新（{count}）",
+                mergeConflicts: "冲突：保留本地版本（{count}）",
+                mergeRule: "若同一风险在两边都被修改，以最后修改时间（日志）较新的版本为准；无日志可判断时保留本地版本。备注、链接、读数、评审和日志将合并：不会删除任何内容，因此仅在一边删除的项目可能重新出现。",
+                mergeApply: "合并",
+                mergeDone: "合并完成",
+                mergeUnreadable: "无法识别的文件：需要 JSON 或 riskr-data.js",
+                journalMerge: "合并",
                 mesureDueDate: "截止日期（可选）",
                 mesureTextPlaceholder: "描述措施",
                 mesureAdd: "添加措施",
                 mesureDelete: "删除措施",
                 assessmentNotePlaceholder: "添加该类别的解读（最多 30 词）",
                 remediationNotePlaceholder: "添加计划的补救措施（最多 30 词）",
-                importTooltip: "导入 JSON 文件",
+                importTooltip: "导入或合并文件",
                 exportHtmlHint: "网页",
                 exportJsonHint: "数据",
                 exportDataJsHint: "可重新加载",
@@ -8440,13 +8656,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCurve: "احتمال بقاء الكلفة الإجمالية دون كل مبلغ (الخط المتقطع: احتياطي 80 %)",
                 provisionCaption: "{count} مخاطر مقدّرة · 10000 محاكاة مونت كارلو · احتمالات ما بعد المعالجة",
                 summaryExpectedCost: "تعرّض مالي متوقع",
+                importReplace: "الاستبدال بملف…",
+                importMerge: "دمج ملف…",
+                importMergeHint: "الاحتفاظ بالاثنين",
+                mergeTitle: "دمج «{name}»",
+                mergeSummary: "مضافة: {added} · محدّثة: {updated} · تعارضات: {conflicts} · مراجعات مدمجة: {reviews} · أسطر سجل مدمجة: {journal}.",
+                mergeSummaryShort: "مضافة {added}، محدّثة {updated}، تعارضات {conflicts}",
+                mergeAdded: "المضافة ({count})",
+                mergeUpdated: "المحدّثة بأحدث نسخة ({count})",
+                mergeConflicts: "تعارضات: تم الاحتفاظ بالنسخة المحلية ({count})",
+                mergeRule: "للخطر المعدّل في الجهتين، تفوز النسخة ذات آخر تعديل أحدث (السجل)؛ وعند غياب سجل للحسم تُحفظ النسخة المحلية. تُجمع الملاحظات والروابط والقراءات والمراجعات والسجل: لا يُحذف شيء، لذا قد يعود عنصر حُذف من جهة واحدة فقط.",
+                mergeApply: "دمج",
+                mergeDone: "تم الدمج",
+                mergeUnreadable: "ملف غير معروف: يُتوقع JSON أو riskr-data.js",
+                journalMerge: "دمج",
                 mesureDueDate: "الموعد النهائي (اختياري)",
                 mesureTextPlaceholder: "صِف الإجراء",
                 mesureAdd: "إضافة إجراء",
                 mesureDelete: "حذف الإجراء",
                 assessmentNotePlaceholder: "أضف قراءة للفئة (30 كلمة كحد أقصى)",
                 remediationNotePlaceholder: "أضف المعالجة المستهدفة (30 كلمة كحد أقصى)",
-                importTooltip: "استيراد ملف JSON",
+                importTooltip: "استيراد ملف أو دمجه",
                 exportHtmlHint: "صفحة ويب",
                 exportJsonHint: "بيانات",
                 exportDataJsHint: "قابل لإعادة التحميل",
@@ -9347,7 +9577,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             'mesure.etat': 'mesureState', 'mesure.porteur': 'mesureOwner', 'mesure.echeance': 'journalDue', 'mesure.barriere': 'journalBarrier',
             'mesure.efficacite': 'journalEfficacy', note: 'journalNote', lien: 'journalLink', created: 'journalCreated',
             deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview',
-            kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds',
+            kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds', merge: 'journalMerge',
             'cout.min': 'costMin', 'cout.probable': 'costLikely', 'cout.max': 'costMax', 'cout.probabilite': 'costProbability' };
         const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review', 'kri', 'kri.releve']);
         function journalValue(champ, value) {
@@ -9370,7 +9600,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const label = t(JOURNAL_LABELS[entry.champ] || 'journalMesure');
             const [avant, apres] = [journalValue(entry.champ, entry.avant), journalValue(entry.champ, entry.apres)];
             const detail = entry.detail ? ` « ${journalValue('', entry.detail)} »` : '';
-            if (entry.champ === 'created' || entry.champ === 'deleted') return `${label} : ${avant || apres}`;
+            if (['created', 'deleted', 'merge'].includes(entry.champ)) return `${label} : ${avant || apres}`;
             // Listes (causes, mesures, notes…) : ajout « + », retrait « − » ; champs simples : avant → après
             if (JOURNAL_LISTS.has(entry.champ) && !avant) return `${label}${detail} : + ${apres}`;
             if (JOURNAL_LISTS.has(entry.champ) && !apres) return `${label}${detail} : − ${avant}`;

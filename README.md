@@ -206,6 +206,12 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   « Marquer comme revu » dans la fiche ; les risques à revoir sont signalés et
   filtrables dans le registre ; export des rappels en `.ics` (Outlook, Google
   Agenda, Calendrier)
+- **Fusion de deux fichiers** (menu Importer › « Fusionner un fichier… », JSON ou
+  `riskr-data.js`) : multi-utilisateur léger. Risques rapprochés par identifiant
+  stable ; un risque modifié des deux côtés garde la version dont la dernière
+  modification (journal) est la plus récente, sinon la version locale (conflit
+  signalé) ; notes, liens, relevés, revues et journal réunis sans doublon. Bilan à
+  valider avant application, annulable (Cmd+Z)
 - **Porteur modifiable partout** : un clic sur la pastille du porteur (registre,
   plan d'actions, fiche) ouvre le même sélecteur avec suggestions et pastilles,
   qui permet aussi de créer un nouveau porteur
