@@ -818,10 +818,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             display: inline-block;
             padding: 3px 10px;
             border-radius: 999px;
-            background: color-mix(in srgb, var(--c) 14%, transparent);
-            color: var(--c);
+            background: var(--surface-2);
+            color: var(--text-2);
             font-size: 13px;
-            font-weight: 500;
             white-space: nowrap;
         }
 
@@ -840,7 +839,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            color: #fff;
+            /* Teinte légère du porteur plutôt qu'un aplat saturé */
+            background: color-mix(in srgb, var(--c) 18%, transparent);
+            color: var(--c);
             font-size: 10px;
             font-weight: 700;
         }
@@ -967,13 +968,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .progress-bar span:nth-child(2) {
-            background: #0a84ff;
+            background: color-mix(in srgb, #34c759 40%, transparent);
         }
 
         .late-chip {
-            padding: 4px 12px;
-            border-radius: 999px;
-            background: color-mix(in srgb, #ff3b30 12%, transparent);
             color: #ff3b30;
             font-size: 14px;
         }
@@ -1036,12 +1034,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             border: 1px solid var(--border);
             border-radius: 12px;
             background: var(--surface);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
-        .action-card.is-late {
-            border-color: #ffb3ad;
-            box-shadow: inset 3px 0 0 #ff3b30;
+        .action-card[draggable] {
+            cursor: grab;
+        }
+
+        .action-card.dragging {
+            opacity: 0.4;
+        }
+
+        .action-column.drop-target {
+            outline: 1.5px dashed var(--border-strong);
+            outline-offset: -1.5px;
         }
 
         .action-card-risk {
@@ -1070,7 +1075,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .action-card.is-done .action-card-text {
-            text-decoration: line-through;
             color: var(--text-3);
         }
 
@@ -1084,14 +1088,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .barrier-tag {
             font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: #0a84ff;
-        }
-
-        .barrier-tag.protection {
-            color: #8e5cf0;
+            color: var(--text-3);
         }
 
         .action-due {
@@ -1100,31 +1097,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .action-card.is-late .action-due {
             color: #ff3b30;
-            font-weight: 500;
-        }
-
-        .action-moves {
-            display: flex;
-            gap: 2px;
-        }
-
-        .action-moves button {
-            display: inline-flex;
-            padding: 2px;
-            border: none;
-            border-radius: 4px;
-            background: none;
-            color: var(--text-3);
-            cursor: pointer;
-        }
-
-        .action-moves button:hover {
-            background: var(--surface-2);
-            color: var(--text);
-        }
-
-        [dir="rtl"] .action-moves svg {
-            transform: scaleX(-1);
         }
 
         .action-empty {
@@ -3308,13 +3280,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background: #ff3b30;
         }
 
-        .bt-node.barrier {
-            border: 1.5px solid #0a84ff;
-        }
-
-        .bt-node.barrier.protection {
-            border-color: #8e5cf0;
-        }
 
         .bt-node.missing {
             border: 1.5px dashed #ff9f0a;
@@ -3325,7 +3290,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .bt-chiffrage {
             font-size: 13px;
             font-weight: 600;
-            color: #c4291c;
+            color: var(--text-2);
         }
 
         .bt-sub {
@@ -3402,9 +3367,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             aspect-ratio: 1;
             padding: 22px;
             border-radius: 50%;
-            background: radial-gradient(circle at 40% 35%, #ffcfc7, #ff8f80);
-            box-shadow: 0 10px 30px rgba(255, 90, 70, 0.25);
-            color: #8a1c12;
+            border: 1px solid color-mix(in srgb, #ff3b30 35%, transparent);
+            background: color-mix(in srgb, #ff3b30 12%, var(--surface));
+            color: var(--text);
             font-size: 16px;
             font-weight: 700;
             text-align: center;
@@ -6366,8 +6331,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} mesures · {done} faites · {doing} en cours · {todo} à faire",
                 actionLateCount: "{count} en retard",
                 actionEmpty: "Aucune mesure",
-                movePrev: "Étape précédente",
-                moveNext: "Étape suivante",
+                dragToChangeState: "Glisser dans une autre colonne pour changer l'état",
                 reviewsTitle: "Revues",
                 reviewFreeze: "Figer une revue",
                 reviewFreezeHint: "Enregistre une photo datée des cotations de tous les risques",
@@ -6728,8 +6692,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} measures · {done} done · {doing} in progress · {todo} to do",
                 actionLateCount: "{count} overdue",
                 actionEmpty: "No measure",
-                movePrev: "Previous step",
-                moveNext: "Next step",
+                dragToChangeState: "Drag to another column to change the state",
                 reviewsTitle: "Reviews",
                 reviewFreeze: "Record a review",
                 reviewFreezeHint: "Saves a dated snapshot of all risk ratings",
@@ -7090,8 +7053,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} medidas · {done} hechas · {doing} en curso · {todo} por hacer",
                 actionLateCount: "{count} retrasadas",
                 actionEmpty: "Ninguna medida",
-                movePrev: "Paso anterior",
-                moveNext: "Paso siguiente",
+                dragToChangeState: "Arrastrar a otra columna para cambiar el estado",
                 reviewsTitle: "Revisiones",
                 reviewFreeze: "Registrar una revisión",
                 reviewFreezeHint: "Guarda una instantánea fechada de las calificaciones de todos los riesgos",
@@ -7452,8 +7414,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} 项措施 · {done} 已完成 · {doing} 进行中 · {todo} 待办",
                 actionLateCount: "{count} 项逾期",
                 actionEmpty: "暂无措施",
-                movePrev: "上一步",
-                moveNext: "下一步",
+                dragToChangeState: "拖到另一列以更改状态",
                 reviewsTitle: "评审",
                 reviewFreeze: "记录一次评审",
                 reviewFreezeHint: "保存所有风险评级的带日期快照",
@@ -7814,8 +7775,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} إجراءات · {done} منجزة · {doing} قيد التنفيذ · {todo} للتنفيذ",
                 actionLateCount: "{count} متأخرة",
                 actionEmpty: "لا توجد إجراءات",
-                movePrev: "الخطوة السابقة",
-                moveNext: "الخطوة التالية",
+                dragToChangeState: "اسحب إلى عمود آخر لتغيير الحالة",
                 reviewsTitle: "المراجعات",
                 reviewFreeze: "تسجيل مراجعة",
                 reviewFreezeHint: "يحفظ لقطة مؤرخة لتقييمات جميع المخاطر",
@@ -9544,7 +9504,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             today.setHours(0, 0, 0, 0);
             const soon = today.getTime() + 30 * 86400000;
             const columns = actionView.group === 'state'
-                ? MESURE_STATE_ORDER.map(state => [t(state === 'done' ? 'stateDonePlural' : MESURE_STATES[state]), items.filter(item => item.mesure.etat === state)])
+                ? MESURE_STATE_ORDER.map(state => [t(state === 'done' ? 'stateDonePlural' : MESURE_STATES[state]), items.filter(item => item.mesure.etat === state), state])
                 : actionView.group === 'due'
                     ? [['dueLate', item => item.late], ['dueSoon', item => !item.late && item.due && item.dueKey <= soon],
                         ['dueLater', item => !item.late && item.due && item.dueKey > soon], ['dueNone', item => !item.due]]
@@ -9552,36 +9512,55 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     : [...new Set(items.map(mesureOwner))].sort((a, b) => a.localeCompare(b))
                         .map(owner => [owner || t('noOwner'), items.filter(item => mesureOwner(item) === owner)]);
 
-            const moveButton = (item, state, label, iconName) =>
-                `<button type="button" data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}" data-state="${state}" title="${t(label)}" aria-label="${t(label)}">${icon(iconName)}</button>`;
+            // Vue par état : la carte se glisse dans une autre colonne pour changer l'état de la mesure
+            const byState = actionView.group === 'state';
             const card = item => {
-                const position = MESURE_STATE_ORDER.indexOf(item.mesure.etat);
                 const owner = mesureOwner(item);
-                return `<article class="action-card${item.late ? ' is-late' : ''}${item.mesure.etat === 'done' ? ' is-done' : ''}">
+                return `<article class="action-card${item.late ? ' is-late' : ''}${item.mesure.etat === 'done' ? ' is-done' : ''}"${byState
+                    ? ` draggable="true" data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}" title="${escapeHtml(t('dragToChangeState'))}"` : ''}>
                     <div class="action-card-risk" data-risk-uid="${escapeHtml(item.risk.uid)}" title="${t('openRiskSheet')}"><span class="id-bubble">${escapeHtml(item.risk.id)}</span>${escapeHtml(item.risk.title)}</div>
                     <div class="action-card-text">${escapeHtml(item.mesure.texte)}</div>
                     <div class="action-card-meta">
                         <span class="barrier-tag ${item.mesure.barriere}">${t(item.mesure.barriere === 'protection' ? 'barrierProtection' : 'barrierPrevention')}</span>
-                        <span class="action-moves">
-                            ${position > 0 ? moveButton(item, MESURE_STATE_ORDER[position - 1], 'movePrev', 'left') : ''}
-                            ${position < MESURE_STATE_ORDER.length - 1 ? moveButton(item, MESURE_STATE_ORDER[position + 1], 'moveNext', 'right') : ''}
-                        </span>
                         <span class="action-due">${item.mesure.echeance ? escapeHtml(item.late ? t('lateOn', { date: item.mesure.echeance }) : item.mesure.echeance) : ''}</span>
                         ${owner ? `<span title="${escapeHtml(owner)}">${avatar(owner)}</span>` : ''}
                     </div>
                 </article>`;
             };
-            board.innerHTML = columns.map(([title, cards]) => `<section class="action-column">
+            board.innerHTML = columns.map(([title, cards, state]) => `<section class="action-column"${state ? ` data-state="${state}"` : ''}>
                 <h4 class="action-column-title"><span>${escapeHtml(title)}</span><span>${cards.length}</span></h4>
                 ${cards.map(card).join('') || `<p class="action-empty">${t('actionEmpty')}</p>`}
             </section>`).join('');
 
             board.onclick = event => {
                 const riskLink = event.target.closest('[data-risk-uid]');
-                if (riskLink) return openRiskSheet(riskLink.dataset.riskUid);
-                const button = event.target.closest('button[data-state]');
-                if (!button) return;
-                findRiskOf(button).mesures[Number(button.dataset.index)].etat = button.dataset.state;
+                if (riskLink) openRiskSheet(riskLink.dataset.riskUid);
+            };
+            const dropColumn = event => event.target.closest('.action-column[data-state]');
+            const clearDrop = () => board.querySelectorAll('.drop-target').forEach(column => column.classList.remove('drop-target'));
+            board.ondragstart = event => {
+                const dragged = event.target.closest('.action-card[draggable]');
+                if (!dragged) return;
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', `${dragged.dataset.riskId}|${dragged.dataset.index}`);
+                dragged.classList.add('dragging');
+            };
+            board.ondragover = event => {
+                const column = dropColumn(event);
+                if (!column) return;
+                event.preventDefault();
+                if (!column.classList.contains('drop-target')) { clearDrop(); column.classList.add('drop-target'); }
+            };
+            board.ondragend = () => { clearDrop(); board.querySelector('.dragging')?.classList.remove('dragging'); };
+            board.ondrop = event => {
+                const column = dropColumn(event);
+                if (!column) return;
+                event.preventDefault();
+                clearDrop();
+                const [riskId, index] = event.dataTransfer.getData('text/plain').split('|');
+                const mesure = risks.find(risk => risk.id === riskId)?.mesures[Number(index)];
+                if (!mesure || mesure.etat === column.dataset.state) return;
+                mesure.etat = column.dataset.state;
                 commitChange();
                 renderRisks();
                 showToast(t('changeSaved'));
@@ -11403,7 +11382,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function avatar(name) {
             const initials = name.split(/\s*\/\s*|\s+/).filter(Boolean).slice(0, 2).map(part => part[0].toUpperCase()).join('');
             const hash = [...name].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) >>> 0, 0);
-            return `<span class="avatar" style="background:${AVATAR_COLORS[hash % AVATAR_COLORS.length]}" aria-hidden="true">${escapeHtml(initials)}</span>`;
+            return `<span class="avatar" style="--c:${AVATAR_COLORS[hash % AVATAR_COLORS.length]}" aria-hidden="true">${escapeHtml(initials)}</span>`;
         }
         const ownerHtml = name => name ? `<span class="owner">${avatar(name)}${escapeHtml(name)}</span>` : '—';
 
@@ -11413,7 +11392,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return `<span class="score-chip${target ? ' target' : ''}" style="background:${background}">${score ?? '—'}</span>`;
         };
         const scoreChips = risk => `<span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)} ${scoreChip(risk.assessmentTarget, true)}</span>`;
-        const treatmentPill = key => `<span class="treat-pill" style="--c:${TREATMENT_COLORS[key]}">${treatmentLabel(key)}</span>`;
+        const treatmentPill = key => `<span class="treat-pill">${treatmentLabel(key)}</span>`;
 
         // Échéance la plus proche parmi les mesures non faites. O(m) par risque
         function nextDue(risk) {
