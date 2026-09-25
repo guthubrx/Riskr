@@ -9276,7 +9276,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const timeline = document.getElementById('review-timeline');
             if (!timeline) return;
             // Choix par défaut (ou devenu invalide) : dernière revue → état actuel
-            if (!reviews.some(r => r.id === comparison.from)) comparison.from = reviews.length ? reviews[reviews.length - 1].id : null;
+            if (!reviews.some(r => r.id === comparison.from)) {
+                // Par défaut : la dernière revue ; si rien n'a bougé depuis, la précédente (sinon tout serait « stable »). O(n)
+                const latest = reviews[reviews.length - 1];
+                const current = new Map(risks.map(risk => [risk.uid, scoreOf(risk.assessmentAfter)]));
+                const unchanged = latest && latest.risks.length === risks.length
+                    && latest.risks.every(entry => current.get(entry.uid) === scoreOf(entry.after));
+                comparison.from = !latest ? null : unchanged && reviews.length > 1 ? reviews[reviews.length - 2].id : latest.id;
+            }
             if (comparison.to !== 'current' && !reviews.some(r => r.id === comparison.to)) comparison.to = 'current';
             const latest = reviews[reviews.length - 1];
 
