@@ -3014,6 +3014,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             stroke-width: 1.5;
         }
 
+        /* Titres expliqués au survol */
+        .bt-head[title],
+        .sheet-score-label[title],
+        .eff span[title] {
+            cursor: help;
+        }
+
         .bt-head {
             font-size: 12px;
             font-weight: 700;
@@ -6169,6 +6176,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                notionCauses: "Causes : ce qui peut déclencher l’événement redouté (situation, faiblesse, dépendance). Un risque a rarement une seule origine.",
+                notionPrevention: "Barrières préventives : mesures qui agissent avant l’événement en neutralisant ses causes. Elles réduisent la probabilité.",
+                notionEvent: "Événement redouté : le moment où le risque se matérialise. À gauche ce qui y mène, à droite ce qui en découle.",
+                notionProtection: "Barrières de protection : mesures qui agissent après l’événement pour en limiter les conséquences (reprise, secours, contrat). Elles réduisent l’impact.",
+                notionConsequences: "Conséquences : effets de l’événement s’il survient (arrêt de service, coût, pénalités, image). Le chiffrage aide à comparer les risques.",
+                notionEfficacy: "Efficacité de la barrière, de 1 à 5 : 1 faible (simple constat), 2 partielle, 3 moyenne, 4 forte, 5 très forte. Cliquer sur un point pour noter, à nouveau pour effacer.",
+                notionBefore: "Avant (inhérent) : cotation du risque sans les mesures, probabilité × impact (1 à 25).",
+                notionAfter: "Après (résiduel) : cotation une fois les mesures appliquées. C’est elle qu’on compare à l’appétence au risque.",
+                notionTarget: "Cible : cotation visée à terme. Si « Après » reste au-dessus, il faut de nouvelles mesures ou accepter formellement l’écart.",
+                notionTreatment: "Traitement : stratégie retenue. Réduire (mesures), Transférer (contrat, assurance), Éviter (renoncer à l’activité) ou Accepter (en connaissance de cause).",
                 velocityNone: "Vélocité non évaluée",
                 velocity1: "Vélocité 1 · lente (mois)",
                 velocity2: "Vélocité 2 · semaines",
@@ -6512,6 +6529,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                notionCauses: "Causes: what can trigger the feared event (situation, weakness, dependency). A risk rarely has a single origin.",
+                notionPrevention: "Preventive barriers: measures that act before the event by neutralising its causes. They reduce the probability.",
+                notionEvent: "Feared event: the moment the risk materialises. On the left what leads to it, on the right what follows from it.",
+                notionProtection: "Protective barriers: measures that act after the event to limit its consequences (recovery, backup, contract). They reduce the impact.",
+                notionConsequences: "Consequences: effects of the event if it occurs (service outage, cost, penalties, reputation). Estimating them helps compare risks.",
+                notionEfficacy: "Barrier effectiveness, 1 to 5: 1 weak (mere observation), 2 partial, 3 moderate, 4 strong, 5 very strong. Click a dot to rate, again to clear.",
+                notionBefore: "Before (inherent): risk rating without the measures, probability × impact (1 to 25).",
+                notionAfter: "After (residual): rating once the measures are applied. This is what is compared with the risk appetite.",
+                notionTarget: "Target: the rating aimed for. If “After” stays above it, new measures are needed or the gap must be formally accepted.",
+                notionTreatment: "Treatment: chosen strategy. Reduce (measures), Transfer (contract, insurance), Avoid (give up the activity) or Accept (knowingly).",
                 velocityNone: "Velocity not rated",
                 velocity1: "Velocity 1 · slow (months)",
                 velocity2: "Velocity 2 · weeks",
@@ -6855,6 +6882,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                notionCauses: "Causas: lo que puede desencadenar el evento temido (situación, debilidad, dependencia). Un riesgo rara vez tiene un solo origen.",
+                notionPrevention: "Barreras preventivas: medidas que actúan antes del evento neutralizando sus causas. Reducen la probabilidad.",
+                notionEvent: "Evento temido: el momento en que el riesgo se materializa. A la izquierda lo que conduce a él, a la derecha lo que se deriva.",
+                notionProtection: "Barreras de protección: medidas que actúan después del evento para limitar sus consecuencias (recuperación, respaldo, contrato). Reducen el impacto.",
+                notionConsequences: "Consecuencias: efectos del evento si ocurre (parada del servicio, coste, penalizaciones, imagen). Estimarlas ayuda a comparar riesgos.",
+                notionEfficacy: "Eficacia de la barrera, de 1 a 5: 1 débil (simple constatación), 2 parcial, 3 media, 4 fuerte, 5 muy fuerte. Clic en un punto para calificar, otra vez para borrar.",
+                notionBefore: "Antes (inherente): calificación del riesgo sin las medidas, probabilidad × impacto (1 a 25).",
+                notionAfter: "Después (residual): calificación una vez aplicadas las medidas. Es la que se compara con el apetito de riesgo.",
+                notionTarget: "Objetivo: calificación buscada a término. Si «Después» sigue por encima, hacen falta nuevas medidas o aceptar formalmente la diferencia.",
+                notionTreatment: "Tratamiento: estrategia elegida. Reducir (medidas), Transferir (contrato, seguro), Evitar (renunciar a la actividad) o Aceptar (con conocimiento de causa).",
                 velocityNone: "Velocidad no evaluada",
                 velocity1: "Velocidad 1 · lenta (meses)",
                 velocity2: "Velocidad 2 · semanas",
@@ -7198,6 +7235,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                notionCauses: "原因：可能引发所担心事件的因素（情形、弱点、依赖）。风险很少只有一个来源。",
+                notionPrevention: "预防屏障：在事件发生前通过消除其原因发挥作用的措施，用于降低可能性。",
+                notionEvent: "所担心的事件：风险变为现实的时刻。左侧是导致它的因素，右侧是其后果。",
+                notionProtection: "保护屏障：在事件发生后限制其后果的措施（恢复、备援、合同），用于降低影响。",
+                notionConsequences: "后果：事件发生后的影响（服务中断、成本、罚款、声誉）。估算有助于比较风险。",
+                notionEfficacy: "屏障有效性，1 至 5：1 弱（仅为观察），2 部分，3 中等，4 强，5 很强。点击圆点评分，再次点击清除。",
+                notionBefore: "处理前（固有）：未采取措施时的风险评级，可能性 × 影响（1 至 25）。",
+                notionAfter: "处理后（剩余）：措施实施后的评级，用于与风险偏好比较。",
+                notionTarget: "目标：最终希望达到的评级。若“处理后”仍高于目标，需要新措施或正式接受差距。",
+                notionTreatment: "处理方式：所选策略。降低（措施）、转移（合同、保险）、规避（放弃该活动）或接受（知情接受）。",
                 velocityNone: "速度未评估",
                 velocity1: "速度 1 · 缓慢（数月）",
                 velocity2: "速度 2 · 数周",
@@ -7541,6 +7588,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                notionCauses: "الأسباب: ما قد يؤدي إلى الحدث المخشي (وضع، ضعف، تبعية). نادرًا ما يكون للخطر مصدر واحد.",
+                notionPrevention: "الحواجز الوقائية: إجراءات تعمل قبل الحدث بتحييد أسبابه، فتخفض الاحتمال.",
+                notionEvent: "الحدث المخشي: لحظة تحقق الخطر. على اليسار ما يؤدي إليه، وعلى اليمين ما ينتج عنه.",
+                notionProtection: "حواجز الحماية: إجراءات تعمل بعد الحدث للحد من عواقبه (استئناف، نجدة، عقد)، فتخفض الأثر.",
+                notionConsequences: "العواقب: آثار الحدث إن وقع (توقف الخدمة، تكلفة، غرامات، سمعة). يساعد تقديرها على مقارنة المخاطر.",
+                notionEfficacy: "فعالية الحاجز من 1 إلى 5: 1 ضعيفة (مجرد ملاحظة)، 2 جزئية، 3 متوسطة، 4 قوية، 5 قوية جدًا. انقر على نقطة للتقييم ومرة أخرى للمسح.",
+                notionBefore: "قبل (الخطر الأصلي): تقييم الخطر دون الإجراءات، الاحتمال × الأثر (من 1 إلى 25).",
+                notionAfter: "بعد (الخطر المتبقي): التقييم بعد تطبيق الإجراءات، وهو ما يُقارن بمستوى التقبّل.",
+                notionTarget: "المستهدف: التقييم المنشود. إذا بقي «بعد» أعلى منه، يلزم اتخاذ إجراءات جديدة أو قبول الفارق رسميًا.",
+                notionTreatment: "المعالجة: الاستراتيجية المختارة. التخفيض (إجراءات)، النقل (عقد، تأمين)، التجنب (التخلي عن النشاط) أو القبول (عن دراية).",
                 velocityNone: "السرعة غير مقيّمة",
                 velocity1: "السرعة 1 · بطيئة (أشهر)",
                 velocity2: "السرعة 2 · أسابيع",
@@ -11081,7 +11138,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const lastReview = history[history.length - 1];
             const axisOptions = (scale, value, prefix) => scale.map(item =>
                 `<option value="${item.value}" ${item.value === value ? 'selected' : ''} title="${escapeHtml(item.label)}">${item.value ? prefix + item.value : '–'}</option>`).join('');
-            const cotation = (field, label, target = false) => `<div class="sheet-score"><span class="sheet-score-label">${t(label)}</span>
+            const NOTIONS = { assessmentBefore: 'notionBefore', assessmentAfter: 'notionAfter', assessmentTarget: 'notionTarget' };
+            const cotation = (field, label, target = false) => `<div class="sheet-score"><span class="sheet-score-label" title="${t(NOTIONS[field])}">${t(label)}</span>
                 ${scoreChip(risk[field], target)}
                 <span class="sheet-score-edit">
                     <select data-assess="${field}" data-axis="0" aria-label="${t(label)} · ${t('colProb')}">${axisOptions(getProbabilityScale(), risk[field][0], 'P')}</select>
@@ -11096,7 +11154,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 .filter(({ mesure }) => mesure.barriere === side)
                 .map(({ mesure, index }) => `<div class="bt-node barrier ${side}">
                     ${editable(`data-mesure="${index}"`, mesure.texte)}
-                    <span class="eff">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="eff-dot${n <= mesure.efficacite ? ' on' : ''}" data-mesure="${index}" data-eff="${n}" aria-label="${t('efficacyLabel')} ${n}/5"></button>`).join('')} ${t('efficacyLabel')}</span>
+                    <span class="eff">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="eff-dot${n <= mesure.efficacite ? ' on' : ''}" data-mesure="${index}" data-eff="${n}" aria-label="${t('efficacyLabel')} ${n}/5"></button>`).join('')} <span title="${t('notionEfficacy')}">${t('efficacyLabel')}</span></span>
                     <span class="bt-sub">${t(MESURE_STATES[mesure.etat])}${mesure.porteur ? ` · ${escapeHtml(mesure.porteur)}` : ''}${mesure.echeance ? ` · ${escapeHtml(mesure.echeance)}` : ''}</span>
                     ${tools(`<button type="button" data-swap="${index}" title="${t('bowtieSwap')}" aria-label="${t('bowtieSwap')}">${icon('swap')}</button>`)}
                 </div>`).join('') || `<div class="bt-node missing">${t('bowtieNoBarrier')}</div>`;
@@ -11108,7 +11166,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <div>
                         <h2 class="sheet-risk-title"><span class="id-bubble big">${escapeHtml(risk.id)}</span>${editable('data-field="title"', risk.title, t('newRisk'))}</h2>
                         <div class="sheet-facts">
-                            <select class="chip-select" data-field="traitement" style="--c:${TREATMENT_COLORS[risk.traitement]}" aria-label="${t('colTreatment')}">
+                            <select class="chip-select" data-field="traitement" style="--c:${TREATMENT_COLORS[risk.traitement]}" title="${t('notionTreatment')}" aria-label="${t('colTreatment')}">
                                 ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}</select>
                             <span class="owner">${avatar(risk.responsable || '?')}${editable('data-field="responsable"', risk.responsable, t('mesureOwner'))}</span>
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
@@ -11121,8 +11179,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 </div>
                 <div class="bowtie2">
                     <svg class="bowtie-links" aria-hidden="true"></svg>
-                    <div class="bt-head">${t('bowtieCauses')}</div><div class="bt-head">${t('bowtiePrevention')}</div><div class="bt-head">${t('bowtieEvent')}</div>
-                    <div class="bt-head">${t('bowtieProtection')}</div><div class="bt-head">${t('bowtieConsequences')}</div>
+                    ${[['bowtieCauses', 'notionCauses'], ['bowtiePrevention', 'notionPrevention'], ['bowtieEvent', 'notionEvent'],
+                        ['bowtieProtection', 'notionProtection'], ['bowtieConsequences', 'notionConsequences']]
+                        .map(([label, notion]) => `<div class="bt-head" title="${t(notion)}">${t(label)}</div>`).join('')}
                     <div class="bt-col" data-col="causes">${risk.causes.map((cause, index) => `<div class="bt-node cause">
                         ${editable(`data-list="causes" data-index="${index}"`, cause)}${tools(del(`data-del-list="causes" data-index="${index}"`))}</div>`).join('')}
                         ${add('data-add="causes"', 'bowtieAddCause')}</div>
