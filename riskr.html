@@ -6511,7 +6511,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendArrow: "Effet des mesures : plus la flèche est longue, plus la réduction est forte",
                 legendArrowShort: "Effet des mesures",
                 legendAppetite: "Frontière d’appétence : au-delà, le risque doit être traité ou accepté formellement",
-                legendTarget: "Cotation cible : bulle au centre de son losange = cible atteinte ; losange seul = cible pas encore atteinte",
+                legendTarget: "Cotation cible : pastille en losange bleu = cible atteinte ; losange blanc = cible visée, pas encore atteinte",
                 legendVelocity: "Taille de la bulle : vélocité (vitesse de survenue, 1 à 5)",
                 selectedCell: "Case sélectionnée · P{p} × I{i} ({score}, {level})",
                 selectedCellHint: "Un clic sur une case filtre le registre et ce panneau.",
@@ -6873,7 +6873,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendArrow: "Effect of the measures: the longer the arrow, the stronger the reduction",
                 legendArrowShort: "Effect of the measures",
                 legendAppetite: "Appetite boundary: beyond it, the risk must be treated or formally accepted",
-                legendTarget: "Target rating: bubble centred in its diamond = target reached; diamond alone = target not reached yet",
+                legendTarget: "Target rating: blue diamond marker = target reached; white diamond = target aimed for, not reached yet",
                 legendVelocity: "Bubble size: velocity (speed of onset, 1 to 5)",
                 selectedCell: "Selected cell · P{p} × I{i} ({score}, {level})",
                 selectedCellHint: "Clicking a cell filters the register and this panel.",
@@ -7235,7 +7235,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendArrow: "Efecto de las medidas: cuanto más larga la flecha, mayor la reducción",
                 legendArrowShort: "Efecto de las medidas",
                 legendAppetite: "Frontera de apetito: más allá, el riesgo debe tratarse o aceptarse formalmente",
-                legendTarget: "Calificación objetivo: burbuja en el centro de su rombo = objetivo alcanzado; rombo solo = objetivo aún no alcanzado",
+                legendTarget: "Calificación objetivo: marcador en rombo azul = objetivo alcanzado; rombo blanco = objetivo buscado, aún no alcanzado",
                 legendVelocity: "Tamaño de la burbuja: velocidad (rapidez de aparición, 1 a 5)",
                 selectedCell: "Casilla seleccionada · P{p} × I{i} ({score}, {level})",
                 selectedCellHint: "Un clic en una casilla filtra el registro y este panel.",
@@ -7597,7 +7597,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendArrow: "措施效果：箭头越长，降低越多",
                 legendArrowShort: "措施效果",
                 legendAppetite: "风险偏好边界：超出后必须处理或正式接受风险",
-                legendTarget: "目标评级：气泡位于菱形中央 = 已达目标；单独的菱形 = 尚未达到目标",
+                legendTarget: "目标评级：蓝色菱形标记 = 已达目标；白色菱形 = 目标位置，尚未达到",
                 legendVelocity: "气泡大小：速度（发生速度，1 至 5）",
                 selectedCell: "所选格 · P{p} × I{i}（{score}，{level}）",
                 selectedCellHint: "点击某格会筛选登记册和此面板。",
@@ -7959,7 +7959,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendArrow: "أثر الإجراءات: كلما طال السهم زاد الخفض",
                 legendArrowShort: "أثر الإجراءات",
                 legendAppetite: "حد التقبّل: بعده يجب معالجة الخطر أو قبوله رسميًا",
-                legendTarget: "التقييم المستهدف: فقاعة في وسط معيّنها = تم بلوغ الهدف؛ معيّن وحده = لم يُبلغ الهدف بعد",
+                legendTarget: "التقييم المستهدف: علامة على شكل معيّن أزرق = تم بلوغ الهدف؛ معيّن أبيض = الهدف المنشود، لم يُبلغ بعد",
                 legendVelocity: "حجم الفقاعة: السرعة (سرعة الوقوع، من 1 إلى 5)",
                 selectedCell: "الخانة المحددة · P{p} × I{i} ({score}، {level})",
                 selectedCellHint: "النقر على خانة يصفّي السجل وهذه اللوحة.",
@@ -9902,7 +9902,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     ctx.shadowBlur = light ? 0 : 4;
                     ctx.fillStyle = dataset.target ? TARGET_COLOR : dataset.hollow ? BUBBLE_COLOR : 'white';
                     dataset.data.forEach(point => {
-                        if (point.bubble) return; // cible atteinte : le numéro est dans la bulle
                         // La police suit la taille de la bulle : le numéro n'est jamais coupé
                         ctx.font = `bold ${Math.max(6, Math.round(fontSize * (point.scale ?? 1) * (dataset.target ? 0.8 : 1)))}px Arial`;
                         ctx.fillText(point.shortLabel, x.getPixelForValue(point.x), y.getPixelForValue(point.y));
@@ -10024,46 +10023,37 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             })).filter(Boolean);
         }
 
-        // Cible atteinte (même cotation que sa bulle « après ») : le losange n'est pas rangé comme une bulle,
-        // il est posé agrandi derrière sa bulle (cf. frameReachedTargets) — bulle au centre de son losange =
-        // cible atteinte. Renvoie les cibles non atteintes, rangées à leur cotation. Complexité : O(n)
-        const TARGET_FRAME = 1.6; // losange (sommets à 1,6 rayon) qui entoure entièrement la bulle
+        // Cible atteinte (même cotation que sa bulle « après ») : la bulle devient un losange bleu et la cible
+        // n'est pas dessinée à part. Renvoie les cibles non atteintes, losanges blancs à leur cotation. Complexité : O(n)
+        const REACHED_SCALE = 1.25; // losange un peu plus grand que la bulle : même surface, le numéro y tient
         function pendingTargets(after, targets) {
-            const bubbles = new Map(after.map(point => [point.shortLabel, point]));
-            return targets.filter(target => {
-                const bubble = bubbles.get(target.shortLabel);
-                if (bubble && bubble.baseX === target.baseX && bubble.baseY === target.baseY) target.bubble = bubble;
-                return !target.bubble;
+            const targetOf = new Map(targets.map(target => [target.shortLabel, target]));
+            after.forEach(bubble => {
+                const target = targetOf.get(bubble.shortLabel);
+                bubble.reached = !!target && target.baseX === bubble.baseX && target.baseY === bubble.baseY;
             });
-        }
-
-        // Après le rangement : chaque cible atteinte suit sa bulle. Complexité : O(n)
-        function frameReachedTargets(targets) {
-            targets.forEach(target => {
-                if (target.bubble) Object.assign(target, { x: target.bubble.x, y: target.bubble.y, scale: target.bubble.scale * TARGET_FRAME });
-            });
+            const reached = new Set(after.filter(bubble => bubble.reached).map(bubble => bubble.shortLabel));
+            return targets.filter(target => !reached.has(target.shortLabel));
         }
 
         // Jeux de données d'une matrice 'before' ou 'after', bulles rangées sans chevauchement
         function matrixChartData(type) {
             const targets = matrixOptions.target && type !== 'before' ? matrixPoints('Target') : [];
-            const extra = targets.length ? [{ data: targets, phase: 'Target', target: true }] : [];
+            const extra = pending => pending.length ? [{ data: pending, phase: 'Target', target: true }] : [];
             if (type === 'trajectory') {
                 // Avant et après sur la même matrice : bulles rangées ensemble, sans chevauchement
-                const before = matrixPoints('Before'), after = matrixPoints('After');
-                const all = [...before, ...after, ...pendingTargets(after, targets)];
+                const before = matrixPoints('Before'), after = matrixPoints('After'), pending = pendingTargets(after, targets);
+                const all = [...before, ...after, ...pending];
                 const bubble = bubbleRatios(all);
                 resolveCollisions(all, bubble.radius * 2);
-                frameReachedTargets(targets);
-                return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After', main: true }, ...extra] };
+                return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After', main: true }, ...extra(pending)] };
             }
             const phase = type === 'before' ? 'Before' : 'After';
-            const data = matrixPoints(phase);
-            const all = [...data, ...pendingTargets(data, targets)];
+            const data = matrixPoints(phase), pending = pendingTargets(data, targets);
+            const all = [...data, ...pending];
             const bubble = bubbleRatios(all);
             resolveCollisions(all, bubble.radius * 2);
-            frameReachedTargets(targets);
-            return { bubble, datasets: [{ data, phase, main: true }, ...extra] };
+            return { bubble, datasets: [{ data, phase, main: true }, ...extra(pending)] };
         }
 
         // Graphique d'une matrice : datasets = [{ data, phase, hollow }] (hollow = bulle creuse)
@@ -10073,14 +10063,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 data: {
                     datasets: datasets.map(({ data, phase, hollow = false, main = false, target = false }) => ({
                         data, phase, hollow, main, target, bubble,
-                        // creuse ou cible : fond blanc, lisible dans les deux thèmes ; cible atteinte : contour seul
-                        backgroundColor: target ? context => context.raw?.bubble ? 'transparent' : '#ffffff' : hollow ? '#ffffff' : BUBBLE_COLOR,
+                        // creuse ou cible : fond blanc, lisible dans les deux thèmes
+                        backgroundColor: hollow || target ? '#ffffff' : BUBBLE_COLOR,
                         borderColor: target ? TARGET_COLOR : hollow ? BUBBLE_COLOR : 'white',
                         borderWidth: hollow || target ? 2 : 1.5,
-                        order: target ? 1 : 0, // cibles dessinées sous les bulles
-                        pointRadius: bubbleRadius,
-                        pointHoverRadius: context => bubbleRadius(context) * 1.1,
-                        pointStyle: target ? 'rectRot' : 'circle'
+                        // Cible atteinte : la bulle prend la forme de la cible (losange bleu)
+                        pointRadius: context => bubbleRadius(context) * (context.raw?.reached ? REACHED_SCALE : 1),
+                        pointHoverRadius: context => bubbleRadius(context) * (context.raw?.reached ? REACHED_SCALE : 1) * 1.1,
+                        pointStyle: context => target || context.raw?.reached ? 'rectRot' : 'circle'
                     }))
                 },
                 options: {
@@ -10891,15 +10881,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const before = matrixPoints('Before');
             const after = matrixPoints('After');
             const target = matrixOptions.target ? matrixPoints('Target') : [];
-            const afterAll = [...after, ...pendingTargets(after, target)];
+            const pending = pendingTargets(after, target);
+            const afterAll = [...after, ...pending];
             const bubble = bubbleRatios(before, afterAll);
             resolveCollisions(before, bubble.radius * 2);
             resolveCollisions(afterAll, bubble.radius * 2);
-            frameReachedTargets(target);
 
             chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before', main: true }], bubble);
             chartAfter = createRiskChart(document.getElementById('chartAfter'),
-                [{ data: after, phase: 'After', main: true }, ...(target.length ? [{ data: target, phase: 'Target', target: true }] : [])], bubble);
+                [{ data: after, phase: 'After', main: true }, ...(pending.length ? [{ data: pending, phase: 'Target', target: true }] : [])], bubble);
 
             updateRiskTable();
             updateGroupTable();

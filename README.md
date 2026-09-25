@@ -137,8 +137,8 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   symbole de légende (nombre par case, appétence, cible en losange vert, taille des
   bulles selon la vélocité ; explication au survol) et le seuil d'appétence, puis les
   risques de la case cliquée et ceux au-dessus de l'appétence
-- **Cible** : bulle au centre de son losange vert = cible atteinte ; losange seul, à
-  sa cotation = cible pas encore atteinte
+- **Cible** : pastille en losange bleu = cible atteinte ; losange blanc à contour vert,
+  à sa cotation = cible visée, pas encore atteinte
 - **Appétence au risque** tracée en pointillé, **nombre de risques par case**
   (options d'affichage), clic sur une case pour filtrer le registre
 - Visualisation comparative de l'impact des remédiations
