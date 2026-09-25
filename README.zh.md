@@ -18,59 +18,51 @@
 
 ## 🖼️ 截图
 
-截图使用 `riskr-data.js` 中的演示数据，该数据完全是虚构的（一个信息系统现代化改造的假想项目），并以浅色或深色主题展示，与 GitHub 的主题保持一致。本 README 的每个语言版本都配有其自身语言的截图（界面和演示数据均为该场合专门翻译，见 `docs/captures/traductions/`）。界面变更后如需重新生成截图：`node docs/captures/generer-captures.mjs`（需要 Chrome）。
+截图使用 `riskr-data.js` 中的演示数据，该数据完全是虚构的（一个信息系统现代化改造的假想项目），以浅色主题展示。本 README 的每个语言版本都配有其自身语言的截图（界面和演示数据均为该场合专门翻译，见 `docs/captures/traductions/`）。界面变更后如需重新生成截图：`node docs/captures/generer-captures.mjs`（需要 Chrome）。
 
 **矩阵**：处理前 → 处理后轨迹、目标（蓝色菱形徽章 = 已达成目标，白色菱形 = 目标方向），风险偏好，某评审日期时的状态。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/matrices.webp">
   <img src="docs/captures/zh/light/matrices.webp" alt="矩阵：风险轨迹、显示选项和超出风险偏好的风险">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/matrices-groupes.webp">
   <img src="docs/captures/zh/light/matrices-groupes.webp" alt="按组划分的整改后矩阵，已达成目标以蓝色菱形显示">
 </picture>
 
 **登记册**：处理前 → 处理后评级 · 目标、跨评审趋势、处理策略、负责人、下次到期日期和措施。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/registre.webp">
   <img src="docs/captures/zh/light/registre.webp" alt="风险登记册">
 </picture>
 
 **风险卡片**：评审节奏、蝴蝶结分析图（原因、屏障及其有效性、后果）、带阈值和读数的关键风险指标（KRI）、以欧元计的成本估算、评级趋势、备注、链接和变更记录。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/fiche.webp">
   <img src="docs/captures/zh/light/fiche.webp" alt="带有蝴蝶结分析图的风险卡片">
 </picture>
 
 **行动计划**：按状态、负责人或到期日期划分的措施，逾期项目高亮显示；卡片可拖拽到指定位置，或拖入另一列以更改其状态（状态视图）或负责人（负责人视图）。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/plan-actions.webp">
   <img src="docs/captures/zh/light/plan-actions.webp" alt="行动计划">
 </picture>
 
 **评审**：已冻结评审的时间线、评审节奏、最新签署的变更、自由比较、评级变化以及按组划分的敞口。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/revues.webp">
   <img src="docs/captures/zh/light/revues.webp" alt="评审与比较">
 </picture>
 
 **委员会视图**：单页摘要（待决事项、关键 KRI、蒙特卡洛模拟计算的风险准备金），可复制到 Word 或 PowerPoint，也可导出为 PDF。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/comite.webp">
   <img src="docs/captures/zh/light/comite.webp" alt="委员会视图">
 </picture>
 
 **设置**：整个分析共用的设置（风险偏好、评审节奏、速度对气泡大小的影响、以欧元计的影响刻度），在任何使用处均可通过“修改”链接回溯查看。
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/parametres.webp">
   <img src="docs/captures/zh/light/parametres.webp" alt="分析设置">
 </picture>
 

@@ -3,6 +3,7 @@
 // Hors français, les textes de la démonstration sont traduits à la volée (traductions/<langue>.json : texte français → traduction).
 // Chrome headless avec un profil jetable : aucune donnée du navigateur personnel n'est utilisée.
 // Chemin de Chrome modifiable par la variable d'environnement CHROME. Sortie : <langue>/<light|dark>/<vue>.webp
+// Poids du dépôt : résolution 1×, WebP qualité 80, thème sombre seulement en anglais et en français.
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { readFile, writeFile, mkdir, rm, mkdtemp } from 'node:fs/promises';
@@ -13,6 +14,7 @@ import { tmpdir } from 'node:os';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, '..', '..');
 const CHROME = process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const DARK_LANGUAGES = new Set(['en', 'fr']);
 const LANGUAGES = process.argv.length > 2 ? process.argv.slice(2) : ['en', 'fr', 'es', 'zh', 'ar'];
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.png': 'image/png', '.svg': 'image/svg+xml' };
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -83,19 +85,19 @@ async function shot(dir, name, prepare, from, to, maxHeight = 1400) {
         return { x: left, y: top, width: Math.min(innerWidth, Math.max(a.right, b.right) + 16) - left,
             height: Math.min(${maxHeight}, b.bottom + scrollY + 16 - top), scale: 1 };
     })()`);
-    const { result } = await send('Page.captureScreenshot', { format: 'webp', quality: 90, clip, captureBeyondViewport: true });
+    const { result } = await send('Page.captureScreenshot', { format: 'webp', quality: 80, clip, captureBeyondViewport: true });
     await writeFile(join(dir, `${name}.webp`), Buffer.from(result.data, 'base64'));
     console.log(`${dir.slice(HERE.length + 1)}/${name}.webp`, Math.round(clip.width), '×', Math.round(clip.height));
 }
 
 const tabs = '.view-tabs, nav[role="tablist"]';
 const reset = `window.scrollTo(0, 0); if (openRiskUid) closeRiskSheet();`;
-await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1.5, mobile: false });
+await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
 for (const lang of LANGUAGES) {
     language = lang;
     // Chaque langue repart d'un stockage vide : l'analyse enregistrée dans le navigateur ne masque pas les données traduites
     await send('Storage.clearDataForOrigin', { origin: ORIGIN, storageTypes: 'all' });
-    for (const theme of ['light', 'dark']) {
+    for (const theme of DARK_LANGUAGES.has(lang) ? ['light', 'dark'] : ['light']) {
         const dir = join(HERE, lang, theme);
         await mkdir(dir, { recursive: true });
         await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: theme }] });

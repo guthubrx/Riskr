@@ -20,7 +20,7 @@
 
 Capturas realizadas con los datos de demostración de `riskr-data.js`, totalmente
 ficticios (un proyecto imaginario de modernización de un sistema de información),
-mostrados en tema claro u oscuro según el de GitHub. Cada versión de este README
+mostrados en tema claro. Cada versión de este README
 tiene sus propias capturas en su idioma (interfaz y datos de demostración traducidos
 para la ocasión, `docs/captures/traductions/`). Para regenerarlas tras un cambio de
 interfaz: `node docs/captures/generer-captures.mjs` (requiere Chrome).
@@ -29,12 +29,10 @@ interfaz: `node docs/captures/generer-captures.mjs` (requiere Chrome).
 alcanzado, rombo blanco = objetivo buscado), apetito de riesgo, estado a la fecha de una revisión.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/matrices.webp">
   <img src="docs/captures/es/light/matrices.webp" alt="Matrices: trayectoria de riesgo, opciones de visualización y riesgos por encima del apetito">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/matrices-groupes.webp">
   <img src="docs/captures/es/light/matrices-groupes.webp" alt="Matriz tras la remediación por grupo, objetivos alcanzados mostrados como rombos azules">
 </picture>
 
@@ -42,7 +40,6 @@ alcanzado, rombo blanco = objetivo buscado), apetito de riesgo, estado a la fech
 responsable, próxima fecha límite y medidas.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/registre.webp">
   <img src="docs/captures/es/light/registre.webp" alt="Registro de riesgos">
 </picture>
 
@@ -51,7 +48,6 @@ eficacia, consecuencias), indicadores clave de riesgo (KRI) con umbrales y lectu
 costeo en euros, tendencia de la calificación, notas, enlaces e historial de cambios.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/fiche.webp">
   <img src="docs/captures/es/light/fiche.webp" alt="Ficha del riesgo con su bow-tie">
 </picture>
 
@@ -60,7 +56,6 @@ resaltados; una tarjeta puede arrastrarse a la posición deseada o a otra column
 su estado (vista por estado) o su responsable (vista por responsable).
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/plan-actions.webp">
   <img src="docs/captures/es/light/plan-actions.webp" alt="Plan de acción">
 </picture>
 
@@ -68,7 +63,6 @@ su estado (vista por estado) o su responsable (vista por responsable).
 firmados, comparación libre, cambios de calificación y exposición por grupo.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/revues.webp">
   <img src="docs/captures/es/light/revues.webp" alt="Revisiones y comparación">
 </picture>
 
@@ -76,7 +70,6 @@ firmados, comparación libre, cambios de calificación y exposición por grupo.
 de riesgo mediante simulación Monte Carlo), copiable en Word o PowerPoint y exportable a PDF.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/comite.webp">
   <img src="docs/captures/es/light/comite.webp" alt="Vista comité">
 </picture>
 
@@ -85,7 +78,6 @@ revisión, efecto de la velocidad en el tamaño de las burbujas, escala de impac
 recordados con un enlace «modificar» allí donde se utilizan.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/es/dark/parametres.webp">
   <img src="docs/captures/es/light/parametres.webp" alt="Parámetros del análisis">
 </picture>
 

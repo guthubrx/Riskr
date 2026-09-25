@@ -21,8 +21,8 @@
 ## 🖼️ لقطات الشاشة
 
 لقطات الشاشة مأخوذة من بيانات العرض التوضيحي الموجودة في `riskr-data.js`، وهي بيانات
-افتراضية بالكامل (مشروع خيالي لتحديث نظام معلومات)، معروضة بالسمة الفاتحة أو
-الداكنة على غرار GitHub. لكل نسخة لغوية من هذا الملف لقطات شاشة بلغتها الخاصة
+افتراضية بالكامل (مشروع خيالي لتحديث نظام معلومات)، معروضة بالسمة
+الفاتحة. لكل نسخة لغوية من هذا الملف لقطات شاشة بلغتها الخاصة
 (الواجهة وبيانات العرض التوضيحي مُترجمتان لهذا الغرض، `docs/captures/traductions/`).
 لإعادة توليدها بعد تعديل الواجهة: `node docs/captures/generer-captures.mjs` (يتطلب Chrome).
 
@@ -30,12 +30,10 @@
 = هدف مرجوّ)، مستوى تقبّل المخاطر، الحالة في تاريخ مراجعة معيّن.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/matrices.webp">
   <img src="docs/captures/ar/light/matrices.webp" alt="Matrices: risk trajectory, display options and risks above appetite">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/matrices-groupes.webp">
   <img src="docs/captures/ar/light/matrices-groupes.webp" alt="Matrix after remediation by group, targets reached shown as blue diamonds">
 </picture>
 
@@ -43,7 +41,6 @@
 المسؤول، تاريخ الاستحقاق القادم والإجراءات.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/registre.webp">
   <img src="docs/captures/ar/light/registre.webp" alt="Risk register">
 </picture>
 
@@ -52,7 +49,6 @@
 التقدير المالي باليورو، اتجاه التقييم، الملاحظات، الروابط وسجل التعديلات.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/fiche.webp">
   <img src="docs/captures/ar/light/fiche.webp" alt="Risk sheet with its bow-tie">
 </picture>
 
@@ -61,7 +57,6 @@
 حالتها (عرض الحالة) أو مسؤولها (عرض المسؤول).
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/plan-actions.webp">
   <img src="docs/captures/ar/light/plan-actions.webp" alt="Action plan">
 </picture>
 
@@ -69,7 +64,6 @@
 الموقّعة، مقارنة حرّة، تغيرات التقييم والتعرّض حسب المجموعة.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/revues.webp">
   <img src="docs/captures/ar/light/revues.webp" alt="Reviews and comparison">
 </picture>
 
@@ -78,7 +72,6 @@
 وللتصدير بصيغة PDF.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/comite.webp">
   <img src="docs/captures/ar/light/comite.webp" alt="Committee view">
 </picture>
 
@@ -87,7 +80,6 @@
 رابط "تعديل" أينما استُخدمت.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/ar/dark/parametres.webp">
   <img src="docs/captures/ar/light/parametres.webp" alt="Analysis settings">
 </picture>
 
