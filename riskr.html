@@ -2943,7 +2943,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: var(--text-3);
         }
 
-        .sheet-velocity select,
         .sheet-score-edit select {
             padding: 2px 4px;
             border: 1px solid var(--border);
@@ -6170,6 +6169,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                velocityNone: "Vélocité non évaluée",
+                velocity1: "Vélocité 1 · lente (mois)",
+                velocity2: "Vélocité 2 · semaines",
+                velocity3: "Vélocité 3 · jours",
+                velocity4: "Vélocité 4 · heures",
+                velocity5: "Vélocité 5 · immédiate",
+                velocityHint: "Vélocité : délai entre le déclenchement du risque et le moment où son impact se fait sentir. Plus elle est élevée, plus les mesures doivent être en place avant : on n’aura pas le temps de réagir.",
                 libraryShort: "Bibliothèque",
                 libraryMine: "Mes modèles",
                 libraryMineHint: "Vos analyses passées peuvent devenir des modèles : « Enregistrer comme modèle » depuis la fiche d’un risque.",
@@ -6506,6 +6512,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                velocityNone: "Velocity not rated",
+                velocity1: "Velocity 1 · slow (months)",
+                velocity2: "Velocity 2 · weeks",
+                velocity3: "Velocity 3 · days",
+                velocity4: "Velocity 4 · hours",
+                velocity5: "Velocity 5 · immediate",
+                velocityHint: "Velocity: time between the risk being triggered and its impact being felt. The higher it is, the more the measures must be in place beforehand: there will be no time to react.",
                 libraryShort: "Library",
                 libraryMine: "My templates",
                 libraryMineHint: "Your past analyses can become templates: “Save as template” from a risk sheet.",
@@ -6842,6 +6855,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                velocityNone: "Velocidad no evaluada",
+                velocity1: "Velocidad 1 · lenta (meses)",
+                velocity2: "Velocidad 2 · semanas",
+                velocity3: "Velocidad 3 · días",
+                velocity4: "Velocidad 4 · horas",
+                velocity5: "Velocidad 5 · inmediata",
+                velocityHint: "Velocidad: tiempo entre el desencadenamiento del riesgo y el momento en que se siente su impacto. Cuanto más alta, más deben estar las medidas implantadas de antemano: no habrá tiempo para reaccionar.",
                 libraryShort: "Biblioteca",
                 libraryMine: "Mis modelos",
                 libraryMineHint: "Sus análisis anteriores pueden convertirse en modelos: «Guardar como modelo» desde la ficha de un riesgo.",
@@ -7178,6 +7198,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                velocityNone: "速度未评估",
+                velocity1: "速度 1 · 缓慢（数月）",
+                velocity2: "速度 2 · 数周",
+                velocity3: "速度 3 · 数天",
+                velocity4: "速度 4 · 数小时",
+                velocity5: "速度 5 · 即时",
+                velocityHint: "速度：风险触发到影响显现之间的时间。速度越高，措施越需提前到位：届时将来不及应对。",
                 libraryShort: "风险库",
                 libraryMine: "我的模板",
                 libraryMineHint: "以往的分析可以作为模板：在风险卡片中点击“另存为模板”。",
@@ -7514,6 +7541,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                velocityNone: "السرعة غير مقيّمة",
+                velocity1: "السرعة 1 · بطيئة (أشهر)",
+                velocity2: "السرعة 2 · أسابيع",
+                velocity3: "السرعة 3 · أيام",
+                velocity4: "السرعة 4 · ساعات",
+                velocity5: "السرعة 5 · فورية",
+                velocityHint: "السرعة: المدة بين وقوع الخطر وظهور أثره. كلما ارتفعت وجب أن تكون الإجراءات جاهزة مسبقًا، إذ لن يتوفر وقت للتصرف.",
                 libraryShort: "المكتبة",
                 libraryMine: "نماذجي",
                 libraryMineHint: "يمكن أن تصبح تحليلاتك السابقة نماذج: «حفظ كنموذج» من بطاقة الخطر.",
@@ -11033,6 +11067,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Fiche du risque : en-tête, cotations, nœud papillon relié, évolution, notes, liens
         // ========================================
 
+        // Vélocité 1 (lente) → 5 (immédiate) : du bleu au rouge
+        const VELOCITY_COLORS = ['#0a84ff', '#30b0c7', '#c9a300', '#ff9f0a', '#ff3b30'];
         const safeUrl = url => /^\s*(javascript|data|vbscript):/i.test(url) ? '#' : url;
         const todayIso = () => { const d = new Date(); return [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-'); };
         const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit' }) : date; };
@@ -11076,7 +11112,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}</select>
                             <span class="owner">${avatar(risk.responsable || '?')}${editable('data-field="responsable"', risk.responsable, t('mesureOwner'))}</span>
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
-                            <label class="sheet-velocity">${t('colVelocity')} <select data-field="velocite">${[0, 1, 2, 3, 4, 5].map(v => `<option value="${v}" ${v === risk.velocite ? 'selected' : ''}>${v || '–'}</option>`).join('')}</select></label>
+                            <select class="chip-select" data-field="velocite" style="--c:${risk.velocite ? VELOCITY_COLORS[risk.velocite - 1] : '#8e8e93'}" title="${t('velocityHint')}" aria-label="${t('colVelocity')}">
+                                ${[0, 1, 2, 3, 4, 5].map(v => `<option value="${v}" ${v === risk.velocite ? 'selected' : ''}>${t(v ? `velocity${v}` : 'velocityNone')}</option>`).join('')}</select>
                             ${lastReview ? `<span class="sheet-muted">${t('reviewedOn', { date: formatReviewDate(lastReview.date) })}</span>` : ''}
                         </div>
                     </div>
