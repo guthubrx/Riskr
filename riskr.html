@@ -1525,13 +1525,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             display: flex;
             flex-direction: column;
             gap: 2px;
-            max-width: 260px;
-            padding: 7px 10px;
+            max-width: 320px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
             border-radius: 6px;
-            background: rgba(29, 29, 31, 0.92);
-            color: #fff;
-            font-size: 12px;
-            line-height: 1.35;
+            background: var(--surface);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.45;
             pointer-events: none;
         }
 
@@ -1540,7 +1542,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         .matrix-tip small {
-            color: rgba(255, 255, 255, 0.65);
+            color: var(--text-3);
         }
 
         /* Barre d'état des matrices : état actuel ou revue passée (lecture seule) */
@@ -12912,10 +12914,32 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             tip.style.top = `${top}px`;
             tip.style.left = `${Math.min(Math.max(4, box.left + box.width / 2 - tip.offsetWidth / 2), window.innerWidth - tip.offsetWidth - 4)}px`;
         }
-        const hideHintTip = () => { const tip = document.getElementById('hint-tip'); if (tip) tip.hidden = true; };
+        let hintElement = null, hintTimer = null;
+        const hideHintTip = () => {
+            clearTimeout(hintTimer);
+            hintElement = null;
+            const tip = document.getElementById('hint-tip');
+            if (tip) tip.hidden = true;
+        };
+        // Toutes les infobulles passent par ce composant (même corps de texte que les cartes) : l'attribut title
+        // est converti au survol, pour que le navigateur n'affiche plus sa petite infobulle système. Les boutons
+        // sans texte gardent leur nom accessible (aria-label). Converties : court délai, comme une infobulle native.
         document.addEventListener('mouseover', event => {
-            const element = event.target.closest?.('[data-tip]');
-            if (element) showHintTip(element); else hideHintTip();
+            const element = event.target.closest?.('[data-tip], [title]');
+            if (element === hintElement) return;
+            if (element?.hasAttribute('title')) {
+                if (element.title) {
+                    element.dataset.tip = element.title;
+                    element.dataset.tipDelay = '';
+                    if (!element.getAttribute('aria-label') && !element.textContent.trim()) element.setAttribute('aria-label', element.title);
+                }
+                element.removeAttribute('title');
+            }
+            hideHintTip();
+            if (!element?.dataset.tip) return;
+            hintElement = element;
+            if ('tipDelay' in element.dataset) hintTimer = setTimeout(() => showHintTip(element), 500);
+            else showHintTip(element);
         });
         ['mousedown', 'scroll', 'keydown'].forEach(type => document.addEventListener(type, hideHintTip, true));
         const safeUrl = url => /^\s*(javascript|data|vbscript):/i.test(url) ? '#' : url;
