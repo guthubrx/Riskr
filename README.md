@@ -201,9 +201,12 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   compteur « KRI en alerte » dans le registre, KRI critiques dans les décisions
   attendues de la vue comité
 - **Chiffrage et provision pour risques** : fourchette de coût par risque dans la
-  fiche, coût attendu, et dans la vue comité (et le PDF) une provision calculée par
-  10 000 simulations Monte-Carlo (loi triangulaire, résultats stables) : espérance,
-  médiane, provision à 80 % et 90 %, courbe cumulée et principaux contributeurs
+  fiche (et coût pondéré pour les comparer), et dans la vue comité (et le PDF) le
+  **montant à provisionner**, qui suffit 8 fois sur 10, présenté en langage courant :
+  le cas le plus probable, le montant à provisionner, la provision prudente, ce qui
+  explique l'écart, et les leviers (baisse de la provision si tel risque était
+  maîtrisé). Calcul par 10 000 simulations Monte-Carlo (loi triangulaire, résultats
+  stables)
 - **Détecteur d'incohérences** : alertes « à vérifier » (rien n'est bloqué) quand
   une probabilité saisie sort de la tranche de la cotation P, qu'un coût ne
   correspond pas à la cotation d'impact selon l'échelle en euros de l'analyse

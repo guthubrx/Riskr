@@ -3369,25 +3369,32 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             align-items: start;
         }
 
-        .provision-kpis {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .provision-kpis span {
+        .provision-headline span {
             display: block;
             font-size: 12px;
             color: var(--text-3);
         }
 
-        .provision-kpis b {
-            font-size: 20px;
+        .provision-headline b {
+            display: block;
+            margin: 2px 0 6px;
+            font-size: 32px;
         }
 
-        .provision-curve {
-            width: 100%;
-            height: 120px;
+        .provision-headline p,
+        .provision-why {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .provision-scenarios {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 0 0 12px;
+            padding-inline-start: 18px;
+            font-size: 14px;
         }
 
         .provision-card h4 {
@@ -6919,16 +6926,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costMax: "Coût max",
                 costProbability: "Probabilité",
                 costProbabilityDefault: "auto : {pct} % d'après P{p}",
-                costExpected: "Coût attendu",
+                costExpected: "Coût pondéré",
                 provisionTitle: "Provision pour risques",
-                provisionExpected: "Espérance",
-                provisionP50: "Médiane (P50)",
-                provisionP80: "Provision à 80 %",
-                provisionP90: "À 90 %",
-                provisionTop: "Principaux contributeurs (coût attendu)",
-                provisionCurve: "Probabilité que le coût total reste sous chaque montant (pointillé : provision à 80 %)",
-                provisionCaption: "{count} risques chiffrés · 10 000 simulations Monte-Carlo · probabilités après remédiation",
-                summaryExpectedCost: "d'exposition financière attendue",
+                provisionCaption: "{count} risques chiffrés · calcul par 10 000 simulations, probabilités après remédiation",
+                summaryExpectedCost: "de coût pondéré par la probabilité",
                 tipKpiExposure: "Criticité moyenne des risques (probabilité × impact, ramenée sur 5), avant puis après les mesures.",
                 tipKpiHigh: "Nombre de risques de niveau élevé ou critique (score d'au moins 10 sur 25), avant puis après les mesures.",
                 tipKpiAppetite: "Risques dont la criticité après remédiation dépasse le seuil d'appétence : ils demandent une décision du comité.",
@@ -6938,19 +6939,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "Répartition des risques par stratégie : réduire (mesures), transférer (contrat, assurance), accepter (risque assumé), éviter (renoncer à l'activité).",
                 tipExposureReviews: "Criticité moyenne après remédiation, sur 5, à chaque revue figée puis aujourd'hui : la barre raccourcit quand l'exposition baisse.",
                 tipDecisions: "Arbitrages à demander au comité : risques au-dessus de l'appétence et indicateurs (KRI) en zone critique.",
-                tipProvision: "Somme à mettre de côté pour les risques chiffrés, estimée par 10 000 simulations : chaque risque survient ou non selon sa probabilité et coûte alors une valeur tirée dans sa fourchette.",
-                provisionExpectedTip: "Coût moyen si l'on rejouait le projet un grand nombre de fois : somme, pour chaque risque, de sa probabilité × son coût moyen.",
-                provisionP50Tip: "Une chance sur deux que le coût total des risques reste en dessous de ce montant.",
-                provisionP80Tip: "Montant recommandé à provisionner : huit chances sur dix que le coût total des risques reste en dessous.",
-                provisionP90Tip: "Provision prudente : neuf chances sur dix que le coût total des risques reste en dessous.",
-                tipCurve: "Lecture : pour un montant (axe horizontal), la hauteur de la courbe donne la probabilité que le coût total reste en dessous. Pointillé vertical : provision à 80 %.",
-                tipTopCost: "Risques dont le coût attendu (probabilité × coût moyen) est le plus élevé : c'est là que les mesures rapportent le plus.",
+                tipProvision: "Somme à mettre de côté pour faire face aux risques chiffrés. Riskr simule 10 000 déroulements possibles du projet : dans chacun, chaque risque se réalise ou non selon sa probabilité ; le montant retenu suffit dans 8 déroulements sur 10.",
                 summaryAboveTip: "Risques dont la criticité après remédiation dépasse le seuil d'appétence : ils demandent une décision.",
                 summaryUpTip: "Risques dont la cotation après remédiation a augmenté depuis la dernière revue figée.",
                 summaryLateTip: "Mesures non faites dont l'échéance est dépassée.",
                 summaryToReviewTip: "Risques dont la date de prochaine revue est dépassée, ou jamais revus (cadence réglée dans l'onglet Revues).",
                 summaryKriAlertTip: "Indicateurs clés de risque dont le dernier relevé atteint le seuil d'alerte ou le seuil critique.",
-                summaryExpectedCostTip: "Somme des coûts attendus des risques chiffrés (probabilité × coût moyen) ; la provision détaillée est dans la vue comité.",
+                summaryExpectedCostTip: "Somme des coûts pondérés (probabilité × coût moyen) des risques chiffrés : un repère pour comparer, pas un budget ; le montant à provisionner est dans la vue comité.",
                 tipColScores: "Criticité (probabilité × impact, sur 25) avant les mesures → après les mesures ; cadre pointillé : cible visée.",
                 tipColTrend: "Évolution de la cotation après remédiation, revue par revue jusqu'à aujourd'hui.",
                 tipColNextDue: "Échéance la plus proche parmi les mesures non faites ; en rouge si elle est dépassée.",
@@ -6977,7 +6972,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipKriCritical: "Seuil critique : à partir de cette valeur, le point passe au rouge et le KRI remonte dans les décisions du comité.",
                 tipCostRange: "Coût si le risque survient, en euros : une seule valeur suffit ; min et max donnent la fourchette de la simulation.",
                 tipCostProbability: "Probabilité que le risque survienne ; vide, elle découle de la cotation P après remédiation (P1 à P5 : 5, 15, 35, 60, 85 %).",
-                tipCostExpected: "Probabilité × coût moyen de la fourchette : la part de ce risque dans la provision.",
+                tipCostExpected: "Probabilité × coût moyen : sert à comparer les risques entre eux, ce n'est pas un budget.",
+                provisionAmount: "Montant à provisionner",
+                provisionLead: "Avec cette somme de côté, il y a 8 chances sur 10 qu'elle suffise à couvrir les risques qui se réaliseront.",
+                provisionLikelyLine: "Le plus probable (1 chance sur 2) : le coût des risques reste sous {amount}.",
+                provisionRecommendedLine: "À provisionner (8 chances sur 10 de suffire) : {amount}.",
+                provisionPrudentLine: "Prudent (9 chances sur 10) : {amount}.",
+                provisionWhy: "Pourquoi un tel écart : {risks} sont peu probables mais coûteux ; si l'un d'eux se réalise, la facture change d'échelle.",
+                provisionLevers: "Ce qui ferait baisser la provision",
+                provisionLeverGain: "−{amount} si ce risque est maîtrisé",
+                tipProvisionLevers: "Pour chaque risque, de combien le montant à provisionner baisserait s'il était entièrement maîtrisé : c'est là que les mesures rapportent le plus. Chaque baisse est calculée seule : elles ne s'additionnent pas.",
+                provisionPdf: "{amount} à provisionner (8 chances sur 10 de suffire)",
                 issuesTitle: "À vérifier",
                 issueProbability: "Probabilité de {prob} % incohérente avec P{p} (attendu entre {min} et {max} %) : ajuster la probabilité ou la cotation.",
                 issueCostHigh: "Coût probable de {cost} : l'échelle d'impact le situe en I{level} alors que le risque est coté I{i}. Impact sous-coté ?",
@@ -7435,16 +7440,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costMax: "Max cost",
                 costProbability: "Probability",
                 costProbabilityDefault: "auto: {pct} % from P{p}",
-                costExpected: "Expected cost",
+                costExpected: "Weighted cost",
                 provisionTitle: "Risk contingency",
-                provisionExpected: "Expected value",
-                provisionP50: "Median (P50)",
-                provisionP80: "Contingency at 80 %",
-                provisionP90: "At 90 %",
-                provisionTop: "Main contributors (expected cost)",
-                provisionCurve: "Probability that the total cost stays below each amount (dashed: contingency at 80 %)",
-                provisionCaption: "{count} costed risks · 10,000 Monte Carlo simulations · residual probabilities",
-                summaryExpectedCost: "expected financial exposure",
+                provisionCaption: "{count} costed risks · computed from 10,000 simulations, residual probabilities",
+                summaryExpectedCost: "of probability-weighted cost",
                 tipKpiExposure: "Average risk criticality (probability × impact, scaled to 5), before and after the measures.",
                 tipKpiHigh: "Number of high or critical risks (score of 10 out of 25 or more), before and after the measures.",
                 tipKpiAppetite: "Risks whose residual criticality exceeds the appetite threshold: they need a committee decision.",
@@ -7454,19 +7453,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "Risks by strategy: reduce (measures), transfer (contract, insurance), accept (risk taken on), avoid (give up the activity).",
                 tipExposureReviews: "Average residual criticality, out of 5, at each frozen review and today: the bar shortens as exposure falls.",
                 tipDecisions: "Decisions to ask the committee for: risks above appetite and key risk indicators (KRI) in the critical zone.",
-                tipProvision: "Amount to set aside for the costed risks, estimated from 10,000 simulations: each risk occurs or not according to its probability and then costs a value drawn from its range.",
-                provisionExpectedTip: "Average cost if the project were replayed many times: for each risk, its probability × its average cost.",
-                provisionP50Tip: "A one-in-two chance that the total cost of the risks stays below this amount.",
-                provisionP80Tip: "Recommended contingency: an eight-in-ten chance that the total cost of the risks stays below it.",
-                provisionP90Tip: "Prudent contingency: a nine-in-ten chance that the total cost of the risks stays below it.",
-                tipCurve: "How to read it: for an amount (horizontal axis), the height of the curve gives the probability that the total cost stays below it. Vertical dashes: contingency at 80 %.",
-                tipTopCost: "Risks with the highest expected cost (probability × average cost): this is where measures pay off most.",
+                tipProvision: "Amount to set aside to face the costed risks. Riskr simulates 10,000 possible courses of the project: in each, every risk materialises or not according to its probability; the amount chosen is enough in 8 courses out of 10.",
                 summaryAboveTip: "Risks whose residual criticality exceeds the appetite threshold: they need a decision.",
                 summaryUpTip: "Risks whose residual rating has risen since the last frozen review.",
                 summaryLateTip: "Unfinished measures past their due date.",
                 summaryToReviewTip: "Risks whose next review date has passed, or never reviewed (cadence set in the Reviews tab).",
                 summaryKriAlertTip: "Key risk indicators whose latest reading reaches the alert or critical threshold.",
-                summaryExpectedCostTip: "Sum of the expected costs of costed risks (probability × average cost); the detailed contingency is in the committee view.",
+                summaryExpectedCostTip: "Sum of the weighted costs (probability × average cost) of costed risks: a benchmark for comparison, not a budget; the amount to set aside is in the committee view.",
                 tipColScores: "Criticality (probability × impact, out of 25) before → after the measures; dashed box: target.",
                 tipColTrend: "Change in the residual rating, review by review up to today.",
                 tipColNextDue: "Nearest due date among unfinished measures; red if overdue.",
@@ -7493,7 +7486,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipKriCritical: "Critical threshold: from this value, the dot turns red and the KRI appears in the committee's decisions.",
                 tipCostRange: "Cost if the risk occurs, in euros: one value is enough; min and max give the simulation range.",
                 tipCostProbability: "Probability that the risk occurs; if empty, it follows from the residual P rating (P1 to P5: 5, 15, 35, 60, 85 %).",
-                tipCostExpected: "Probability × average cost of the range: this risk's share of the contingency.",
+                tipCostExpected: "Probability × average cost: used to compare risks with each other, not a budget.",
+                provisionAmount: "Amount to set aside",
+                provisionLead: "With this amount set aside, there is an 8 in 10 chance that it will cover the risks that materialise.",
+                provisionLikelyLine: "Most likely (1 chance in 2): the cost of the risks stays below {amount}.",
+                provisionRecommendedLine: "To set aside (8 in 10 chance of being enough): {amount}.",
+                provisionPrudentLine: "Prudent (9 in 10 chance): {amount}.",
+                provisionWhy: "Why such a gap: {risks} are unlikely but costly; if one of them materialises, the bill changes scale.",
+                provisionLevers: "What would lower the contingency",
+                provisionLeverGain: "−{amount} if this risk is under control",
+                tipProvisionLevers: "For each risk, how much the amount to set aside would fall if it were fully under control: this is where measures pay off most. Each reduction is computed on its own: they do not add up.",
+                provisionPdf: "{amount} to set aside (8 in 10 chance of being enough)",
                 issuesTitle: "To check",
                 issueProbability: "A {prob} % probability is inconsistent with P{p} (expected {min} to {max} %): adjust the probability or the rating.",
                 issueCostHigh: "Likely cost of {cost}: the impact scale places it at I{level} while the risk is rated I{i}. Impact underrated?",
@@ -7954,16 +7957,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costMax: "Coste máx.",
                 costProbability: "Probabilidad",
                 costProbabilityDefault: "auto: {pct} % según P{p}",
-                costExpected: "Coste esperado",
+                costExpected: "Coste ponderado",
                 provisionTitle: "Provisión para riesgos",
-                provisionExpected: "Esperanza",
-                provisionP50: "Mediana (P50)",
-                provisionP80: "Provisión al 80 %",
-                provisionP90: "Al 90 %",
-                provisionTop: "Principales contribuyentes (coste esperado)",
-                provisionCurve: "Probabilidad de que el coste total quede por debajo de cada importe (discontinua: provisión al 80 %)",
-                provisionCaption: "{count} riesgos cuantificados · 10 000 simulaciones Monte Carlo · probabilidades residuales",
-                summaryExpectedCost: "de exposición financiera esperada",
+                provisionCaption: "{count} riesgos cuantificados · cálculo con 10 000 simulaciones, probabilidades residuales",
+                summaryExpectedCost: "de coste ponderado por la probabilidad",
                 tipKpiExposure: "Criticidad media de los riesgos (probabilidad × impacto, sobre 5), antes y después de las medidas.",
                 tipKpiHigh: "Número de riesgos altos o críticos (puntuación de al menos 10 sobre 25), antes y después de las medidas.",
                 tipKpiAppetite: "Riesgos cuya criticidad residual supera el umbral de apetito: requieren una decisión del comité.",
@@ -7973,19 +7970,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "Riesgos por estrategia: reducir (medidas), transferir (contrato, seguro), aceptar (riesgo asumido), evitar (renunciar a la actividad).",
                 tipExposureReviews: "Criticidad residual media, sobre 5, en cada revisión fijada y hoy: la barra se acorta cuando baja la exposición.",
                 tipDecisions: "Decisiones que pedir al comité: riesgos por encima del apetito e indicadores (KRI) en zona crítica.",
-                tipProvision: "Importe a reservar para los riesgos cuantificados, estimado con 10 000 simulaciones: cada riesgo ocurre o no según su probabilidad y cuesta entonces un valor de su horquilla.",
-                provisionExpectedTip: "Coste medio si el proyecto se repitiera muchas veces: suma, para cada riesgo, de su probabilidad × su coste medio.",
-                provisionP50Tip: "Una probabilidad entre dos de que el coste total de los riesgos quede por debajo de este importe.",
-                provisionP80Tip: "Provisión recomendada: ocho probabilidades entre diez de que el coste total quede por debajo.",
-                provisionP90Tip: "Provisión prudente: nueve probabilidades entre diez de que el coste total quede por debajo.",
-                tipCurve: "Lectura: para un importe (eje horizontal), la altura de la curva da la probabilidad de que el coste total quede por debajo. Línea vertical: provisión al 80 %.",
-                tipTopCost: "Riesgos con el mayor coste esperado (probabilidad × coste medio): ahí es donde las medidas rinden más.",
+                tipProvision: "Importe a reservar para afrontar los riesgos cuantificados. Riskr simula 10 000 desarrollos posibles del proyecto: en cada uno, cada riesgo se materializa o no según su probabilidad; el importe elegido basta en 8 de cada 10.",
                 summaryAboveTip: "Riesgos cuya criticidad residual supera el umbral de apetito: requieren una decisión.",
                 summaryUpTip: "Riesgos cuya calificación residual ha subido desde la última revisión fijada.",
                 summaryLateTip: "Medidas no realizadas con la fecha límite vencida.",
                 summaryToReviewTip: "Riesgos cuya próxima revisión ha vencido, o nunca revisados (cadencia en la pestaña Revisiones).",
                 summaryKriAlertTip: "Indicadores clave cuyo último valor alcanza el umbral de alerta o crítico.",
-                summaryExpectedCostTip: "Suma de los costes esperados de los riesgos cuantificados (probabilidad × coste medio); la provisión detallada está en la vista comité.",
+                summaryExpectedCostTip: "Suma de los costes ponderados (probabilidad × coste medio): una referencia para comparar, no un presupuesto; el importe a provisionar está en la vista comité.",
                 tipColScores: "Criticidad (probabilidad × impacto, sobre 25) antes → después de las medidas; recuadro discontinuo: objetivo.",
                 tipColTrend: "Evolución de la calificación residual, revisión a revisión hasta hoy.",
                 tipColNextDue: "Fecha límite más próxima entre las medidas no realizadas; en rojo si ha vencido.",
@@ -8012,7 +8003,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipKriCritical: "Umbral crítico: a partir de este valor, el punto se vuelve rojo y el KRI aparece en las decisiones del comité.",
                 tipCostRange: "Coste si el riesgo ocurre, en euros: basta un valor; mín. y máx. dan la horquilla de la simulación.",
                 tipCostProbability: "Probabilidad de que el riesgo ocurra; si está vacía, resulta de la calificación P residual (P1 a P5: 5, 15, 35, 60, 85 %).",
-                tipCostExpected: "Probabilidad × coste medio de la horquilla: la parte de este riesgo en la provisión.",
+                tipCostExpected: "Probabilidad × coste medio: sirve para comparar los riesgos entre sí, no es un presupuesto.",
+                provisionAmount: "Importe a provisionar",
+                provisionLead: "Con este importe reservado, hay 8 posibilidades sobre 10 de que baste para cubrir los riesgos que se materialicen.",
+                provisionLikelyLine: "Lo más probable (1 posibilidad sobre 2): el coste de los riesgos queda por debajo de {amount}.",
+                provisionRecommendedLine: "A provisionar (8 posibilidades sobre 10 de bastar): {amount}.",
+                provisionPrudentLine: "Prudente (9 posibilidades sobre 10): {amount}.",
+                provisionWhy: "Por qué tanta diferencia: {risks} son poco probables pero costosos; si uno se materializa, la factura cambia de escala.",
+                provisionLevers: "Qué reduciría la provisión",
+                provisionLeverGain: "−{amount} si este riesgo se controla",
+                tipProvisionLevers: "Para cada riesgo, cuánto bajaría el importe a provisionar si estuviera totalmente controlado: ahí es donde las medidas rinden más. Cada reducción se calcula por separado: no se suman.",
+                provisionPdf: "{amount} a provisionar (8 posibilidades sobre 10 de bastar)",
                 issuesTitle: "Por verificar",
                 issueProbability: "Probabilidad del {prob} % incoherente con P{p} (esperado entre {min} y {max} %): ajuste la probabilidad o la calificación.",
                 issueCostHigh: "Coste probable de {cost}: la escala de impacto lo sitúa en I{level} y el riesgo está calificado I{i}. ¿Impacto infravalorado?",
@@ -8470,16 +8471,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costMax: "最高成本",
                 costProbability: "概率",
                 costProbabilityDefault: "自动：按 P{p} 为 {pct}%",
-                costExpected: "期望成本",
+                costExpected: "加权成本",
                 provisionTitle: "风险准备金",
-                provisionExpected: "期望值",
-                provisionP50: "中位数（P50）",
-                provisionP80: "80% 置信准备金",
-                provisionP90: "90% 置信",
-                provisionTop: "主要贡献（期望成本）",
-                provisionCurve: "总成本低于各金额的概率（虚线：80% 准备金）",
-                provisionCaption: "{count} 项已估算风险 · 10000 次蒙特卡罗模拟 · 处理后概率",
-                summaryExpectedCost: "预期财务敞口",
+                provisionCaption: "{count} 项已估算风险 · 基于 10000 次模拟，采用处理后概率",
+                summaryExpectedCost: "按概率加权的成本",
                 tipKpiExposure: "风险平均严重度（概率 × 影响，折算为 5 分制），措施实施前与实施后。",
                 tipKpiHigh: "高或严重风险的数量（得分不低于 10/25），措施实施前与实施后。",
                 tipKpiAppetite: "处理后严重度超过风险偏好阈值的风险：需要委员会决策。",
@@ -8489,19 +8484,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "按策略划分的风险：降低（措施）、转移（合同、保险）、接受（承担风险）、规避（放弃该活动）。",
                 tipExposureReviews: "每次冻结评审及当前的处理后平均严重度（满分 5）：敞口下降时条形变短。",
                 tipDecisions: "需提请委员会决策的事项：超出风险偏好的风险，以及处于临界区的关键风险指标（KRI）。",
-                tipProvision: "为已估算风险预留的金额，基于 10000 次模拟：每项风险按其概率发生或不发生，发生时的成本取自其区间。",
-                provisionExpectedTip: "若项目重复多次的平均成本：各风险概率 × 平均成本之和。",
-                provisionP50Tip: "风险总成本低于此金额的概率为二分之一。",
-                provisionP80Tip: "建议计提的准备金：风险总成本低于此金额的概率为十分之八。",
-                provisionP90Tip: "审慎准备金：风险总成本低于此金额的概率为十分之九。",
-                tipCurve: "读法：对横轴上的某一金额，曲线高度即总成本低于该金额的概率。竖直虚线：80% 准备金。",
-                tipTopCost: "期望成本（概率 × 平均成本）最高的风险：在这些风险上采取措施收益最大。",
+                tipProvision: "为应对已估算风险而预留的金额。Riskr 模拟项目的 10000 种可能进程：每种进程中各风险按其概率发生或不发生；所选金额在十分之八的进程中足够。",
                 summaryAboveTip: "处理后严重度超过风险偏好阈值的风险：需要决策。",
                 summaryUpTip: "自上次冻结评审以来处理后评级上升的风险。",
                 summaryLateTip: "已过截止日期但尚未完成的措施。",
                 summaryToReviewTip: "下次评审日期已过或从未评审的风险（周期在“评审”标签中设置）。",
                 summaryKriAlertTip: "最新读数达到预警或临界阈值的关键风险指标。",
-                summaryExpectedCostTip: "已估算风险期望成本之和（概率 × 平均成本）；详细准备金见委员会视图。",
+                summaryExpectedCostTip: "已估算风险的加权成本之和（概率 × 平均成本）：用于比较的参考，并非预算；建议计提金额见委员会视图。",
                 tipColScores: "严重度（概率 × 影响，满分 25）：措施前 → 措施后；虚线框：目标。",
                 tipColTrend: "处理后评级在各次评审直至今天的变化。",
                 tipColNextDue: "未完成措施中最近的截止日期；逾期显示为红色。",
@@ -8528,7 +8517,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipKriCritical: "临界阈值：达到该值时圆点变红，KRI 进入委员会待决事项。",
                 tipCostRange: "风险发生时的成本（欧元）：填一个值即可；最低和最高值构成模拟区间。",
                 tipCostProbability: "风险发生的概率；留空则按处理后 P 评级推算（P1 至 P5：5、15、35、60、85%）。",
-                tipCostExpected: "概率 × 区间平均成本：该风险在准备金中的份额。",
+                tipCostExpected: "概率 × 平均成本：用于比较风险之间的轻重，并非预算。",
+                provisionAmount: "建议计提金额",
+                provisionLead: "预留这笔金额，有十分之八的把握足以覆盖将发生的风险。",
+                provisionLikelyLine: "最可能情况（二分之一）：风险成本低于 {amount}。",
+                provisionRecommendedLine: "建议计提（十分之八足够）：{amount}。",
+                provisionPrudentLine: "审慎（十分之九）：{amount}。",
+                provisionWhy: "差距为何如此之大：{risks} 发生概率低但代价高；一旦其中之一发生，成本将成倍增加。",
+                provisionLevers: "可降低准备金的因素",
+                provisionLeverGain: "若控制该风险，可减少 {amount}",
+                tipProvisionLevers: "每项风险若完全受控，建议计提金额将减少多少：在这些风险上采取措施收益最大。每项减少额单独计算：不可相加。",
+                provisionPdf: "建议计提 {amount}（十分之八足够）",
                 issuesTitle: "待核实",
                 issueProbability: "概率 {prob}% 与 P{p} 不一致（应在 {min}% 至 {max}% 之间）：请调整概率或评级。",
                 issueCostHigh: "最可能成本 {cost}：按影响刻度应为 I{level}，而风险评为 I{i}。影响是否被低估？",
@@ -8986,16 +8985,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costMax: "الكلفة القصوى",
                 costProbability: "الاحتمال",
                 costProbabilityDefault: "تلقائي: {pct} % حسب P{p}",
-                costExpected: "الكلفة المتوقعة",
+                costExpected: "الكلفة المرجحة بالاحتمال",
                 provisionTitle: "احتياطي المخاطر",
-                provisionExpected: "القيمة المتوقعة",
-                provisionP50: "الوسيط (P50)",
-                provisionP80: "الاحتياطي عند 80 %",
-                provisionP90: "عند 90 %",
-                provisionTop: "أكبر المساهمين (الكلفة المتوقعة)",
-                provisionCurve: "احتمال بقاء الكلفة الإجمالية دون كل مبلغ (الخط المتقطع: احتياطي 80 %)",
-                provisionCaption: "{count} مخاطر مقدّرة · 10000 محاكاة مونت كارلو · احتمالات ما بعد المعالجة",
-                summaryExpectedCost: "تعرّض مالي متوقع",
+                provisionCaption: "{count} مخاطر مقدّرة · حساب بعشرة آلاف محاكاة، باحتمالات ما بعد المعالجة",
+                summaryExpectedCost: "كلفة مرجحة بالاحتمال",
                 tipKpiExposure: "متوسط خطورة المخاطر (الاحتمال × الأثر، على 5) قبل الإجراءات وبعدها.",
                 tipKpiHigh: "عدد المخاطر العالية أو الحرجة (درجة 10 من 25 أو أكثر) قبل الإجراءات وبعدها.",
                 tipKpiAppetite: "مخاطر تتجاوز خطورتها بعد المعالجة عتبة التقبّل: تتطلب قرارًا من اللجنة.",
@@ -9005,19 +8998,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipTreatments: "المخاطر حسب الاستراتيجية: التخفيض (إجراءات)، النقل (عقد، تأمين)، القبول (خطر مُتحمَّل)، التجنب (التخلي عن النشاط).",
                 tipExposureReviews: "متوسط الخطورة بعد المعالجة، على 5، في كل مراجعة مثبّتة واليوم: يقصر الشريط عندما ينخفض التعرّض.",
                 tipDecisions: "قرارات يُطلب من اللجنة اتخاذها: مخاطر فوق مستوى التقبّل ومؤشرات (KRI) في المنطقة الحرجة.",
-                tipProvision: "مبلغ يُجنَّب للمخاطر المقدّرة، محسوب من 10000 محاكاة: يقع كل خطر أو لا حسب احتماله، ويكلّف عندها قيمة من نطاقه.",
-                provisionExpectedTip: "متوسط الكلفة لو أُعيد المشروع مرات كثيرة: مجموع احتمال كل خطر × متوسط كلفته.",
-                provisionP50Tip: "احتمال واحد من اثنين أن تبقى الكلفة الإجمالية للمخاطر دون هذا المبلغ.",
-                provisionP80Tip: "الاحتياطي الموصى به: ثمانية احتمالات من عشرة أن تبقى الكلفة الإجمالية دونه.",
-                provisionP90Tip: "احتياطي حذر: تسعة احتمالات من عشرة أن تبقى الكلفة الإجمالية دونه.",
-                tipCurve: "القراءة: لمبلغ على المحور الأفقي، يعطي ارتفاع المنحنى احتمال بقاء الكلفة الإجمالية دونه. الخط العمودي المتقطع: احتياطي 80 %.",
-                tipTopCost: "المخاطر ذات الكلفة المتوقعة الأعلى (الاحتمال × متوسط الكلفة): هنا تكون الإجراءات أجدى.",
+                tipProvision: "المبلغ الواجب تجنيبه لمواجهة المخاطر المقدّرة. يحاكي Riskr عشرة آلاف مسار ممكن للمشروع: في كل مسار يقع كل خطر أو لا حسب احتماله؛ والمبلغ المختار يكفي في 8 مسارات من 10.",
                 summaryAboveTip: "مخاطر تتجاوز خطورتها بعد المعالجة عتبة التقبّل: تتطلب قرارًا.",
                 summaryUpTip: "مخاطر ارتفع تقييمها بعد المعالجة منذ آخر مراجعة مثبّتة.",
                 summaryLateTip: "إجراءات غير منجزة تجاوزت موعدها النهائي.",
                 summaryToReviewTip: "مخاطر تجاوزت موعد مراجعتها القادمة أو لم تُراجع قط (الوتيرة في تبويب المراجعات).",
                 summaryKriAlertTip: "مؤشرات مخاطر رئيسية بلغت قراءتها الأخيرة عتبة التنبيه أو العتبة الحرجة.",
-                summaryExpectedCostTip: "مجموع الكلف المتوقعة للمخاطر المقدّرة (الاحتمال × متوسط الكلفة)؛ الاحتياطي المفصل في عرض اللجنة.",
+                summaryExpectedCostTip: "مجموع الكلف المرجحة (الاحتمال × متوسط الكلفة): مرجع للمقارنة وليس ميزانية؛ المبلغ الواجب تجنيبه في عرض اللجنة.",
                 tipColScores: "الخطورة (الاحتمال × الأثر، من 25) قبل ← بعد الإجراءات؛ الإطار المتقطع: الهدف.",
                 tipColTrend: "تطور التقييم بعد المعالجة، مراجعة بعد مراجعة حتى اليوم.",
                 tipColNextDue: "أقرب موعد نهائي بين الإجراءات غير المنجزة؛ بالأحمر إذا تجاوزته.",
@@ -9044,7 +9031,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipKriCritical: "العتبة الحرجة: من هذه القيمة تصبح النقطة حمراء ويظهر المؤشر في قرارات اللجنة.",
                 tipCostRange: "الكلفة إذا وقع الخطر، باليورو: تكفي قيمة واحدة؛ الأدنى والأقصى يحددان نطاق المحاكاة.",
                 tipCostProbability: "احتمال وقوع الخطر؛ إن كان فارغًا فهو مستمد من تقييم P بعد المعالجة (P1 إلى P5: 5، 15، 35، 60، 85 %).",
-                tipCostExpected: "الاحتمال × متوسط كلفة النطاق: حصة هذا الخطر في الاحتياطي.",
+                tipCostExpected: "الاحتمال × متوسط الكلفة: للمقارنة بين المخاطر، وليس ميزانية.",
+                provisionAmount: "المبلغ الواجب تجنيبه",
+                provisionLead: "بتجنيب هذا المبلغ، هناك 8 فرص من 10 أن يكفي لتغطية المخاطر التي ستقع.",
+                provisionLikelyLine: "الأرجح (فرصة من 2): تبقى كلفة المخاطر دون {amount}.",
+                provisionRecommendedLine: "للتجنيب (8 فرص من 10 أن يكفي): {amount}.",
+                provisionPrudentLine: "حذر (9 فرص من 10): {amount}.",
+                provisionWhy: "لماذا هذا الفارق: {risks} قليلة الاحتمال لكنها مكلفة؛ إذا وقع أحدها تغيّر حجم الفاتورة.",
+                provisionLevers: "ما الذي يخفّض الاحتياطي",
+                provisionLeverGain: "−{amount} إذا تمت السيطرة على هذا الخطر",
+                tipProvisionLevers: "لكل خطر، بكم ينخفض المبلغ الواجب تجنيبه لو تمت السيطرة عليه كليًا: هنا تكون الإجراءات أجدى. تُحسب كل نسبة خفض على حدة: لا تُجمع.",
+                provisionPdf: "{amount} للتجنيب (8 فرص من 10 أن يكفي)",
                 issuesTitle: "للتحقق",
                 issueProbability: "احتمال {prob} % لا يتسق مع P{p} (المتوقع بين {min} و{max} %): عدّل الاحتمال أو التقييم.",
                 issueCostHigh: "الكلفة المرجحة {cost}: يضعها سلّم الأثر في I{level} بينما قُيّم الخطر I{i}. هل الأثر مقدَّر بأقل من حقيقته؟",
@@ -12820,6 +12817,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function committeeContent() {
             const stats = committeeStats();
             const provision = simulateProvision();
+            // Gros risques peu probables qui expliquent l'écart entre le cas le plus probable et le montant à provisionner
+            const bigRisks = provision && provision.p80 >= 2 * provision.p50 ? provision.items.filter(item => item.p < 0.5 && item.range[2] >= 2 * provision.p50)
+                .sort((a, b) => b.range[2] - a.range[2]).slice(0, 2).map(item => item.risk) : [];
             const kpi = (label, value, detail = '', tone = '', tip = '') => `<div class="committee-kpi">
                 <span class="kpi-label"${tip ? ` data-tip="${escapeHtml(t(tip))}"` : ''}>${label}</span><span class="kpi-value">${value}</span>
                 <span class="kpi-detail ${tone}">${detail}</span></div>`;
@@ -12865,11 +12865,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>
                     ${provision ? `<section class="committee-card provision-card"><h3 data-tip="${t('tipProvision')}">${t('provisionTitle')}</h3>
                         <div class="provision-body">
-                            <div class="provision-kpis">${[['provisionExpected', provision.expected], ['provisionP50', provision.p50], ['provisionP80', provision.p80], ['provisionP90', provision.p90]]
-                                .map(([key, value]) => `<div><span data-tip="${t(`${key}Tip`)}">${t(key)}</span><b>${escapeHtml(formatMoney(value))}</b></div>`).join('')}</div>
-                            <div data-tip="${t('tipCurve')}">${provisionCurve(provision)}<p class="review-meta">${t('provisionCurve')}</p></div>
-                            <div><h4 data-tip="${t('tipTopCost')}">${t('provisionTop')}</h4><ol class="provision-top">${[...provision.items].sort((a, b) => expectedCost(b.risk) - expectedCost(a.risk)).slice(0, 5)
-                                .map(({ risk }) => `<li><b>${escapeHtml(risk.id)}</b> ${escapeHtml(risk.title)} <span>${escapeHtml(formatMoney(expectedCost(risk)))}</span></li>`).join('')}</ol></div>
+                            <div class="provision-headline"><span>${t('provisionAmount')}</span><b>${escapeHtml(formatMoney(provision.p80))}</b><p>${t('provisionLead')}</p></div>
+                            <div><ul class="provision-scenarios">
+                                <li>${escapeHtml(t('provisionLikelyLine', { amount: formatMoney(provision.p50) }))}</li>
+                                <li><b>${escapeHtml(t('provisionRecommendedLine', { amount: formatMoney(provision.p80) }))}</b></li>
+                                <li>${escapeHtml(t('provisionPrudentLine', { amount: formatMoney(provision.p90) }))}</li></ul>
+                                ${bigRisks.length ? `<p class="provision-why">${escapeHtml(t('provisionWhy', { risks: bigRisks.map(risk => `${risk.id} ${risk.title}`).join(' ; ') }))}</p>` : ''}</div>
+                            <div><h4 data-tip="${t('tipProvisionLevers')}">${t('provisionLevers')}</h4><ol class="provision-top">${provisionLevers(provision)
+                                .map(({ risk, gain }) => `<li><b>${escapeHtml(risk.id)}</b> ${escapeHtml(risk.title)} <span>${escapeHtml(t('provisionLeverGain', { amount: formatMoney(gain) }))}</span></li>`).join('')}</ol></div>
                         </div>
                         <p class="review-meta">${t('provisionCaption', { count: provision.items.length })}</p></section>` : ''}`,
                 mount: body => {
@@ -12970,7 +12973,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Montants : espaces fines insécables remplacées (non gérées par la police du PDF)
             const provision = simulateProvision();
             const pdfMoney = value => formatMoney(value, false).replace(/[\u202f\u00a0]/g, ' ');
-            if (provision) decisions.push(`${pdfText('provisionTitle')} : ${pdfText('provisionP80')} ${pdfMoney(provision.p80)} · ${pdfText('provisionExpected')} ${pdfMoney(provision.expected)}`);
+            if (provision) decisions.push(`${pdfText('provisionTitle')} : ${t('provisionPdf', { amount: pdfMoney(provision.p80) })}`);
             decisions.slice(0, 8).forEach(line => {
                 y += 6;
                 doc.text(doc.splitTextToSize(line, 265)[0], 14, y);
@@ -13409,8 +13412,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Provision pour risques : T tirages ; à chaque tirage, chaque risque chiffré survient avec sa probabilité
         // et coûte alors une valeur tirée dans sa fourchette (loi triangulaire). Générateur à graine fixe
         // (mulberry32) : mêmes résultats à chaque affichage. Complexité : O(T·r + T log T), r = risques chiffrés.
-        function simulateProvision(trials = 10000) {
-            const items = risks.map(risk => ({ risk, p: riskProbability(risk) / 100, range: costRange(risk) })).filter(item => item.range && item.p > 0);
+        function simulateProvision(trials = 10000, excluded = null) {
+            const items = risks.filter(risk => risk !== excluded).map(risk => ({ risk, p: riskProbability(risk) / 100, range: costRange(risk) }))
+                .filter(item => item.range && item.p > 0);
             if (!items.length) return null;
             let seed = 20260925;
             const random = () => {
@@ -13435,18 +13439,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 p50: quantile(0.5), p80: quantile(0.8), p90: quantile(0.9) };
         }
 
-        // Courbe cumulée : probabilité que le coût total reste sous chaque montant, provision à 80 % marquée. O(1) (60 points)
-        function provisionCurve({ totals, p80 }) {
-            const max = totals[totals.length - 1] || 1;
-            const points = Array.from({ length: 61 }, (_, k) => {
-                const index = Math.min(totals.length - 1, Math.floor(k / 60 * (totals.length - 1)));
-                return `${(totals[index] / max * 300).toFixed(1)},${(110 - index / (totals.length - 1) * 100).toFixed(1)}`;
-            });
-            const x80 = (p80 / max * 300).toFixed(1);
-            return `<svg class="provision-curve" viewBox="0 0 300 120" preserveAspectRatio="none" aria-label="${escapeHtml(t('provisionCurve'))}">
-                <line x1="0" x2="300" y1="30" y2="30" stroke="var(--border)" stroke-dasharray="3 3"/>
-                <line x1="${x80}" x2="${x80}" y1="10" y2="110" stroke="var(--accent)" stroke-dasharray="3 3"/>
-                <polyline points="0,110 ${points.join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>`;
+        // Leviers : baisse du montant à provisionner si un risque était entièrement maîtrisé (retiré de la simulation).
+        // Limité aux 6 risques au coût pondéré le plus fort : O(6 · T · r).
+        function provisionLevers(provision) {
+            return [...provision.items].sort((a, b) => expectedCost(b.risk) - expectedCost(a.risk)).slice(0, 6)
+                .map(({ risk }) => ({ risk, gain: provision.p80 - (simulateProvision(10000, risk)?.p80 ?? 0) }))
+                .filter(lever => lever.gain > provision.p80 * 0.02).sort((a, b) => b.gain - a.gain).slice(0, 4);
         }
 
         // Détecteur d'incohérences : alertes « à vérifier », rien n'est bloqué. Complexité : O(k) par risque (k = KRI)
