@@ -3280,6 +3280,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font: inherit;
         }
 
+        /* Champs numériques : place pour 7 chiffres à côté des flèches */
+        .kri-input[type="number"] {
+            width: 88px;
+        }
+
         .kri-add .kri-input,
         .kri-input[data-kri-field="unite"] {
             width: 96px;
@@ -3452,12 +3457,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             border-color: #ff9f0a;
         }
 
+        .settings-page {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 960px;
+        }
+
+        .settings-page .sheet-head {
+            margin-bottom: 0;
+        }
+
+        .settings-page .committee-sub {
+            margin: -12px 0 0;
+        }
+
+        .settings-page .segmented {
+            width: fit-content;
+        }
+
+        .settings-hint {
+            margin: 0 0 12px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .settings-page .impact-scale {
+            margin-top: 0;
+            font-size: 13px;
+        }
+
+        .settings-page .impact-scale .cost-input {
+            width: 120px;
+        }
+
         .impact-scale {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 6px 14px;
-            margin-top: 12px;
+            gap: 6px 10px;
+            margin: 12px 0 0;
             font-size: 12px;
             color: var(--text-3);
         }
@@ -3495,7 +3534,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cursor: pointer;
         }
 
-        .cadence-setting.flash {
+        [data-setting].flash {
             outline: 2px solid var(--accent);
             outline-offset: 6px;
             border-radius: 6px;
@@ -5496,6 +5535,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <button type="button" class="view-tab" role="tab" data-tab="actions" onclick="showTab('actions')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span data-i18n="actionPlanTitle">Plan d’actions</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="revues" onclick="showTab('revues')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-i18n="reviewsTitle">Revues</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="comite" onclick="showTab('comite')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg><span data-i18n="tabCommittee">Vue comité</span></button>
+            <button type="button" class="view-tab" role="tab" data-tab="parametres" onclick="showTab('parametres')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg><span data-i18n="tabSettings">Paramètres</span></button>
         </nav>
 
         <section class="tab-panel" data-panel="matrices" role="tabpanel">
@@ -5621,7 +5661,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <div class="reviews-page">
                 <aside>
                     <button type="button" class="big-btn" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="reviewNewFreeze">Figer une nouvelle revue</span></button>
-                    <div class="cadence-setting"><span data-i18n="cadenceLabel" data-i18n-tip="tipCadence">Revue des risques tous les</span><div id="cadence-options" class="segmented labeled" role="radiogroup"></div></div>
+                    <div class="cadence-setting"><span data-i18n="cadenceLabel" data-i18n-tip="tipCadence">Revue des risques tous les</span><b id="cadence-current"></b><button type="button" class="link-btn" onclick="gotoSetting('cadence')" data-i18n="settingsChange">modifier</button></div>
                     <ol id="review-timeline" class="review-timeline"></ol>
                     <p class="reviews-hint" data-i18n="reviewsHint"></p>
                     <section class="journal-recent"><h3 data-i18n="journalRecent" data-i18n-tip="tipJournalRecent">Dernières modifications</h3><div id="journal-recent"></div></section>
@@ -5668,6 +5708,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <!-- Vue comité -->
         <section class="tab-panel" data-panel="comite" role="tabpanel" hidden>
             <div id="committee-panel"></div>
+        </section>
+
+        <!-- Paramètres communs à l'analyse -->
+        <section class="tab-panel" data-panel="parametres" role="tabpanel" hidden>
+            <div id="settings-page" class="settings-page"></div>
         </section>
     </div>
 
@@ -6950,7 +6995,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 summaryAboveTip: "Risques dont la criticité après remédiation dépasse le seuil d'appétence : ils demandent une décision.",
                 summaryUpTip: "Risques dont la cotation après remédiation a augmenté depuis la dernière revue figée.",
                 summaryLateTip: "Mesures non faites dont l'échéance est dépassée.",
-                summaryToReviewTip: "Risques dont la date de prochaine revue est dépassée, ou jamais revus (cadence réglée dans l'onglet Revues).",
+                summaryToReviewTip: "Risques dont la date de prochaine revue est dépassée, ou jamais revus (cadence réglée dans l'onglet Paramètres).",
                 summaryKriAlertTip: "Indicateurs clés de risque dont le dernier relevé atteint le seuil d'alerte ou le seuil critique.",
                 summaryExpectedCostTip: "Somme des coûts pondérés (probabilité × coût moyen) des risques chiffrés : un repère pour comparer, pas un budget ; le montant à provisionner est dans la vue comité.",
                 tipColScores: "Criticité (probabilité × impact, sur 25) avant les mesures → après les mesures ; cadre pointillé : cible visée.",
@@ -7209,6 +7254,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                tabSettings: "Paramètres",
+                settingsTitle: "Paramètres de l'analyse",
+                settingsIntro: "Réglages communs à tous les risques, enregistrés avec les données de l'analyse.",
+                settingsAppetiteHint: "Criticité (probabilité × impact) au-delà de laquelle un risque doit être traité ou accepté formellement par le comité.",
+                settingsCadenceTitle: "Cadence de revue",
+                settingsImpactTitle: "Échelle d'impact en euros",
+                settingsImpactHint: "Seuils à partir desquels un coût correspond à I2, I3, I4 ou I5, à adapter à la taille du projet. Ils ne créent aucun coût : ils servent seulement à signaler un impact sous-coté ou sur-coté.",
+                impactScaleInvalid: "Seuil non enregistré : chaque seuil doit être supérieur au précédent.",
+                settingsChange: "modifier",
                 matrixStateLabel: "État affiché dans les matrices",
                 matrixStateChangedOne: "État actuel · 1 changement depuis {review}",
                 matrixStateChangedMany: "État actuel · {count} changements depuis {review}",
@@ -7476,7 +7530,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 summaryAboveTip: "Risks whose residual criticality exceeds the appetite threshold: they need a decision.",
                 summaryUpTip: "Risks whose residual rating has risen since the last frozen review.",
                 summaryLateTip: "Unfinished measures past their due date.",
-                summaryToReviewTip: "Risks whose next review date has passed, or never reviewed (cadence set in the Reviews tab).",
+                summaryToReviewTip: "Risks whose next review date has passed, or never reviewed (cadence set in the Settings tab).",
                 summaryKriAlertTip: "Key risk indicators whose latest reading reaches the alert or critical threshold.",
                 summaryExpectedCostTip: "Sum of the weighted costs (probability × average cost) of costed risks: a benchmark for comparison, not a budget; the amount to set aside is in the committee view.",
                 tipColScores: "Criticality (probability × impact, out of 25) before → after the measures; dashed box: target.",
@@ -7735,6 +7789,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                tabSettings: "Settings",
+                settingsTitle: "Analysis settings",
+                settingsIntro: "Settings shared by all risks, saved with the analysis data.",
+                settingsAppetiteHint: "Criticality (probability × impact) above which a risk must be treated or formally accepted by the committee.",
+                settingsCadenceTitle: "Review cadence",
+                settingsImpactTitle: "Impact scale in euros",
+                settingsImpactHint: "Thresholds from which a cost corresponds to I2, I3, I4 or I5, to be adapted to the size of the project. They create no cost: they only flag an under- or over-rated impact.",
+                impactScaleInvalid: "Threshold not saved: each threshold must be greater than the previous one.",
+                settingsChange: "change",
                 matrixStateLabel: "State shown in the matrices",
                 matrixStateChangedOne: "Current state · 1 change since {review}",
                 matrixStateChangedMany: "Current state · {count} changes since {review}",
@@ -8005,7 +8068,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 summaryAboveTip: "Riesgos cuya criticidad residual supera el umbral de apetito: requieren una decisión.",
                 summaryUpTip: "Riesgos cuya calificación residual ha subido desde la última revisión fijada.",
                 summaryLateTip: "Medidas no realizadas con la fecha límite vencida.",
-                summaryToReviewTip: "Riesgos cuya próxima revisión ha vencido, o nunca revisados (cadencia en la pestaña Revisiones).",
+                summaryToReviewTip: "Riesgos cuya próxima revisión ha vencido, o nunca revisados (cadencia en la pestaña Parámetros).",
                 summaryKriAlertTip: "Indicadores clave cuyo último valor alcanza el umbral de alerta o crítico.",
                 summaryExpectedCostTip: "Suma de los costes ponderados (probabilidad × coste medio): una referencia para comparar, no un presupuesto; el importe a provisionar está en la vista comité.",
                 tipColScores: "Criticidad (probabilidad × impacto, sobre 25) antes → después de las medidas; recuadro discontinuo: objetivo.",
@@ -8261,6 +8324,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                tabSettings: "Parámetros",
+                settingsTitle: "Parámetros del análisis",
+                settingsIntro: "Ajustes comunes a todos los riesgos, guardados con los datos del análisis.",
+                settingsAppetiteHint: "Criticidad (probabilidad × impacto) por encima de la cual un riesgo debe tratarse o aceptarse formalmente por el comité.",
+                settingsCadenceTitle: "Frecuencia de revisión",
+                settingsImpactTitle: "Escala de impacto en euros",
+                settingsImpactHint: "Umbrales a partir de los cuales un coste corresponde a I2, I3, I4 o I5, que deben adaptarse al tamaño del proyecto. No crean ningún coste: solo señalan un impacto infravalorado o sobrevalorado.",
+                impactScaleInvalid: "Umbral no guardado: cada umbral debe ser mayor que el anterior.",
+                settingsChange: "modificar",
                 matrixStateLabel: "Estado mostrado en las matrices",
                 matrixStateChangedOne: "Estado actual · 1 cambio desde {review}",
                 matrixStateChangedMany: "Estado actual · {count} cambios desde {review}",
@@ -8531,7 +8603,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 summaryAboveTip: "处理后严重度超过风险偏好阈值的风险：需要决策。",
                 summaryUpTip: "自上次冻结评审以来处理后评级上升的风险。",
                 summaryLateTip: "已过截止日期但尚未完成的措施。",
-                summaryToReviewTip: "下次评审日期已过或从未评审的风险（周期在“评审”标签中设置）。",
+                summaryToReviewTip: "下次评审日期已过或从未评审的风险（周期在“设置”标签中设置）。",
                 summaryKriAlertTip: "最新读数达到预警或临界阈值的关键风险指标。",
                 summaryExpectedCostTip: "已估算风险的加权成本之和（概率 × 平均成本）：用于比较的参考，并非预算；建议计提金额见委员会视图。",
                 tipColScores: "严重度（概率 × 影响，满分 25）：措施前 → 措施后；虚线框：目标。",
@@ -8787,6 +8859,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                tabSettings: "设置",
+                settingsTitle: "分析设置",
+                settingsIntro: "所有风险共用的设置，随分析数据一起保存。",
+                settingsAppetiteHint: "关键度（概率 × 影响）超过该值的风险必须处理，或由委员会正式接受。",
+                settingsCadenceTitle: "评审周期",
+                settingsImpactTitle: "以欧元计的影响等级",
+                settingsImpactHint: "成本对应 I2、I3、I4 或 I5 的起始阈值，应根据项目规模调整。它们不会产生任何成本，只用于提示影响评级偏低或偏高。",
+                impactScaleInvalid: "阈值未保存：每个阈值必须大于前一个。",
+                settingsChange: "修改",
                 matrixStateLabel: "矩阵中显示的状态",
                 matrixStateChangedOne: "当前状态 · 自{review}以来有 1 处变化",
                 matrixStateChangedMany: "当前状态 · 自{review}以来有 {count} 处变化",
@@ -9057,7 +9138,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 summaryAboveTip: "مخاطر تتجاوز خطورتها بعد المعالجة عتبة التقبّل: تتطلب قرارًا.",
                 summaryUpTip: "مخاطر ارتفع تقييمها بعد المعالجة منذ آخر مراجعة مثبّتة.",
                 summaryLateTip: "إجراءات غير منجزة تجاوزت موعدها النهائي.",
-                summaryToReviewTip: "مخاطر تجاوزت موعد مراجعتها القادمة أو لم تُراجع قط (الوتيرة في تبويب المراجعات).",
+                summaryToReviewTip: "مخاطر تجاوزت موعد مراجعتها القادمة أو لم تُراجع قط (الوتيرة في تبويب الإعدادات).",
                 summaryKriAlertTip: "مؤشرات مخاطر رئيسية بلغت قراءتها الأخيرة عتبة التنبيه أو العتبة الحرجة.",
                 summaryExpectedCostTip: "مجموع الكلف المرجحة (الاحتمال × متوسط الكلفة): مرجع للمقارنة وليس ميزانية؛ المبلغ الواجب تجنيبه في عرض اللجنة.",
                 tipColScores: "الخطورة (الاحتمال × الأثر، من 25) قبل ← بعد الإجراءات؛ الإطار المتقطع: الهدف.",
@@ -9313,6 +9394,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                tabSettings: "الإعدادات",
+                settingsTitle: "إعدادات التحليل",
+                settingsIntro: "إعدادات مشتركة بين جميع المخاطر، تُحفظ مع بيانات التحليل.",
+                settingsAppetiteHint: "درجة الخطورة (الاحتمال × الأثر) التي يجب بعدها معالجة الخطر أو قبوله رسميًا من اللجنة.",
+                settingsCadenceTitle: "وتيرة المراجعة",
+                settingsImpactTitle: "مقياس الأثر باليورو",
+                settingsImpactHint: "العتبات التي تبدأ عندها التكلفة بالتوافق مع I2 أو I3 أو I4 أو I5، ويجب تكييفها مع حجم المشروع. لا تنشئ أي تكلفة: تُستخدم فقط للتنبيه إلى أثر مقدّر بأقل أو بأكثر من اللازم.",
+                impactScaleInvalid: "لم تُحفظ العتبة: يجب أن تكون كل عتبة أكبر من السابقة.",
+                settingsChange: "تعديل",
                 matrixStateLabel: "الحالة المعروضة في المصفوفات",
                 matrixStateChangedOne: "الحالة الحالية · تغيير واحد منذ {review}",
                 matrixStateChangedMany: "الحالة الحالية · {count} تغييرات منذ {review}",
@@ -11040,9 +11130,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderReviews() {
             const timeline = document.getElementById('review-timeline');
             if (!timeline) return;
-            document.getElementById('cadence-options').innerHTML = [30, 60, 90, 180].map(days =>
-                `<button type="button" class="segmented-btn${settings.cadenceRevue === days ? ' active' : ''}" role="radio" aria-checked="${settings.cadenceRevue === days}"
-                    onclick="setReviewCadence(${days})">${t('cadenceDays', { n: days })}</button>`).join('');
+            document.getElementById('cadence-current').textContent = t('cadenceDays', { n: settings.cadenceRevue });
             const recent = document.getElementById('journal-recent');
             recent.innerHTML = journalList([...journal].reverse(), 8, true);
             recent.onclick = event => {
@@ -12520,6 +12608,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             updateCharts();
         }
 
+        // Niveaux d'appétence proposés : criticité maximale acceptée (0 : aucune appétence)
+        const APPETITE_LEVELS = [[CRITICALITY_THRESHOLDS.medium - 1, 'critLow'], [CRITICALITY_THRESHOLDS.high - 1, 'critMedium'],
+            [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh'], [0, 'appetiteNone']];
+
         // L'appétence fait partie de l'analyse : historisée et enregistrée avec les données
         function setRiskAppetite(max) {
             settings.riskAppetite = max;
@@ -12537,8 +12629,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const svg = inner => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
             const chip = (name, label, symbol, tip) => `<button type="button" class="option-chip${matrixOptions[name] ? ' on' : ''}" aria-pressed="${matrixOptions[name]}"
                 ${tip ? `data-tip="${escapeHtml(t(tip))}"` : ''} onclick="toggleMatrixOption('${name}')">${svg(symbol)}${t(label)}</button>`;
-            const levels = [[CRITICALITY_THRESHOLDS.medium - 1, 'critLow'], [CRITICALITY_THRESHOLDS.high - 1, 'critMedium'],
-                [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh'], [0, 'appetiteNone']];
             // Avant (creuse), après (pleine) et flèche : seulement en trajectoire, où les deux se côtoient
             const legend = matrixLayout !== 'trajectory' ? [] : [
                 [`<circle cx="12" cy="12" r="8" fill="#fff" stroke="${BUBBLE_COLOR}" stroke-width="2.5"/>`, 'modeBefore', 'legendBefore'],
@@ -12568,10 +12658,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         ${chip('target', 'optionTarget', `<rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)" fill="none" stroke="${TARGET_COLOR}" stroke-width="2.5"/>`, 'legendTarget')}
                         ${chip('velocity', 'optionVelocity', `<circle cx="7" cy="14" r="4" fill="currentColor"/><circle cx="17" cy="12" r="6.5" fill="currentColor"/>`, 'legendVelocity')}
                     </div>
-                    <div class="panel-appetite"><span>${t('appetiteLabel')}</span>
-                        <div class="segmented labeled" role="radiogroup" aria-label="${escapeHtml(t('appetiteLabel'))}">${levels.map(([max, key]) =>
-                            `<button type="button" class="segmented-btn${settings.riskAppetite === max ? ' active' : ''}" role="radio" aria-checked="${settings.riskAppetite === max}"
-                                ${max ? `data-tip="≤ ${max}"` : ''} onclick="setRiskAppetite(${max})">${t(key)}</button>`).join('')}</div></div>
+                    <div class="panel-appetite"><span>${t('appetiteLabel')} :</span><b>${t((APPETITE_LEVELS.find(([max]) => max === settings.riskAppetite) || [0, 'appetiteNone'])[1])}</b>
+                        <button type="button" class="link-btn" onclick="gotoSetting('appetite')">${t('settingsChange')}</button></div>
                 </section>
                 <section class="panel-card"><h3>${cell ? t('selectedCell', { p: cell.p, i: cell.i, score: cellScore, level: t(FILTER_LEVELS[getCriticalityLevel(cellScore)]).toLocaleLowerCase() })
                         : t('selectedCell', {}).split(' · ')[0]}</h3>
@@ -12667,6 +12755,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
             chartBefore = chartAfter = chartTrajectory = null;
             renderReviews();
+            renderSettings();
             withCurrentState(renderCommitteeTab);
             renderRegister();
 
@@ -13626,6 +13715,49 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             commitChange();
             renderReviews();
             renderRisks();
+            renderSettings();
+        }
+
+        // Paramètres communs à l'analyse : un seul endroit pour les régler, rappels « modifier » ailleurs
+        function renderSettings() {
+            const page = document.getElementById('settings-page');
+            if (!page) return;
+            const choices = (options, current, handler) => `<div class="segmented labeled" role="radiogroup">${options.map(([value, label, tip]) =>
+                `<button type="button" class="segmented-btn${current === value ? ' active' : ''}" role="radio" aria-checked="${current === value}"
+                    ${tip ? `data-tip="${tip}"` : ''} onclick="${handler}(${value})">${label}</button>`).join('')}</div>`;
+            page.innerHTML = `<div class="sheet-head"><h2>${t('settingsTitle')}</h2></div><p class="committee-sub">${t('settingsIntro')}</p>
+                <section class="committee-card" data-setting="appetite"><h3>${t('appetiteLabel')}</h3><p class="settings-hint">${t('settingsAppetiteHint')}</p>
+                    ${choices(APPETITE_LEVELS.map(([max, key]) => [max, t(key), max ? `≤ ${max}` : '']), settings.riskAppetite, 'setRiskAppetite')}</section>
+                <section class="committee-card" data-setting="cadence"><h3>${t('settingsCadenceTitle')}</h3><p class="settings-hint">${t('tipCadence')}</p>
+                    ${choices([30, 60, 90, 180].map(days => [days, t('cadenceDays', { n: days })]), settings.cadenceRevue, 'setReviewCadence')}</section>
+                <section class="committee-card" data-setting="impact"><h3>${t('settingsImpactTitle')}</h3><p class="settings-hint">${t('settingsImpactHint')}</p>
+                    <div class="impact-scale">${settings.echelleImpact.map((limit, index) =>
+                        `<label>${t('impactScaleFrom', { n: index + 2 })} <input type="number" min="0" step="any" class="kri-input cost-input" data-impact-limit="${index}" value="${limit}"> €</label>`).join('')}</div></section>`;
+            page.onchange = event => {
+                const limit = event.target.closest('[data-impact-limit]');
+                if (!limit) return;
+                // Seuils croissants obligatoires : une saisie qui casserait l'ordre est refusée
+                const next = [...settings.echelleImpact];
+                next[Number(limit.dataset.impactLimit)] = toNumber(limit.value);
+                if (!next.every((v, i) => v > 0 && (!i || v > next[i - 1]))) {
+                    showToast(t('impactScaleInvalid'));
+                    return renderSettings();
+                }
+                settings.echelleImpact = next;
+                commitChange();
+                renderRisks();
+                showToast(t('changeSaved'));
+            };
+        }
+
+        // Ouvre l'onglet Paramètres sur un réglage et le met en évidence
+        function gotoSetting(name) {
+            if (openRiskUid) closeRiskSheet();
+            showTab('parametres');
+            const card = document.querySelector(`[data-setting="${name}"]`);
+            card.scrollIntoView({ block: 'center' });
+            card.classList.add('flash');
+            setTimeout(() => card.classList.remove('flash'), 1600);
         }
         const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit' }) : date; };
 
@@ -13696,7 +13828,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <span class="vel-text">${risk.velocite ? t(`velocity${risk.velocite}`).split(' · ').pop() : '–'}</span></span>
                             <span class="review-cadence${cadence.due ? ' due' : ''}"><span>${cadence.last ? t('reviewedOn', { date: formatReviewDate(cadence.last) }) : t('reviewNever')}</span>
                                 <label data-tip="${t('tipNextReview')}">${t('reviewNextLabel')} <input type="date" class="review-date" value="${escapeHtml(cadence.next)}"></label>
-                                <button type="button" class="link-btn" data-action="goto-cadence" title="${t('cadenceLabel')}">${t('cadenceEvery', { n: settings.cadenceRevue })}</button>
+                                <button type="button" class="link-btn" data-action="goto-settings" data-setting="cadence" title="${t('cadenceLabel')}">${t('cadenceEvery', { n: settings.cadenceRevue })}</button>
                                 <button type="button" class="sheet-btn" data-action="mark-reviewed" data-tip="${t('tipMarkReviewed')}">${icon('check')} ${t('markReviewed')}</button></span>
                         </div>
                     </div>
@@ -13739,13 +13871,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <section class="committee-card sheet-cost"><h3 data-tip="${t('costHint')}">${t('costTitle')}</h3>
                     <div class="cost-fields">${[['min', 'costMin'], ['probable', 'costLikely'], ['max', 'costMax']].map(([field, label]) =>
                         `<label data-tip="${t('tipCostRange')}">${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input${flagged('cout')}" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
-                        <label data-tip="${t('tipCostWithoutProtection')}">${t('costWithoutProtection')} <input type="number" min="0" step="any" class="kri-input cost-input${flagged('cout')}" data-cost-field="sansProtection" value="${risk.cout.sansProtection ?? ''}"> €</label>
+                        <label data-tip="${t('tipCostWithoutProtection')}">${t('costWithoutProtection')} <input type="number" min="0" step="any" class="kri-input cost-input" data-cost-field="sansProtection" value="${risk.cout.sansProtection ?? ''}"> €</label>
                         <label data-tip="${t('tipCostProbability')}">${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input${flagged('probabilite')}" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
                             placeholder="${t('costAuto')}"> %</label>
                         ${risk.cout.probabilite === null && risk.assessmentAfter[0] ? `<small>${t('costProbabilityDefault', { p: risk.assessmentAfter[0], pct: DEFAULT_PROBABILITY[risk.assessmentAfter[0]] })}</small>` : ''}
                         <span class="cost-expected" data-tip="${t('tipCostExpected')}">${t('costExpected')} : <b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div>
-                    <div class="impact-scale" data-tip="${t('tipImpactScale')}"><span>${t('impactScaleLabel')}</span>${settings.echelleImpact.map((limit, index) =>
-                        `<label>${t('impactScaleFrom', { n: index + 2 })} <input type="number" min="0" step="any" class="kri-input cost-input" data-impact-limit="${index}" value="${limit}"> €</label>`).join('')}</div></section>
+                    <p class="impact-scale"><span data-tip="${t('tipImpactScale')}">${t('impactScaleLabel')}</span> ${escapeHtml(settings.echelleImpact.map((limit, index) =>
+                        `${t('impactScaleFrom', { n: index + 2 })} ${formatMoney(limit)}`).join(' · '))}
+                        <button type="button" class="link-btn" data-action="goto-settings" data-setting="impact">${t('settingsChange')}</button></p></section>
                 <div class="sheet-cards">
                     <section class="committee-card"><h3>${t('evolutionTitle')}</h3><div class="sheet-evolution"><canvas></canvas></div>
                         <p class="review-meta">${history.length ? t('evolutionCaption', { dates: history.map(r => shortDate(r.date)).join(', ') }) : ''}</p></section>
@@ -13793,14 +13926,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
             // Seuils et unité d'un KRI
             sheet.onchange = event => {
-                const limit = event.target.closest('[data-impact-limit]');
-                if (limit) {
-                    // Seuils croissants obligatoires : une saisie qui casserait l'ordre est ignorée
-                    const next = [...settings.echelleImpact];
-                    next[Number(limit.dataset.impactLimit)] = toNumber(limit.value);
-                    if (next.every((v, i) => v > 0 && (!i || v > next[i - 1]))) settings.echelleImpact = next;
-                    return save('all');
-                }
                 const cost = event.target.closest('[data-cost-field]');
                 if (cost) {
                     risk.cout[cost.dataset.costField] = toNumber(cost.value);
@@ -13885,13 +14010,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     risk.kri.push(normalizeKri({ nom: t('kriNew') }));
                     renderRegister();
                     sheet.querySelector(`[data-kri-name="${risk.kri.length - 1}"]`).click();
-                } else if (action === 'goto-cadence') {
-                    closeRiskSheet();
-                    showTab('revues');
-                    const setting = document.querySelector('.cadence-setting');
-                    setting.scrollIntoView({ block: 'center' });
-                    setting.classList.add('flash');
-                    setTimeout(() => setting.classList.remove('flash'), 1600);
+                } else if (action === 'goto-settings') {
+                    gotoSetting(target.dataset.setting);
                 } else if (action === 'mark-reviewed') {
                     risk.revuLe = todayIso();
                     risk.prochaineRevue = ''; // la prochaine revue repart de la cadence
@@ -14036,7 +14156,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Onglets de vues
         // ========================================
 
-        const VIEW_TABS = ['matrices', 'registre', 'actions', 'revues', 'comite'];
+        const VIEW_TABS = ['matrices', 'registre', 'actions', 'revues', 'comite', 'parametres'];
         // Onglet de l'adresse (riskr.html#revues), sinon le dernier utilisé
         // Adresse d'une fiche : riskr.html#fiche:<identifiant stable du risque>
         const tabFromHash = location.hash.startsWith('#fiche:') ? 'registre' : location.hash.slice(1);

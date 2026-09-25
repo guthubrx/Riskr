@@ -90,6 +90,7 @@ for (const [theme, folder] of [['light', 'clair'], ['dark', 'sombre']]) {
     await shot(dir, 'plan-actions', `${reset} showTab('actions'); setActionGrouping('state');`, tabs, '[data-panel="actions"]', 1100);
     await shot(dir, 'revues', `${reset} showTab('revues');`, tabs, '[data-panel="revues"]', 1700);
     await shot(dir, 'comite', `${reset} showTab('comite');`, tabs, '[data-panel="comite"]', 1900);
+    await shot(dir, 'parametres', `${reset} showTab('parametres');`, tabs, '[data-panel="parametres"]', 1200);
 }
 
 ws.close();

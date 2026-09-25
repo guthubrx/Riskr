@@ -70,6 +70,14 @@ pour risques par simulation Monte-Carlo), copiable dans Word ou PowerPoint et ex
   <img src="docs/captures/clair/comite.png" alt="Vue comité">
 </picture>
 
+**Paramètres** : réglages communs à toute l'analyse (appétence au risque, cadence de
+revue, échelle d'impact en euros), rappelés avec un lien « modifier » là où ils servent.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/parametres.png">
+  <img src="docs/captures/clair/parametres.png" alt="Paramètres de l'analyse">
+</picture>
+
 ## 📦 Données séparées (riskr-data.js)
 
 Les données vivent dans `riskr-data.js` (format `window.RISKR_DATA`), chargé
@@ -167,7 +175,7 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 ### Organisation en onglets
 - **Matrices** (matrices, panneau latéral, moyennes par groupe, tableau
   récapitulatif), **Registre** (tableau compact, cartes ou édition complète),
-  **Plan d'actions**, **Revues**, **Vue comité** ; l'onglet choisi est mémorisé et
+  **Plan d'actions**, **Revues**, **Vue comité**, **Paramètres** ; l'onglet choisi est mémorisé et
   figure dans l'adresse (`riskr.html#revues`). Un clic sur une case de matrice
   filtre le registre et le panneau latéral.
 - **Fiche du risque** (clic sur un risque, adresse `riskr.html#fiche:<uid>`) :
@@ -214,12 +222,12 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Détecteur d'incohérences** : alertes « à vérifier » (rien n'est bloqué) quand
   une probabilité saisie sort de la tranche de la cotation P, qu'un coût ne
   correspond pas à la cotation d'impact selon l'échelle en euros de l'analyse
-  (`settings.echelleImpact`, réglable dans la fiche), qu'un KRI est critique sur un
+  (`settings.echelleImpact`, réglable dans l'onglet Paramètres), qu'un KRI est critique sur un
   risque coté peu probable, ou que les cotations se contredisent ; compteur et
   filtre dans le registre, détail dans la fiche
 - **Cadence de revue** : chaque risque a une prochaine revue (date choisie, sinon
-  dernière revue + cadence de 30, 60, 90 ou 180 jours réglée en haut de l'onglet
-  Revues, sous « Figer une nouvelle revue », et rappelée dans la fiche) ;
+  dernière revue + cadence de 30, 60, 90 ou 180 jours réglée dans l'onglet
+  Paramètres, et rappelée dans l'onglet Revues et dans la fiche) ;
   « Marquer comme revu » dans la fiche ; les risques à revoir sont signalés et
   filtrables dans le registre ; export des rappels en `.ics` (Outlook, Google
   Agenda, Calendrier)
@@ -260,7 +268,8 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   PDF restent sur l'état actuel.
 - **Panneau latéral** : une carte compacte « Affichage » où chaque option porte son
   symbole de légende (nombre par case, appétence, cible en losange vert, taille des
-  bulles selon la vélocité ; explication au survol) et le seuil d'appétence, puis les
+  bulles selon la vélocité ; explication au survol) et le rappel du seuil d'appétence
+  (réglé dans l'onglet Paramètres), puis les
   risques de la case cliquée et ceux au-dessus de l'appétence
 - **Cible** : pastille en losange bleu = cible atteinte ; losange blanc à contour vert,
   à sa cotation = cible visée, pas encore atteinte
