@@ -7088,6 +7088,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCondition: ", à condition de réaliser les {count} mesures restantes",
                 provisionConditionLate: " (dont {late} en retard)",
                 provisionNormal: "Cas normal, aucun gros risque ne se réalise : environ {amount} pour les {count} autres risques chiffrés.",
+                provisionNormalNone: "Cas normal : le plus souvent, aucun des {count} autres risques chiffrés ne se réalise.",
                 provisionBigTitle: "Les gros risques",
                 provisionBigCost: "{amount} s'il se réalise",
                 provisionNoBig: "Aucun risque ne pèse à lui seul la moitié du montant : la somme couvre une accumulation de petits aléas.",
@@ -7633,6 +7634,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCondition: ", provided the {count} remaining measures are carried out",
                 provisionConditionLate: " ({late} of them overdue)",
                 provisionNormal: "Normal case, no big risk occurs: about {amount} for the {count} other costed risks.",
+                provisionNormalNone: "Normal case: most of the time, none of the {count} other costed risks occurs.",
                 provisionBigTitle: "The big risks",
                 provisionBigCost: "{amount} if it occurs",
                 provisionNoBig: "No single risk weighs half of the amount: the sum covers an accumulation of small setbacks.",
@@ -8181,6 +8183,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCondition: ", siempre que se realicen las {count} medidas pendientes",
                 provisionConditionLate: " ({late} de ellas con retraso)",
                 provisionNormal: "Caso normal, no se materializa ningún riesgo grande: unos {amount} para los otros {count} riesgos cuantificados.",
+                provisionNormalNone: "Caso normal: la mayoría de las veces, no se materializa ninguno de los otros {count} riesgos cuantificados.",
                 provisionBigTitle: "Los riesgos grandes",
                 provisionBigCost: "{amount} si se materializa",
                 provisionNoBig: "Ningún riesgo pesa por sí solo la mitad del importe: la suma cubre una acumulación de pequeños imprevistos.",
@@ -8726,6 +8729,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCondition: "，前提是完成剩余的 {count} 项措施",
                 provisionConditionLate: "（其中 {late} 项已逾期）",
                 provisionNormal: "正常情况（没有大风险发生）：其余 {count} 个已估算风险约需 {amount}。",
+                provisionNormalNone: "正常情况：大多数情况下，其余 {count} 个已估算风险都不会发生。",
                 provisionBigTitle: "大风险",
                 provisionBigCost: "若发生则为 {amount}",
                 provisionNoBig: "没有任何单一风险占到金额的一半：这笔钱用于应对多个小意外的累积。",
@@ -9271,6 +9275,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 provisionCondition: "، بشرط تنفيذ التدابير المتبقية وعددها {count}",
                 provisionConditionLate: " (منها {late} متأخرة)",
                 provisionNormal: "الحالة العادية، لا يقع أي خطر كبير: نحو {amount} للمخاطر المقدّرة الأخرى وعددها {count}.",
+                provisionNormalNone: "الحالة العادية: في أغلب الأحيان لا يقع أي من المخاطر المقدّرة الأخرى وعددها {count}.",
                 provisionBigTitle: "المخاطر الكبيرة",
                 provisionBigCost: "{amount} إذا وقع",
                 provisionNoBig: "لا يمثل أي خطر بمفرده نصف المبلغ: المبلغ يغطي تراكم حوادث صغيرة.",
@@ -13144,7 +13149,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 ${provision.savings > 0 ? `<p class="provision-savings">${escapeHtml(t('provisionSavings', { amount: approxMoney(provision.savings) }))}${provision.pending
                                     ? escapeHtml(t('provisionCondition', { count: provision.pending }) + (provision.late ? t('provisionConditionLate', { late: provision.late }) : '')) : ''}.</p>` : ''}</div>
                             <div>
-                                ${provision.big.length ? `<p class="provision-normal">${escapeHtml(t('provisionNormal', { amount: approxMoney(provision.normal), count: provision.normalCount }))}</p>
+                                ${provision.big.length ? `<p class="provision-normal">${provision.normalCount ? escapeHtml(provision.normal > 0
+                                    ? t('provisionNormal', { amount: approxMoney(provision.normal), count: provision.normalCount })
+                                    : t('provisionNormalNone', { count: provision.normalCount })) : ''}</p>
                                 <h4>${t('provisionBigTitle')}</h4>
                                 <ul class="provision-scenarios">${provision.big.map(risk => `<li><b>${escapeHtml(risk.id)} ${escapeHtml(risk.title)}</b>${colon()}${escapeHtml(t('provisionBigCost', { amount: approxMoney(costRange(risk)[1]) }))}
                                     <small>${escapeHtml(measureEffectText(risk))}</small></li>`).join('')}</ul>` : `<p class="provision-normal">${escapeHtml(t('provisionNoBig'))}</p>`}
@@ -13882,6 +13889,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Nouveautés, de la plus récente à la plus ancienne : [type, français, anglais] ; les autres langues
         // affichent l'anglais. À compléter à chaque évolution (commits : dépôt GitHub).
         const CHANGELOG = [
+            { date: "2026-09-25", commits: [], title: ["Provision : cas normal", "Contingency: normal case"], items: [
+                ["fixed", "Provision : « le plus souvent, aucun des autres risques ne se réalise » au lieu d'un montant de 0 €.", "Contingency: \"most of the time, none of the other risks occurs\" instead of an amount of €0."]] },
             { date: "2026-09-25", commits: ["66dcd41", "ce755c4"], title: ["Icônes et documentation", "Icons and documentation"], items: [
                 ["fixed", "Icônes d'import et d'export remises dans le bon sens (flèche entrante pour importer, sortante pour exporter).", "Import and export icons the right way round (inward arrow to import, outward arrow to export)."],
                 ["improved", "README en anglais par défaut, traduit dans les 5 langues de l'application, avec des captures dans chaque langue.", "README in English by default, translated into the application's 5 languages, with screenshots in each language."],
