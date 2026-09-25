@@ -3292,6 +3292,84 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cursor: pointer;
         }
 
+        /* Chiffrage et provision pour risques */
+        .sheet-cost {
+            margin-top: 16px;
+        }
+
+        .cost-fields {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 16px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .cost-fields .cost-input {
+            width: 100px;
+        }
+
+        .cost-fields small {
+            color: var(--text-3);
+        }
+
+        .cost-expected {
+            margin-inline-start: auto;
+        }
+
+        .provision-card {
+            margin-top: 16px;
+        }
+
+        .provision-body {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.3fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .provision-kpis {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .provision-kpis span {
+            display: block;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .provision-kpis b {
+            font-size: 20px;
+        }
+
+        .provision-curve {
+            width: 100%;
+            height: 120px;
+        }
+
+        .provision-card h4 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .provision-top {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 0;
+            padding-inline-start: 18px;
+            font-size: 13px;
+        }
+
+        .provision-top span {
+            float: inline-end;
+            color: var(--text-2);
+        }
+
         /* Cadence de revue */
         .review-cadence {
             display: inline-flex;
@@ -6598,6 +6676,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalKri: "Indicateur",
                 journalKriValue: "Relevé",
                 journalKriThresholds: "Seuils",
+                costTitle: "Chiffrage du risque",
+                costHint: "Coût si le risque survient (fourchette) et probabilité : ils alimentent la provision pour risques de la vue comité.",
+                costMin: "Coût min",
+                costLikely: "Coût probable",
+                costMax: "Coût max",
+                costProbability: "Probabilité",
+                costProbabilityDefault: "par défaut d'après P{p} : {pct} %",
+                costExpected: "Coût attendu",
+                provisionTitle: "Provision pour risques",
+                provisionExpected: "Espérance",
+                provisionP50: "Médiane (P50)",
+                provisionP80: "Provision à 80 %",
+                provisionP90: "À 90 %",
+                provisionTop: "Principaux contributeurs (coût attendu)",
+                provisionCurve: "Probabilité que le coût total reste sous chaque montant (pointillé : provision à 80 %)",
+                provisionCaption: "{count} risques chiffrés · 10 000 simulations Monte-Carlo · probabilités après remédiation",
+                summaryExpectedCost: "d'exposition financière attendue",
                 mesureDueDate: "Échéance (facultatif)",
                 mesureTextPlaceholder: "Décrire la mesure",
                 mesureAdd: "Ajouter une mesure",
@@ -7017,6 +7112,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalKri: "Indicator",
                 journalKriValue: "Reading",
                 journalKriThresholds: "Thresholds",
+                costTitle: "Risk costing",
+                costHint: "Cost if the risk occurs (range) and probability: they feed the risk contingency in the committee view.",
+                costMin: "Min cost",
+                costLikely: "Likely cost",
+                costMax: "Max cost",
+                costProbability: "Probability",
+                costProbabilityDefault: "default from P{p}: {pct} %",
+                costExpected: "Expected cost",
+                provisionTitle: "Risk contingency",
+                provisionExpected: "Expected value",
+                provisionP50: "Median (P50)",
+                provisionP80: "Contingency at 80 %",
+                provisionP90: "At 90 %",
+                provisionTop: "Main contributors (expected cost)",
+                provisionCurve: "Probability that the total cost stays below each amount (dashed: contingency at 80 %)",
+                provisionCaption: "{count} costed risks · 10,000 Monte Carlo simulations · residual probabilities",
+                summaryExpectedCost: "expected financial exposure",
                 mesureDueDate: "Due date (optional)",
                 mesureTextPlaceholder: "Describe the measure",
                 mesureAdd: "Add a measure",
@@ -7439,6 +7551,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalKri: "Indicador",
                 journalKriValue: "Medición",
                 journalKriThresholds: "Umbrales",
+                costTitle: "Cuantificación del riesgo",
+                costHint: "Coste si el riesgo ocurre (horquilla) y probabilidad: alimentan la provisión para riesgos de la vista comité.",
+                costMin: "Coste mín.",
+                costLikely: "Coste probable",
+                costMax: "Coste máx.",
+                costProbability: "Probabilidad",
+                costProbabilityDefault: "por defecto según P{p}: {pct} %",
+                costExpected: "Coste esperado",
+                provisionTitle: "Provisión para riesgos",
+                provisionExpected: "Esperanza",
+                provisionP50: "Mediana (P50)",
+                provisionP80: "Provisión al 80 %",
+                provisionP90: "Al 90 %",
+                provisionTop: "Principales contribuyentes (coste esperado)",
+                provisionCurve: "Probabilidad de que el coste total quede por debajo de cada importe (discontinua: provisión al 80 %)",
+                provisionCaption: "{count} riesgos cuantificados · 10 000 simulaciones Monte Carlo · probabilidades residuales",
+                summaryExpectedCost: "de exposición financiera esperada",
                 mesureDueDate: "Plazo (opcional)",
                 mesureTextPlaceholder: "Describir la medida",
                 mesureAdd: "Añadir una medida",
@@ -7858,6 +7987,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalKri: "指标",
                 journalKriValue: "读数",
                 journalKriThresholds: "阈值",
+                costTitle: "风险估算",
+                costHint: "风险发生时的成本（区间）和概率：用于委员会视图中的风险准备金。",
+                costMin: "最低成本",
+                costLikely: "最可能成本",
+                costMax: "最高成本",
+                costProbability: "概率",
+                costProbabilityDefault: "默认按 P{p}：{pct}%",
+                costExpected: "期望成本",
+                provisionTitle: "风险准备金",
+                provisionExpected: "期望值",
+                provisionP50: "中位数（P50）",
+                provisionP80: "80% 置信准备金",
+                provisionP90: "90% 置信",
+                provisionTop: "主要贡献（期望成本）",
+                provisionCurve: "总成本低于各金额的概率（虚线：80% 准备金）",
+                provisionCaption: "{count} 项已估算风险 · 10000 次蒙特卡罗模拟 · 处理后概率",
+                summaryExpectedCost: "预期财务敞口",
                 mesureDueDate: "截止日期（可选）",
                 mesureTextPlaceholder: "描述措施",
                 mesureAdd: "添加措施",
@@ -8277,6 +8423,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalKri: "مؤشر",
                 journalKriValue: "قراءة",
                 journalKriThresholds: "العتبات",
+                costTitle: "تقدير كلفة الخطر",
+                costHint: "الكلفة إذا وقع الخطر (نطاق) والاحتمال: يغذيان احتياطي المخاطر في عرض اللجنة.",
+                costMin: "الكلفة الدنيا",
+                costLikely: "الكلفة المرجحة",
+                costMax: "الكلفة القصوى",
+                costProbability: "الاحتمال",
+                costProbabilityDefault: "افتراضيًا حسب P{p}: {pct} %",
+                costExpected: "الكلفة المتوقعة",
+                provisionTitle: "احتياطي المخاطر",
+                provisionExpected: "القيمة المتوقعة",
+                provisionP50: "الوسيط (P50)",
+                provisionP80: "الاحتياطي عند 80 %",
+                provisionP90: "عند 90 %",
+                provisionTop: "أكبر المساهمين (الكلفة المتوقعة)",
+                provisionCurve: "احتمال بقاء الكلفة الإجمالية دون كل مبلغ (الخط المتقطع: احتياطي 80 %)",
+                provisionCaption: "{count} مخاطر مقدّرة · 10000 محاكاة مونت كارلو · احتمالات ما بعد المعالجة",
+                summaryExpectedCost: "تعرّض مالي متوقع",
                 mesureDueDate: "الموعد النهائي (اختياري)",
                 mesureTextPlaceholder: "صِف الإجراء",
                 mesureAdd: "إضافة إجراء",
@@ -8932,6 +9095,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 liens: objectList(raw.liens).map(normalizeLink),
                 // Cadence de revue : dernière revue déclarée et prochaine revue choisie (AAAA-MM-JJ, facultatives)
                 kri: objectList(raw.kri).map(normalizeKri), // indicateurs clés de risque
+                cout: normalizeCout(raw.cout), // coût si le risque survient (€) et probabilité (%)
                 revuLe: isIsoDate(raw.revuLe) ? raw.revuLe : '',
                 prochaineRevue: isIsoDate(raw.prochaineRevue) ? raw.prochaineRevue : ''
             });
@@ -9013,6 +9177,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             releves: objectList(raw.releves).map(r => ({ date: String(r.date || ''), valeur: toNumber(r.valeur), auteur: String(r.auteur || '') }))
                 .filter(r => r.valeur !== null).sort((a, b) => a.date.localeCompare(b.date))
         });
+
+        // Chiffrage : fourchette de coût en euros si le risque survient, probabilité en % (vide : déduite de la cotation)
+        const normalizeCout = raw => ({ min: toNumber(raw?.min), probable: toNumber(raw?.probable), max: toNumber(raw?.max),
+            probabilite: toNumber(raw?.probabilite) });
 
         const isIsoDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
@@ -9150,6 +9318,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 });
                 listChanges(old.notes.map(n => n.texte), risk.notes.map(n => n.texte)).forEach(([a, b]) => add(risk, 'note', a, b));
                 listChanges(old.liens.map(l => l.libelle), risk.liens.map(l => l.libelle)).forEach(([a, b]) => add(risk, 'lien', a, b));
+                ['min', 'probable', 'max', 'probabilite'].forEach(field => {
+                    if (journalText(old.cout[field]) !== journalText(risk.cout[field])) add(risk, `cout.${field}`, old.cout[field], risk.cout[field]);
+                });
                 listChanges(old.kri.map(k => k.nom), risk.kri.map(k => k.nom)).forEach(([a, b]) => add(risk, 'kri', a, b));
                 const oldKri = new Map(old.kri.map(k => [k.id, k]));
                 risk.kri.forEach(kri => {
@@ -9176,7 +9347,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             'mesure.etat': 'mesureState', 'mesure.porteur': 'mesureOwner', 'mesure.echeance': 'journalDue', 'mesure.barriere': 'journalBarrier',
             'mesure.efficacite': 'journalEfficacy', note: 'journalNote', lien: 'journalLink', created: 'journalCreated',
             deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview',
-            kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds' };
+            kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds',
+            'cout.min': 'costMin', 'cout.probable': 'costLikely', 'cout.max': 'costMax', 'cout.probabilite': 'costProbability' };
         const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review', 'kri', 'kri.releve']);
         function journalValue(champ, value) {
             if (value === '') return '';
@@ -9186,6 +9358,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             if (champ === 'traitement') return treatmentLabel(value);
             if (champ === 'revuLe' || champ === 'prochaineRevue') return formatReviewDate(value);
+            if (champ === 'cout.probabilite') return `${value} %`;
+            if (champ.startsWith('cout.')) return formatMoney(Number(value), false);
             if (champ === 'statut') return t(value);
             if (champ === 'mesure.etat') return t(MESURE_STATES[value] || 'stateTodo');
             if (champ === 'mesure.barriere') return t(value === 'protection' ? 'barrierProtection' : 'barrierPrevention');
@@ -12001,6 +12175,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Contenu de la vue comité : titre, boutons, corps et montage du graphique de trajectoire
         function committeeContent() {
             const stats = committeeStats();
+            const provision = simulateProvision();
             const kpi = (label, value, detail = '', tone = '') => `<div class="committee-kpi">
                 <span class="kpi-label">${label}</span><span class="kpi-value">${value}</span>
                 <span class="kpi-detail ${tone}">${detail}</span></div>`;
@@ -12043,7 +12218,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`),
                                 ...stats.kriCritical.map(({ risk, kri }) => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(t('kriDecision', { name: kri.nom, value: formatKri(kri) }))}</li>`)]
                                 .join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
-                    </div>`,
+                    </div>
+                    ${provision ? `<section class="committee-card provision-card"><h3 data-tip="${t('costHint')}">${t('provisionTitle')}</h3>
+                        <div class="provision-body">
+                            <div class="provision-kpis">${[['provisionExpected', provision.expected], ['provisionP50', provision.p50], ['provisionP80', provision.p80], ['provisionP90', provision.p90]]
+                                .map(([key, value]) => `<div><span>${t(key)}</span><b>${escapeHtml(formatMoney(value))}</b></div>`).join('')}</div>
+                            <div>${provisionCurve(provision)}<p class="review-meta">${t('provisionCurve')}</p></div>
+                            <div><h4>${t('provisionTop')}</h4><ol class="provision-top">${[...provision.items].sort((a, b) => expectedCost(b.risk) - expectedCost(a.risk)).slice(0, 5)
+                                .map(({ risk }) => `<li><b>${escapeHtml(risk.id)}</b> ${escapeHtml(risk.title)} <span>${escapeHtml(formatMoney(expectedCost(risk)))}</span></li>`).join('')}</ol></div>
+                        </div>
+                        <p class="review-meta">${t('provisionCaption', { count: provision.items.length })}</p></section>` : ''}`,
                 mount: body => {
                     const { datasets, bubble } = matrixChartData('trajectory');
                     committeeChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
@@ -12136,9 +12320,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             doc.text(pdfText('committeeDecisions'), 14, y);
             doc.setFontSize(9);
             doc.setFont(undefined, 'normal');
-            const decisions = stats.above.length
-                ? stats.above.map(risk => `${risk.id} · ${risk.title} (${scoreOf(risk.assessmentAfter)})`)
-                : [pdfText('committeeNoDecision')];
+            const decisions = [...stats.above.map(risk => `${risk.id} · ${risk.title} (${scoreOf(risk.assessmentAfter)})`),
+                ...stats.kriCritical.map(({ risk, kri }) => `${risk.id} · ${t('kriDecision', { name: kri.nom, value: formatKri(kri) })}`)];
+            if (!decisions.length) decisions.push(pdfText('committeeNoDecision'));
+            // Montants : espaces fines insécables remplacées (non gérées par la police du PDF)
+            const provision = simulateProvision();
+            const pdfMoney = value => formatMoney(value, false).replace(/[\u202f\u00a0]/g, ' ');
+            if (provision) decisions.push(`${pdfText('provisionTitle')} : ${pdfText('provisionP80')} ${pdfMoney(provision.p80)} · ${pdfText('provisionExpected')} ${pdfMoney(provision.expected)}`);
             decisions.slice(0, 8).forEach(line => {
                 y += 6;
                 doc.text(doc.splitTextToSize(line, 265)[0], 14, y);
@@ -12390,7 +12578,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 [risks.filter(risk => lastScores.has(risk.uid) && scoreOf(risk.assessmentAfter) > lastScores.get(risk.uid)).length, 'summaryUp'],
                 [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate'],
                 [risks.filter(toReview).length, 'summaryToReview'],
-                [risks.flatMap(risk => risk.kri).filter(kri => ['alert', 'critical'].includes(kriStatus(kri))).length, 'summaryKriAlert']
+                [risks.flatMap(risk => risk.kri).filter(kri => ['alert', 'critical'].includes(kriStatus(kri))).length, 'summaryKriAlert'],
+                ...(risks.some(costRange) ? [[escapeHtml(formatMoney(risks.reduce((sum, risk) => sum + expectedCost(risk), 0))), 'summaryExpectedCost']] : [])
             ];
             document.getElementById('register-summary').innerHTML = summary.map(([count, key]) => `<span><b>${count}</b> ${t(key)}</span>`).join('');
             if (registerMode === 'edit') return;
@@ -12526,6 +12715,64 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return `<svg class="kri-spark" viewBox="0 0 160 40" preserveAspectRatio="none" aria-hidden="true">${limit(kri.alerte, KRI_COLORS.alert)}${limit(kri.critique, KRI_COLORS.critical)}
                 <polyline points="${values.map((v, i) => `${x(i)},${y(v)}`).join(' ')}" fill="none" stroke="currentColor" stroke-width="1.5"/>
                 <circle cx="${x(values.length - 1)}" cy="${y(values[values.length - 1])}" r="3" fill="${KRI_COLORS[kriStatus(kri)]}"/></svg>`;
+        }
+
+        // Probabilité par défaut selon la cotation P après remédiation (P1..P5), en %
+        const DEFAULT_PROBABILITY = [0, 5, 15, 35, 60, 85];
+        const riskProbability = risk => risk.cout.probabilite ?? DEFAULT_PROBABILITY[risk.assessmentAfter[0]] ?? 0;
+        // Fourchette [min, probable, max] triée ; une seule valeur saisie vaut pour les trois. null si non chiffré
+        function costRange(risk) {
+            const values = [risk.cout.min, risk.cout.probable, risk.cout.max];
+            const known = values.filter(v => v !== null);
+            if (!known.length) return null;
+            const likely = risk.cout.probable ?? known[Math.floor(known.length / 2)];
+            return [risk.cout.min ?? likely, likely, risk.cout.max ?? likely].sort((a, b) => a - b);
+        }
+        const expectedCost = risk => { const range = costRange(risk); return range ? riskProbability(risk) / 100 * (range[0] + range[1] + range[2]) / 3 : 0; };
+        const formatMoney = (value, compact = true) => new Intl.NumberFormat(currentLanguage, { style: 'currency', currency: 'EUR',
+            maximumFractionDigits: compact ? 1 : 0, notation: compact ? 'compact' : 'standard' }).format(value);
+
+        // Provision pour risques : T tirages ; à chaque tirage, chaque risque chiffré survient avec sa probabilité
+        // et coûte alors une valeur tirée dans sa fourchette (loi triangulaire). Générateur à graine fixe
+        // (mulberry32) : mêmes résultats à chaque affichage. Complexité : O(T·r + T log T), r = risques chiffrés.
+        function simulateProvision(trials = 10000) {
+            const items = risks.map(risk => ({ risk, p: riskProbability(risk) / 100, range: costRange(risk) })).filter(item => item.range && item.p > 0);
+            if (!items.length) return null;
+            let seed = 20260925;
+            const random = () => {
+                seed = (seed + 0x6D2B79F5) | 0;
+                let x = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+                x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+                return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+            };
+            const triangular = ([a, c, b]) => {
+                const u = random(), width = b - a || 1;
+                return u < (c - a) / width ? a + Math.sqrt(u * width * (c - a)) : b - Math.sqrt((1 - u) * width * (b - c));
+            };
+            const totals = new Float64Array(trials);
+            for (let t = 0; t < trials; t++) {
+                let sum = 0;
+                for (const item of items) if (random() < item.p) sum += triangular(item.range);
+                totals[t] = sum;
+            }
+            totals.sort();
+            const quantile = q => totals[Math.min(trials - 1, Math.floor(q * trials))];
+            return { items, totals, expected: items.reduce((sum, item) => sum + expectedCost(item.risk), 0),
+                p50: quantile(0.5), p80: quantile(0.8), p90: quantile(0.9) };
+        }
+
+        // Courbe cumulée : probabilité que le coût total reste sous chaque montant, provision à 80 % marquée. O(1) (60 points)
+        function provisionCurve({ totals, p80 }) {
+            const max = totals[totals.length - 1] || 1;
+            const points = Array.from({ length: 61 }, (_, k) => {
+                const index = Math.min(totals.length - 1, Math.floor(k / 60 * (totals.length - 1)));
+                return `${(totals[index] / max * 300).toFixed(1)},${(110 - index / (totals.length - 1) * 100).toFixed(1)}`;
+            });
+            const x80 = (p80 / max * 300).toFixed(1);
+            return `<svg class="provision-curve" viewBox="0 0 300 120" preserveAspectRatio="none" aria-label="${escapeHtml(t('provisionCurve'))}">
+                <line x1="0" x2="300" y1="30" y2="30" stroke="var(--border)" stroke-dasharray="3 3"/>
+                <line x1="${x80}" x2="${x80}" y1="10" y2="110" stroke="var(--accent)" stroke-dasharray="3 3"/>
+                <polyline points="0,110 ${points.join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>`;
         }
 
         // Date de la dernière revue figée qui contient chaque risque. Complexité : O(E), E = entrées de revues
@@ -12677,6 +12924,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <button type="button" class="sheet-btn" data-kri-add="${index}">${icon('plus')} ${t('kriAddValue')}</button></div>
                     </div>`; }).join('') || `<p class="review-empty">${t('kriEmpty')}</p>`}</div>
                     <button type="button" class="bowtie-add" data-action="add-kri">${icon('plus')} ${t('kriAdd')}</button></section>
+                <section class="committee-card sheet-cost"><h3 data-tip="${t('costHint')}">${t('costTitle')}</h3>
+                    <div class="cost-fields">${[['min', 'costMin'], ['probable', 'costLikely'], ['max', 'costMax']].map(([field, label]) =>
+                        `<label>${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
+                        <label>${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
+                            placeholder="${DEFAULT_PROBABILITY[risk.assessmentAfter[0]] ?? ''}"> %</label>
+                        ${risk.cout.probabilite === null && risk.assessmentAfter[0] ? `<small>${t('costProbabilityDefault', { p: risk.assessmentAfter[0], pct: DEFAULT_PROBABILITY[risk.assessmentAfter[0]] })}</small>` : ''}
+                        <span class="cost-expected">${t('costExpected')} : <b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div></section>
                 <div class="sheet-cards">
                     <section class="committee-card"><h3>${t('evolutionTitle')}</h3><div class="sheet-evolution"><canvas></canvas></div>
                         <p class="review-meta">${history.length ? t('evolutionCaption', { dates: history.map(r => shortDate(r.date)).join(', ') }) : ''}</p></section>
@@ -12724,6 +12978,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
             // Seuils et unité d'un KRI
             sheet.onchange = event => {
+                const cost = event.target.closest('[data-cost-field]');
+                if (cost) {
+                    risk.cout[cost.dataset.costField] = toNumber(cost.value);
+                    return save('all');
+                }
                 const input = event.target.closest('[data-kri-field]');
                 if (!input) return;
                 const kri = risk.kri[Number(input.dataset.kri)];

@@ -110,6 +110,10 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   releves: [{ date, valeur, auteur }] }` ; `sens` vaut `hausse` (plus la valeur
   monte, plus c'est grave) ou `baisse` ; le dernier relevé donne le statut
   (vert, orange au seuil d'alerte, rouge au seuil critique).
+- `cout` : chiffrage `{ min, probable, max, probabilite }` — coût en euros si le
+  risque survient (une seule valeur suffit) et probabilité en % ; vide, la
+  probabilité découle de la cotation P après remédiation (P1 à P5 : 5, 15, 35, 60,
+  85 %).
 - `revuLe` / `prochaineRevue` (facultatifs, `AAAA-MM-JJ`) : dernière revue
   déclarée et prochaine revue choisie ; `settings.cadenceRevue` : revue des risques
   tous les N jours (90 par défaut).
@@ -193,6 +197,10 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   risque avec seuils d'alerte et critique, relevés datés et signés, mini-courbe ;
   compteur « KRI en alerte » dans le registre, KRI critiques dans les décisions
   attendues de la vue comité
+- **Chiffrage et provision pour risques** : fourchette de coût par risque dans la
+  fiche, coût attendu, et dans la vue comité (et le PDF) une provision calculée par
+  10 000 simulations Monte-Carlo (loi triangulaire, résultats stables) : espérance,
+  médiane, provision à 80 % et 90 %, courbe cumulée et principaux contributeurs
 - **Cadence de revue** : chaque risque a une prochaine revue (date choisie, sinon
   dernière revue + cadence de 30, 60, 90 ou 180 jours réglée dans l'onglet Revues) ;
   « Marquer comme revu » dans la fiche ; les risques à revoir sont signalés et
