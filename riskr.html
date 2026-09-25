@@ -11598,8 +11598,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     save('all');
                 } else renderRegister();
             };
+            let typed = false; // à l'ouverture, tous les porteurs ; le filtre s'applique dès la première frappe
             const render = () => {
-                const query = input.value.trim();
+                const query = typed ? input.value.trim() : '';
                 const lower = query.toLocaleLowerCase();
                 const owners = knownOwners().filter(owner => owner.toLocaleLowerCase().includes(lower));
                 const exact = owners.some(owner => owner.toLocaleLowerCase() === lower);
@@ -11613,7 +11614,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             };
             list.onmousedown = event => event.preventDefault(); // garder le focus dans le champ
             list.onclick = event => { const choice = event.target.closest('[data-owner]'); if (choice) finish(choice.dataset.owner); };
-            input.oninput = render;
+            input.oninput = () => { typed = true; render(); };
             input.onkeydown = event => {
                 if (event.key === 'Enter') {
                     // Porteur existant de même nom (casse près), sinon le texte tapé
