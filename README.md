@@ -170,6 +170,9 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   échéance, « Mes mesures », étiquette préventive / protection, retards en tête,
   glisser-déposer des cartes : ordre dans la colonne conservé, changement d'état
   (vue par état) ou de porteur (vue par porteur)
+- **Porteur modifiable partout** : un clic sur la pastille du porteur (registre,
+  plan d'actions, fiche) ouvre le même sélecteur avec suggestions et pastilles,
+  qui permet aussi de créer un nouveau porteur
 - **Revues** : photo datée des cotations (« Figer une nouvelle revue », auteur ou
   instance), frise, comparaison de deux revues ou d'une revue avec l'état actuel
   (compteurs, changements triés par écart), courbe d'exposition moyenne par

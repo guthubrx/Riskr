@@ -3106,6 +3106,49 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             outline: none;
         }
 
+        .owner-input.floating {
+            position: fixed;
+            z-index: 3001;
+        }
+
+        /* Porteur cliquable : registre (pastille et nom), plan d'actions (pastille seule) */
+        .owner-edit {
+            margin: -3px -6px;
+            padding: 3px 6px;
+            border: none;
+            border-radius: 8px;
+            background: none;
+            color: inherit;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .owner-edit:hover {
+            background: var(--surface-2);
+        }
+
+        .owner-avatar {
+            display: inline-flex;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: none;
+            cursor: pointer;
+        }
+
+        .owner-avatar:hover {
+            outline: 2px solid var(--border-strong);
+            outline-offset: 1px;
+        }
+
+        .avatar.empty {
+            border: 1.5px dashed var(--border-strong);
+            background: none;
+            color: var(--text-3);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
         /* Suggestions du champ porteur */
         .picker {
             position: fixed;
@@ -6241,6 +6284,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 copyForWord: "Copier pour Word",
                 copiedForWord: "Copié",
                 mesureOwner: "Porteur",
+                changeOwner: "Changer le porteur",
                 mesureDueDate: "Échéance (facultatif)",
                 mesureTextPlaceholder: "Décrire la mesure",
                 mesureAdd: "Ajouter une mesure",
@@ -6601,6 +6645,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 copyForWord: "Copy for Word",
                 copiedForWord: "Copied",
                 mesureOwner: "Owner",
+                changeOwner: "Change owner",
                 mesureDueDate: "Due date (optional)",
                 mesureTextPlaceholder: "Describe the measure",
                 mesureAdd: "Add a measure",
@@ -6964,6 +7009,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Interface complète (en-tête, messages, exports)
                 mesureOwner: "Responsable",
+                changeOwner: "Cambiar el responsable",
                 mesureDueDate: "Plazo (opcional)",
                 mesureTextPlaceholder: "Describir la medida",
                 mesureAdd: "Añadir una medida",
@@ -7324,6 +7370,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Interface complète (en-tête, messages, exports)
                 mesureOwner: "负责人",
+                changeOwner: "更改负责人",
                 mesureDueDate: "截止日期（可选）",
                 mesureTextPlaceholder: "描述措施",
                 mesureAdd: "添加措施",
@@ -7684,6 +7731,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
                 // Interface complète (en-tête, messages, exports)
                 mesureOwner: "المسؤول",
+                changeOwner: "تغيير المسؤول",
                 mesureDueDate: "الموعد النهائي (اختياري)",
                 mesureTextPlaceholder: "صِف الإجراء",
                 mesureAdd: "إضافة إجراء",
@@ -9549,7 +9597,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <div class="action-card-meta">
                         <span class="barrier-tag ${item.mesure.barriere}">${t(item.mesure.barriere === 'protection' ? 'barrierProtection' : 'barrierPrevention')}</span>
                         <span class="action-due">${item.mesure.echeance ? escapeHtml(item.late ? t('lateOn', { date: item.mesure.echeance }) : item.mesure.echeance) : ''}</span>
-                        ${owner ? `<span title="${escapeHtml(owner)}">${avatar(owner)}</span>` : ''}
+                        <button type="button" class="owner-avatar" data-edit-owner data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}"
+                            title="${escapeHtml(owner ? `${owner} · ${t('changeOwner')}` : t('changeOwner'))}">${owner ? avatar(owner) : '<span class="avatar empty" aria-hidden="true">+</span>'}</button>
                     </div>
                 </article>`;
             };
@@ -9560,6 +9609,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             </section>`).join('');
 
             board.onclick = event => {
+                const ownerTarget = event.target.closest('[data-edit-owner]');
+                if (ownerTarget) {
+                    const risk = risks.find(r => r.id === ownerTarget.dataset.riskId);
+                    const mesure = risk.mesures[Number(ownerTarget.dataset.index)];
+                    return editOwner(ownerTarget, mesure.porteur || risk.responsable,
+                        owner => { mesure.porteur = owner; saveOwnerChange(); }, () => {}, true);
+                }
                 const riskLink = event.target.closest('[data-risk-uid]');
                 if (riskLink) openRiskSheet(riskLink.dataset.riskUid);
             };
@@ -11496,7 +11552,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const hash = [...name].reduce((sum, char) => (sum * 31 + char.charCodeAt(0)) >>> 0, 0);
             return `<span class="avatar" style="--c:${AVATAR_COLORS[hash % AVATAR_COLORS.length]}" aria-hidden="true">${escapeHtml(initials)}</span>`;
         }
-        const ownerHtml = name => name ? `<span class="owner">${avatar(name)}${escapeHtml(name)}</span>` : '—';
+        // Porteur cliquable (registre) : ouvre le sélecteur de porteur
+        const ownerButton = name => `<button type="button" class="owner owner-edit" data-edit-owner title="${escapeHtml(t('changeOwner'))}">${name ? `${avatar(name)}${escapeHtml(name)}` : '—'}</button>`;
+        const saveOwnerChange = () => { commitChange(); renderRisks(); showToast(t('changeSaved')); };
 
         const scoreChip = (assessment, target = false) => {
             const score = residualScore(assessment);
@@ -11571,7 +11629,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <td>${scoreChips(risk)}</td>
                             <td>${trend(risk)}</td>
                             <td>${treatmentPill(risk.traitement)}</td>
-                            <td>${ownerHtml(risk.responsable)}</td>
+                            <td>${ownerButton(risk.responsable)}</td>
                             <td>${nextDue(risk)}</td>
                             <td>${mesuresPill(risk)}</td>
                         </tr>`).join('')}`).join('')}
@@ -11582,9 +11640,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <div><div class="register-title"><span class="register-id">${escapeHtml(risk.id)}</span> ${escapeHtml(risk.title)}</div>
                             <div class="register-sub">${residual(risk)}</div></div>
                         <div class="register-card-foot">${scoreChips(risk)} ${trend(risk)}</div>
-                        <div class="register-card-foot">${treatmentPill(risk.traitement)} ${ownerHtml(risk.responsable)} ${nextDue(risk)} ${mesuresPill(risk)}</div>
+                        <div class="register-card-foot">${treatmentPill(risk.traitement)} ${ownerButton(risk.responsable)} ${nextDue(risk)} ${mesuresPill(risk)}</div>
                     </article>`).join('')}`).join('')}</div>`;
             view.onclick = event => {
+                const ownerTarget = event.target.closest('[data-edit-owner]');
+                if (ownerTarget) {
+                    const risk = risks.find(r => r.uid === ownerTarget.closest('[data-risk-uid]').dataset.riskUid);
+                    return editOwner(ownerTarget, risk.responsable, owner => { risk.responsable = owner; saveOwnerChange(); }, renderRegister);
+                }
                 const target = event.target.closest('[data-risk-uid]');
                 if (target) openRiskSheet(target.dataset.riskUid);
             };
@@ -11792,7 +11855,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     risk.traitement = risk.traitement === target.dataset.treatment ? '' : target.dataset.treatment;
                     save('all');
                 } else if (action === 'edit-owner') {
-                    editOwner(target, risk, save);
+                    editOwner(target, risk.responsable, owner => { risk.responsable = owner; save('all'); }, renderRegister);
                 } else if (target.dataset.goto) {
                     openRiskSheet(target.dataset.goto, true);
                 } else if (add) {
@@ -11874,14 +11937,20 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             requestAnimationFrame(() => drawBowtieLinks(sheet.querySelector('.bowtie2')));
         }
 
-        // Champ porteur : saisie avec suggestions parmi les porteurs existants, ou création d'un nouveau
-        function editOwner(button, risk, save) {
+        // Champ porteur : saisie avec suggestions parmi les porteurs existants, ou création d'un nouveau.
+        // Le champ remplace `anchor` (fiche, registre) ou, en flottant, s'ouvre à côté (pastille du plan d'actions).
+        // onPick(porteur) si le porteur change, sinon onCancel(). Complexité : O(p) par frappe, p = porteurs connus.
+        function editOwner(anchor, current, onPick, onCancel, floating = false) {
             const input = document.createElement('input');
-            input.className = 'owner-input';
-            input.value = risk.responsable;
+            input.className = `owner-input${floating ? ' floating' : ''}`;
+            input.value = current;
             input.placeholder = t('mesureOwner');
             input.setAttribute('aria-label', t('mesureOwner'));
-            button.replaceWith(input);
+            if (floating) {
+                const box = anchor.getBoundingClientRect();
+                Object.assign(input.style, { top: `${box.top - 4}px`, left: `${Math.max(8, Math.min(box.right - 200, innerWidth - 208))}px` });
+                document.body.appendChild(input);
+            } else anchor.replaceWith(input);
             const list = document.createElement('div');
             list.className = 'picker';
             list.setAttribute('role', 'listbox');
@@ -11891,10 +11960,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (done) return;
                 done = true;
                 list.remove();
-                if (value !== null && value !== risk.responsable) {
-                    risk.responsable = value;
-                    save('all');
-                } else renderRegister();
+                if (floating) input.remove();
+                if (value !== null && value !== current) onPick(value);
+                else onCancel();
             };
             let typed = false; // à l'ouverture, tous les porteurs ; le filtre s'applique dès la première frappe
             const render = () => {
@@ -11902,7 +11970,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const lower = query.toLocaleLowerCase();
                 const owners = knownOwners().filter(owner => owner.toLocaleLowerCase().includes(lower));
                 const exact = owners.some(owner => owner.toLocaleLowerCase() === lower);
-                list.innerHTML = owners.map(owner => `<button type="button" role="option" class="${owner === risk.responsable ? 'on' : ''}" data-owner="${escapeHtml(owner)}">${avatar(owner)}${escapeHtml(owner)}</button>`).join('')
+                list.innerHTML = owners.map(owner => `<button type="button" role="option" class="${owner === current ? 'on' : ''}" data-owner="${escapeHtml(owner)}">${avatar(owner)}${escapeHtml(owner)}</button>`).join('')
                     + (query && !exact ? `<button type="button" role="option" data-owner="${escapeHtml(query)}">${avatar(query)}${escapeHtml(t('createOwner', { name: query }))}</button>` : '');
                 list.hidden = !list.innerHTML;
                 const box = input.getBoundingClientRect();
