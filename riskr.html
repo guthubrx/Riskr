@@ -2878,6 +2878,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             margin-inline-start: auto;
         }
 
+        .sheet-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .sheet-nav .icon-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        [dir="rtl"] .sheet-nav svg {
+            transform: scaleX(-1);
+        }
+
         .breadcrumb a {
             color: var(--text-2);
             text-decoration: none;
@@ -6176,6 +6192,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                prevRisk: "Risque précédent",
+                nextRisk: "Risque suivant",
                 notionCauses: "Causes : ce qui peut déclencher l’événement redouté (situation, faiblesse, dépendance). Un risque a rarement une seule origine.",
                 notionPrevention: "Barrières préventives : mesures qui agissent avant l’événement en neutralisant ses causes. Elles réduisent la probabilité.",
                 notionEvent: "Événement redouté : le moment où le risque se matérialise. À gauche ce qui y mène, à droite ce qui en découle.",
@@ -6529,6 +6547,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                prevRisk: "Previous risk",
+                nextRisk: "Next risk",
                 notionCauses: "Causes: what can trigger the feared event (situation, weakness, dependency). A risk rarely has a single origin.",
                 notionPrevention: "Preventive barriers: measures that act before the event by neutralising its causes. They reduce the probability.",
                 notionEvent: "Feared event: the moment the risk materialises. On the left what leads to it, on the right what follows from it.",
@@ -6882,6 +6902,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                prevRisk: "Riesgo anterior",
+                nextRisk: "Riesgo siguiente",
                 notionCauses: "Causas: lo que puede desencadenar el evento temido (situación, debilidad, dependencia). Un riesgo rara vez tiene un solo origen.",
                 notionPrevention: "Barreras preventivas: medidas que actúan antes del evento neutralizando sus causas. Reducen la probabilidad.",
                 notionEvent: "Evento temido: el momento en que el riesgo se materializa. A la izquierda lo que conduce a él, a la derecha lo que se deriva.",
@@ -7235,6 +7257,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                prevRisk: "上一个风险",
+                nextRisk: "下一个风险",
                 notionCauses: "原因：可能引发所担心事件的因素（情形、弱点、依赖）。风险很少只有一个来源。",
                 notionPrevention: "预防屏障：在事件发生前通过消除其原因发挥作用的措施，用于降低可能性。",
                 notionEvent: "所担心的事件：风险变为现实的时刻。左侧是导致它的因素，右侧是其后果。",
@@ -7588,6 +7612,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                prevRisk: "الخطر السابق",
+                nextRisk: "الخطر التالي",
                 notionCauses: "الأسباب: ما قد يؤدي إلى الحدث المخشي (وضع، ضعف، تبعية). نادرًا ما يكون للخطر مصدر واحد.",
                 notionPrevention: "الحواجز الوقائية: إجراءات تعمل قبل الحدث بتحييد أسبابه، فتخفض الاحتمال.",
                 notionEvent: "الحدث المخشي: لحظة تحقق الخطر. على اليسار ما يؤدي إليه، وعلى اليمين ما ينتج عنه.",
@@ -11133,6 +11159,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderRiskSheet(risk) {
             const sheet = document.getElementById('risk-sheet');
             const group = riskGroups.find(g => g.risks.includes(risk));
+            // Ordre du registre : groupe par groupe, pour passer au risque précédent ou suivant
+            const ordered = riskGroups.flatMap(g => g.risks);
+            const position = ordered.indexOf(risk);
             const above = settings.riskAppetite && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
             const history = reviews.filter(r => r.risks.some(entry => entry.uid === risk.uid));
             const lastReview = history[history.length - 1];
@@ -11161,7 +11190,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             sheet.innerHTML = `
                 <nav class="breadcrumb"><a href="#registre" data-action="close">${t('tabRegister')}</a> › <span>${riskGroups.indexOf(group) + 1} · ${escapeHtml(group.name)}</span> › <span>${t('sheetTitle')}</span>
-                    <button type="button" class="sheet-btn breadcrumb-action" data-action="save-template">${icon('plus')} ${t('saveAsTemplate')}</button></nav>
+                    <button type="button" class="sheet-btn breadcrumb-action" data-action="save-template">${icon('plus')} ${t('saveAsTemplate')}</button>
+                    <span class="sheet-nav">
+                        <button type="button" class="icon-btn" data-goto="${escapeHtml(ordered[position - 1]?.uid ?? '')}" ${position > 0 ? '' : 'disabled'} title="${t('prevRisk')}" aria-label="${t('prevRisk')}">${icon('left')}</button>
+                        <span>${position + 1} / ${ordered.length}</span>
+                        <button type="button" class="icon-btn" data-goto="${escapeHtml(ordered[position + 1]?.uid ?? '')}" ${position < ordered.length - 1 ? '' : 'disabled'} title="${t('nextRisk')}" aria-label="${t('nextRisk')}">${icon('right')}</button>
+                    </span></nav>
                 <div class="sheet-top">
                     <div>
                         <h2 class="sheet-risk-title"><span class="id-bubble big">${escapeHtml(risk.id)}</span>${editable('data-field="title"', risk.title, t('newRisk'))}</h2>
@@ -11250,6 +11284,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (action === 'close') {
                     event.preventDefault();
                     closeRiskSheet();
+                } else if (target.dataset.goto) {
+                    openRiskSheet(target.dataset.goto);
                 } else if (add) {
                     risk[add].push(add === 'consequences' ? normalizeConsequence('') : '');
                     renderRegister();
