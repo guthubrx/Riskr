@@ -3091,6 +3091,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-weight: 600;
         }
 
+        .picker .avatar {
+            width: 20px;
+            height: 20px;
+            font-size: 8px;
+        }
+
 
         .appetite-pill {
             padding: 4px 12px;
@@ -11604,8 +11610,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const lower = query.toLocaleLowerCase();
                 const owners = knownOwners().filter(owner => owner.toLocaleLowerCase().includes(lower));
                 const exact = owners.some(owner => owner.toLocaleLowerCase() === lower);
-                list.innerHTML = owners.map(owner => `<button type="button" role="option" class="${owner === risk.responsable ? 'on' : ''}" data-owner="${escapeHtml(owner)}">${escapeHtml(owner)}</button>`).join('')
-                    + (query && !exact ? `<button type="button" role="option" data-owner="${escapeHtml(query)}">${escapeHtml(t('createOwner', { name: query }))}</button>` : '');
+                list.innerHTML = owners.map(owner => `<button type="button" role="option" class="${owner === risk.responsable ? 'on' : ''}" data-owner="${escapeHtml(owner)}">${avatar(owner)}${escapeHtml(owner)}</button>`).join('')
+                    + (query && !exact ? `<button type="button" role="option" data-owner="${escapeHtml(query)}">${avatar(query)}${escapeHtml(t('createOwner', { name: query }))}</button>` : '');
                 list.hidden = !list.innerHTML;
                 const box = input.getBoundingClientRect();
                 list.style.top = `${box.bottom + 4}px`;
