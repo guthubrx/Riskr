@@ -3141,6 +3141,119 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             outline-offset: 1px;
         }
 
+        /* Pastille d'identité (en-tête) et fenêtre de saisie du nom */
+        .user-chip {
+            display: inline-flex;
+            margin-inline-start: 4px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: none;
+            cursor: pointer;
+        }
+
+        .user-chip .avatar {
+            width: 30px;
+            height: 30px;
+            font-size: 11px;
+        }
+
+        .user-chip:hover {
+            outline: 2px solid var(--border-strong);
+            outline-offset: 2px;
+        }
+
+        .identity-pop {
+            position: fixed;
+            z-index: 3000;
+            width: 300px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .identity-pop h3 {
+            margin: 0 0 6px;
+            font-size: 15px;
+        }
+
+        .identity-pop p {
+            margin: 0 0 10px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .identity-pop input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--text);
+            font: inherit;
+        }
+
+        .identity-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        /* Journal des modifications */
+        .journal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .journal-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .journal-row[data-risk-uid] {
+            cursor: pointer;
+        }
+
+        .journal-row small {
+            display: block;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .journal-more summary {
+            margin: 10px 0;
+            font-size: 13px;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .sheet-journal {
+            margin-top: 16px;
+        }
+
+        .journal-recent {
+            margin-top: 20px;
+        }
+
+        .journal-recent h3 {
+            margin: 0 0 10px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+
         .avatar.empty {
             border: 1.5px dashed var(--border-strong);
             background: none;
@@ -5013,6 +5126,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <button role="menuitem" onclick="handleExport('html')">HTML <span class="menu-hint" data-i18n="exportHtmlHint">Page web</span></button>
                         <button role="menuitem" onclick="handleExport('json')">JSON <span class="menu-hint" data-i18n="exportJsonHint">Données</span></button>
                         <button role="menuitem" onclick="handleExport('datajs')">riskr-data.js <span class="menu-hint" data-i18n="exportDataJsHint">Rechargeable</span></button>
+                        <button role="menuitem" onclick="handleExport('datajs-nojournal')" data-i18n-title="exportNoJournalTip">riskr-data.js <span class="menu-hint" data-i18n="exportNoJournalHint">Sans journal</span></button>
                     </div>
                 </div>
                 <span id="file-save-status" class="file-save-status" role="status"></span>
@@ -5033,6 +5147,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>
                 </div>
                 <button id="theme-button" class="icon-btn" onclick="toggleTheme()"></button>
+                <button id="user-button" class="user-chip" type="button" onclick="openIdentity(this)"></button>
             </div>
         </header>
 
@@ -5170,6 +5285,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <button type="button" class="big-btn" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="reviewNewFreeze">Figer une nouvelle revue</span></button>
                     <ol id="review-timeline" class="review-timeline"></ol>
                     <p class="reviews-hint" data-i18n="reviewsHint"></p>
+                    <section class="journal-recent"><h3 data-i18n="journalRecent">Dernières modifications</h3><div id="journal-recent"></div></section>
                 </aside>
                 <div class="reviews-main">
                     <div id="compare-bar" class="compare-bar"></div>
@@ -5793,6 +5909,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 case 'datajs':
                     exportDataJsFile(); // Sauvegarde riskr-data.js rechargeable
                     break;
+                case 'datajs-nojournal': {
+                    // Même fichier sans le journal (noms et horaires des modifications) : pour partager hors de l'équipe
+                    const { journal: omitted, ...data } = buildCanonicalData();
+                    downloadTextFile(buildDataFileContent(data), dataFileName, 'text/javascript');
+                    break;
+                }
             }
         }
         
@@ -5880,7 +6002,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     // 3. Remplacer le modèle, l'historiser et le sauvegarder
                     applyModel(model);
                     validateRiskGroupNarratives(riskGroups);
-                    commitChange();
+                    commitChange({ journal: false });
 
                     // 4. Rafraîchir l'interface
                     renderRisks();
@@ -6285,6 +6407,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 copiedForWord: "Copié",
                 mesureOwner: "Porteur",
                 changeOwner: "Changer le porteur",
+                identityTitle: "Votre nom",
+                identityAsk: "Qui modifie ?",
+                identityHint: "Facultatif et déclaratif : il signe vos modifications dans le journal et pré-remplit l'auteur des notes et des revues. Il reste dans ce navigateur.",
+                identityPlaceholder: "Prénom Nom",
+                identitySave: "Enregistrer",
+                identityAnonymous: "Rester anonyme",
+                identityTooltip: "{name} · modifier",
+                identityTooltipNone: "Anonyme · indiquer votre nom",
+                journalTitle: "Journal des modifications",
+                journalRecent: "Dernières modifications",
+                journalEmpty: "Aucune modification enregistrée",
+                journalShowAll: "Tout afficher ({count})",
+                journalFieldTitle: "Titre",
+                journalCause: "Cause",
+                journalConsequence: "Conséquence",
+                journalCosting: "Chiffrage",
+                journalMesure: "Mesure",
+                journalDue: "Échéance",
+                journalBarrier: "Côté de la barrière",
+                journalEfficacy: "Efficacité",
+                journalNote: "Note",
+                journalLink: "Lien",
+                journalCreated: "Risque créé",
+                journalDeleted: "Risque supprimé",
+                journalReview: "Revue",
+                exportNoJournalHint: "Sans journal",
+                exportNoJournalTip: "Même fichier, sans le journal des modifications (qui a changé quoi, et quand) : pour partager l'analyse hors de l'équipe.",
                 mesureDueDate: "Échéance (facultatif)",
                 mesureTextPlaceholder: "Décrire la mesure",
                 mesureAdd: "Ajouter une mesure",
@@ -6646,6 +6795,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 copiedForWord: "Copied",
                 mesureOwner: "Owner",
                 changeOwner: "Change owner",
+                identityTitle: "Your name",
+                identityAsk: "Who is editing?",
+                identityHint: "Optional and self-declared: it signs your changes in the log and pre-fills the author of notes and reviews. It stays in this browser.",
+                identityPlaceholder: "First and last name",
+                identitySave: "Save",
+                identityAnonymous: "Stay anonymous",
+                identityTooltip: "{name} · change",
+                identityTooltipNone: "Anonymous · set your name",
+                journalTitle: "Change log",
+                journalRecent: "Recent changes",
+                journalEmpty: "No recorded changes",
+                journalShowAll: "Show all ({count})",
+                journalFieldTitle: "Title",
+                journalCause: "Cause",
+                journalConsequence: "Consequence",
+                journalCosting: "Costing",
+                journalMesure: "Measure",
+                journalDue: "Due date",
+                journalBarrier: "Barrier side",
+                journalEfficacy: "Effectiveness",
+                journalNote: "Note",
+                journalLink: "Link",
+                journalCreated: "Risk created",
+                journalDeleted: "Risk deleted",
+                journalReview: "Review",
+                exportNoJournalHint: "Without log",
+                exportNoJournalTip: "Same file, without the change log (who changed what, and when): to share the analysis outside the team.",
                 mesureDueDate: "Due date (optional)",
                 mesureTextPlaceholder: "Describe the measure",
                 mesureAdd: "Add a measure",
@@ -7010,6 +7186,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Interface complète (en-tête, messages, exports)
                 mesureOwner: "Responsable",
                 changeOwner: "Cambiar el responsable",
+                identityTitle: "Su nombre",
+                identityAsk: "¿Quién edita?",
+                identityHint: "Opcional y declarativo: firma sus cambios en el registro y rellena el autor de las notas y revisiones. Se queda en este navegador.",
+                identityPlaceholder: "Nombre y apellido",
+                identitySave: "Guardar",
+                identityAnonymous: "Permanecer anónimo",
+                identityTooltip: "{name} · cambiar",
+                identityTooltipNone: "Anónimo · indicar su nombre",
+                journalTitle: "Registro de cambios",
+                journalRecent: "Últimos cambios",
+                journalEmpty: "Ningún cambio registrado",
+                journalShowAll: "Mostrar todo ({count})",
+                journalFieldTitle: "Título",
+                journalCause: "Causa",
+                journalConsequence: "Consecuencia",
+                journalCosting: "Cuantificación",
+                journalMesure: "Medida",
+                journalDue: "Fecha límite",
+                journalBarrier: "Lado de la barrera",
+                journalEfficacy: "Eficacia",
+                journalNote: "Nota",
+                journalLink: "Enlace",
+                journalCreated: "Riesgo creado",
+                journalDeleted: "Riesgo eliminado",
+                journalReview: "Revisión",
+                exportNoJournalHint: "Sin registro",
+                exportNoJournalTip: "Mismo archivo, sin el registro de cambios (quién cambió qué y cuándo): para compartir el análisis fuera del equipo.",
                 mesureDueDate: "Plazo (opcional)",
                 mesureTextPlaceholder: "Describir la medida",
                 mesureAdd: "Añadir una medida",
@@ -7371,6 +7574,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Interface complète (en-tête, messages, exports)
                 mesureOwner: "负责人",
                 changeOwner: "更改负责人",
+                identityTitle: "您的姓名",
+                identityAsk: "谁在修改？",
+                identityHint: "可选、自行声明：用于在日志中署名您的修改，并预填备注和评审的作者。仅保存在此浏览器中。",
+                identityPlaceholder: "姓名",
+                identitySave: "保存",
+                identityAnonymous: "保持匿名",
+                identityTooltip: "{name} · 修改",
+                identityTooltipNone: "匿名 · 填写姓名",
+                journalTitle: "修改日志",
+                journalRecent: "最近修改",
+                journalEmpty: "暂无修改记录",
+                journalShowAll: "显示全部（{count}）",
+                journalFieldTitle: "标题",
+                journalCause: "原因",
+                journalConsequence: "后果",
+                journalCosting: "估算",
+                journalMesure: "措施",
+                journalDue: "截止日期",
+                journalBarrier: "屏障类型",
+                journalEfficacy: "有效性",
+                journalNote: "备注",
+                journalLink: "链接",
+                journalCreated: "已创建风险",
+                journalDeleted: "已删除风险",
+                journalReview: "评审",
+                exportNoJournalHint: "不含日志",
+                exportNoJournalTip: "同一文件，但不含修改日志（谁在何时修改了什么）：用于在团队之外分享分析。",
                 mesureDueDate: "截止日期（可选）",
                 mesureTextPlaceholder: "描述措施",
                 mesureAdd: "添加措施",
@@ -7732,6 +7962,33 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 // Interface complète (en-tête, messages, exports)
                 mesureOwner: "المسؤول",
                 changeOwner: "تغيير المسؤول",
+                identityTitle: "اسمك",
+                identityAsk: "من يعدّل؟",
+                identityHint: "اختياري وتصريحي: يوقّع تعديلاتك في السجل ويملأ مسبقًا مؤلف الملاحظات والمراجعات. يبقى في هذا المتصفح.",
+                identityPlaceholder: "الاسم الكامل",
+                identitySave: "حفظ",
+                identityAnonymous: "البقاء مجهولًا",
+                identityTooltip: "{name} · تغيير",
+                identityTooltipNone: "مجهول · أدخل اسمك",
+                journalTitle: "سجل التعديلات",
+                journalRecent: "آخر التعديلات",
+                journalEmpty: "لا توجد تعديلات مسجلة",
+                journalShowAll: "عرض الكل ({count})",
+                journalFieldTitle: "العنوان",
+                journalCause: "سبب",
+                journalConsequence: "عاقبة",
+                journalCosting: "التقدير",
+                journalMesure: "إجراء",
+                journalDue: "الموعد النهائي",
+                journalBarrier: "جهة الحاجز",
+                journalEfficacy: "الفعالية",
+                journalNote: "ملاحظة",
+                journalLink: "رابط",
+                journalCreated: "تم إنشاء الخطر",
+                journalDeleted: "تم حذف الخطر",
+                journalReview: "مراجعة",
+                exportNoJournalHint: "بدون سجل",
+                exportNoJournalTip: "الملف نفسه، بدون سجل التعديلات (من غيّر ماذا ومتى): لمشاركة التحليل خارج الفريق.",
                 mesureDueDate: "الموعد النهائي (اختياري)",
                 mesureTextPlaceholder: "صِف الإجراء",
                 mesureAdd: "إضافة إجراء",
@@ -8427,10 +8684,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 console.warn(`[Riskr] ${riskById.size - groupedRisks.length} risque(s) sans groupe ignoré(s)`);
             }
             return { risks: groupedRisks, riskGroups: newGroups, settings: normalizeSettings(data.settings),
-                reviews: normalizeReviews(data.reviews) };
+                reviews: normalizeReviews(data.reviews), journal: normalizeJournal(data.journal) };
         }
 
         // Revues figées : photo datée des cotations, repérées par l'identifiant stable du risque
+        // Ligne du journal : { id, date (ISO, heure comprise), auteur, uid, risque, champ, detail, avant, apres }
+        function normalizeJournal(raw) {
+            return (Array.isArray(raw) ? raw : []).filter(entry => entry && entry.champ).map(entry => ({
+                id: String(entry.id || newUid()), date: String(entry.date || ''), auteur: String(entry.auteur || ''),
+                uid: String(entry.uid || ''), risque: String(entry.risque || ''), champ: String(entry.champ),
+                detail: String(entry.detail || ''), avant: String(entry.avant ?? ''), apres: String(entry.apres ?? '')
+            }));
+        }
+
         function normalizeReviews(raw) {
             return (Array.isArray(raw) ? raw : []).filter(review => review && Array.isArray(review.risks)).map(review => ({
                 id: String(review.id || newUid()),
@@ -8466,6 +8732,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             Object.assign(settings, model.settings);
             reviews.length = 0;
             reviews.push(...model.reviews);
+            journal.length = 0;
+            journal.push(...model.journal);
         }
 
         // Copie sérialisable au format canonique (risks[] + riskGroups[].riskIds)
@@ -8474,6 +8742,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 risks,
                 settings,
                 reviews,
+                journal,
                 riskGroups: riskGroups.map(({ risks: groupRisks, ...group }) =>
                     Object.assign(group, { riskIds: groupRisks.map(r => r.id) }))
             }));
@@ -8512,13 +8781,190 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
         }
 
-        // À appeler APRÈS chaque modification du modèle
-        function commitChange() {
+        // À appeler APRÈS chaque modification du modèle. { journal: false } : remplacement complet (import)
+        function commitChange({ journal: withJournal = true } = {}) {
             renumber();
             renderActionPlan();
+            if (withJournal) recordJournal(history[historyIndex]);
             saveState();
             persistModel();
             scheduleFileSave();
+            if (withJournal) askIdentityOnce();
+        }
+
+        // ========================================
+        // Journal des modifications
+        // ========================================
+        // Compare l'état précédent (sommet de la pile d'annulation) à l'état courant et ajoute une ligne
+        // par changement : Annuler retire donc aussi la ligne. Plafonné à JOURNAL_MAX lignes (les plus anciennes partent).
+        // Complexité : O(r + m) par modification — r risques, m éléments de listes (mesures, causes, notes…).
+        const JOURNAL_MAX = 2000;
+        const JOURNAL_FIELDS = ['title', 'assessmentBefore', 'assessmentAfter', 'assessmentTarget', 'traitement', 'responsable', 'velocite', 'statut'];
+        const MESURE_FIELDS = ['etat', 'porteur', 'echeance', 'barriere', 'efficacite'];
+        const journalText = value => Array.isArray(value) ? value.join(',') : String(value ?? '');
+
+        // Éléments retirés et ajoutés entre deux listes de textes (multiensembles) ; autant de retraits que
+        // d'ajouts = modifications, appariées dans l'ordre. Complexité : O(a + b)
+        function listChanges(before, after) {
+            const count = new Map();
+            before.forEach(item => count.set(item, (count.get(item) || 0) + 1));
+            const added = after.filter(item => { const n = count.get(item) || 0; if (n) { count.set(item, n - 1); return false; } return true; });
+            const removed = [...count].flatMap(([item, n]) => Array(n).fill(item));
+            if (added.length === removed.length) return added.map((item, i) => [removed[i], item]);
+            return [...removed.map(item => [item, '']), ...added.map(item => ['', item])];
+        }
+
+        function recordJournal(previous) {
+            if (!previous) return;
+            const date = new Date().toISOString();
+            const entries = [];
+            const add = (risk, champ, avant, apres, detail = '') => entries.push({ id: newUid(), date, auteur: currentUser,
+                uid: risk.uid, risque: risk.id, champ, detail, avant: journalText(avant), apres: journalText(apres) });
+            const before = new Map(previous.risks.map(risk => [risk.uid, risk]));
+            risks.forEach(risk => {
+                const old = before.get(risk.uid);
+                before.delete(risk.uid);
+                if (!old) return add(risk, 'created', '', risk.title);
+                JOURNAL_FIELDS.forEach(field => {
+                    if (journalText(old[field]) !== journalText(risk[field])) add(risk, field, old[field], risk[field]);
+                });
+                listChanges(old.causes, risk.causes).forEach(([a, b]) => add(risk, 'cause', a, b));
+                listChanges(old.consequences.map(c => c.texte), risk.consequences.map(c => c.texte)).forEach(([a, b]) => add(risk, 'consequence', a, b));
+                const costing = new Map(old.consequences.map(c => [c.texte, c.chiffrage]));
+                risk.consequences.forEach(c => {
+                    if (costing.has(c.texte) && costing.get(c.texte) !== c.chiffrage) add(risk, 'chiffrage', costing.get(c.texte), c.chiffrage, c.texte);
+                });
+                listChanges(old.mesures.map(m => m.texte), risk.mesures.map(m => m.texte)).forEach(([a, b]) => add(risk, 'mesure', a, b));
+                const oldMesures = new Map(old.mesures.map(m => [m.texte, m]));
+                risk.mesures.forEach(mesure => {
+                    const was = oldMesures.get(mesure.texte);
+                    if (was) MESURE_FIELDS.forEach(field => {
+                        if (journalText(was[field]) !== journalText(mesure[field])) add(risk, `mesure.${field}`, was[field], mesure[field], mesure.texte);
+                    });
+                });
+                listChanges(old.notes.map(n => n.texte), risk.notes.map(n => n.texte)).forEach(([a, b]) => add(risk, 'note', a, b));
+                listChanges(old.liens.map(l => l.libelle), risk.liens.map(l => l.libelle)).forEach(([a, b]) => add(risk, 'lien', a, b));
+            });
+            before.forEach(old => add(old, 'deleted', old.title, ''));
+            const oldReviews = new Map(previous.reviews.map(review => [review.id, review.label]));
+            reviews.forEach(review => { if (!oldReviews.delete(review.id)) add({ uid: '', id: '' }, 'review', '', review.label); });
+            oldReviews.forEach(label => add({ uid: '', id: '' }, 'review', label, ''));
+            journal.push(...entries);
+            if (journal.length > JOURNAL_MAX) journal.splice(0, journal.length - JOURNAL_MAX);
+        }
+
+        // Libellé et valeurs lisibles d'une ligne de journal, dans la langue active
+        const JOURNAL_LABELS = { title: 'journalFieldTitle', assessmentBefore: 'colBeforeShort', assessmentAfter: 'colAfterShort',
+            assessmentTarget: 'colTarget', traitement: 'colTreatment', responsable: 'mesureOwner', velocite: 'colVelocity', statut: 'colStatus',
+            cause: 'journalCause', consequence: 'journalConsequence', chiffrage: 'journalCosting', mesure: 'journalMesure',
+            'mesure.etat': 'mesureState', 'mesure.porteur': 'mesureOwner', 'mesure.echeance': 'journalDue', 'mesure.barriere': 'journalBarrier',
+            'mesure.efficacite': 'journalEfficacy', note: 'journalNote', lien: 'journalLink', created: 'journalCreated',
+            deleted: 'journalDeleted', review: 'journalReview' };
+        function journalValue(champ, value) {
+            if (value === '') return '';
+            if (champ.startsWith('assessment')) {
+                const [p, i] = value.split(',').map(Number);
+                return p && i ? `P${p} × I${i}` : '—';
+            }
+            if (champ === 'traitement') return treatmentLabel(value);
+            if (champ === 'statut') return t(value);
+            if (champ === 'mesure.etat') return t(MESURE_STATES[value] || 'stateTodo');
+            if (champ === 'mesure.barriere') return t(value === 'protection' ? 'barrierProtection' : 'barrierPrevention');
+            if (champ === 'velocite' || champ === 'mesure.efficacite') return value === '0' ? '—' : `${value}/5`;
+            return value.length > 80 ? `${value.slice(0, 79)}…` : value;
+        }
+        function journalLine(entry) {
+            const label = t(JOURNAL_LABELS[entry.champ] || 'journalMesure');
+            const [avant, apres] = [journalValue(entry.champ, entry.avant), journalValue(entry.champ, entry.apres)];
+            const detail = entry.detail ? ` « ${journalValue('', entry.detail)} »` : '';
+            if (entry.champ === 'created' || entry.champ === 'deleted') return `${label} : ${avant || apres}`;
+            if (!avant) return `${label}${detail} : + ${apres}`;
+            if (!apres) return `${label}${detail} : − ${avant}`;
+            return `${label}${detail} : ${avant} → ${apres}`;
+        }
+        const formatJournalDate = iso => {
+            const date = new Date(iso);
+            return isNaN(date) ? '' : new Intl.DateTimeFormat(currentLanguage, { dateStyle: 'short', timeStyle: 'short' }).format(date);
+        };
+        // Ligne affichée : pastille de l'auteur (trait si anonyme), date, auteur, et le risque si demandé
+        const journalRow = (entry, withRisk = false) => `<li class="journal-row"${withRisk && entry.uid ? ` data-risk-uid="${escapeHtml(entry.uid)}"` : ''}>
+            ${userAvatar(entry.auteur)}<div><small>${escapeHtml(formatJournalDate(entry.date))} · ${escapeHtml(entry.auteur || '—')}${withRisk && entry.risque ? ` · ${escapeHtml(entry.risque)}` : ''}</small>
+            <span>${escapeHtml(journalLine(entry))}</span></div></li>`;
+
+        // ========================================
+        // Identité déclarative
+        // ========================================
+        // Nom facultatif, gardé dans ce navigateur et commun à toutes les analyses (comme le thème) :
+        // il signe le journal et pré-remplit l'auteur des notes et des revues. Aucun contrôle : c'est déclaratif.
+        const USER_KEY = 'riskr-user', USER_ASKED_KEY = 'riskr-user-asked';
+        const readLocal = key => { try { return localStorage.getItem(key) || ''; } catch { return ''; } };
+        const writeLocal = (key, value) => { try { localStorage.setItem(key, value); } catch { /* stockage bloqué : nom gardé pour la session */ } };
+        let currentUser = readLocal(USER_KEY);
+        const userAvatar = name => name ? avatar(name) : '<span class="avatar empty" aria-hidden="true">—</span>';
+
+        function setCurrentUser(name) {
+            currentUser = name.trim();
+            writeLocal(USER_KEY, currentUser);
+            writeLocal(USER_ASKED_KEY, '1');
+            renderUserChip();
+            renderActionPlan();
+            refreshSheet();
+        }
+
+        function renderUserChip() {
+            const button = document.getElementById('user-button');
+            if (!button) return;
+            const tip = currentUser ? t('identityTooltip', { name: currentUser }) : t('identityTooltipNone');
+            button.innerHTML = userAvatar(currentUser);
+            button.title = tip;
+            button.setAttribute('aria-label', tip);
+        }
+
+        // Demandé une seule fois, à la première modification : la simple consultation n'est jamais interrompue
+        function askIdentityOnce() {
+            if (currentUser || readLocal(USER_ASKED_KEY)) return;
+            writeLocal(USER_ASKED_KEY, '1');
+            setTimeout(() => openIdentity(document.getElementById('user-button'), true), 300);
+        }
+
+        function openIdentity(anchor, first = false) {
+            document.querySelector('.identity-pop')?.remove();
+            const pop = document.createElement('div');
+            pop.className = 'identity-pop';
+            pop.setAttribute('role', 'dialog');
+            pop.innerHTML = `<h3>${t(first ? 'identityAsk' : 'identityTitle')}</h3><p>${t('identityHint')}</p>
+                <input type="text" value="${escapeHtml(currentUser)}" placeholder="${escapeHtml(t('identityPlaceholder'))}" aria-label="${escapeHtml(t('identityTitle'))}">
+                <div class="identity-actions"><button type="button" class="sheet-btn" data-anonymous>${t('identityAnonymous')}</button>
+                    <button type="button" class="sheet-btn primary" data-save>${t('identitySave')}</button></div>`;
+            document.body.appendChild(pop);
+            const box = anchor.getBoundingClientRect();
+            pop.style.top = `${box.bottom + 8}px`;
+            pop.style.left = `${Math.max(8, Math.min(box.right - pop.offsetWidth, innerWidth - pop.offsetWidth - 8))}px`;
+            const input = pop.querySelector('input');
+            const outside = event => { if (!pop.contains(event.target) && !anchor.contains(event.target)) close(); };
+            const close = () => { pop.remove(); removeEventListener('pointerdown', outside, true); };
+            addEventListener('pointerdown', outside, true);
+            // À la première demande, la modification qui l'a déclenchée est signée du nom saisi
+            const save = name => {
+                setCurrentUser(name);
+                const last = journal[journal.length - 1];
+                if (first && currentUser && last) {
+                    journal.filter(entry => !entry.auteur && entry.date === last.date).forEach(entry => { entry.auteur = currentUser; });
+                    persistModel();
+                    scheduleFileSave();
+                }
+                close();
+            };
+            pop.onclick = event => {
+                if (event.target.closest('[data-save]')) save(input.value);
+                else if (event.target.closest('[data-anonymous]')) save('');
+            };
+            input.onkeydown = event => {
+                if (event.key === 'Enter') save(input.value);
+                if (event.key === 'Escape') close();
+            };
+            input.focus();
+            input.select();
         }
 
         // ========================================
@@ -8744,6 +9190,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const riskGroups = [];
         const settings = {};
         const reviews = [];
+        const journal = []; // journal des modifications (cf. recordJournal)
         if (window.RISKR_DATA && window.RISKR_DATA.risks && window.RISKR_DATA.riskGroups) {
             applyModel(buildModel(window.RISKR_DATA));
             // Le script est en fin de page : le titre existe déjà dans le DOM
@@ -9360,7 +9807,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 id: newUid(),
                 date: [today.getFullYear(), today.getMonth() + 1, today.getDate()].map(n => String(n).padStart(2, '0')).join('-'),
                 label: t('reviewLabel', { n: reviews.length + 1 }),
-                auteur: '',
+                auteur: currentUser,
                 risks: risks.map(risk => ({ uid: risk.uid, id: risk.id, title: risk.title, groupe: groupOf.get(risk.uid) || '',
                     before: [...risk.assessmentBefore], after: [...risk.assessmentAfter] }))
             };
@@ -9393,6 +9840,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderReviews() {
             const timeline = document.getElementById('review-timeline');
             if (!timeline) return;
+            const recent = document.getElementById('journal-recent');
+            recent.innerHTML = journalList([...journal].reverse(), 8, true);
+            recent.onclick = event => {
+                const row = event.target.closest('[data-risk-uid]');
+                if (row && risks.some(risk => risk.uid === row.dataset.riskUid)) { showTab('registre'); openRiskSheet(row.dataset.riskUid); }
+            };
             // Choix par défaut (ou devenu invalide) : dernière revue → état actuel
             if (!reviews.some(r => r.id === comparison.from)) {
                 // Par défaut : la dernière revue ; si rien n'a bougé depuis, la précédente (sinon tout serait « stable »). O(n)
@@ -9559,9 +10012,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const meLabel = document.getElementById('actions-me');
             meLabel.hidden = actionView.scope !== 'mine';
             meLabel.querySelector('select').innerHTML = `<option value="">${t('mePlaceholder')}</option>` +
-                people.map(name => `<option ${name === actionView.me ? 'selected' : ''}>${escapeHtml(name)}</option>`).join('');
+                people.map(name => `<option ${name === (actionView.me || currentUser) ? 'selected' : ''}>${escapeHtml(name)}</option>`).join('');
             const items = actionView.scope === 'mine'
-                ? all.filter(item => actionView.me && ownerParts(mesureOwner(item)).includes(actionView.me))
+                ? all.filter(item => (actionView.me || currentUser) && ownerParts(mesureOwner(item)).includes(actionView.me || currentUser))
                 : all;
 
             // Résumé et progression
@@ -11714,6 +12167,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const todayIso = () => { const d = new Date(); return [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-'); };
         const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit' }) : date; };
 
+        // Liste de journal : les `visible` plus récentes, le reste dépliable. Complexité : O(n)
+        const journalList = (entries, visible, withRisk = false) => !entries.length ? `<p class="review-empty">${t('journalEmpty')}</p>`
+            : `<ul class="journal-list">${entries.slice(0, visible).map(entry => journalRow(entry, withRisk)).join('')}</ul>${entries.length > visible
+                ? `<details class="journal-more"><summary>${t('journalShowAll', { count: entries.length })}</summary><ul class="journal-list">${entries.slice(visible).map(entry => journalRow(entry, withRisk)).join('')}</ul></details>` : ''}`;
+
         function renderRiskSheet(risk) {
             const sheet = document.getElementById('risk-sheet');
             const group = riskGroups.find(g => g.risks.includes(risk));
@@ -11800,14 +12258,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <section class="committee-card"><h3>${t('notesTitle')}</h3>
                         <ul class="sheet-list">${[...risk.notes].reverse().map((note, reversed) => `<li><small>${escapeHtml(formatReviewDate(note.date))}${note.auteur ? ` · ${escapeHtml(note.auteur)}` : ''}</small>${escapeHtml(note.texte)}
                             <button type="button" class="review-delete" data-del-list="notes" data-index="${risk.notes.length - 1 - reversed}" title="${t('deleteItem')}" aria-label="${t('deleteItem')}">${icon('trash')}</button></li>`).join('') || `<li class="review-empty">${t('noNotes')}</li>`}</ul>
-                        <div class="sheet-form"><input data-note="auteur" placeholder="${t('reviewAuthorPlaceholder')}"><textarea data-note="texte" rows="2" placeholder="${t('notePlaceholder')}"></textarea>
+                        <div class="sheet-form"><input data-note="auteur" value="${escapeHtml(currentUser)}" placeholder="${t('reviewAuthorPlaceholder')}"><textarea data-note="texte" rows="2" placeholder="${t('notePlaceholder')}"></textarea>
                             <button type="button" class="sheet-btn" data-action="add-note">${icon('plus')} ${t('addItem')}</button></div></section>
                     <section class="committee-card"><h3>${t('linksTitle')}</h3>
                         <ul class="sheet-list">${risk.liens.map((link, index) => `<li><a href="${escapeHtml(safeUrl(link.url))}" target="_blank" rel="noopener noreferrer">${icon(/^https?:/i.test(link.url) ? 'link' : 'file')}${escapeHtml(link.libelle)}</a>
                             <button type="button" class="review-delete" data-del-list="liens" data-index="${index}" title="${t('deleteItem')}" aria-label="${t('deleteItem')}">${icon('trash')}</button></li>`).join('') || `<li class="review-empty">${t('noLinks')}</li>`}</ul>
                         <div class="sheet-form"><input data-link="libelle" placeholder="${t('linkLabelPlaceholder')}"><input data-link="url" placeholder="${t('linkUrlPlaceholder')}">
                             <button type="button" class="sheet-btn" data-action="add-link">${icon('plus')} ${t('addItem')}</button></div></section>
-                </div>`;
+                </div>
+                <section class="committee-card sheet-journal"><h3>${t('journalTitle')}</h3>${journalList(journal.filter(entry => entry.uid === risk.uid).reverse(), 10)}</section>`;
 
             mountRiskSheet(sheet, risk, history);
         }
@@ -12106,6 +12565,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Textes statiques (data-i18n : contenu ; data-i18n-title : infobulle et nom accessible),
         // langue et sens d'écriture du document (l'arabe s'écrit de droite à gauche)
         function applyTranslations() {
+            renderUserChip();
             document.documentElement.lang = currentLanguage;
             document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
             document.title = t('pageTitle');

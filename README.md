@@ -106,6 +106,10 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   cotation, mesures }`.
 - `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
   permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
+- `journal` : journal des modifications `{ id, date, auteur, uid, risque, champ,
+  detail, avant, apres }`, alimenté automatiquement à chaque modification
+  (2 000 lignes au plus). Le menu Exporter propose « riskr-data.js · Sans journal »
+  pour partager l'analyse sans ces noms et horaires.
 - `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
   before, after }] }`, photos datées des cotations servant aux comparaisons.
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
@@ -170,6 +174,14 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   échéance, « Mes mesures », étiquette préventive / protection, retards en tête,
   glisser-déposer des cartes : ordre dans la colonne conservé, changement d'état
   (vue par état) ou de porteur (vue par porteur)
+- **Identité déclarative** : pastille en haut à droite (initiales, couleur stable
+  par nom, « — » si anonyme). Le nom est facultatif, demandé une seule fois à la
+  première modification, gardé dans le navigateur : il signe le journal et
+  pré-remplit l'auteur des notes et des revues. Aucun contrôle : c'est déclaratif.
+- **Journal des modifications** : qui a changé quoi et quand (cotations,
+  traitement, porteur, mesures, notes…), dans la fiche du risque et, pour toute
+  l'analyse, dans l'onglet Revues (« Dernières modifications ») ; Annuler retire
+  aussi la ligne correspondante
 - **Porteur modifiable partout** : un clic sur la pastille du porteur (registre,
   plan d'actions, fiche) ouvre le même sélecteur avec suggestions et pastilles,
   qui permet aussi de créer un nouveau porteur
