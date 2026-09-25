@@ -204,6 +204,12 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   fiche, coût attendu, et dans la vue comité (et le PDF) une provision calculée par
   10 000 simulations Monte-Carlo (loi triangulaire, résultats stables) : espérance,
   médiane, provision à 80 % et 90 %, courbe cumulée et principaux contributeurs
+- **Détecteur d'incohérences** : alertes « à vérifier » (rien n'est bloqué) quand
+  une probabilité saisie sort de la tranche de la cotation P, qu'un coût ne
+  correspond pas à la cotation d'impact selon l'échelle en euros de l'analyse
+  (`settings.echelleImpact`, réglable dans la fiche), qu'un KRI est critique sur un
+  risque coté peu probable, ou que les cotations se contredisent ; compteur et
+  filtre dans le registre, détail dans la fiche
 - **Cadence de revue** : chaque risque a une prochaine revue (date choisie, sinon
   dernière revue + cadence de 30, 60, 90 ou 180 jours réglée en haut de l'onglet
   Revues, sous « Figer une nouvelle revue », et rappelée dans la fiche) ;

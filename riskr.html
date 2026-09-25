@@ -3410,6 +3410,44 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: var(--text-2);
         }
 
+        /* Détecteur d'incohérences */
+        .issue-box {
+            margin: 16px 0 0;
+            padding: 12px 16px;
+            border: 1px solid color-mix(in srgb, #ff9f0a 45%, var(--border));
+            border-radius: 8px;
+            background: color-mix(in srgb, #ff9f0a 7%, var(--surface));
+        }
+
+        .issue-box h3 {
+            margin: 0 0 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #b35c00;
+        }
+
+        .issue-box ul {
+            margin: 0;
+            padding-inline-start: 18px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .kri-input.has-issue {
+            border-color: #ff9f0a;
+        }
+
+        .impact-scale {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 14px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
         /* Cadence de revue */
         .review-cadence {
             display: inline-flex;
@@ -5596,6 +5634,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <select id="filter-owner" class="filter-select" onchange="setFilter('owner', this.value)"></select>
             <button type="button" id="filter-appetite" class="filter-toggle" data-i18n-tip="tipFilterAppetite" onclick="setFilter('aboveAppetite', !riskFilter.aboveAppetite)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="filterAboveAppetite">Au-dessus de l’appétence</span></button>
             <button type="button" id="filter-review" class="filter-toggle" data-i18n-tip="tipFilterReview" onclick="setFilter('toReview', !riskFilter.toReview)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="filterToReview">À revoir</span></button>
+            <button type="button" id="filter-issues" class="filter-toggle" data-i18n-tip="tipFilterIssues" onclick="setFilter('issues', !riskFilter.issues)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/></svg><span data-i18n="filterIssues">Incohérences</span></button>
             <button type="button" id="filter-cell" class="filter-chip" onclick="setFilter('cell', null)" hidden></button>
             <span id="filter-count" class="filter-count"></span>
             <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
@@ -6879,7 +6918,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costLikely: "Coût probable",
                 costMax: "Coût max",
                 costProbability: "Probabilité",
-                costProbabilityDefault: "par défaut d'après P{p} : {pct} %",
+                costProbabilityDefault: "auto : {pct} % d'après P{p}",
                 costExpected: "Coût attendu",
                 provisionTitle: "Provision pour risques",
                 provisionExpected: "Espérance",
@@ -6939,6 +6978,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "Coût si le risque survient, en euros : une seule valeur suffit ; min et max donnent la fourchette de la simulation.",
                 tipCostProbability: "Probabilité que le risque survienne ; vide, elle découle de la cotation P après remédiation (P1 à P5 : 5, 15, 35, 60, 85 %).",
                 tipCostExpected: "Probabilité × coût moyen de la fourchette : la part de ce risque dans la provision.",
+                issuesTitle: "À vérifier",
+                issueProbability: "Probabilité de {prob} % incohérente avec P{p} (attendu entre {min} et {max} %) : ajuster la probabilité ou la cotation.",
+                issueCostHigh: "Coût probable de {cost} : l'échelle d'impact le situe en I{level} alors que le risque est coté I{i}. Impact sous-coté ?",
+                issueCostLow: "Coût probable de {cost} : l'échelle d'impact le situe en I{level} alors que le risque est coté I{i}. Impact surtout non financier (sûreté, image) ? Sinon, cotation à revoir.",
+                issueKri: "Un indicateur est en zone critique alors que la probabilité est cotée P{p} : le terrain contredit la cotation.",
+                issueTarget: "La cible est plus grave que la cotation actuelle.",
+                issueAfter: "La cotation après remédiation est plus grave qu'avant.",
+                issueTag: "à vérifier",
+                summaryIssues: "à vérifier (incohérences)",
+                summaryIssuesTip: "Risques dont les chiffres se contredisent : probabilité, coût, KRI ou cotations incohérents. Détail dans la fiche.",
+                filterIssues: "Incohérences",
+                tipFilterIssues: "N'afficher que les risques dont les chiffres se contredisent.",
+                impactScaleLabel: "Échelle d'impact en € (commune à l'analyse) :",
+                impactScaleFrom: "I{n} dès",
+                tipImpactScale: "Seuils en euros à partir desquels un coût correspond à I2, I3, I4 ou I5 : ils servent à détecter un impact sous-coté ou sur-coté.",
+                costAuto: "auto",
                 importReplace: "Remplacer par un fichier…",
                 importMerge: "Fusionner un fichier…",
                 importMergeHint: "Garder les deux",
@@ -7379,7 +7434,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costLikely: "Likely cost",
                 costMax: "Max cost",
                 costProbability: "Probability",
-                costProbabilityDefault: "default from P{p}: {pct} %",
+                costProbabilityDefault: "auto: {pct} % from P{p}",
                 costExpected: "Expected cost",
                 provisionTitle: "Risk contingency",
                 provisionExpected: "Expected value",
@@ -7439,6 +7494,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "Cost if the risk occurs, in euros: one value is enough; min and max give the simulation range.",
                 tipCostProbability: "Probability that the risk occurs; if empty, it follows from the residual P rating (P1 to P5: 5, 15, 35, 60, 85 %).",
                 tipCostExpected: "Probability × average cost of the range: this risk's share of the contingency.",
+                issuesTitle: "To check",
+                issueProbability: "A {prob} % probability is inconsistent with P{p} (expected {min} to {max} %): adjust the probability or the rating.",
+                issueCostHigh: "Likely cost of {cost}: the impact scale places it at I{level} while the risk is rated I{i}. Impact underrated?",
+                issueCostLow: "Likely cost of {cost}: the impact scale places it at I{level} while the risk is rated I{i}. Mostly non-financial impact (safety, image)? Otherwise, review the rating.",
+                issueKri: "An indicator is in the critical zone while the probability is rated P{p}: the field data contradicts the rating.",
+                issueTarget: "The target is more severe than the current rating.",
+                issueAfter: "The rating after remediation is more severe than before.",
+                issueTag: "to check",
+                summaryIssues: "to check (inconsistencies)",
+                summaryIssuesTip: "Risks whose figures contradict each other: inconsistent probability, cost, KRI or ratings. Details in the sheet.",
+                filterIssues: "Inconsistencies",
+                tipFilterIssues: "Show only risks whose figures contradict each other.",
+                impactScaleLabel: "Impact scale in € (shared by the analysis):",
+                impactScaleFrom: "I{n} from",
+                tipImpactScale: "Euro thresholds from which a cost corresponds to I2, I3, I4 or I5: used to detect an underrated or overrated impact.",
+                costAuto: "auto",
                 importReplace: "Replace with a file…",
                 importMerge: "Merge a file…",
                 importMergeHint: "Keep both",
@@ -7882,7 +7953,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costLikely: "Coste probable",
                 costMax: "Coste máx.",
                 costProbability: "Probabilidad",
-                costProbabilityDefault: "por defecto según P{p}: {pct} %",
+                costProbabilityDefault: "auto: {pct} % según P{p}",
                 costExpected: "Coste esperado",
                 provisionTitle: "Provisión para riesgos",
                 provisionExpected: "Esperanza",
@@ -7942,6 +8013,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "Coste si el riesgo ocurre, en euros: basta un valor; mín. y máx. dan la horquilla de la simulación.",
                 tipCostProbability: "Probabilidad de que el riesgo ocurra; si está vacía, resulta de la calificación P residual (P1 a P5: 5, 15, 35, 60, 85 %).",
                 tipCostExpected: "Probabilidad × coste medio de la horquilla: la parte de este riesgo en la provisión.",
+                issuesTitle: "Por verificar",
+                issueProbability: "Probabilidad del {prob} % incoherente con P{p} (esperado entre {min} y {max} %): ajuste la probabilidad o la calificación.",
+                issueCostHigh: "Coste probable de {cost}: la escala de impacto lo sitúa en I{level} y el riesgo está calificado I{i}. ¿Impacto infravalorado?",
+                issueCostLow: "Coste probable de {cost}: la escala lo sitúa en I{level} y el riesgo está calificado I{i}. ¿Impacto sobre todo no financiero (seguridad, imagen)? Si no, revise la calificación.",
+                issueKri: "Un indicador está en zona crítica mientras la probabilidad está calificada P{p}: los datos contradicen la calificación.",
+                issueTarget: "El objetivo es más grave que la calificación actual.",
+                issueAfter: "La calificación tras la remediación es más grave que antes.",
+                issueTag: "por verificar",
+                summaryIssues: "por verificar (incoherencias)",
+                summaryIssuesTip: "Riesgos cuyas cifras se contradicen: probabilidad, coste, KRI o calificaciones incoherentes. Detalle en la ficha.",
+                filterIssues: "Incoherencias",
+                tipFilterIssues: "Mostrar solo los riesgos cuyas cifras se contradicen.",
+                impactScaleLabel: "Escala de impacto en € (común al análisis):",
+                impactScaleFrom: "I{n} desde",
+                tipImpactScale: "Umbrales en euros a partir de los cuales un coste corresponde a I2, I3, I4 o I5: sirven para detectar un impacto infravalorado o sobrevalorado.",
+                costAuto: "auto",
                 importReplace: "Reemplazar por un archivo…",
                 importMerge: "Fusionar un archivo…",
                 importMergeHint: "Conservar ambos",
@@ -8382,7 +8469,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costLikely: "最可能成本",
                 costMax: "最高成本",
                 costProbability: "概率",
-                costProbabilityDefault: "默认按 P{p}：{pct}%",
+                costProbabilityDefault: "自动：按 P{p} 为 {pct}%",
                 costExpected: "期望成本",
                 provisionTitle: "风险准备金",
                 provisionExpected: "期望值",
@@ -8442,6 +8529,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "风险发生时的成本（欧元）：填一个值即可；最低和最高值构成模拟区间。",
                 tipCostProbability: "风险发生的概率；留空则按处理后 P 评级推算（P1 至 P5：5、15、35、60、85%）。",
                 tipCostExpected: "概率 × 区间平均成本：该风险在准备金中的份额。",
+                issuesTitle: "待核实",
+                issueProbability: "概率 {prob}% 与 P{p} 不一致（应在 {min}% 至 {max}% 之间）：请调整概率或评级。",
+                issueCostHigh: "最可能成本 {cost}：按影响刻度应为 I{level}，而风险评为 I{i}。影响是否被低估？",
+                issueCostLow: "最可能成本 {cost}：按影响刻度应为 I{level}，而风险评为 I{i}。影响是否主要是非财务性的（安全、形象）？否则请复核评级。",
+                issueKri: "某指标处于临界区，而概率评为 P{p}：实际数据与评级矛盾。",
+                issueTarget: "目标比当前评级更严重。",
+                issueAfter: "处理后的评级比处理前更严重。",
+                issueTag: "待核实",
+                summaryIssues: "项待核实（不一致）",
+                summaryIssuesTip: "数据相互矛盾的风险：概率、成本、KRI 或评级不一致。详见风险卡片。",
+                filterIssues: "不一致",
+                tipFilterIssues: "仅显示数据相互矛盾的风险。",
+                impactScaleLabel: "影响刻度（欧元，整个分析通用）：",
+                impactScaleFrom: "I{n} 起",
+                tipImpactScale: "成本对应 I2、I3、I4 或 I5 的欧元阈值：用于发现被低估或高估的影响。",
+                costAuto: "自动",
                 importReplace: "用文件替换…",
                 importMerge: "合并文件…",
                 importMergeHint: "保留两者",
@@ -8882,7 +8985,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 costLikely: "الكلفة المرجحة",
                 costMax: "الكلفة القصوى",
                 costProbability: "الاحتمال",
-                costProbabilityDefault: "افتراضيًا حسب P{p}: {pct} %",
+                costProbabilityDefault: "تلقائي: {pct} % حسب P{p}",
                 costExpected: "الكلفة المتوقعة",
                 provisionTitle: "احتياطي المخاطر",
                 provisionExpected: "القيمة المتوقعة",
@@ -8942,6 +9045,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tipCostRange: "الكلفة إذا وقع الخطر، باليورو: تكفي قيمة واحدة؛ الأدنى والأقصى يحددان نطاق المحاكاة.",
                 tipCostProbability: "احتمال وقوع الخطر؛ إن كان فارغًا فهو مستمد من تقييم P بعد المعالجة (P1 إلى P5: 5، 15، 35، 60، 85 %).",
                 tipCostExpected: "الاحتمال × متوسط كلفة النطاق: حصة هذا الخطر في الاحتياطي.",
+                issuesTitle: "للتحقق",
+                issueProbability: "احتمال {prob} % لا يتسق مع P{p} (المتوقع بين {min} و{max} %): عدّل الاحتمال أو التقييم.",
+                issueCostHigh: "الكلفة المرجحة {cost}: يضعها سلّم الأثر في I{level} بينما قُيّم الخطر I{i}. هل الأثر مقدَّر بأقل من حقيقته؟",
+                issueCostLow: "الكلفة المرجحة {cost}: يضعها السلّم في I{level} بينما قُيّم الخطر I{i}. هل الأثر غير مالي أساسًا (السلامة، السمعة)؟ وإلا فراجع التقييم.",
+                issueKri: "مؤشر في المنطقة الحرجة بينما قُيّم الاحتمال P{p}: الواقع يناقض التقييم.",
+                issueTarget: "الهدف أشد خطورة من التقييم الحالي.",
+                issueAfter: "التقييم بعد المعالجة أشد خطورة منه قبلها.",
+                issueTag: "للتحقق",
+                summaryIssues: "للتحقق (تناقضات)",
+                summaryIssuesTip: "مخاطر تتناقض أرقامها: احتمال أو كلفة أو مؤشر أو تقييمات غير متسقة. التفاصيل في البطاقة.",
+                filterIssues: "التناقضات",
+                tipFilterIssues: "عرض المخاطر التي تتناقض أرقامها فقط.",
+                impactScaleLabel: "سلّم الأثر باليورو (مشترك للتحليل):",
+                impactScaleFrom: "I{n} من",
+                tipImpactScale: "عتبات باليورو يقابل الكلفة عندها I2 أو I3 أو I4 أو I5: تُستخدم لكشف أثر مقدَّر بأقل أو بأكثر من حقيقته.",
+                costAuto: "تلقائي",
                 importReplace: "الاستبدال بملف…",
                 importMerge: "دمج ملف…",
                 importMergeHint: "الاحتفاظ بالاثنين",
@@ -9704,6 +9823,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const appetite = raw && raw.riskAppetite;
             const cadence = raw && raw.cadenceRevue;
             return {
+                // Échelle d'impact en euros : seuils à partir desquels un coût relève de I2, I3, I4, I5
+                echelleImpact: Array.isArray(raw?.echelleImpact) && raw.echelleImpact.length === 4
+                    && raw.echelleImpact.every((v, i, a) => Number.isFinite(v) && v > 0 && (!i || v > a[i - 1]))
+                    ? raw.echelleImpact : [10000, 50000, 250000, 1000000],
                 // Revue des risques tous les N jours (90 par défaut)
                 cadenceRevue: Number.isInteger(cadence) && cadence > 0 && cadence <= 3650 ? cadence : 90,
                 riskAppetite: Number.isInteger(appetite) && appetite >= 0 && appetite <= 25
@@ -12195,11 +12318,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const MATRIX_TITLES = { before: 'matrixBefore', after: 'matrixAfter', trajectory: 'matrixTrajectory' };
 
         // Filtres du registre (état d'affichage, non enregistré). cell = { phase, p, i } : case cliquée
-        const riskFilter = { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, cell: null };
+        const riskFilter = { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, issues: false, cell: null };
         const FILTER_LEVELS = { none: 'critNotEval', low: 'critLow', medium: 'critMedium', high: 'critHigh', critical: 'critCritical' };
 
         const isFilterActive = () => Boolean(riskFilter.text || riskFilter.group || riskFilter.level ||
-            riskFilter.treatment || riskFilter.owner || riskFilter.aboveAppetite || riskFilter.toReview || riskFilter.cell);
+            riskFilter.treatment || riskFilter.owner || riskFilter.aboveAppetite || riskFilter.toReview || riskFilter.issues || riskFilter.cell);
 
         function setFilter(name, value) {
             riskFilter[name] = value;
@@ -12207,7 +12330,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function clearFilters() {
-            Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, cell: null });
+            Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, issues: false, cell: null });
             document.getElementById('filter-text').value = '';
             fillFilterOptions();
             applyFilters();
@@ -12223,6 +12346,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (f.owner && risk.responsable !== f.owner) return false;
             if (f.aboveAppetite && !(settings.riskAppetite && score > settings.riskAppetite)) return false;
             if (f.toReview && !reviewStatus(risk, dates).due) return false;
+            if (f.issues && !riskIssues(risk).length) return false;
             if (f.cell) {
                 const cell = evaluatedAssessment(risk, f.cell.phase);
                 if (!cell || cell[0] !== f.cell.p || cell[1] !== f.cell.i) return false;
@@ -12285,6 +12409,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             document.getElementById('filter-appetite').classList.toggle('active', riskFilter.aboveAppetite);
             document.getElementById('filter-review').classList.toggle('active', riskFilter.toReview);
+            document.getElementById('filter-issues').classList.toggle('active', riskFilter.issues);
             document.querySelectorAll('.filter-select').forEach(select =>
                 select.classList.toggle('active', Boolean(riskFilter[select.id.replace('filter-', '')])));
             document.getElementById('filter-clear').hidden = !active;
@@ -13097,6 +13222,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 [risks.filter(risk => lastScores.has(risk.uid) && scoreOf(risk.assessmentAfter) > lastScores.get(risk.uid)).length, 'summaryUp'],
                 [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate'],
                 [risks.filter(toReview).length, 'summaryToReview'],
+                [risks.filter(risk => riskIssues(risk).length).length, 'summaryIssues'],
                 [risks.flatMap(risk => risk.kri).filter(kri => ['alert', 'critical'].includes(kriStatus(kri))).length, 'summaryKriAlert'],
                 ...(risks.some(costRange) ? [[escapeHtml(formatMoney(risks.reduce((sum, risk) => sum + expectedCost(risk), 0))), 'summaryExpectedCost']] : [])
             ];
@@ -13109,7 +13235,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const residual = risk => {
                 const after = evaluatedAssessment(risk, 'After');
                 return (after ? t('residualDetail', { p: after[0], i: after[1] }) : t('critNotEval'))
-                    + (toReview(risk) ? ` · <span class="review-due-tag">${t('reviewDueTag')}</span>` : '');
+                    + (toReview(risk) ? ` · <span class="review-due-tag">${t('reviewDueTag')}</span>` : '')
+                    + (riskIssues(risk).length ? ` · <span class="review-due-tag">${t('issueTag')}</span>` : '');
             };
             const attributes = risk => `data-risk-id="${escapeHtml(risk.id)}" data-risk-uid="${escapeHtml(risk.uid)}" title="${t('openRiskSheet')}"`;
 
@@ -13322,6 +13449,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <polyline points="0,110 ${points.join(' ')}" fill="none" stroke="var(--accent)" stroke-width="2"/></svg>`;
         }
 
+        // Détecteur d'incohérences : alertes « à vérifier », rien n'est bloqué. Complexité : O(k) par risque (k = KRI)
+        const PROBABILITY_BANDS = [null, [0, 10], [10, 25], [25, 50], [50, 75], [75, 100]];
+        const impactLevelFor = cost => 1 + settings.echelleImpact.filter(limit => cost >= limit).length;
+        const assessmentScore = ([p, i]) => p * i;
+        function riskIssues(risk) {
+            const issues = [];
+            const [p, i] = risk.assessmentAfter;
+            const probability = risk.cout.probabilite;
+            if (probability !== null && p) {
+                const [min, max] = PROBABILITY_BANDS[p];
+                if (probability < min || probability > max) issues.push({ field: 'probabilite', text: t('issueProbability', { prob: probability, p, min, max }) });
+            }
+            const range = costRange(risk);
+            if (range && i) {
+                const level = impactLevelFor(range[1]);
+                if (level > i) issues.push({ field: 'cout', text: t('issueCostHigh', { cost: formatMoney(range[1]), level, i }) });
+                else if (level < i) issues.push({ field: 'cout', text: t('issueCostLow', { cost: formatMoney(range[1]), level, i }) });
+            }
+            if (p && p <= 2 && risk.kri.some(kri => kriStatus(kri) === 'critical')) issues.push({ field: 'kri', text: t('issueKri', { p }) });
+            const [before, after, target] = [risk.assessmentBefore, risk.assessmentAfter, risk.assessmentTarget].map(assessmentScore);
+            if (target && after && target > after) issues.push({ field: 'cotation', text: t('issueTarget') });
+            if (before && after && after > before) issues.push({ field: 'cotation', text: t('issueAfter') });
+            return issues;
+        }
+
         // Date de la dernière revue figée qui contient chaque risque. Complexité : O(E), E = entrées de revues
         function lastReviewDates() {
             const dates = new Map();
@@ -13382,6 +13534,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const above = settings.riskAppetite && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
             const history = reviews.filter(r => r.risks.some(entry => entry.uid === risk.uid));
             const cadence = reviewStatus(risk);
+            const issues = riskIssues(risk);
+            const flagged = field => issues.some(issue => issue.field === field) ? ' has-issue' : '';
             // 5 segments cliquables ; cliquer le niveau actuel le remet à « non évalué »
             const levelBar = (field, axis, letter, scale, name) => {
                 const value = risk[field][axis];
@@ -13439,6 +13593,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>
                     <div class="sheet-scores">${cotation('assessmentBefore', 'colBeforeShort')}<span class="sheet-arrow">→</span>${cotation('assessmentAfter', 'colAfterShort')}<span class="sheet-arrow">→</span>${cotation('assessmentTarget', 'colTarget', true)}</div>
                 </div>
+                ${issues.length ? `<section class="issue-box"><h3>${t('issuesTitle')}</h3><ul>${issues.map(issue => `<li>${escapeHtml(issue.text)}</li>`).join('')}</ul></section>` : ''}
                 <div class="bowtie2">
                     <svg class="bowtie-links" aria-hidden="true"></svg>
                     ${[['bowtieCauses', 'notionCauses'], ['bowtiePrevention', 'notionPrevention'], ['bowtieEvent', 'notionEvent'],
@@ -13474,11 +13629,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <button type="button" class="bowtie-add" data-action="add-kri">${icon('plus')} ${t('kriAdd')}</button></section>
                 <section class="committee-card sheet-cost"><h3 data-tip="${t('costHint')}">${t('costTitle')}</h3>
                     <div class="cost-fields">${[['min', 'costMin'], ['probable', 'costLikely'], ['max', 'costMax']].map(([field, label]) =>
-                        `<label data-tip="${t('tipCostRange')}">${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
-                        <label data-tip="${t('tipCostProbability')}">${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
-                            placeholder="${DEFAULT_PROBABILITY[risk.assessmentAfter[0]] ?? ''}"> %</label>
+                        `<label data-tip="${t('tipCostRange')}">${t(label)} <input type="number" min="0" step="any" class="kri-input cost-input${flagged('cout')}" data-cost-field="${field}" value="${risk.cout[field] ?? ''}"> €</label>`).join('')}
+                        <label data-tip="${t('tipCostProbability')}">${t('costProbability')} <input type="number" min="0" max="100" step="any" class="kri-input${flagged('probabilite')}" data-cost-field="probabilite" value="${risk.cout.probabilite ?? ''}"
+                            placeholder="${t('costAuto')}"> %</label>
                         ${risk.cout.probabilite === null && risk.assessmentAfter[0] ? `<small>${t('costProbabilityDefault', { p: risk.assessmentAfter[0], pct: DEFAULT_PROBABILITY[risk.assessmentAfter[0]] })}</small>` : ''}
-                        <span class="cost-expected" data-tip="${t('tipCostExpected')}">${t('costExpected')} : <b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div></section>
+                        <span class="cost-expected" data-tip="${t('tipCostExpected')}">${t('costExpected')} : <b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div>
+                    <div class="impact-scale" data-tip="${t('tipImpactScale')}"><span>${t('impactScaleLabel')}</span>${settings.echelleImpact.map((limit, index) =>
+                        `<label>${t('impactScaleFrom', { n: index + 2 })} <input type="number" min="0" step="any" class="kri-input cost-input" data-impact-limit="${index}" value="${limit}"> €</label>`).join('')}</div></section>
                 <div class="sheet-cards">
                     <section class="committee-card"><h3>${t('evolutionTitle')}</h3><div class="sheet-evolution"><canvas></canvas></div>
                         <p class="review-meta">${history.length ? t('evolutionCaption', { dates: history.map(r => shortDate(r.date)).join(', ') }) : ''}</p></section>
@@ -13526,6 +13683,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
             // Seuils et unité d'un KRI
             sheet.onchange = event => {
+                const limit = event.target.closest('[data-impact-limit]');
+                if (limit) {
+                    // Seuils croissants obligatoires : une saisie qui casserait l'ordre est ignorée
+                    const next = [...settings.echelleImpact];
+                    next[Number(limit.dataset.impactLimit)] = toNumber(limit.value);
+                    if (next.every((v, i) => v > 0 && (!i || v > next[i - 1]))) settings.echelleImpact = next;
+                    return save('all');
+                }
                 const cost = event.target.closest('[data-cost-field]');
                 if (cost) {
                     risk.cout[cost.dataset.costField] = toNumber(cost.value);
