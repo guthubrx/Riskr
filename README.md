@@ -106,6 +106,10 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   cotation, mesures }`.
 - `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
   permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
+- `kri` : indicateurs clés de risque `{ id, nom, unite, sens, alerte, critique,
+  releves: [{ date, valeur, auteur }] }` ; `sens` vaut `hausse` (plus la valeur
+  monte, plus c'est grave) ou `baisse` ; le dernier relevé donne le statut
+  (vert, orange au seuil d'alerte, rouge au seuil critique).
 - `revuLe` / `prochaineRevue` (facultatifs, `AAAA-MM-JJ`) : dernière revue
   déclarée et prochaine revue choisie ; `settings.cadenceRevue` : revue des risques
   tous les N jours (90 par défaut).
@@ -185,6 +189,10 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   traitement, porteur, mesures, notes…), dans la fiche du risque et, pour toute
   l'analyse, dans l'onglet Revues (« Dernières modifications ») ; Annuler retire
   aussi la ligne correspondante
+- **Indicateurs clés de risque (KRI)** : dans la fiche, des mesures chiffrées par
+  risque avec seuils d'alerte et critique, relevés datés et signés, mini-courbe ;
+  compteur « KRI en alerte » dans le registre, KRI critiques dans les décisions
+  attendues de la vue comité
 - **Cadence de revue** : chaque risque a une prochaine revue (date choisie, sinon
   dernière revue + cadence de 30, 60, 90 ou 180 jours réglée dans l'onglet Revues) ;
   « Marquer comme revu » dans la fiche ; les risques à revoir sont signalés et

@@ -3203,6 +3203,95 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             margin-top: 10px;
         }
 
+        /* Indicateurs clés de risque (KRI) */
+        .sheet-kri {
+            margin-top: 16px;
+        }
+
+        .kri-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .kri-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .kri-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .kri-head .review-delete {
+            margin-inline-start: auto;
+        }
+
+        .kri-dot {
+            flex-shrink: 0;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .kri-value b {
+            font-size: 22px;
+        }
+
+        .kri-value small {
+            display: block;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .kri-spark {
+            width: 100%;
+            height: 40px;
+            color: var(--text-2);
+        }
+
+        .kri-settings,
+        .kri-add {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 10px;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .kri-input {
+            width: 64px;
+            padding: 2px 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--text);
+            font: inherit;
+        }
+
+        .kri-add .kri-input {
+            width: 90px;
+        }
+
+        .kri-sense {
+            padding: 2px 8px;
+            border: none;
+            border-radius: 6px;
+            background: var(--surface-2);
+            color: var(--text-2);
+            font: inherit;
+            cursor: pointer;
+        }
+
         /* Cadence de revue */
         .review-cadence {
             display: inline-flex;
@@ -6491,6 +6580,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 icsSummary: "Revue du risque {id} — {title}",
                 journalReviewed: "Revu le",
                 journalNextReview: "Prochaine revue",
+                kriTitle: "Indicateurs de risque (KRI)",
+                kriHint: "Mesure chiffrée qui signale que le risque se rapproche, avec des seuils d'alerte et critique.",
+                kriAdd: "Ajouter un indicateur",
+                kriNew: "Nouvel indicateur",
+                kriAddValue: "Relevé",
+                kriValuePlaceholder: "Valeur",
+                kriUnit: "Unité",
+                kriAlert: "Alerte",
+                kriCritical: "Critique",
+                kriHigherWorse: "↑ plus haut = pire",
+                kriLowerWorse: "↓ plus bas = pire",
+                kriNoValue: "Aucun relevé",
+                kriEmpty: "Aucun indicateur : ajoutez une mesure chiffrée qui alerte avant que le risque ne survienne.",
+                summaryKriAlert: "KRI en alerte",
+                kriDecision: "KRI « {name} » en zone critique : {value}",
+                journalKri: "Indicateur",
+                journalKriValue: "Relevé",
+                journalKriThresholds: "Seuils",
                 mesureDueDate: "Échéance (facultatif)",
                 mesureTextPlaceholder: "Décrire la mesure",
                 mesureAdd: "Ajouter une mesure",
@@ -6892,6 +6999,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 icsSummary: "Review of risk {id} — {title}",
                 journalReviewed: "Reviewed on",
                 journalNextReview: "Next review",
+                kriTitle: "Key risk indicators (KRI)",
+                kriHint: "A measured value that signals the risk is getting closer, with alert and critical thresholds.",
+                kriAdd: "Add an indicator",
+                kriNew: "New indicator",
+                kriAddValue: "Reading",
+                kriValuePlaceholder: "Value",
+                kriUnit: "Unit",
+                kriAlert: "Alert",
+                kriCritical: "Critical",
+                kriHigherWorse: "↑ higher = worse",
+                kriLowerWorse: "↓ lower = worse",
+                kriNoValue: "No reading",
+                kriEmpty: "No indicator: add a measured value that warns before the risk occurs.",
+                summaryKriAlert: "KRIs on alert",
+                kriDecision: "KRI “{name}” in the critical zone: {value}",
+                journalKri: "Indicator",
+                journalKriValue: "Reading",
+                journalKriThresholds: "Thresholds",
                 mesureDueDate: "Due date (optional)",
                 mesureTextPlaceholder: "Describe the measure",
                 mesureAdd: "Add a measure",
@@ -7296,6 +7421,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 icsSummary: "Revisión del riesgo {id} — {title}",
                 journalReviewed: "Revisado el",
                 journalNextReview: "Próxima revisión",
+                kriTitle: "Indicadores clave de riesgo (KRI)",
+                kriHint: "Valor medido que indica que el riesgo se acerca, con umbrales de alerta y crítico.",
+                kriAdd: "Añadir un indicador",
+                kriNew: "Nuevo indicador",
+                kriAddValue: "Medición",
+                kriValuePlaceholder: "Valor",
+                kriUnit: "Unidad",
+                kriAlert: "Alerta",
+                kriCritical: "Crítico",
+                kriHigherWorse: "↑ más alto = peor",
+                kriLowerWorse: "↓ más bajo = peor",
+                kriNoValue: "Sin mediciones",
+                kriEmpty: "Ningún indicador: añada un valor medido que avise antes de que ocurra el riesgo.",
+                summaryKriAlert: "KRI en alerta",
+                kriDecision: "KRI «{name}» en zona crítica: {value}",
+                journalKri: "Indicador",
+                journalKriValue: "Medición",
+                journalKriThresholds: "Umbrales",
                 mesureDueDate: "Plazo (opcional)",
                 mesureTextPlaceholder: "Describir la medida",
                 mesureAdd: "Añadir una medida",
@@ -7697,6 +7840,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 icsSummary: "风险 {id} 评审 — {title}",
                 journalReviewed: "评审于",
                 journalNextReview: "下次评审",
+                kriTitle: "关键风险指标（KRI）",
+                kriHint: "用于提示风险临近的量化指标，设有预警和临界阈值。",
+                kriAdd: "添加指标",
+                kriNew: "新指标",
+                kriAddValue: "读数",
+                kriValuePlaceholder: "数值",
+                kriUnit: "单位",
+                kriAlert: "预警",
+                kriCritical: "临界",
+                kriHigherWorse: "↑ 越高越差",
+                kriLowerWorse: "↓ 越低越差",
+                kriNoValue: "暂无读数",
+                kriEmpty: "暂无指标：请添加一个能在风险发生前发出预警的量化指标。",
+                summaryKriAlert: "项 KRI 预警",
+                kriDecision: "KRI“{name}”处于临界区：{value}",
+                journalKri: "指标",
+                journalKriValue: "读数",
+                journalKriThresholds: "阈值",
                 mesureDueDate: "截止日期（可选）",
                 mesureTextPlaceholder: "描述措施",
                 mesureAdd: "添加措施",
@@ -8098,6 +8259,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 icsSummary: "مراجعة الخطر {id} — {title}",
                 journalReviewed: "رُوجع في",
                 journalNextReview: "المراجعة القادمة",
+                kriTitle: "مؤشرات المخاطر الرئيسية (KRI)",
+                kriHint: "قيمة مقاسة تنبّه إلى اقتراب الخطر، مع عتبتي تنبيه وحرجة.",
+                kriAdd: "إضافة مؤشر",
+                kriNew: "مؤشر جديد",
+                kriAddValue: "قراءة",
+                kriValuePlaceholder: "القيمة",
+                kriUnit: "الوحدة",
+                kriAlert: "تنبيه",
+                kriCritical: "حرج",
+                kriHigherWorse: "↑ الأعلى = أسوأ",
+                kriLowerWorse: "↓ الأدنى = أسوأ",
+                kriNoValue: "لا توجد قراءات",
+                kriEmpty: "لا يوجد مؤشر: أضف قيمة مقاسة تنبّه قبل وقوع الخطر.",
+                summaryKriAlert: "مؤشرات في حالة تنبيه",
+                kriDecision: "المؤشر «{name}» في المنطقة الحرجة: {value}",
+                journalKri: "مؤشر",
+                journalKriValue: "قراءة",
+                journalKriThresholds: "العتبات",
                 mesureDueDate: "الموعد النهائي (اختياري)",
                 mesureTextPlaceholder: "صِف الإجراء",
                 mesureAdd: "إضافة إجراء",
@@ -8752,6 +8931,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 notes: objectList(raw.notes).map(normalizeNote),
                 liens: objectList(raw.liens).map(normalizeLink),
                 // Cadence de revue : dernière revue déclarée et prochaine revue choisie (AAAA-MM-JJ, facultatives)
+                kri: objectList(raw.kri).map(normalizeKri), // indicateurs clés de risque
                 revuLe: isIsoDate(raw.revuLe) ? raw.revuLe : '',
                 prochaineRevue: isIsoDate(raw.prochaineRevue) ? raw.prochaineRevue : ''
             });
@@ -8825,6 +9005,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Réglages de l'analyse, enregistrés avec le modèle (historique, navigateur, fichier).
         // riskAppetite : score P × I maximal acceptable (0 = aucune appétence définie) ;
         // par défaut juste sous le seuil « élevé ».
+        // Indicateur clé de risque : relevés triés par date ; sens « hausse » = plus la valeur monte, plus c'est grave
+        const toNumber = value => value === '' || value === null || value === undefined || isNaN(Number(value)) ? null : Number(value);
+        const normalizeKri = raw => ({
+            id: String(raw.id || newUid()), nom: String(raw.nom || ''), unite: String(raw.unite || ''),
+            sens: raw.sens === 'baisse' ? 'baisse' : 'hausse', alerte: toNumber(raw.alerte), critique: toNumber(raw.critique),
+            releves: objectList(raw.releves).map(r => ({ date: String(r.date || ''), valeur: toNumber(r.valeur), auteur: String(r.auteur || '') }))
+                .filter(r => r.valeur !== null).sort((a, b) => a.date.localeCompare(b.date))
+        });
+
         const isIsoDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
         function normalizeSettings(raw) {
@@ -8961,6 +9150,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 });
                 listChanges(old.notes.map(n => n.texte), risk.notes.map(n => n.texte)).forEach(([a, b]) => add(risk, 'note', a, b));
                 listChanges(old.liens.map(l => l.libelle), risk.liens.map(l => l.libelle)).forEach(([a, b]) => add(risk, 'lien', a, b));
+                listChanges(old.kri.map(k => k.nom), risk.kri.map(k => k.nom)).forEach(([a, b]) => add(risk, 'kri', a, b));
+                const oldKri = new Map(old.kri.map(k => [k.id, k]));
+                risk.kri.forEach(kri => {
+                    const was = oldKri.get(kri.id);
+                    if (!was) return;
+                    const seen = new Set(was.releves.map(r => `${r.date}|${r.valeur}`));
+                    kri.releves.filter(r => !seen.has(`${r.date}|${r.valeur}`)).forEach(r => add(risk, 'kri.releve', '', formatKri(kri, r.valeur), kri.nom));
+                    const limits = k => `${k.alerte ?? '—'} / ${k.critique ?? '—'}`;
+                    if (limits(was) !== limits(kri)) add(risk, 'kri.seuils', limits(was), limits(kri), kri.nom);
+                });
             });
             before.forEach(old => add(old, 'deleted', old.title, ''));
             const oldReviews = new Map(previous.reviews.map(review => [review.id, review.label]));
@@ -8976,8 +9175,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cause: 'journalCause', consequence: 'journalConsequence', chiffrage: 'journalCosting', mesure: 'journalMesure',
             'mesure.etat': 'mesureState', 'mesure.porteur': 'mesureOwner', 'mesure.echeance': 'journalDue', 'mesure.barriere': 'journalBarrier',
             'mesure.efficacite': 'journalEfficacy', note: 'journalNote', lien: 'journalLink', created: 'journalCreated',
-            deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview' };
-        const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review']);
+            deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview',
+            kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds' };
+        const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review', 'kri', 'kri.releve']);
         function journalValue(champ, value) {
             if (value === '') return '';
             if (champ.startsWith('assessment')) {
@@ -11784,6 +11984,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 delta: exposureBefore && exposureAfter !== null ? Math.round((exposureAfter / exposureBefore - 1) * 100) : null,
                 highBefore: high('Before'), highAfter: high('After'),
                 above: settings.riskAppetite ? risks.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [],
+                kriCritical: risks.flatMap(risk => risk.kri.filter(kri => kriStatus(kri) === 'critical').map(kri => ({ risk, kri }))),
                 late: mesures.filter(isMesureLate).length, mesureCount: mesures.length,
                 top: risks.filter(risk => scoreOf(risk.assessmentAfter))
                     .sort((a, b) => scoreOf(b.assessmentAfter) - scoreOf(a.assessmentAfter) || scoreOf(b.assessmentBefore) - scoreOf(a.assessmentBefore))
@@ -11838,8 +12039,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <b style="width:${(value || 0) / 5 * 100}%"></b>
                                 <span>${formatExposure(value)}</span></div>`).join('')}</section>
                         <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
-                            <ul class="committee-list">${stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
-                                ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
+                            <ul class="committee-list">${[...stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
+                                ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`),
+                                ...stats.kriCritical.map(({ risk, kri }) => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(t('kriDecision', { name: kri.nom, value: formatKri(kri) }))}</li>`)]
+                                .join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
                     </div>`,
                 mount: body => {
                     const { datasets, bubble } = matrixChartData('trajectory');
@@ -11883,7 +12086,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentAfter))]}">${scoreOf(risk.assessmentAfter)}</td>
                         <td style="${cell}">${treatmentLabel(risk.traitement)}</td><td style="${cell}">${escapeHtml(risk.responsable)}</td></tr>`).join('')}</table>
                 <h3 style="font-family:Arial,sans-serif">${t('committeeDecisions')}</h3>
-                <ul style="font-family:Arial,sans-serif;font-size:10pt">${stats.above.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)} : ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`).join('') || `<li>${t('committeeNoDecision')}</li>`}</ul>`;
+                <ul style="font-family:Arial,sans-serif;font-size:10pt">${[...stats.above.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)} : ${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`),
+                    ...stats.kriCritical.map(({ risk, kri }) => `<li>${escapeHtml(risk.id)} · ${escapeHtml(t('kriDecision', { name: kri.nom, value: formatKri(kri) }))}</li>`)].join('') || `<li>${t('committeeNoDecision')}</li>`}</ul>`;
             if (await copyRichHtml(html, document.getElementById('committee-panel').innerText)) {
                 showToast(t('committeeCopied'));
             } else {
@@ -12185,7 +12389,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 [risks.filter(isAbove).length, 'summaryAbove'],
                 [risks.filter(risk => lastScores.has(risk.uid) && scoreOf(risk.assessmentAfter) > lastScores.get(risk.uid)).length, 'summaryUp'],
                 [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate'],
-                [risks.filter(toReview).length, 'summaryToReview']
+                [risks.filter(toReview).length, 'summaryToReview'],
+                [risks.flatMap(risk => risk.kri).filter(kri => ['alert', 'critical'].includes(kriStatus(kri))).length, 'summaryKriAlert']
             ];
             document.getElementById('register-summary').innerHTML = summary.map(([count, key]) => `<span><b>${count}</b> ${t(key)}</span>`).join('');
             if (registerMode === 'edit') return;
@@ -12297,6 +12502,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const isoDate = d => [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-');
         const todayIso = () => isoDate(new Date());
         const addDays = (iso, days) => { const d = mesureDueDate(iso); d.setDate(d.getDate() + days); return isoDate(d); };
+
+        // Statut d'un KRI d'après son dernier relevé : critique, alerte, ok, ou aucun relevé. O(1)
+        const KRI_COLORS = { ok: '#34c759', alert: '#ff9f0a', critical: '#ff3b30', none: 'var(--border-strong)' };
+        function kriStatus(kri) {
+            const last = kri.releves[kri.releves.length - 1];
+            if (!last) return 'none';
+            const worse = limit => limit !== null && (kri.sens === 'baisse' ? last.valeur <= limit : last.valeur >= limit);
+            return worse(kri.critique) ? 'critical' : worse(kri.alerte) ? 'alert' : 'ok';
+        }
+        const formatKri = (kri, value = kri.releves[kri.releves.length - 1]?.valeur) =>
+            value === undefined || value === null ? '—' : `${value.toLocaleString(currentLanguage)}${kri.unite ? ` ${kri.unite}` : ''}`;
+
+        // Mini-courbe des 12 derniers relevés, seuils d'alerte et critique en pointillé. Complexité : O(v)
+        function kriSparkline(kri) {
+            const values = kri.releves.slice(-12).map(r => r.valeur);
+            if (values.length < 2) return '';
+            const bounds = [...values, kri.alerte, kri.critique].filter(v => v !== null);
+            const min = Math.min(...bounds), span = Math.max(...bounds) - min || 1;
+            const x = i => 4 + i * 152 / (values.length - 1), y = v => 36 - (v - min) / span * 32;
+            const limit = (value, color) => value === null ? ''
+                : `<line x1="0" x2="160" y1="${y(value)}" y2="${y(value)}" stroke="${color}" stroke-width="1" stroke-dasharray="3 3"/>`;
+            return `<svg class="kri-spark" viewBox="0 0 160 40" preserveAspectRatio="none" aria-hidden="true">${limit(kri.alerte, KRI_COLORS.alert)}${limit(kri.critique, KRI_COLORS.critical)}
+                <polyline points="${values.map((v, i) => `${x(i)},${y(v)}`).join(' ')}" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="${x(values.length - 1)}" cy="${y(values[values.length - 1])}" r="3" fill="${KRI_COLORS[kriStatus(kri)]}"/></svg>`;
+        }
 
         // Date de la dernière revue figée qui contient chaque risque. Complexité : O(E), E = entrées de revues
         function lastReviewDates() {
@@ -12431,6 +12661,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         ${tools(del(`data-del-list="consequences" data-index="${index}"`))}</div>`).join('')}
                         ${add('data-add="consequences"', 'bowtieAddConsequence')}</div>
                 </div>
+                <section class="committee-card sheet-kri"><h3 data-tip="${t('kriHint')}">${t('kriTitle')}</h3>
+                    <div class="kri-grid">${risk.kri.map((kri, index) => { const status = kriStatus(kri), last = kri.releves[kri.releves.length - 1]; return `<div class="kri-card">
+                        <div class="kri-head"><span class="kri-dot" style="background:${KRI_COLORS[status]}"></span>${editable(`data-kri-name="${index}"`, kri.nom, t('kriNew'))}
+                            <button type="button" class="review-delete" data-kri-del="${index}" title="${t('deleteItem')}" aria-label="${t('deleteItem')}">${icon('trash')}</button></div>
+                        <div class="kri-value"><b>${escapeHtml(formatKri(kri))}</b>${last ? `<small>${escapeHtml(formatReviewDate(last.date))}${last.auteur ? ` · ${escapeHtml(last.auteur)}` : ''}</small>` : `<small>${t('kriNoValue')}</small>`}</div>
+                        ${kriSparkline(kri)}
+                        <div class="kri-settings">
+                            <button type="button" class="kri-sense" data-kri-sens="${index}">${t(kri.sens === 'baisse' ? 'kriLowerWorse' : 'kriHigherWorse')}</button>
+                            <label>${t('kriAlert')} <input type="number" class="kri-input" data-kri="${index}" data-kri-field="alerte" value="${kri.alerte ?? ''}"></label>
+                            <label>${t('kriCritical')} <input type="number" class="kri-input" data-kri="${index}" data-kri-field="critique" value="${kri.critique ?? ''}"></label>
+                            <label>${t('kriUnit')} <input class="kri-input" data-kri="${index}" data-kri-field="unite" value="${escapeHtml(kri.unite)}"></label>
+                        </div>
+                        <div class="kri-add"><input type="number" step="any" class="kri-input" data-kri-value="${index}" placeholder="${t('kriValuePlaceholder')}">
+                            <button type="button" class="sheet-btn" data-kri-add="${index}">${icon('plus')} ${t('kriAddValue')}</button></div>
+                    </div>`; }).join('') || `<p class="review-empty">${t('kriEmpty')}</p>`}</div>
+                    <button type="button" class="bowtie-add" data-action="add-kri">${icon('plus')} ${t('kriAdd')}</button></section>
                 <div class="sheet-cards">
                     <section class="committee-card"><h3>${t('evolutionTitle')}</h3><div class="sheet-evolution"><canvas></canvas></div>
                         <p class="review-meta">${history.length ? t('evolutionCaption', { dates: history.map(r => shortDate(r.date)).join(', ') }) : ''}</p></section>
@@ -12458,13 +12704,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 setTimeout(() => { if (redraw === 'all') { renderRisks(); updateCharts(); } else renderRegister(); }, 0);
             };
             sheet.querySelectorAll('.editable-sheet').forEach(element => {
-                const { field, list, sub, mesure } = element.dataset;
+                const { field, list, sub, mesure, kriName } = element.dataset;
                 makeInlineEditable(element, () => {}, { required: field === 'title', onBlur: value => {
                     if (value === element.dataset.originalValue) return;
                     if (field) risk[field] = value;
                     else if (mesure !== undefined) {
                         if (value) risk.mesures[Number(mesure)].texte = value;
                         else risk.mesures.splice(Number(mesure), 1);
+                    } else if (kriName !== undefined) {
+                        if (value) risk.kri[Number(kriName)].nom = value;
+                        else risk.kri.splice(Number(kriName), 1);
                     } else if (sub === 'chiffrage') risk.consequences[Number(element.dataset.index)].chiffrage = value;
                     else if (value) {
                         if (sub) risk[list][Number(element.dataset.index)].texte = value;
@@ -12472,6 +12721,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     } else risk[list].splice(Number(element.dataset.index), 1);
                     save(field || mesure !== undefined ? 'all' : 'sheet');
                 } });
+            });
+            // Seuils et unité d'un KRI
+            sheet.onchange = event => {
+                const input = event.target.closest('[data-kri-field]');
+                if (!input) return;
+                const kri = risk.kri[Number(input.dataset.kri)];
+                kri[input.dataset.kriField] = input.dataset.kriField === 'unite' ? input.value.trim() : toNumber(input.value);
+                save();
+            };
+            sheet.querySelectorAll('[data-kri-value]').forEach(input => {
+                input.onkeydown = event => { if (event.key === 'Enter') sheet.querySelector(`[data-kri-add="${input.dataset.kriValue}"]`).click(); };
             });
             sheet.querySelector('.review-date').onchange = event => {
                 risk.prochaineRevue = isIsoDate(event.target.value) ? event.target.value : '';
@@ -12525,6 +12785,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         mesures: risk.mesures.map(mesure => mesure.texte).filter(Boolean) });
                     commitChange();
                     showToast(t('templateSaved'));
+                } else if (target.dataset.kriAdd !== undefined) {
+                    const valeur = toNumber(sheet.querySelector(`[data-kri-value="${target.dataset.kriAdd}"]`).value);
+                    if (valeur === null) return;
+                    const kri = risk.kri[Number(target.dataset.kriAdd)];
+                    kri.releves.push({ date: todayIso(), valeur, auteur: currentUser });
+                    kri.releves.sort((a, b) => a.date.localeCompare(b.date));
+                    save('all');
+                } else if (target.dataset.kriSens !== undefined) {
+                    const kri = risk.kri[Number(target.dataset.kriSens)];
+                    kri.sens = kri.sens === 'baisse' ? 'hausse' : 'baisse';
+                    save('all');
+                } else if (target.dataset.kriDel !== undefined) {
+                    risk.kri.splice(Number(target.dataset.kriDel), 1);
+                    save('all');
+                } else if (action === 'add-kri') {
+                    risk.kri.push(normalizeKri({ nom: t('kriNew') }));
+                    renderRegister();
+                    sheet.querySelector(`[data-kri-name="${risk.kri.length - 1}"]`).click();
                 } else if (action === 'mark-reviewed') {
                     risk.revuLe = todayIso();
                     risk.prochaineRevue = ''; // la prochaine revue repart de la cadence
