@@ -3643,8 +3643,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         /* Titres expliqués au survol */
         .bt-head[data-tip],
         .sheet-score-label[data-tip],
-        .eff span[data-tip] {
+        .eff span[data-tip],
+        h3[data-tip] {
             cursor: help;
+        }
+
+        /* Titre de section expliqué : la zone de survol se limite au texte */
+        h3[data-tip] {
+            width: fit-content;
         }
 
         /* Infobulle d'explication : même corps de texte que les barrières */
@@ -12932,7 +12938,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             tip.textContent = element.dataset.tip;
             tip.hidden = false;
-            const box = element.getBoundingClientRect();
+            // Ancrée sur le contenu visible (texte, icône) plutôt que sur la boîte : un titre en pleine largeur
+            // garde son infobulle sous ses mots
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            const content = range.getBoundingClientRect();
+            const box = content.width ? content : element.getBoundingClientRect();
             const top = box.bottom + 8 + tip.offsetHeight <= window.innerHeight ? box.bottom + 8 : box.top - 8 - tip.offsetHeight;
             tip.style.top = `${top}px`;
             tip.style.left = `${Math.min(Math.max(4, box.left + box.width / 2 - tip.offsetWidth / 2), window.innerWidth - tip.offsetWidth - 4)}px`;
