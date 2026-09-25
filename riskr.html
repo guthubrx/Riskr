@@ -1036,17 +1036,42 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             background: var(--surface);
         }
 
-        .action-card[draggable] {
+        .action-card[data-drag] {
             cursor: grab;
+            touch-action: none; /* au doigt, la carte se glisse au lieu de faire défiler la page */
+            user-select: none;
         }
 
-        .action-card.dragging {
-            opacity: 0.4;
+        /* Carte saisie : elle flotte au-dessus du tableau et suit le pointeur */
+        .action-card.lifted {
+            position: fixed;
+            z-index: 2000;
+            margin: 0;
+            pointer-events: none;
+            transform: rotate(1.5deg);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
         }
 
-        .action-column.drop-target {
-            outline: 1.5px dashed var(--border-strong);
-            outline-offset: -1.5px;
+        .action-card.lifted.landing {
+            transition: left 160ms ease, top 160ms ease, transform 160ms ease;
+            transform: none;
+        }
+
+        /* Emplacement où la carte tombera */
+        .action-placeholder {
+            flex-shrink: 0;
+            border: 1.5px dashed var(--border-strong);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--text) 3%, transparent);
+        }
+
+        .action-column:has(.action-placeholder) .action-empty {
+            display: none;
+        }
+
+        body.is-dragging,
+        body.is-dragging * {
+            cursor: grabbing !important;
         }
 
         .action-card-risk {
@@ -2815,6 +2840,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         .stack-bar {
             display: flex;
+            gap: 2px;
             height: 24px;
             margin-bottom: 10px;
             overflow: hidden;
@@ -2852,6 +2878,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             display: block;
             height: 8px;
             border-radius: 4px;
+            background: color-mix(in srgb, var(--accent) 55%, var(--border));
         }
 
         .committee-list {
@@ -6331,7 +6358,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} mesures · {done} faites · {doing} en cours · {todo} à faire",
                 actionLateCount: "{count} en retard",
                 actionEmpty: "Aucune mesure",
-                dragToChangeState: "Glisser dans une autre colonne pour changer l'état",
                 reviewsTitle: "Revues",
                 reviewFreeze: "Figer une revue",
                 reviewFreezeHint: "Enregistre une photo datée des cotations de tous les risques",
@@ -6692,7 +6718,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} measures · {done} done · {doing} in progress · {todo} to do",
                 actionLateCount: "{count} overdue",
                 actionEmpty: "No measure",
-                dragToChangeState: "Drag to another column to change the state",
                 reviewsTitle: "Reviews",
                 reviewFreeze: "Record a review",
                 reviewFreezeHint: "Saves a dated snapshot of all risk ratings",
@@ -7053,7 +7078,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} medidas · {done} hechas · {doing} en curso · {todo} por hacer",
                 actionLateCount: "{count} retrasadas",
                 actionEmpty: "Ninguna medida",
-                dragToChangeState: "Arrastrar a otra columna para cambiar el estado",
                 reviewsTitle: "Revisiones",
                 reviewFreeze: "Registrar una revisión",
                 reviewFreezeHint: "Guarda una instantánea fechada de las calificaciones de todos los riesgos",
@@ -7414,7 +7438,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} 项措施 · {done} 已完成 · {doing} 进行中 · {todo} 待办",
                 actionLateCount: "{count} 项逾期",
                 actionEmpty: "暂无措施",
-                dragToChangeState: "拖到另一列以更改状态",
                 reviewsTitle: "评审",
                 reviewFreeze: "记录一次评审",
                 reviewFreezeHint: "保存所有风险评级的带日期快照",
@@ -7775,7 +7798,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 actionSummary: "{total} إجراءات · {done} منجزة · {doing} قيد التنفيذ · {todo} للتنفيذ",
                 actionLateCount: "{count} متأخرة",
                 actionEmpty: "لا توجد إجراءات",
-                dragToChangeState: "اسحب إلى عمود آخر لتغيير الحالة",
                 reviewsTitle: "المراجعات",
                 reviewFreeze: "تسجيل مراجعة",
                 reviewFreezeHint: "يحفظ لقطة مؤرخة لتقييمات جميع المخاطر",
@@ -8237,7 +8259,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo',
                 // Côté de la barrière dans le nœud papillon, et son efficacité (0 = non évaluée, 1 à 5)
                 barriere: mesure.barriere === 'protection' ? 'protection' : 'prevention',
-                efficacite: toScore(mesure.efficacite)
+                efficacite: toScore(mesure.efficacite),
+                // Position choisie par glisser-déposer dans le plan d'actions (absente : tri par retard et échéance)
+                ...(Number.isInteger(mesure.rang) ? { rang: mesure.rang } : {})
             };
         }
 
@@ -9476,7 +9500,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const due = mesureDueDate(mesure.echeance);
                 return { risk, mesure, index, late: isMesureLate(mesure), due, dueKey: due ? due.getTime() : Number.MAX_SAFE_INTEGER };
             })).filter(item => item.mesure.texte);
-            all.sort((a, b) => (b.late - a.late) || (a.dueKey - b.dueKey));
+            // Rang posé par glisser-déposer d'abord (sans rang : après), puis retards et échéance la plus proche
+            const rank = item => Number.isInteger(item.mesure.rang) ? item.mesure.rang : Infinity;
+            all.sort((a, b) => (rank(a) - rank(b)) || (b.late - a.late) || (a.dueKey - b.dueKey));
 
             // Barre : identité et périmètre
             const people = [...new Set(all.flatMap(item => ownerParts(mesureOwner(item))))].sort((a, b) => a.localeCompare(b));
@@ -9510,14 +9536,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         ['dueLater', item => !item.late && item.due && item.dueKey > soon], ['dueNone', item => !item.due]]
                         .map(([key, keep]) => [t(key), items.filter(keep)])
                     : [...new Set(items.map(mesureOwner))].sort((a, b) => a.localeCompare(b))
-                        .map(owner => [owner || t('noOwner'), items.filter(item => mesureOwner(item) === owner)]);
+                        .map(owner => [owner || t('noOwner'), items.filter(item => mesureOwner(item) === owner), null, owner]);
 
-            // Vue par état : la carte se glisse dans une autre colonne pour changer l'état de la mesure
-            const byState = actionView.group === 'state';
+            // Par état ou par porteur, la carte se glisse (cf. enableCardDrag) ; par échéance, l'ordre est calculé
+            const draggable = actionView.group !== 'due';
             const card = item => {
                 const owner = mesureOwner(item);
-                return `<article class="action-card${item.late ? ' is-late' : ''}${item.mesure.etat === 'done' ? ' is-done' : ''}"${byState
-                    ? ` draggable="true" data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}" title="${escapeHtml(t('dragToChangeState'))}"` : ''}>
+                return `<article class="action-card${item.late ? ' is-late' : ''}${item.mesure.etat === 'done' ? ' is-done' : ''}"${draggable
+                    ? ` data-drag data-risk-id="${escapeHtml(item.risk.id)}" data-index="${item.index}"` : ''}>
                     <div class="action-card-risk" data-risk-uid="${escapeHtml(item.risk.uid)}" title="${t('openRiskSheet')}"><span class="id-bubble">${escapeHtml(item.risk.id)}</span>${escapeHtml(item.risk.title)}</div>
                     <div class="action-card-text">${escapeHtml(item.mesure.texte)}</div>
                     <div class="action-card-meta">
@@ -9527,7 +9553,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>
                 </article>`;
             };
-            board.innerHTML = columns.map(([title, cards, state]) => `<section class="action-column"${state ? ` data-state="${state}"` : ''}>
+            const dropTarget = (state, owner) => state ? ` data-drop data-state="${state}"` : owner ? ` data-drop data-owner="${escapeHtml(owner)}"` : '';
+            board.innerHTML = columns.map(([title, cards, state, owner]) => `<section class="action-column"${dropTarget(state, owner)}>
                 <h4 class="action-column-title"><span>${escapeHtml(title)}</span><span>${cards.length}</span></h4>
                 ${cards.map(card).join('') || `<p class="action-empty">${t('actionEmpty')}</p>`}
             </section>`).join('');
@@ -9536,34 +9563,116 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const riskLink = event.target.closest('[data-risk-uid]');
                 if (riskLink) openRiskSheet(riskLink.dataset.riskUid);
             };
-            const dropColumn = event => event.target.closest('.action-column[data-state]');
-            const clearDrop = () => board.querySelectorAll('.drop-target').forEach(column => column.classList.remove('drop-target'));
-            board.ondragstart = event => {
-                const dragged = event.target.closest('.action-card[draggable]');
-                if (!dragged) return;
-                event.dataTransfer.effectAllowed = 'move';
-                event.dataTransfer.setData('text/plain', `${dragged.dataset.riskId}|${dragged.dataset.index}`);
-                dragged.classList.add('dragging');
+            enableCardDrag(board);
+        }
+
+        // Glisser-déposer des cartes du plan (souris, stylet ou doigt) : la carte suit le pointeur, un
+        // emplacement vide montre où elle tombera et les autres cartes s'écartent en glissant. Au dépôt :
+        // nouvel état (vue par état) ou nouveau porteur (vue par porteur), et rang de chaque carte de la
+        // colonne d'arrivée, pour garder l'ordre choisi. Complexité : O(c) par mouvement, c = cartes visibles.
+        function enableCardDrag(board) {
+            let drag = null;
+            const columnCards = column => [...column.querySelectorAll('.action-card:not(.lifted)')];
+
+            // Animation FLIP : chaque carte part de son ancienne position et glisse jusqu'à la nouvelle
+            const reflow = (columns, change) => {
+                const cards = [...new Set(columns)].flatMap(columnCards);
+                const before = new Map(cards.map(card => [card, card.getBoundingClientRect().top]));
+                change();
+                cards.forEach(card => {
+                    const delta = before.get(card) - card.getBoundingClientRect().top;
+                    if (!delta) return;
+                    card.style.transition = 'none';
+                    card.style.transform = `translateY(${delta}px)`;
+                    card.getBoundingClientRect(); // applique la position de départ avant d'animer
+                    card.style.transition = 'transform 180ms ease';
+                    card.style.transform = '';
+                });
             };
-            board.ondragover = event => {
-                const column = dropColumn(event);
-                if (!column) return;
-                event.preventDefault();
-                if (!column.classList.contains('drop-target')) { clearDrop(); column.classList.add('drop-target'); }
+
+            const start = () => {
+                const box = drag.card.getBoundingClientRect();
+                drag.offsetX = drag.startX - box.left;
+                drag.offsetY = drag.startY - box.top;
+                drag.from = [drag.card.parentNode, columnCards(drag.card.parentNode).indexOf(drag.card)];
+                drag.placeholder = document.createElement('div');
+                drag.placeholder.className = 'action-placeholder';
+                drag.placeholder.style.height = `${box.height}px`;
+                drag.card.after(drag.placeholder);
+                Object.assign(drag.card.style, { width: `${box.width}px`, left: `${box.left}px`, top: `${box.top}px`, transition: '', transform: '' });
+                drag.card.classList.add('lifted');
+                document.body.classList.add('is-dragging');
+                drag.started = true;
             };
-            board.ondragend = () => { clearDrop(); board.querySelector('.dragging')?.classList.remove('dragging'); };
-            board.ondrop = event => {
-                const column = dropColumn(event);
+
+            const move = event => {
+                if (!drag.started) {
+                    if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 6) return;
+                    start();
+                }
+                drag.card.style.left = `${event.clientX - drag.offsetX}px`;
+                drag.card.style.top = `${event.clientY - drag.offsetY}px`;
+                if (event.clientY < 60) scrollBy(0, -16);
+                else if (event.clientY > innerHeight - 60) scrollBy(0, 16);
+                const column = document.elementFromPoint(event.clientX, event.clientY)?.closest('.action-column[data-drop]');
                 if (!column) return;
-                event.preventDefault();
-                clearDrop();
-                const [riskId, index] = event.dataTransfer.getData('text/plain').split('|');
-                const mesure = risks.find(risk => risk.id === riskId)?.mesures[Number(index)];
-                if (!mesure || mesure.etat === column.dataset.state) return;
-                mesure.etat = column.dataset.state;
-                commitChange();
-                renderRisks();
-                showToast(t('changeSaved'));
+                const next = columnCards(column).find(card => {
+                    const box = card.getBoundingClientRect();
+                    return event.clientY < box.top + box.height / 2;
+                }) || null;
+                if (drag.placeholder.parentNode === column && drag.placeholder.nextElementSibling === next) return;
+                reflow([drag.placeholder.parentNode, column], () => column.insertBefore(drag.placeholder, next));
+            };
+
+            const stop = () => {
+                removeEventListener('pointermove', move);
+                removeEventListener('pointerup', end);
+                removeEventListener('pointercancel', cancel);
+                removeEventListener('keydown', escape);
+                document.body.classList.remove('is-dragging');
+            };
+            const cancel = () => { stop(); if (drag.started) renderActionPlan(); drag = null; };
+            const escape = event => { if (event.key === 'Escape') cancel(); };
+
+            const end = () => {
+                stop();
+                const { card, placeholder, from, started } = drag;
+                drag = null;
+                if (!started) return; // simple clic : la fiche du risque s'ouvre normalement
+                // Le clic qui suit le relâchement n'ouvre pas la fiche
+                const swallow = event => event.stopPropagation();
+                addEventListener('click', swallow, { capture: true });
+                setTimeout(() => removeEventListener('click', swallow, { capture: true }));
+                // La carte rejoint sa place, puis la mesure est mise à jour
+                const target = placeholder.getBoundingClientRect();
+                card.classList.add('landing');
+                Object.assign(card.style, { left: `${target.left}px`, top: `${target.top}px` });
+                setTimeout(() => {
+                    const column = placeholder.parentNode;
+                    const order = [...column.querySelectorAll('.action-card:not(.lifted), .action-placeholder')]
+                        .map(element => element === placeholder ? card : element);
+                    if (column === from[0] && order.indexOf(card) === from[1]) return renderActionPlan(); // rien n'a bougé
+                    const riskById = new Map(risks.map(risk => [risk.id, risk]));
+                    const mesureOf = element => riskById.get(element.dataset.riskId)?.mesures[Number(element.dataset.index)];
+                    const mesure = mesureOf(card);
+                    if (column.dataset.state) mesure.etat = column.dataset.state;
+                    if (column.dataset.owner) mesure.porteur = column.dataset.owner;
+                    order.forEach((element, rang) => { const item = mesureOf(element); if (item) item.rang = rang; });
+                    commitChange();
+                    renderRisks();
+                    showToast(t('changeSaved'));
+                }, 160);
+            };
+
+            board.onpointerdown = event => {
+                const card = event.target.closest('.action-card[data-drag]');
+                if (!card || event.button !== 0 || drag) return;
+                event.preventDefault(); // pas de sélection de texte pendant le glisser
+                drag = { card, startX: event.clientX, startY: event.clientY, started: false };
+                addEventListener('pointermove', move);
+                addEventListener('pointerup', end);
+                addEventListener('pointercancel', cancel);
+                addEventListener('keydown', escape);
             };
         }
 
@@ -11020,6 +11129,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // ========================================
 
         const TREATMENT_COLORS = { reduce: '#0a84ff', transfer: '#8e5cf0', accept: '#ff9f0a', avoid: '#34c759', '': '#aeaeb2' };
+        // Vue comité : une seule teinte, plus ou moins soutenue selon la stratégie (non définie : neutre)
+        const TREATMENT_SHADES = { reduce: 100, transfer: 70, accept: 45, avoid: 25, '': 0 };
+        const treatmentShade = key => `color-mix(in srgb, var(--accent) ${TREATMENT_SHADES[key]}%, var(--border))`;
         const scoreOf = assessment => residualScore(assessment) || 0;
 
         // Chiffres de la synthèse. Complexité : O(n log n + m), n = risques, m = mesures
@@ -11076,19 +11188,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             <table class="committee-table">
                                 <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
                                 <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
-                                    <td class="nowrap">${getCriticalityBadge(...risk.assessmentBefore)} → ${getCriticalityBadge(...risk.assessmentAfter)}</td>
+                                    <td class="nowrap">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)}</td>
                                     <td>${treatmentLabel(risk.traitement)}</td><td>${escapeHtml(risk.responsable) || '—'}</td></tr>`).join('')}</tbody>
                             </table></section>
                     </div>
                     <div class="committee-grid thirds">
                         <section class="committee-card"><h3>${t('committeeTreatments')}</h3>
                             <div class="stack-bar">${Object.entries(stats.treatments).filter(([, count]) => count).map(([key, count]) =>
-                                `<span style="width:${count / totalRisks * 100}%;background:${TREATMENT_COLORS[key]}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
+                                `<span style="width:${count / totalRisks * 100}%;background:${treatmentShade(key)}" title="${treatmentLabel(key)} : ${count}"></span>`).join('')}</div>
                             <div class="stack-legend">${Object.entries(stats.treatments).map(([key, count]) =>
-                                `<span><i style="background:${TREATMENT_COLORS[key]}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
+                                `<span><i style="background:${treatmentShade(key)}"></i>${treatmentLabel(key)} · ${count}</span>`).join('')}</div></section>
                         <section class="committee-card"><h3>${t('committeeReviews')}</h3>
                             ${stats.exposures.map(({ label, value }) => `<div class="exposure-row"><span>${escapeHtml(label)}</span>
-                                <b style="width:${(value || 0) / 5 * 100}%;background:${value === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(value * 5)]}"></b>
+                                <b style="width:${(value || 0) / 5 * 100}%"></b>
                                 <span>${formatExposure(value)}</span></div>`).join('')}</section>
                         <section class="committee-card"><h3>${t('committeeDecisions')}</h3>
                             <ul class="committee-list">${stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)} :
