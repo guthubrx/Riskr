@@ -2947,6 +2947,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cursor: pointer;
         }
 
+        .owner-select {
+            --c: var(--text-2);
+            color: var(--text);
+        }
+
         .appetite-pill {
             padding: 4px 12px;
             border-radius: 999px;
@@ -6215,6 +6220,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                newOwner: "＋ Nouveau porteur…",
+                newOwnerPrompt: "Nom du nouveau porteur",
                 prevRisk: "Risque précédent",
                 nextRisk: "Risque suivant",
                 notionCauses: "Causes : ce qui peut déclencher l’événement redouté (situation, faiblesse, dépendance). Un risque a rarement une seule origine.",
@@ -6570,6 +6577,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                newOwner: "＋ New owner…",
+                newOwnerPrompt: "Name of the new owner",
                 prevRisk: "Previous risk",
                 nextRisk: "Next risk",
                 notionCauses: "Causes: what can trigger the feared event (situation, weakness, dependency). A risk rarely has a single origin.",
@@ -6925,6 +6934,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                newOwner: "＋ Nuevo responsable…",
+                newOwnerPrompt: "Nombre del nuevo responsable",
                 prevRisk: "Riesgo anterior",
                 nextRisk: "Riesgo siguiente",
                 notionCauses: "Causas: lo que puede desencadenar el evento temido (situación, debilidad, dependencia). Un riesgo rara vez tiene un solo origen.",
@@ -7280,6 +7291,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                newOwner: "＋ 新负责人…",
+                newOwnerPrompt: "新负责人姓名",
                 prevRisk: "上一个风险",
                 nextRisk: "下一个风险",
                 notionCauses: "原因：可能引发所担心事件的因素（情形、弱点、依赖）。风险很少只有一个来源。",
@@ -7635,6 +7648,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                newOwner: "＋ مسؤول جديد…",
+                newOwnerPrompt: "اسم المسؤول الجديد",
                 prevRisk: "الخطر السابق",
                 nextRisk: "الخطر التالي",
                 notionCauses: "الأسباب: ما قد يؤدي إلى الحدث المخشي (وضع، ضعف، تبعية). نادرًا ما يكون للخطر مصدر واحد.",
@@ -11182,6 +11197,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const VELOCITY_DOTS = ['', '🔵', '🟢', '🟡', '🟠', '🔴'];
         const TREATMENT_DOTS = { reduce: '🔵', transfer: '🟣', accept: '🟠', avoid: '🟢', '': '⚪' };
 
+        // Porteurs déjà utilisés dans l'analyse (risques et mesures), triés. O(n + m)
+        const knownOwners = () => [...new Set(risks.flatMap(risk => [risk.responsable, ...risk.mesures.map(mesure => mesure.porteur)]).filter(Boolean))]
+            .sort((a, b) => a.localeCompare(b));
+
         // Infobulle des éléments [data-tip], placée sous l'élément (au-dessus si la place manque)
         function showHintTip(element) {
             let tip = document.getElementById('hint-tip');
@@ -11254,7 +11273,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <div class="sheet-facts">
                             <select class="chip-select" data-field="traitement" style="--c:${TREATMENT_COLORS[risk.traitement]}" data-tip="${t('notionTreatment')}" aria-label="${t('colTreatment')}">
                                 ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${TREATMENT_DOTS[key]} ${treatmentLabel(key)}</option>`).join('')}</select>
-                            <span class="owner">${avatar(risk.responsable || '?')}${editable('data-field="responsable"', risk.responsable, t('mesureOwner'))}</span>
+                            <span class="owner">${avatar(risk.responsable || '?')}<select class="chip-select owner-select" data-field="responsable" aria-label="${t('mesureOwner')}">
+                                <option value="" ${risk.responsable ? '' : 'selected'}>${t('noOwner')}</option>
+                                ${knownOwners().map(owner => `<option ${owner === risk.responsable ? 'selected' : ''}>${escapeHtml(owner)}</option>`).join('')}
+                                <option value="__new__">${t('newOwner')}</option></select></span>
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
                             <select class="chip-select" data-field="velocite" style="--c:${risk.velocite ? VELOCITY_COLORS[risk.velocite - 1] : '#8e8e93'}" data-tip="${t('velocityHint')}" aria-label="${t('colVelocity')}">
                                 ${[0, 1, 2, 3, 4, 5].map(v => `<option value="${v}" ${v === risk.velocite ? 'selected' : ''}>${v ? `${VELOCITY_DOTS[v]} ` : ''}${t(v ? `velocity${v}` : 'velocityNone')}</option>`).join('')}</select>
@@ -11326,6 +11348,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (select.dataset.assess) risk[select.dataset.assess][Number(select.dataset.axis)] = Number(select.value);
                 else if (select.dataset.field === 'velocite') risk.velocite = Number(select.value);
                 else if (select.dataset.field === 'traitement') risk.traitement = select.value;
+                else if (select.dataset.field === 'responsable') {
+                    const owner = select.value === '__new__' ? (prompt(t('newOwnerPrompt')) || '').trim() : select.value;
+                    if (select.value === '__new__' && !owner) return renderRegister(); // saisie annulée : revenir au porteur actuel
+                    risk.responsable = owner;
+                }
                 else return;
                 save('all');
             };
