@@ -106,6 +106,9 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   cotation, mesures }`.
 - `uid` : identifiant interne stable d'un risque (généré automatiquement), qui
   permet de suivre un risque d'une revue à l'autre malgré la renumérotation.
+- `revuLe` / `prochaineRevue` (facultatifs, `AAAA-MM-JJ`) : dernière revue
+  déclarée et prochaine revue choisie ; `settings.cadenceRevue` : revue des risques
+  tous les N jours (90 par défaut).
 - `journal` : journal des modifications `{ id, date, auteur, uid, risque, champ,
   detail, avant, apres }`, alimenté automatiquement à chaque modification
   (2 000 lignes au plus). Le menu Exporter propose « riskr-data.js · Sans journal »
@@ -182,6 +185,11 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   traitement, porteur, mesures, notes…), dans la fiche du risque et, pour toute
   l'analyse, dans l'onglet Revues (« Dernières modifications ») ; Annuler retire
   aussi la ligne correspondante
+- **Cadence de revue** : chaque risque a une prochaine revue (date choisie, sinon
+  dernière revue + cadence de 30, 60, 90 ou 180 jours réglée dans l'onglet Revues) ;
+  « Marquer comme revu » dans la fiche ; les risques à revoir sont signalés et
+  filtrables dans le registre ; export des rappels en `.ics` (Outlook, Google
+  Agenda, Calendrier)
 - **Porteur modifiable partout** : un clic sur la pastille du porteur (registre,
   plan d'actions, fiche) ouvre le même sélecteur avec suggestions et pastilles,
   qui permet aussi de créer un nouveau porteur

@@ -3203,6 +3203,44 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             margin-top: 10px;
         }
 
+        /* Cadence de revue */
+        .review-cadence {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-3);
+        }
+
+        .review-cadence.due > span:first-child {
+            color: #b35c00;
+        }
+
+        .review-date {
+            padding: 2px 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--surface);
+            color: var(--text);
+            font: inherit;
+            font-size: 13px;
+        }
+
+        .review-due-tag {
+            color: #b35c00;
+        }
+
+        .cadence-setting {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
         /* Journal des modifications */
         .journal-list {
             display: flex;
@@ -5126,6 +5164,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <button role="menuitem" onclick="handleExport('html')">HTML <span class="menu-hint" data-i18n="exportHtmlHint">Page web</span></button>
                         <button role="menuitem" onclick="handleExport('json')">JSON <span class="menu-hint" data-i18n="exportJsonHint">Données</span></button>
                         <button role="menuitem" onclick="handleExport('datajs')">riskr-data.js <span class="menu-hint" data-i18n="exportDataJsHint">Rechargeable</span></button>
+                        <button role="menuitem" onclick="handleExport('ics')">.ics <span class="menu-hint" data-i18n="exportIcsHint">Rappels de revue</span></button>
                         <button role="menuitem" onclick="handleExport('datajs-nojournal')" data-i18n-title="exportNoJournalTip">riskr-data.js <span class="menu-hint" data-i18n="exportNoJournalHint">Sans journal</span></button>
                     </div>
                 </div>
@@ -5284,6 +5323,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <aside>
                     <button type="button" class="big-btn" onclick="freezeReview()" data-i18n-title="reviewFreezeHint"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="reviewNewFreeze">Figer une nouvelle revue</span></button>
                     <ol id="review-timeline" class="review-timeline"></ol>
+                    <div class="cadence-setting"><span data-i18n="cadenceLabel">Revue des risques tous les</span><div id="cadence-options" class="segmented labeled" role="radiogroup"></div></div>
                     <p class="reviews-hint" data-i18n="reviewsHint"></p>
                     <section class="journal-recent"><h3 data-i18n="journalRecent">Dernières modifications</h3><div id="journal-recent"></div></section>
                 </aside>
@@ -5308,6 +5348,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <select id="filter-treatment" class="filter-select" onchange="setFilter('treatment', this.value)"></select>
             <select id="filter-owner" class="filter-select" onchange="setFilter('owner', this.value)"></select>
             <button type="button" id="filter-appetite" class="filter-toggle" onclick="setFilter('aboveAppetite', !riskFilter.aboveAppetite)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span data-i18n="filterAboveAppetite">Au-dessus de l’appétence</span></button>
+            <button type="button" id="filter-review" class="filter-toggle" onclick="setFilter('toReview', !riskFilter.toReview)"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span data-i18n="filterToReview">À revoir</span></button>
             <button type="button" id="filter-cell" class="filter-chip" onclick="setFilter('cell', null)" hidden></button>
             <span id="filter-count" class="filter-count"></span>
             <button type="button" id="filter-clear" class="filter-toggle" onclick="clearFilters()" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg><span data-i18n="filterClear">Effacer les filtres</span></button>
@@ -5909,6 +5950,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 case 'datajs':
                     exportDataJsFile(); // Sauvegarde riskr-data.js rechargeable
                     break;
+                case 'ics':
+                    exportReviewCalendar();
+                    break;
                 case 'datajs-nojournal': {
                     // Même fichier sans le journal (noms et horaires des modifications) : pour partager hors de l'équipe
                     const { journal: omitted, ...data } = buildCanonicalData();
@@ -6434,6 +6478,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalReview: "Revue",
                 exportNoJournalHint: "Sans journal",
                 exportNoJournalTip: "Même fichier, sans le journal des modifications (qui a changé quoi, et quand) : pour partager l'analyse hors de l'équipe.",
+                reviewNever: "Jamais revu",
+                reviewNextLabel: "Prochaine revue",
+                markReviewed: "Marquer comme revu",
+                reviewMarked: "Risque marqué comme revu",
+                reviewDueTag: "À revoir",
+                summaryToReview: "à revoir",
+                filterToReview: "À revoir",
+                cadenceLabel: "Revue des risques tous les",
+                cadenceDays: "{n} j",
+                exportIcsHint: "Rappels de revue",
+                icsSummary: "Revue du risque {id} — {title}",
+                journalReviewed: "Revu le",
+                journalNextReview: "Prochaine revue",
                 mesureDueDate: "Échéance (facultatif)",
                 mesureTextPlaceholder: "Décrire la mesure",
                 mesureAdd: "Ajouter une mesure",
@@ -6822,6 +6879,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalReview: "Review",
                 exportNoJournalHint: "Without log",
                 exportNoJournalTip: "Same file, without the change log (who changed what, and when): to share the analysis outside the team.",
+                reviewNever: "Never reviewed",
+                reviewNextLabel: "Next review",
+                markReviewed: "Mark as reviewed",
+                reviewMarked: "Risk marked as reviewed",
+                reviewDueTag: "Review due",
+                summaryToReview: "due for review",
+                filterToReview: "Review due",
+                cadenceLabel: "Review risks every",
+                cadenceDays: "{n} d",
+                exportIcsHint: "Review reminders",
+                icsSummary: "Review of risk {id} — {title}",
+                journalReviewed: "Reviewed on",
+                journalNextReview: "Next review",
                 mesureDueDate: "Due date (optional)",
                 mesureTextPlaceholder: "Describe the measure",
                 mesureAdd: "Add a measure",
@@ -7213,6 +7283,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalReview: "Revisión",
                 exportNoJournalHint: "Sin registro",
                 exportNoJournalTip: "Mismo archivo, sin el registro de cambios (quién cambió qué y cuándo): para compartir el análisis fuera del equipo.",
+                reviewNever: "Nunca revisado",
+                reviewNextLabel: "Próxima revisión",
+                markReviewed: "Marcar como revisado",
+                reviewMarked: "Riesgo marcado como revisado",
+                reviewDueTag: "Por revisar",
+                summaryToReview: "por revisar",
+                filterToReview: "Por revisar",
+                cadenceLabel: "Revisar los riesgos cada",
+                cadenceDays: "{n} d",
+                exportIcsHint: "Recordatorios de revisión",
+                icsSummary: "Revisión del riesgo {id} — {title}",
+                journalReviewed: "Revisado el",
+                journalNextReview: "Próxima revisión",
                 mesureDueDate: "Plazo (opcional)",
                 mesureTextPlaceholder: "Describir la medida",
                 mesureAdd: "Añadir una medida",
@@ -7601,6 +7684,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalReview: "评审",
                 exportNoJournalHint: "不含日志",
                 exportNoJournalTip: "同一文件，但不含修改日志（谁在何时修改了什么）：用于在团队之外分享分析。",
+                reviewNever: "从未评审",
+                reviewNextLabel: "下次评审",
+                markReviewed: "标记为已评审",
+                reviewMarked: "风险已标记为已评审",
+                reviewDueTag: "待评审",
+                summaryToReview: "项待评审",
+                filterToReview: "待评审",
+                cadenceLabel: "风险评审周期",
+                cadenceDays: "{n} 天",
+                exportIcsHint: "评审提醒",
+                icsSummary: "风险 {id} 评审 — {title}",
+                journalReviewed: "评审于",
+                journalNextReview: "下次评审",
                 mesureDueDate: "截止日期（可选）",
                 mesureTextPlaceholder: "描述措施",
                 mesureAdd: "添加措施",
@@ -7989,6 +8085,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 journalReview: "مراجعة",
                 exportNoJournalHint: "بدون سجل",
                 exportNoJournalTip: "الملف نفسه، بدون سجل التعديلات (من غيّر ماذا ومتى): لمشاركة التحليل خارج الفريق.",
+                reviewNever: "لم يُراجع قط",
+                reviewNextLabel: "المراجعة القادمة",
+                markReviewed: "تعليم كمُراجَع",
+                reviewMarked: "تم تعليم الخطر كمُراجَع",
+                reviewDueTag: "يحتاج مراجعة",
+                summaryToReview: "تحتاج مراجعة",
+                filterToReview: "يحتاج مراجعة",
+                cadenceLabel: "مراجعة المخاطر كل",
+                cadenceDays: "{n} يوم",
+                exportIcsHint: "تذكيرات المراجعة",
+                icsSummary: "مراجعة الخطر {id} — {title}",
+                journalReviewed: "رُوجع في",
+                journalNextReview: "المراجعة القادمة",
                 mesureDueDate: "الموعد النهائي (اختياري)",
                 mesureTextPlaceholder: "صِف الإجراء",
                 mesureAdd: "إضافة إجراء",
@@ -8641,7 +8750,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 consequences: objectList(raw.consequences).map(normalizeConsequence),
                 velocite: toScore(raw.velocite), // vitesse de survenue (1 à 5), 0 = non évaluée
                 notes: objectList(raw.notes).map(normalizeNote),
-                liens: objectList(raw.liens).map(normalizeLink)
+                liens: objectList(raw.liens).map(normalizeLink),
+                // Cadence de revue : dernière revue déclarée et prochaine revue choisie (AAAA-MM-JJ, facultatives)
+                revuLe: isIsoDate(raw.revuLe) ? raw.revuLe : '',
+                prochaineRevue: isIsoDate(raw.prochaineRevue) ? raw.prochaineRevue : ''
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -8713,9 +8825,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Réglages de l'analyse, enregistrés avec le modèle (historique, navigateur, fichier).
         // riskAppetite : score P × I maximal acceptable (0 = aucune appétence définie) ;
         // par défaut juste sous le seuil « élevé ».
+        const isIsoDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+
         function normalizeSettings(raw) {
             const appetite = raw && raw.riskAppetite;
+            const cadence = raw && raw.cadenceRevue;
             return {
+                // Revue des risques tous les N jours (90 par défaut)
+                cadenceRevue: Number.isInteger(cadence) && cadence > 0 && cadence <= 3650 ? cadence : 90,
                 riskAppetite: Number.isInteger(appetite) && appetite >= 0 && appetite <= 25
                     ? appetite
                     : CRITICALITY_THRESHOLDS.high - 1,
@@ -8799,7 +8916,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // par changement : Annuler retire donc aussi la ligne. Plafonné à JOURNAL_MAX lignes (les plus anciennes partent).
         // Complexité : O(r + m) par modification — r risques, m éléments de listes (mesures, causes, notes…).
         const JOURNAL_MAX = 2000;
-        const JOURNAL_FIELDS = ['title', 'assessmentBefore', 'assessmentAfter', 'assessmentTarget', 'traitement', 'responsable', 'velocite', 'statut'];
+        const JOURNAL_FIELDS = ['title', 'assessmentBefore', 'assessmentAfter', 'assessmentTarget', 'traitement', 'responsable', 'velocite', 'statut', 'revuLe', 'prochaineRevue'];
         const MESURE_FIELDS = ['etat', 'porteur', 'echeance', 'barriere', 'efficacite'];
         const journalText = value => Array.isArray(value) ? value.join(',') : String(value ?? '');
 
@@ -8859,7 +8976,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             cause: 'journalCause', consequence: 'journalConsequence', chiffrage: 'journalCosting', mesure: 'journalMesure',
             'mesure.etat': 'mesureState', 'mesure.porteur': 'mesureOwner', 'mesure.echeance': 'journalDue', 'mesure.barriere': 'journalBarrier',
             'mesure.efficacite': 'journalEfficacy', note: 'journalNote', lien: 'journalLink', created: 'journalCreated',
-            deleted: 'journalDeleted', review: 'journalReview' };
+            deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview' };
+        const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review']);
         function journalValue(champ, value) {
             if (value === '') return '';
             if (champ.startsWith('assessment')) {
@@ -8867,6 +8985,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 return p && i ? `P${p} × I${i}` : '—';
             }
             if (champ === 'traitement') return treatmentLabel(value);
+            if (champ === 'revuLe' || champ === 'prochaineRevue') return formatReviewDate(value);
             if (champ === 'statut') return t(value);
             if (champ === 'mesure.etat') return t(MESURE_STATES[value] || 'stateTodo');
             if (champ === 'mesure.barriere') return t(value === 'protection' ? 'barrierProtection' : 'barrierPrevention');
@@ -8878,9 +8997,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const [avant, apres] = [journalValue(entry.champ, entry.avant), journalValue(entry.champ, entry.apres)];
             const detail = entry.detail ? ` « ${journalValue('', entry.detail)} »` : '';
             if (entry.champ === 'created' || entry.champ === 'deleted') return `${label} : ${avant || apres}`;
-            if (!avant) return `${label}${detail} : + ${apres}`;
-            if (!apres) return `${label}${detail} : − ${avant}`;
-            return `${label}${detail} : ${avant} → ${apres}`;
+            // Listes (causes, mesures, notes…) : ajout « + », retrait « − » ; champs simples : avant → après
+            if (JOURNAL_LISTS.has(entry.champ) && !avant) return `${label}${detail} : + ${apres}`;
+            if (JOURNAL_LISTS.has(entry.champ) && !apres) return `${label}${detail} : − ${avant}`;
+            return `${label}${detail} : ${avant || '—'} → ${apres || '—'}`;
         }
         const formatJournalDate = iso => {
             const date = new Date(iso);
@@ -9840,6 +9960,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderReviews() {
             const timeline = document.getElementById('review-timeline');
             if (!timeline) return;
+            document.getElementById('cadence-options').innerHTML = [30, 60, 90, 180].map(days =>
+                `<button type="button" class="segmented-btn${settings.cadenceRevue === days ? ' active' : ''}" role="radio" aria-checked="${settings.cadenceRevue === days}"
+                    onclick="setReviewCadence(${days})">${t('cadenceDays', { n: days })}</button>`).join('');
             const recent = document.getElementById('journal-recent');
             recent.innerHTML = journalList([...journal].reverse(), 8, true);
             recent.onclick = event => {
@@ -11179,11 +11302,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const MATRIX_TITLES = { before: 'matrixBefore', after: 'matrixAfter', trajectory: 'matrixTrajectory' };
 
         // Filtres du registre (état d'affichage, non enregistré). cell = { phase, p, i } : case cliquée
-        const riskFilter = { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, cell: null };
+        const riskFilter = { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, cell: null };
         const FILTER_LEVELS = { none: 'critNotEval', low: 'critLow', medium: 'critMedium', high: 'critHigh', critical: 'critCritical' };
 
         const isFilterActive = () => Boolean(riskFilter.text || riskFilter.group || riskFilter.level ||
-            riskFilter.treatment || riskFilter.owner || riskFilter.aboveAppetite || riskFilter.cell);
+            riskFilter.treatment || riskFilter.owner || riskFilter.aboveAppetite || riskFilter.toReview || riskFilter.cell);
 
         function setFilter(name, value) {
             riskFilter[name] = value;
@@ -11191,13 +11314,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
 
         function clearFilters() {
-            Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, cell: null });
+            Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, cell: null });
             document.getElementById('filter-text').value = '';
             fillFilterOptions();
             applyFilters();
         }
 
-        function riskMatches(risk, group) {
+        function riskMatches(risk, group, dates) {
             const f = riskFilter;
             const after = evaluatedAssessment(risk, 'After');
             const score = after ? after[0] * after[1] : null;
@@ -11206,6 +11329,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (f.treatment && (risk.traitement || '-') !== f.treatment) return false;
             if (f.owner && risk.responsable !== f.owner) return false;
             if (f.aboveAppetite && !(settings.riskAppetite && score > settings.riskAppetite)) return false;
+            if (f.toReview && !reviewStatus(risk, dates).due) return false;
             if (f.cell) {
                 const cell = evaluatedAssessment(risk, f.cell.phase);
                 if (!cell || cell[0] !== f.cell.p || cell[1] !== f.cell.i) return false;
@@ -11240,8 +11364,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function applyFilters() {
             const active = isFilterActive();
             const visible = new Set();
+            const dates = lastReviewDates();
             riskGroups.forEach(group => group.risks.forEach(risk => {
-                if (riskMatches(risk, group)) visible.add(risk.id);
+                if (riskMatches(risk, group, dates)) visible.add(risk.id);
             }));
             document.querySelectorAll('#risks-container tr[data-risk-id], #risk-table-body tr[data-risk-id], #register-view [data-risk-id]').forEach(row => {
                 row.classList.toggle('filtered-out', !visible.has(row.dataset.riskId));
@@ -11266,6 +11391,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 cell.innerHTML = `${escapeHtml(t('filterCell', { p: riskFilter.cell.p, i: riskFilter.cell.i, phase }))} ${icon('close')}`;
             }
             document.getElementById('filter-appetite').classList.toggle('active', riskFilter.aboveAppetite);
+            document.getElementById('filter-review').classList.toggle('active', riskFilter.toReview);
             document.querySelectorAll('.filter-select').forEach(select =>
                 select.classList.toggle('active', Boolean(riskFilter[select.id.replace('filter-', '')])));
             document.getElementById('filter-clear').hidden = !active;
@@ -12052,11 +12178,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const last = reviews[reviews.length - 1];
             const lastScores = last ? new Map(last.risks.map(r => [r.uid, scoreOf(r.after)])) : new Map();
             const isAbove = risk => Boolean(settings.riskAppetite) && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
+            const dates = lastReviewDates();
+            const toReview = risk => reviewStatus(risk, dates).due;
             const summary = [
                 [risks.length, 'summaryRisks'],
                 [risks.filter(isAbove).length, 'summaryAbove'],
                 [risks.filter(risk => lastScores.has(risk.uid) && scoreOf(risk.assessmentAfter) > lastScores.get(risk.uid)).length, 'summaryUp'],
-                [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate']
+                [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate'],
+                [risks.filter(toReview).length, 'summaryToReview']
             ];
             document.getElementById('register-summary').innerHTML = summary.map(([count, key]) => `<span><b>${count}</b> ${t(key)}</span>`).join('');
             if (registerMode === 'edit') return;
@@ -12065,7 +12194,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const trend = risk => trendSparkline([...reviewScores.map(scores => scores.get(risk.uid) ?? null), residualScore(risk.assessmentAfter)]) || '—';
             const residual = risk => {
                 const after = evaluatedAssessment(risk, 'After');
-                return after ? t('residualDetail', { p: after[0], i: after[1] }) : t('critNotEval');
+                return (after ? t('residualDetail', { p: after[0], i: after[1] }) : t('critNotEval'))
+                    + (toReview(risk) ? ` · <span class="review-due-tag">${t('reviewDueTag')}</span>` : '');
             };
             const attributes = risk => `data-risk-id="${escapeHtml(risk.id)}" data-risk-uid="${escapeHtml(risk.uid)}" title="${t('openRiskSheet')}"`;
 
@@ -12164,7 +12294,54 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         });
         ['mousedown', 'scroll', 'keydown'].forEach(type => document.addEventListener(type, hideHintTip, true));
         const safeUrl = url => /^\s*(javascript|data|vbscript):/i.test(url) ? '#' : url;
-        const todayIso = () => { const d = new Date(); return [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-'); };
+        const isoDate = d => [d.getFullYear(), d.getMonth() + 1, d.getDate()].map(n => String(n).padStart(2, '0')).join('-');
+        const todayIso = () => isoDate(new Date());
+        const addDays = (iso, days) => { const d = mesureDueDate(iso); d.setDate(d.getDate() + days); return isoDate(d); };
+
+        // Date de la dernière revue figée qui contient chaque risque. Complexité : O(E), E = entrées de revues
+        function lastReviewDates() {
+            const dates = new Map();
+            reviews.forEach(review => review.risks.forEach(entry => {
+                if ((dates.get(entry.uid) || '') < review.date) dates.set(entry.uid, review.date);
+            }));
+            return dates;
+        }
+
+        // Cadence de revue d'un risque : dernière revue (« Marquer comme revu » ou revue figée), prochaine
+        // (date choisie, sinon dernière + cadence), « à revoir » si dépassée ou jamais revu. O(1) avec l'index
+        function reviewStatus(risk, dates = lastReviewDates()) {
+            const frozen = dates.get(risk.uid) || '';
+            const last = risk.revuLe > frozen ? risk.revuLe : frozen;
+            const next = risk.prochaineRevue || (last ? addDays(last, settings.cadenceRevue) : '');
+            return { last, next, due: !next || next < todayIso() };
+        }
+
+        // Rappels de revue au format iCalendar (RFC 5545) : un événement « journée entière » par risque à sa
+        // prochaine revue (aujourd'hui si elle est dépassée), pour Outlook, Google Agenda ou Calendrier. O(n)
+        function exportReviewCalendar() {
+            const dates = lastReviewDates(), today = todayIso();
+            const icsText = text => String(text).replace(/\\/g, '\\\\').replace(/[;,]/g, match => `\\${match}`).replace(/\r?\n/g, '\\n');
+            const compact = iso => iso.replace(/-/g, '');
+            const fold = line => line.match(/.{1,74}/gu).join('\r\n ');
+            const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+            const events = risks.flatMap(risk => {
+                const { next } = reviewStatus(risk, dates);
+                const day = !next || next < today ? today : next;
+                return ['BEGIN:VEVENT', `UID:riskr-${risk.uid}-${compact(day)}`, `DTSTAMP:${stamp}`,
+                    `DTSTART;VALUE=DATE:${compact(day)}`, `DTEND;VALUE=DATE:${compact(addDays(day, 1))}`,
+                    `SUMMARY:${icsText(t('icsSummary', { id: risk.id, title: risk.title }))}`,
+                    `DESCRIPTION:${icsText(`${t('mesureOwner')} : ${risk.responsable || '—'}`)}`, 'END:VEVENT'];
+            });
+            const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Riskr//Revues//FR', 'CALSCALE:GREGORIAN', ...events, 'END:VCALENDAR'];
+            downloadTextFile(lines.map(fold).join('\r\n') + '\r\n', `riskr-revues_${today}.ics`, 'text/calendar');
+        }
+
+        function setReviewCadence(days) {
+            settings.cadenceRevue = days;
+            commitChange();
+            renderReviews();
+            renderRisks();
+        }
         const shortDate = date => { const parsed = mesureDueDate(date); return parsed ? parsed.toLocaleDateString(currentLanguage, { day: '2-digit', month: '2-digit' }) : date; };
 
         // Liste de journal : les `visible` plus récentes, le reste dépliable. Complexité : O(n)
@@ -12180,7 +12357,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const position = ordered.indexOf(risk);
             const above = settings.riskAppetite && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
             const history = reviews.filter(r => r.risks.some(entry => entry.uid === risk.uid));
-            const lastReview = history[history.length - 1];
+            const cadence = reviewStatus(risk);
             // 5 segments cliquables ; cliquer le niveau actuel le remet à « non évalué »
             const levelBar = (field, axis, letter, scale, name) => {
                 const value = risk[field][axis];
@@ -12230,7 +12407,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                     `<button type="button" class="vbar${v <= risk.velocite ? ' on' : ''}" style="--h:${4 + v * 2}px;--c:${VELOCITY_COLORS[risk.velocite - 1] || 'transparent'}" role="radio" aria-checked="${v === risk.velocite}"
                                         data-velocity="${v}" data-tip="${t(`velocity${v}`)}" aria-label="${t(`velocity${v}`)}"></button>`).join('')}</span>
                                 <span class="vel-text">${risk.velocite ? t(`velocity${risk.velocite}`).split(' · ').pop() : '–'}</span></span>
-                            ${lastReview ? `<span class="sheet-muted">${t('reviewedOn', { date: formatReviewDate(lastReview.date) })}</span>` : ''}
+                            <span class="review-cadence${cadence.due ? ' due' : ''}"><span>${cadence.last ? t('reviewedOn', { date: formatReviewDate(cadence.last) }) : t('reviewNever')}</span>
+                                <label>${t('reviewNextLabel')} <input type="date" class="review-date" value="${escapeHtml(cadence.next)}"></label>
+                                <button type="button" class="sheet-btn" data-action="mark-reviewed">${icon('check')} ${t('markReviewed')}</button></span>
                         </div>
                     </div>
                     <div class="sheet-scores">${cotation('assessmentBefore', 'colBeforeShort')}<span class="sheet-arrow">→</span>${cotation('assessmentAfter', 'colAfterShort')}<span class="sheet-arrow">→</span>${cotation('assessmentTarget', 'colTarget', true)}</div>
@@ -12294,6 +12473,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     save(field || mesure !== undefined ? 'all' : 'sheet');
                 } });
             });
+            sheet.querySelector('.review-date').onchange = event => {
+                risk.prochaineRevue = isIsoDate(event.target.value) ? event.target.value : '';
+                save('all');
+            };
             sheet.onclick = event => {
                 const target = event.target.closest('button, a[data-action]');
                 if (!target) return;
@@ -12342,6 +12525,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         mesures: risk.mesures.map(mesure => mesure.texte).filter(Boolean) });
                     commitChange();
                     showToast(t('templateSaved'));
+                } else if (action === 'mark-reviewed') {
+                    risk.revuLe = todayIso();
+                    risk.prochaineRevue = ''; // la prochaine revue repart de la cadence
+                    save('all');
+                    showToast(t('reviewMarked'));
                 } else if (action === 'add-note') {
                     const texte = sheet.querySelector('[data-note="texte"]').value.trim();
                     if (!texte) return;
