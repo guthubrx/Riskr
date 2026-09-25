@@ -1546,6 +1546,50 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             color: rgba(255, 255, 255, 0.65);
         }
 
+        /* Barre d'état des matrices : état actuel ou revue passée (lecture seule) */
+        .matrix-state {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px 16px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            background: var(--surface-2);
+            font-size: 14px;
+            color: var(--text-2);
+        }
+
+        .matrix-state[hidden] {
+            display: none;
+        }
+
+        .matrix-state.past {
+            background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+            color: var(--text);
+        }
+
+        .matrix-state-text {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 12px;
+        }
+
+        .matrix-state-text button {
+            padding: 0;
+            border: none;
+            background: none;
+            color: var(--accent);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .matrix-state .segmented {
+            overflow-x: auto;
+        }
+
         /* Panneau latéral des matrices : affichage, légende, case sélectionnée, appétence */
         .matrix-panel {
             display: flex;
@@ -4980,6 +5024,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>
                 </h3>
                 <div id="matrices-content" class="collapsible-content">
+                    <div id="matrix-state" class="matrix-state" hidden></div>
                     <div class="dashboard-layout with-panel">
                         <!-- Colonne gauche : Matrices -->
                         <div class="charts-column">
@@ -5823,12 +5868,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Le PDF présente les matrices avant / après côte à côte, même en vue trajectoire
         function exportToPDF() {
             if (activeTab !== 'matrices') showTab('matrices'); // les matrices doivent être dessinées pour être capturées
-            const previous = matrixLayout;
-            if (previous !== 'split') setMatrixLayout('split');
+            // Le PDF présente toujours l'état actuel, les deux matrices côte à côte
+            const previous = matrixLayout, shownReview = matrixReviewId;
+            matrixReviewId = null;
+            if (previous !== 'split') setMatrixLayout('split'); else updateCharts();
             try {
                 exportPdfDocument();
             } finally {
-                if (previous !== 'split') setMatrixLayout(previous);
+                matrixReviewId = shownReview;
+                if (previous !== 'split') setMatrixLayout(previous); else updateCharts();
             }
         }
 
@@ -6372,6 +6420,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registre",
                 tabCommittee: "Vue comité",
+                matrixStateLabel: "État affiché dans les matrices",
+                matrixStateChangedOne: "État actuel · 1 changement depuis {review}",
+                matrixStateChangedMany: "État actuel · {count} changements depuis {review}",
+                matrixStateSame: "État actuel · identique à {review}",
+                matrixStateReview: "{review} · lecture seule",
+                backToCurrent: "Revenir à l’état actuel",
                 createOwner: "Créer « {name} »",
                 prevRisk: "Risque précédent",
                 nextRisk: "Risque suivant",
@@ -6728,6 +6782,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Register",
                 tabCommittee: "Committee view",
+                matrixStateLabel: "State shown in the matrices",
+                matrixStateChangedOne: "Current state · 1 change since {review}",
+                matrixStateChangedMany: "Current state · {count} changes since {review}",
+                matrixStateSame: "Current state · same as {review}",
+                matrixStateReview: "{review} · read only",
+                backToCurrent: "Back to the current state",
                 createOwner: "Create “{name}”",
                 prevRisk: "Previous risk",
                 nextRisk: "Next risk",
@@ -7084,6 +7144,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "Matrices",
                 tabRegister: "Registro",
                 tabCommittee: "Vista comité",
+                matrixStateLabel: "Estado mostrado en las matrices",
+                matrixStateChangedOne: "Estado actual · 1 cambio desde {review}",
+                matrixStateChangedMany: "Estado actual · {count} cambios desde {review}",
+                matrixStateSame: "Estado actual · idéntico a {review}",
+                matrixStateReview: "{review} · solo lectura",
+                backToCurrent: "Volver al estado actual",
                 createOwner: "Crear «{name}»",
                 prevRisk: "Riesgo anterior",
                 nextRisk: "Riesgo siguiente",
@@ -7440,6 +7506,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "矩阵",
                 tabRegister: "登记册",
                 tabCommittee: "委员会视图",
+                matrixStateLabel: "矩阵中显示的状态",
+                matrixStateChangedOne: "当前状态 · 自{review}以来有 1 处变化",
+                matrixStateChangedMany: "当前状态 · 自{review}以来有 {count} 处变化",
+                matrixStateSame: "当前状态 · 与{review}相同",
+                matrixStateReview: "{review} · 只读",
+                backToCurrent: "返回当前状态",
                 createOwner: "新建“{name}”",
                 prevRisk: "上一个风险",
                 nextRisk: "下一个风险",
@@ -7796,6 +7868,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tabMatrices: "المصفوفات",
                 tabRegister: "السجل",
                 tabCommittee: "عرض اللجنة",
+                matrixStateLabel: "الحالة المعروضة في المصفوفات",
+                matrixStateChangedOne: "الحالة الحالية · تغيير واحد منذ {review}",
+                matrixStateChangedMany: "الحالة الحالية · {count} تغييرات منذ {review}",
+                matrixStateSame: "الحالة الحالية · مطابقة لـ {review}",
+                matrixStateReview: "{review} · للقراءة فقط",
+                backToCurrent: "العودة إلى الحالة الحالية",
                 createOwner: "إنشاء «{name}»",
                 prevRisk: "الخطر السابق",
                 nextRisk: "الخطر التالي",
@@ -9915,8 +9993,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Points d'une phase ('Before' | 'After') selon la vue : un point par risque, ou la
         // cotation moyenne de chaque groupe. Complexité : O(n) — n = nombre de risques.
         function matrixPoints(phase) {
+            const groups = matrixGroups();
             if (matrixViewMode === 'groups') {
-                return riskGroups.map(group => {
+                return groups.map(group => {
                     const assessments = group.risks.map(risk => evaluatedAssessment(risk, phase)).filter(Boolean);
                     if (!assessments.length) return null;
                     const x = assessments.reduce((sum, a) => sum + a[0], 0) / assessments.length;
@@ -9927,7 +10006,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         scale: velocityScale(velocities.length ? velocities.reduce((sum, v) => sum + v, 0) / velocities.length : 0) };
                 }).filter(Boolean);
             }
-            return riskGroups.flatMap(group => group.risks.map(risk => {
+            return groups.flatMap(group => group.risks.map(risk => {
                 const assessment = evaluatedAssessment(risk, phase);
                 if (!assessment) return null;
                 const [x, y] = assessment;
@@ -10055,7 +10134,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Complexité : O(R × n), R = nombre de revues (un index par revue, construit une fois)
             const reviewScores = reviews.map(review => new Map(review.risks.map(r => [r.uid, residualScore(r.after)])));
             
-            riskGroups.forEach(group => {
+            matrixGroups().forEach(group => {
                 group.risks.forEach(currentRisk => {
                     const row = document.createElement('tr');
                     row.dataset.riskId = currentRisk.id;
@@ -10152,7 +10231,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             
             const groupTableBody = document.getElementById('group-table-body');
             
-            riskGroups.forEach((group, index) => {
+            matrixGroups().forEach((group, index) => {
                 const critBefore = meanGroupCriticality(group, 'Before');
                 const critAfter = meanGroupCriticality(group, 'After');
                 const assessmentNote = String(group.assessmentNote || '').trim();
@@ -10645,12 +10724,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <span class="id-bubble">${escapeHtml(risk.id)}</span><span>${escapeHtml(risk.title)}</span>
                 <span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)}</span></div>`;
             const cell = riskFilter.cell;
-            const cellRisks = cell ? risks.filter(risk => {
+            const shown = matrixGroups().flatMap(group => group.risks);
+            const cellRisks = cell ? shown.filter(risk => {
                 const assessment = evaluatedAssessment(risk, cell.phase);
                 return assessment && assessment[0] === cell.p && assessment[1] === cell.i;
             }) : [];
             const cellScore = cell ? cell.p * cell.i : 0;
-            const above = settings.riskAppetite ? risks.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [];
+            const above = settings.riskAppetite ? shown.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [];
 
             panel.innerHTML = `
                 <section class="panel-card"><h3>${t('panelDisplay')}</h3>
@@ -10674,7 +10754,79 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             };
         }
 
+        // Revue affichée dans l'onglet Matrices (null : état actuel). Non enregistrée : c'est une vue.
+        let matrixReviewId = null;
+
+        // Groupes et risques affichés dans l'onglet Matrices : l'état actuel, ou la photo d'une revue
+        // (cible non figée dans les revues : non affichée). Complexité : O(n)
+        function matrixGroups() {
+            const review = reviews.find(r => r.id === matrixReviewId);
+            if (!review) return riskGroups;
+            const live = new Map(risks.map(risk => [risk.uid, risk]));
+            const liveGroupOf = new Map(riskGroups.flatMap(group => group.risks.map(risk => [risk.uid, group])));
+            const liveGroupByName = new Map(riskGroups.map(group => [group.name, group]));
+            const groups = new Map();
+            review.risks.forEach(entry => {
+                const name = entry.groupe || liveGroupOf.get(entry.uid)?.name || '—';
+                if (!groups.has(name)) {
+                    const liveGroup = liveGroupByName.get(name);
+                    groups.set(name, { ...(liveGroup || { description: '' }), id: liveGroup ? liveGroup.id : groups.size + 1, name, risks: [] });
+                }
+                groups.get(name).risks.push({ uid: entry.uid, id: entry.id, title: entry.title, assessmentBefore: entry.before,
+                    assessmentAfter: entry.after, assessmentTarget: [0, 0], velocite: live.get(entry.uid)?.velocite || 0 });
+            });
+            return [...groups.values()];
+        }
+
+        function setMatrixReview(id) {
+            matrixReviewId = id;
+            updateCharts();
+        }
+
+        // Exécute fn sur l'état actuel (vue comité, export PDF), quelle que soit la revue affichée
+        function withCurrentState(fn) {
+            const shown = matrixReviewId;
+            matrixReviewId = null;
+            try {
+                return fn();
+            } finally {
+                matrixReviewId = shown;
+            }
+        }
+
+        // Barre d'état des matrices : ce qui est affiché, et la frise pour choisir une revue. O(n)
+        function renderMatrixState() {
+            const bar = document.getElementById('matrix-state');
+            if (!reviews.some(r => r.id === matrixReviewId)) matrixReviewId = null;
+            bar.hidden = reviews.length === 0;
+            if (!reviews.length) return;
+            const name = review => `${review.label} (${formatReviewDate(review.date)})`;
+            const shown = reviews.find(r => r.id === matrixReviewId);
+            let text;
+            if (shown) {
+                text = `<span>${escapeHtml(t('matrixStateReview', { review: name(shown) }))}</span><button type="button" data-review="">${t('backToCurrent')}</button>`;
+            } else {
+                const latest = reviews[reviews.length - 1];
+                const frozen = new Map(latest.risks.map(entry => [entry.uid, scoreOf(entry.after)]));
+                const changes = risks.filter(risk => frozen.get(risk.uid) !== scoreOf(risk.assessmentAfter)).length
+                    + latest.risks.filter(entry => !risks.some(risk => risk.uid === entry.uid)).length;
+                const key = changes === 0 ? 'matrixStateSame' : changes === 1 ? 'matrixStateChangedOne' : 'matrixStateChangedMany';
+                text = `<span>${escapeHtml(t(key, { count: changes, review: name(latest) }))}</span>`;
+            }
+            bar.classList.toggle('past', Boolean(shown));
+            bar.innerHTML = `<span class="matrix-state-text">${text}</span>
+                <span class="segmented labeled" role="radiogroup" aria-label="${t('matrixStateLabel')}">
+                    ${reviews.map(review => `<button type="button" class="segmented-btn${review.id === matrixReviewId ? ' active' : ''}" data-review="${escapeHtml(review.id)}" data-tip="${escapeHtml(name(review))}">${escapeHtml(shortDate(review.date))}</button>`).join('')}
+                    <button type="button" class="segmented-btn${shown ? '' : ' active'}" data-review="">${t('currentShort')}</button>
+                </span>`;
+            bar.onclick = event => {
+                const button = event.target.closest('[data-review]');
+                if (button) setMatrixReview(button.dataset.review || null);
+            };
+        }
+
         function updateCharts() {
+            renderMatrixState();
             const column = document.querySelector('.charts-column');
             column.dataset.layout = matrixLayout;
             const shown = { before: ['before'], after: ['after'], split: ['before', 'after'], trajectory: ['trajectory'] }[matrixLayout];
@@ -10684,7 +10836,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             [chartBefore, chartAfter, chartTrajectory].forEach(chart => chart && chart.destroy());
             chartBefore = chartAfter = chartTrajectory = null;
             renderReviews();
-            renderCommitteeTab();
+            withCurrentState(renderCommitteeTab);
             renderRegister();
 
             if (matrixLayout !== 'split') {

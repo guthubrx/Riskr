@@ -129,6 +129,10 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 - **Matrices Before/After** avec Chart.js
 - **Matrices Avant, Après, côte à côte ou Trajectoire** : en trajectoire, chaque
   risque va de sa position avant (bulle creuse) à sa position après (bulle pleine)
+- **Matrices à une date de revue** : une frise sous l'en-tête affiche l'état actuel
+  (« 1 changement depuis la revue n°5 ») ou n'importe quelle revue passée, en
+  lecture seule ; matrices, panneau et tableaux suivent. La vue comité et l'export
+  PDF restent sur l'état actuel.
 - **Panneau latéral** : options (nombre par case, appétence, cible en losange vert,
   taille des bulles selon la vélocité), légende, risques de la case cliquée,
   risques au-dessus de l'appétence
