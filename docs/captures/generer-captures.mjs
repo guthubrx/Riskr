@@ -86,10 +86,10 @@ for (const [theme, folder] of [['light', 'clair'], ['dark', 'sombre']]) {
     await shot(dir, 'matrices-groupes', `${reset} setMatrixView('groups'); setMatrixLayout('after');`,
         '[data-panel="matrices"] .collapsible-section', '[data-panel="matrices"] .collapsible-section');
     await shot(dir, 'registre', `${reset} setMatrixView('risks'); showTab('registre');`, tabs, '[data-panel="registre"]', 2000);
-    await shot(dir, 'fiche', `${reset} showTab('registre'); openRiskSheet('demo-3-1');`, '#risk-sheet', '#risk-sheet', 1500);
+    await shot(dir, 'fiche', `${reset} showTab('registre'); openRiskSheet('demo-3-1');`, '#risk-sheet', '#risk-sheet', 2800);
     await shot(dir, 'plan-actions', `${reset} showTab('actions'); setActionGrouping('state');`, tabs, '[data-panel="actions"]', 1100);
-    await shot(dir, 'revues', `${reset} showTab('revues');`, tabs, '[data-panel="revues"]');
-    await shot(dir, 'comite', `${reset} showTab('comite');`, tabs, '[data-panel="comite"]');
+    await shot(dir, 'revues', `${reset} showTab('revues');`, tabs, '[data-panel="revues"]', 1700);
+    await shot(dir, 'comite', `${reset} showTab('comite');`, tabs, '[data-panel="comite"]', 1900);
 }
 
 ws.close();

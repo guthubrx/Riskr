@@ -9,7 +9,8 @@ window.RISKR_DATA = {
     "storageNamespace": "riskr-demo"
   },
   "settings": {
-    "riskAppetite": 9
+    "riskAppetite": 9,
+    "cadenceRevue": 90
   },
   "risks": [
     {
@@ -146,7 +147,12 @@ window.RISKR_DATA = {
           "texte": "RACI publié ; reste à tracer les arbitrages pour atteindre la cible."
         }
       ],
-      "liens": []
+      "liens": [],
+      "cout": {
+        "min": 5000,
+        "probable": 20000,
+        "max": 60000
+      }
     },
     {
       "uid": "demo-2-1",
@@ -220,7 +226,44 @@ window.RISKR_DATA = {
           "libelle": "Plan de continuité (modèle)",
           "url": "https://example.com/plan-de-continuite"
         }
-      ]
+      ],
+      "kri": [
+        {
+          "id": "kri-2-1",
+          "nom": "Disponibilité du service",
+          "unite": "%",
+          "sens": "baisse",
+          "alerte": 99.5,
+          "critique": 99,
+          "releves": [
+            {
+              "date": "2026-05-31",
+              "valeur": 99.2,
+              "auteur": "Camille Laurent"
+            },
+            {
+              "date": "2026-06-30",
+              "valeur": 99.4,
+              "auteur": "Camille Laurent"
+            },
+            {
+              "date": "2026-07-31",
+              "valeur": 99.7,
+              "auteur": "Camille Laurent"
+            },
+            {
+              "date": "2026-08-31",
+              "valeur": 99.8,
+              "auteur": "Camille Laurent"
+            }
+          ]
+        }
+      ],
+      "cout": {
+        "min": 20000,
+        "probable": 60000,
+        "max": 150000
+      }
     },
     {
       "uid": "demo-2-2",
@@ -268,7 +311,13 @@ window.RISKR_DATA = {
           "texte": "Risque accepté formellement jusqu'à la fin de la bascule."
         }
       ],
-      "liens": []
+      "liens": [],
+      "cout": {
+        "min": 10000,
+        "probable": 40000,
+        "max": 90000
+      },
+      "prochaineRevue": "2026-09-15"
     },
     {
       "uid": "demo-3-1",
@@ -347,7 +396,54 @@ window.RISKR_DATA = {
           "libelle": "Politique de mise à jour (exemple)",
           "url": "https://example.com/politique-mises-a-jour"
         }
-      ]
+      ],
+      "kri": [
+        {
+          "id": "kri-3-1",
+          "nom": "Correctifs critiques en attente",
+          "unite": "correctifs",
+          "sens": "hausse",
+          "alerte": 5,
+          "critique": 10,
+          "releves": [
+            {
+              "date": "2026-04-30",
+              "valeur": 14,
+              "auteur": "Hugo Bernard"
+            },
+            {
+              "date": "2026-05-31",
+              "valeur": 12,
+              "auteur": "Hugo Bernard"
+            },
+            {
+              "date": "2026-06-30",
+              "valeur": 11,
+              "auteur": "Hugo Bernard"
+            },
+            {
+              "date": "2026-07-31",
+              "valeur": 9,
+              "auteur": "Hugo Bernard"
+            },
+            {
+              "date": "2026-08-31",
+              "valeur": 8,
+              "auteur": "Hugo Bernard"
+            },
+            {
+              "date": "2026-09-22",
+              "valeur": 6,
+              "auteur": "Hugo Bernard"
+            }
+          ]
+        }
+      ],
+      "cout": {
+        "min": 50000,
+        "probable": 200000,
+        "max": 600000
+      }
     },
     {
       "uid": "demo-3-2",
@@ -458,7 +554,45 @@ window.RISKR_DATA = {
           "texte": "Avenant signé : l'impact baisse, la probabilité reste à surveiller."
         }
       ],
-      "liens": []
+      "liens": [],
+      "kri": [
+        {
+          "id": "kri-4-1",
+          "nom": "Livrables en retard",
+          "unite": "livrables",
+          "sens": "hausse",
+          "alerte": 2,
+          "critique": 4,
+          "releves": [
+            {
+              "date": "2026-06-30",
+              "valeur": 1,
+              "auteur": "Inès Moreau"
+            },
+            {
+              "date": "2026-07-31",
+              "valeur": 2,
+              "auteur": "Inès Moreau"
+            },
+            {
+              "date": "2026-08-31",
+              "valeur": 3,
+              "auteur": "Inès Moreau"
+            },
+            {
+              "date": "2026-09-23",
+              "valeur": 4,
+              "auteur": "Inès Moreau"
+            }
+          ]
+        }
+      ],
+      "cout": {
+        "min": 30000,
+        "probable": 80000,
+        "max": 250000
+      },
+      "prochaineRevue": "2026-09-20"
     },
     {
       "uid": "demo-4-2",
@@ -616,7 +750,44 @@ window.RISKR_DATA = {
           "libelle": "Registre des traitements (modèle)",
           "url": "https://example.com/registre-traitements"
         }
-      ]
+      ],
+      "kri": [
+        {
+          "id": "kri-5-2",
+          "nom": "Comptes à privilèges non revus",
+          "unite": "comptes",
+          "sens": "hausse",
+          "alerte": 5,
+          "critique": 15,
+          "releves": [
+            {
+              "date": "2026-03-31",
+              "valeur": 22,
+              "auteur": "Inès Moreau"
+            },
+            {
+              "date": "2026-06-30",
+              "valeur": 18,
+              "auteur": "Inès Moreau"
+            },
+            {
+              "date": "2026-08-31",
+              "valeur": 9,
+              "auteur": "Inès Moreau"
+            },
+            {
+              "date": "2026-09-14",
+              "valeur": 4,
+              "auteur": "Inès Moreau"
+            }
+          ]
+        }
+      ],
+      "cout": {
+        "min": 10000,
+        "probable": 100000,
+        "max": 800000
+      }
     }
   ],
   "riskGroups": [
@@ -1273,6 +1444,140 @@ window.RISKR_DATA = {
           ]
         }
       ]
+    }
+  ],
+  "journal": [
+    {
+      "id": "demo-j01",
+      "date": "2026-03-16T09:05:00Z",
+      "auteur": "Camille Laurent",
+      "uid": "demo-1-1",
+      "risque": "1.1",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "3,3",
+      "apres": "2,3"
+    },
+    {
+      "id": "demo-j02",
+      "date": "2026-03-16T09:12:00Z",
+      "auteur": "Camille Laurent",
+      "uid": "demo-5-1",
+      "risque": "5.1",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "3,3",
+      "apres": "2,3"
+    },
+    {
+      "id": "demo-j03",
+      "date": "2026-06-15T12:20:00Z",
+      "auteur": "Hugo Bernard",
+      "uid": "demo-3-2",
+      "risque": "3.2",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "3,2",
+      "apres": "2,2"
+    },
+    {
+      "id": "demo-j04",
+      "date": "2026-06-15T12:31:00Z",
+      "auteur": "Hugo Bernard",
+      "uid": "demo-4-1",
+      "risque": "4.1",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "3,4",
+      "apres": "3,3"
+    },
+    {
+      "id": "demo-j05",
+      "date": "2026-06-15T12:40:00Z",
+      "auteur": "Inès Moreau",
+      "uid": "demo-5-2",
+      "risque": "5.2",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "2,4",
+      "apres": "1,4"
+    },
+    {
+      "id": "demo-j06",
+      "date": "2026-07-31T07:00:00Z",
+      "auteur": "Hugo Bernard",
+      "uid": "demo-3-1",
+      "risque": "3.1",
+      "champ": "mesure.etat",
+      "detail": "Appliquer les correctifs critiques sous 15 jours.",
+      "avant": "todo",
+      "apres": "doing"
+    },
+    {
+      "id": "demo-j07",
+      "date": "2026-09-14T09:02:00Z",
+      "auteur": "Camille Laurent",
+      "uid": "demo-2-1",
+      "risque": "2.1",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "3,3",
+      "apres": "2,3"
+    },
+    {
+      "id": "demo-j08",
+      "date": "2026-09-14T09:15:00Z",
+      "auteur": "Inès Moreau",
+      "uid": "demo-5-2",
+      "risque": "5.2",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "1,4",
+      "apres": "1,3"
+    },
+    {
+      "id": "demo-j09",
+      "date": "2026-09-14T09:20:00Z",
+      "auteur": "Camille Laurent",
+      "uid": "",
+      "risque": "",
+      "champ": "review",
+      "detail": "",
+      "avant": "",
+      "apres": "Revue de rentrée"
+    },
+    {
+      "id": "demo-j10",
+      "date": "2026-09-22T14:45:00Z",
+      "auteur": "Hugo Bernard",
+      "uid": "demo-3-1",
+      "risque": "3.1",
+      "champ": "assessmentAfter",
+      "detail": "",
+      "avant": "4,4",
+      "apres": "3,4"
+    },
+    {
+      "id": "demo-j11",
+      "date": "2026-09-22T14:47:00Z",
+      "auteur": "Hugo Bernard",
+      "uid": "demo-3-1",
+      "risque": "3.1",
+      "champ": "note",
+      "detail": "",
+      "avant": "",
+      "apres": "Deux serveurs migrés : la probabilité passe de 4 à 3."
+    },
+    {
+      "id": "demo-j12",
+      "date": "2026-09-23T07:30:00Z",
+      "auteur": "Inès Moreau",
+      "uid": "demo-4-1",
+      "risque": "4.1",
+      "champ": "kri.releve",
+      "detail": "Livrables en retard",
+      "avant": "",
+      "apres": "4 livrables"
     }
   ]
 };

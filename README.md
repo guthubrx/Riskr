@@ -36,8 +36,9 @@ porteur, prochaine échéance et mesures.
   <img src="docs/captures/clair/registre.png" alt="Registre des risques">
 </picture>
 
-**Fiche du risque** : nœud papillon (causes, barrières et leur efficacité,
-conséquences chiffrées), évolution de la cotation, notes de revue, pièces et liens.
+**Fiche du risque** : cadence de revue, nœud papillon (causes, barrières et leur
+efficacité, conséquences), indicateurs clés de risque (KRI) avec seuils et relevés,
+chiffrage en euros, évolution de la cotation, notes, liens et journal des modifications.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/fiche.png">
@@ -53,15 +54,16 @@ son état (vue par état) ou son porteur (vue par porteur).
   <img src="docs/captures/clair/plan-actions.png" alt="Plan d'actions">
 </picture>
 
-**Revues** : frise des revues figées, comparaison au choix, changements de
-cotation et exposition moyenne par groupe.
+**Revues** : frise des revues figées, cadence de revue, dernières modifications
+signées, comparaison au choix, changements de cotation et exposition par groupe.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/revues.png">
   <img src="docs/captures/clair/revues.png" alt="Revues et comparaison">
 </picture>
 
-**Vue comité** : synthèse d'une page, copiable dans Word ou PowerPoint et exportable en PDF.
+**Vue comité** : synthèse d'une page (décisions attendues, KRI critiques, provision
+pour risques par simulation Monte-Carlo), copiable dans Word ou PowerPoint et exportable en PDF.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/comite.png">
