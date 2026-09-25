@@ -114,8 +114,8 @@
   apres }`，每次变更时自动填写（最多 2000 行）。
   导出菜单中的“riskr-data.js · 不含日志”选项可在分享分析时
   隐藏这些姓名和时间。
-- `reviews`：已冻结评审 `{ id, date, label, risks: [{ uid, id, title,
-  before, after }] }`，用于比较的带日期评级快照。
+- `reviews`：已冻结评审 `{ id, date, label, auteur, note, risks: [{ uid, id,
+  title, before, after, motif }] }`，用于比较的带日期评级快照；`note` 概述评审，`motif` 说明评级理由。
 - `statut` 为 `statusNotTreated`、`statusInProgress`、`statusTreated` 或
   `statusAccepted`。
 - `traitement`（策略）为 `reduce`、`accept`、`transfer`、`avoid` 或 `''`

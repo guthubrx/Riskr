@@ -144,8 +144,9 @@ The data field names are in French (the application's original language):
   apres }`, filled in automatically at every change (2,000 lines at most). The
   Export menu offers "riskr-data.js · Without log" to share the analysis without
   these names and times.
-- `reviews`: frozen reviews `{ id, date, label, risks: [{ uid, id, title,
-  before, after }] }`, dated snapshots of the ratings used for comparisons.
+- `reviews`: frozen reviews `{ id, date, label, auteur, note, risks: [{ uid, id,
+  title, before, after, motif }] }`, dated snapshots of the ratings used for
+  comparisons; `note` summarises the review and `motif` explains a rating.
 - `statut` is `statusNotTreated`, `statusInProgress`, `statusTreated` or
   `statusAccepted`.
 - `traitement` (strategy) is `reduce`, `accept`, `transfer`, `avoid` or `''`

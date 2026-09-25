@@ -136,8 +136,8 @@ Los nombres de los campos de datos están en francés (idioma original de la apl
   apres }`, completado automáticamente en cada cambio (2.000 líneas como máximo). El
   menú Exportar ofrece «riskr-data.js · Sin historial» para compartir el análisis sin
   esos nombres y horas.
-- `reviews`: revisiones registradas `{ id, date, label, risks: [{ uid, id, title,
-  before, after }] }`, instantáneas fechadas de las calificaciones utilizadas para comparaciones.
+- `reviews`: revisiones registradas `{ id, date, label, auteur, note, risks: [{ uid, id,
+  title, before, after, motif }] }`, instantáneas fechadas de las calificaciones utilizadas para comparaciones; `note` resume la revisión y `motif` explica una calificación.
 - `statut` es `statusNotTreated`, `statusInProgress`, `statusTreated` o
   `statusAccepted`.
 - `traitement` (estrategia) es `reduce`, `accept`, `transfer`, `avoid` o `''`

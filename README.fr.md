@@ -143,8 +143,9 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   detail, avant, apres }`, alimenté automatiquement à chaque modification
   (2 000 lignes au plus). Le menu Exporter propose « riskr-data.js · Sans journal »
   pour partager l'analyse sans ces noms et horaires.
-- `reviews` : revues figées `{ id, date, label, risks: [{ uid, id, title,
-  before, after }] }`, photos datées des cotations servant aux comparaisons.
+- `reviews` : revues figées `{ id, date, label, auteur, note, risks: [{ uid, id,
+  title, before, after, motif }] }`, photos datées des cotations servant aux
+  comparaisons ; `note` résume la revue et `motif` explique une cotation.
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
   `statusAccepted`.
 - `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid` ou `''`

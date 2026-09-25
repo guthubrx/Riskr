@@ -139,8 +139,8 @@
   avant, apres }`، يُملأ تلقائيًا عند كل تعديل (2000 سطر كحد أقصى). تقترح قائمة
   التصدير خيار "riskr-data.js · بدون سجل" لمشاركة التحليل دون هذه الأسماء
   والأوقات.
-- `reviews`: المراجعات المسجَّلة `{ id, date, label, risks: [{ uid, id, title,
-  before, after }] }`، لقطات مؤرخة للتقييمات تُستخدم في المقارنات.
+- `reviews`: المراجعات المسجَّلة `{ id, date, label, auteur, note, risks: [{ uid, id,
+  title, before, after, motif }] }`، لقطات مؤرخة للتقييمات تُستخدم في المقارنات؛ يلخّص `note` المراجعة ويشرح `motif` سبب التقييم.
 - `statut` تكون `statusNotTreated` أو `statusInProgress` أو `statusTreated` أو
   `statusAccepted`.
 - `traitement` (الاستراتيجية) تكون `reduce` أو `accept` أو `transfer` أو

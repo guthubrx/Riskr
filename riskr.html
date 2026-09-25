@@ -1338,6 +1338,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             height: 320px;
         }
 
+        .change-motif {
+            display: block;
+            margin-top: 3px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .review-note {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        /* Synthèse vide : invite visible seulement au survol de la carte */
+        .review-card:not(:hover) .review-note:empty:not(:focus) {
+            display: none;
+        }
+
         .change-row {
             display: grid;
             grid-template-columns: 28px minmax(0, 1fr) auto 40px;
@@ -7423,6 +7441,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewLatest: "dernière",
                 reviewComparedBadge: "comparée",
                 reviewAuthorPlaceholder: "auteur ou instance",
+                reviewNotePlaceholder: "Synthèse de la revue…",
                 reviewsHint: "Une revue fige les cotations à une date. Les revues passées restent consultables et sont enregistrées avec les données.",
                 changesTitle: "Changements de cotation résiduelle",
                 exposureByGroup: "Exposition moyenne par groupe (/5)",
@@ -7969,6 +7988,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewLatest: "latest",
                 reviewComparedBadge: "compared",
                 reviewAuthorPlaceholder: "author or body",
+                reviewNotePlaceholder: "Review summary…",
                 reviewsHint: "A review freezes the ratings at a given date. Past reviews remain available and are saved with the data.",
                 changesTitle: "Residual rating changes",
                 exposureByGroup: "Average exposure by group (/5)",
@@ -8515,6 +8535,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewLatest: "última",
                 reviewComparedBadge: "comparada",
                 reviewAuthorPlaceholder: "autor o instancia",
+                reviewNotePlaceholder: "Síntesis de la revisión…",
                 reviewsHint: "Una revisión fija las calificaciones en una fecha. Las revisiones anteriores siguen consultables y se guardan con los datos.",
                 changesTitle: "Cambios de calificación residual",
                 exposureByGroup: "Exposición media por grupo (/5)",
@@ -9061,6 +9082,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewLatest: "最新",
                 reviewComparedBadge: "对比中",
                 reviewAuthorPlaceholder: "作者或机构",
+                reviewNotePlaceholder: "评审摘要…",
                 reviewsHint: "评审会冻结某一日期的评级。以往的评审仍可查看，并随数据一起保存。",
                 changesTitle: "剩余评级变化",
                 exposureByGroup: "各组平均暴露（/5）",
@@ -9607,6 +9629,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 reviewLatest: "الأحدث",
                 reviewComparedBadge: "مقارنة",
                 reviewAuthorPlaceholder: "الكاتب أو الهيئة",
+                reviewNotePlaceholder: "ملخص المراجعة…",
                 reviewsHint: "تثبّت المراجعة التقييمات في تاريخ معيّن. تبقى المراجعات السابقة متاحة وتُحفظ مع البيانات.",
                 changesTitle: "تغييرات التقييم المتبقي",
                 exposureByGroup: "متوسط التعرض حسب المجموعة (/5)",
@@ -10062,9 +10085,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 date: String(review.date || ''),
                 label: String(review.label || ''),
                 auteur: String(review.auteur || ''),
+                // Synthèse de la revue et motif de chaque cotation (facultatifs)
+                note: String(review.note || ''),
                 risks: review.risks.filter(r => r && r.uid).map(r => ({
                     uid: String(r.uid), id: String(r.id || ''), title: String(r.title || ''), groupe: String(r.groupe || ''),
-                    before: toAssessment(r.before), after: toAssessment(r.after)
+                    before: toAssessment(r.before), after: toAssessment(r.after), motif: String(r.motif || '')
                 }))
             }));
         }
@@ -11275,6 +11300,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         ${item.id === comparison.from ? `<span class="review-badge compared">${t('reviewComparedBadge')}</span>` : item === latest ? `<span class="review-badge latest">${t('reviewLatest')}</span>` : ''}
                     </div>
                     <div class="review-meta">${escapeHtml(formatReviewDate(item.date))} · <span class="editable-review-label review-author" data-review-id="${escapeHtml(item.id)}" data-field="auteur" data-placeholder="${t('reviewAuthorPlaceholder')}">${escapeHtml(item.auteur)}</span> · ${t('reviewRisks', { count: item.risks.length })}</div>
+                    <p class="editable-review-label review-note" data-review-id="${escapeHtml(item.id)}" data-field="note" data-placeholder="${t('reviewNotePlaceholder')}">${escapeHtml(item.note || '')}</p>
                 </div>
                 <button type="button" class="review-delete" data-review-id="${escapeHtml(item.id)}" title="${t('reviewDelete')}" aria-label="${t('reviewDelete')}">${icon('trash')}</button>
             </li>`).join('') || `<li class="review-empty">${t('reviewNone')}</li>`;
@@ -11332,9 +11358,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             changes.sort((a, b) => (a.delta ?? 99) - (b.delta ?? 99) || a.risk.id.localeCompare(b.risk.id, undefined, { numeric: true }));
             const deltaHtml = change => change.kind === 'new' ? t('diffNew') : change.kind === 'closed' ? t('diffClosed')
                 : change.delta === 0 ? '=' : `${change.delta > 0 ? '+' : '−'}${Math.abs(change.delta)}`;
+            const target = comparison.to === 'current' ? reviews[reviews.length - 1] : reviews.find(r => r.id === comparison.to);
+            const motifs = new Map((target?.risks || []).filter(r => r.motif).map(r => [r.uid, r.motif]));
             list.innerHTML = changes.map(change => `<div class="change-row">
                 <span class="id-bubble">${escapeHtml(change.risk.id)}</span>
-                <span>${escapeHtml(change.risk.title)}</span>
+                <span>${escapeHtml(change.risk.title)}${change.kind !== 'closed' && motifs.has(change.risk.uid) ? `<small class="change-motif">${escapeHtml(motifs.get(change.risk.uid))}</small>` : ''}</span>
                 <span class="score-chips">${change.kind === 'new' ? '' : scoreChip(change.before.after)} → ${change.kind === 'closed' ? '—' : scoreChip(change.risk.after)}</span>
                 <span class="change-delta ${change.delta < 0 ? 'down' : change.delta > 0 ? 'up' : ''}">${deltaHtml(change)}</span>
             </div>`).join('');
@@ -13889,7 +13917,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Nouveautés, de la plus récente à la plus ancienne : [type, français, anglais] ; les autres langues
         // affichent l'anglais. À compléter à chaque évolution (commits : dépôt GitHub).
         const CHANGELOG = [
-            { date: "2026-09-25", commits: [], title: ["Dates des revues", "Review dates"], items: [
+            { date: "2026-09-25", commits: [], title: ["Explications des revues", "Review explanations"], items: [
+                ["new", "Synthèse d'une revue (modifiable sur sa carte) et motif de chaque cotation, affiché sous les changements comparés.", "Review summary (editable on its card) and a reason for each rating, shown under the compared changes."]] },
+            { date: "2026-09-25", commits: ["8c3e7ba"], title: ["Dates des revues", "Review dates"], items: [
                 ["fixed", "Dates courtes des revues avec l'année (frise des matrices, évolution de la cotation dans la fiche).", "Short review dates include the year (matrix timeline, rating trend in the risk sheet)."]] },
             { date: "2026-09-25", commits: ["5aab9ff"], title: ["Provision : cas normal", "Contingency: normal case"], items: [
                 ["fixed", "Provision : « le plus souvent, aucun des autres risques ne se réalise » au lieu d'un montant de 0 €.", "Contingency: \"most of the time, none of the other risks occurs\" instead of an amount of €0."]] },
