@@ -45,7 +45,8 @@ conséquences chiffrées), évolution de la cotation, notes de revue, pièces et
 </picture>
 
 **Plan d'actions** : mesures par état, porteur ou échéance, retards en évidence ;
-en vue par état, une mesure se glisse d'une colonne à l'autre pour changer d'état.
+une carte se glisse à la hauteur voulue ou dans une autre colonne pour changer
+son état (vue par état) ou son porteur (vue par porteur).
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/sombre/plan-actions.png">
@@ -95,6 +96,8 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
 - `causes` : textes du nœud papillon ; `consequences` : `{ texte, chiffrage }`
   (une simple chaîne est aussi acceptée). Chaque mesure porte aussi `barriere`
   (`prevention` ou `protection`), son côté dans le nœud, et `efficacite` (0 à 5).
+  `rang` (facultatif) garde la position choisie par glisser-déposer dans le plan
+  d'actions ; sans rang, les mesures sont triées par retard puis par échéance.
 - `velocite` : vitesse de survenue du risque (1 à 5, 0 = non évaluée), utilisée
   par l'option « Taille = vélocité » des matrices.
 - `notes` : notes de revue `{ date, auteur, texte }` ; `liens` : pièces et liens
@@ -165,7 +168,8 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   (à faire, en cours, faite) ; échéance dépassée signalée en rouge
 - **Plan d'actions** : progression, mesures regroupées par état, porteur ou
   échéance, « Mes mesures », étiquette préventive / protection, retards en tête,
-  glisser-déposer d'une colonne à l'autre (vue par état) pour changer l'état d'une mesure
+  glisser-déposer des cartes : ordre dans la colonne conservé, changement d'état
+  (vue par état) ou de porteur (vue par porteur)
 - **Revues** : photo datée des cotations (« Figer une nouvelle revue », auteur ou
   instance), frise, comparaison de deux revues ou d'une revue avec l'état actuel
   (compteurs, changements triés par écart), courbe d'exposition moyenne par
