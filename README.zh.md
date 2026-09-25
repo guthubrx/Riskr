@@ -1,0 +1,357 @@
+<div align="center">
+  <img src="riskr.png" alt="Riskr Logo" width="128" height="128">
+  <h1>Riskr</h1>
+  <p>用于风险分析与风险地图绘制的网页应用，提供处理前/处理后矩阵和协同管理。</p>
+</div>
+
+<p align="center">
+  <a href="README.md">🇬🇧 English</a> ·
+  <a href="README.fr.md">🇫🇷 Français</a> ·
+  <a href="README.es.md">🇪🇸 Español</a> ·
+  <a href="README.zh.md">🇨🇳 中文</a> ·
+  <a href="README.ar.md">🇸🇦 العربية</a>
+</p>
+
+## 📋 简介
+
+**Riskr** 是一个完整的单页网页应用，用于风险分析与风险管理。它通过交互式矩阵和详细表格，展示风险在整改措施实施前后的演变情况。
+
+## 🖼️ 截图
+
+截图使用 `riskr-data.js` 中的演示数据，该数据完全是虚构的（一个信息系统现代化改造的假想项目），并以浅色或深色主题展示，与 GitHub 的主题保持一致。本 README 的每个语言版本都配有其自身语言的截图（界面和演示数据均为该场合专门翻译，见 `docs/captures/traductions/`）。界面变更后如需重新生成截图：`node docs/captures/generer-captures.mjs`（需要 Chrome）。
+
+**矩阵**：处理前 → 处理后轨迹、目标（蓝色菱形徽章 = 已达成目标，白色菱形 = 目标方向），风险偏好，某评审日期时的状态。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/matrices.webp">
+  <img src="docs/captures/zh/light/matrices.webp" alt="矩阵：风险轨迹、显示选项和超出风险偏好的风险">
+</picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/matrices-groupes.webp">
+  <img src="docs/captures/zh/light/matrices-groupes.webp" alt="按组划分的整改后矩阵，已达成目标以蓝色菱形显示">
+</picture>
+
+**登记册**：处理前 → 处理后评级 · 目标、跨评审趋势、处理策略、负责人、下次到期日期和措施。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/registre.webp">
+  <img src="docs/captures/zh/light/registre.webp" alt="风险登记册">
+</picture>
+
+**风险卡片**：评审节奏、蝴蝶结分析图（原因、屏障及其有效性、后果）、带阈值和读数的关键风险指标（KRI）、以欧元计的成本估算、评级趋势、备注、链接和变更记录。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/fiche.webp">
+  <img src="docs/captures/zh/light/fiche.webp" alt="带有蝴蝶结分析图的风险卡片">
+</picture>
+
+**行动计划**：按状态、负责人或到期日期划分的措施，逾期项目高亮显示；卡片可拖拽到指定位置，或拖入另一列以更改其状态（状态视图）或负责人（负责人视图）。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/plan-actions.webp">
+  <img src="docs/captures/zh/light/plan-actions.webp" alt="行动计划">
+</picture>
+
+**评审**：已冻结评审的时间线、评审节奏、最新签署的变更、自由比较、评级变化以及按组划分的敞口。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/revues.webp">
+  <img src="docs/captures/zh/light/revues.webp" alt="评审与比较">
+</picture>
+
+**委员会视图**：单页摘要（待决事项、关键 KRI、蒙特卡洛模拟计算的风险准备金），可复制到 Word 或 PowerPoint，也可导出为 PDF。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/comite.webp">
+  <img src="docs/captures/zh/light/comite.webp" alt="委员会视图">
+</picture>
+
+**设置**：整个分析共用的设置（风险偏好、评审节奏、速度对气泡大小的影响、以欧元计的影响刻度），在任何使用处均可通过“修改”链接回溯查看。
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/zh/dark/parametres.webp">
+  <img src="docs/captures/zh/light/parametres.webp" alt="分析设置">
+</picture>
+
+## 📦 数据分离（riskr-data.js）
+
+数据存放在 `riskr-data.js`（`window.RISKR_DATA` 格式）中，由 `riskr.html` 自动加载。HTML 是引擎，数据文件才是内容：进行一次新的分析时，只需更改 `riskr-data.js`。
+
+- **规范格式**：扁平化的 `risks[]` + `riskGroups[].riskIds`
+- **往返保证**：JSON 导出与 `riskr-data.js` 导出（导出菜单）产生相同的格式，可原样重新导入或放在 HTML 旁重新加载
+- 没有 `riskr-data.js` 时，页面显示最简占位内容（HTML 中不隐藏任何示例数据）
+- 在本地打开时，`riskr-data.local.js` 可以覆盖通用数据。该文件被 Git 忽略，只能包含不应公开的私密数据。
+
+每个风险在整改前和整改后都有**一个评级**：
+`assessmentBefore` 和 `assessmentAfter`，格式为 `[probability, impact]`
+（1 到 5；`[0, 0]` = 未评估）。严重性为可能性 × 影响（满分 25）；
+在表格和矩阵中按满分 5 折算显示（得分 ÷ 5）。
+
+数据字段名使用法语（应用的原始语言）：
+
+- `mesures`：措施列表 `{ texte, porteur, echeance, etat }`（文本、负责人、
+  到期日期、状态；负责人和到期日期为可选；`etat` 为 `todo`、`doing` 或
+  `done`；也接受纯文本字符串）。未完成措施的 `YYYY-MM-DD` 或
+  `DD/MM/YYYY` 格式的到期日期一旦过期，就会被标记为逾期。
+- `causes`：蝴蝶结分析图的原因文本；`consequences`：`{ texte, chiffrage }`（文本、成本估算；
+  也接受纯字符串）。每项措施还带有 `barriere`
+  （`prevention` 或 `protection`），表示其在蝴蝶结分析图中的所属侧，以及 `efficacite`
+  （有效性，0 到 5）。`rang`（可选）保留在行动计划中通过拖拽
+  选定的位置；没有排名时，措施按延迟再按到期日期排序。
+- `velocite`：风险发生的速度（1 到 5，0 = 未评估），供矩阵中的
+  “大小 = 速度”选项使用。
+- `notes`：评审备注 `{ date, auteur, texte }`（日期、作者、文本）；`liens`：
+  文档和链接 `{ libelle, url }`（标签、URL）。
+- `settings.templates`：风险库中的“我的模板” `{ titre, description,
+  cotation, mesures }`。
+- `uid`：风险的稳定内部标识符（自动生成），用于
+  在重新编号后仍能跨评审追踪同一风险。
+- `kri`：关键风险指标 `{ id, nom, unite, sens, alerte, critique,
+  releves: [{ date, valeur, auteur }] }`（名称、单位、方向、预警和临界
+  阈值、读数）；`sens` 为 `hausse`（数值越高越差）或
+  `baisse`；最新读数决定状态（绿色，达到预警阈值为橙色，
+  达到临界阈值为红色）。
+- `cout`：成本估算 `{ min, probable, max, probabilite, sansProtection }` — 风险
+  发生时的成本（欧元，填一个值即可）及概率（%）；留空时，
+  概率由整改后的 P 评级推算（P1 至 P5：5、15、35、60、85%）。
+  `sansProtection`（可选）：若没有防护措施时风险发生的可能成本。
+- `revuLe` / `prochaineRevue`（可选，`YYYY-MM-DD`）：已声明的上次评审和
+  选定的下次评审；`settings.cadenceRevue`：每 N 天评审一次风险（默认 90 天）。
+- `journal`：变更记录 `{ id, date, auteur, uid, risque, champ, detail, avant,
+  apres }`，每次变更时自动填写（最多 2000 行）。
+  导出菜单中的“riskr-data.js · 不含日志”选项可在分享分析时
+  隐藏这些姓名和时间。
+- `reviews`：已冻结评审 `{ id, date, label, risks: [{ uid, id, title,
+  before, after }] }`，用于比较的带日期评级快照。
+- `statut` 为 `statusNotTreated`、`statusInProgress`、`statusTreated` 或
+  `statusAccepted`。
+- `traitement`（策略）为 `reduce`、`accept`、`transfer`、`avoid` 或 `''`
+  （未定义）；`assessmentTarget` 为目标评级 `[probability, impact]`
+  （`[0, 0]` = 未定义）。
+- `settings.riskAppetite`：可接受的最高分数（P × I，满分 25；`0` = 无）。
+  默认值为 9，略低于“高”阈值。在矩阵上以虚线表示；
+  超出该值的剩余风险会在登记册中被标记。
+- 编号（`1.1`、`1.2`……）遵循风险的位置，在每次新增、
+  删除或移动后重新计算。
+- 默认严重性阈值：低 1-4、中等 5-9、高 10-14、
+  严重 15-25。它们在各处生效（矩阵、徽章、表格），可在
+  `appState.criticalityThresholds` 中修改，例如
+  `{ medium: 5, high: 10, critical: 15 }`。
+- 一个组的平均值是其已评估风险的平均严重性，满分为 5，
+  与摘要表中一致。
+- 导入还支持较旧的格式：嵌套在组内的风险、旧版的双重评级
+  （`assessmentA*`/`assessmentB*`、`gcBefore`/`dtuBefore`……）、以文本表示的状态
+  （“En cours”……）。无效文件会被拒绝，且不会更改当前显示的分析。
+
+每个组还可以有两个供决策者阅读的摘要字段：
+
+- `assessmentNote`：该类别的简要解读；
+- `remediationNote`：预定的整改方向。
+
+Riskr 将这两段文本限制在 30 个词以内。引擎与不包含这两个字段的
+旧版数据文件保持兼容。
+
+## 🔌 100% 离线
+
+所有库（chart.js 4.4.0、jsPDF 2.5.1、jspdf-autotable 3.8.2、
+xlsx 0.18.5）都以内联方式打包进 HTML：不依赖任何 CDN，
+页面在完全无网络的情况下也能正常运行（单个文件约 2 MB）。
+
+## ✨ 功能
+
+### 标签式布局
+- **矩阵**（矩阵图、侧边面板、按组平均值、摘要表）、
+  **登记册**（紧凑表格、卡片或完整编辑）、**行动计划**、
+  **评审**、**委员会视图**、**设置**、**更新内容**（自首个版本以来的变更
+  历史，附带指向对应提交的链接）；所选标签会被记住并显示在
+  地址栏中（`riskr.html#revues`、`riskr.html#fiche:…`）；
+  浏览器的“后退 / 前进”按钮可在各标签或风险卡片之间切换，
+  而无需离开页面。点击矩阵单元格可筛选登记册和
+  侧边面板。
+- **风险卡片**（点击某个风险，地址为 `riskr.html#fiche:<uid>`）：
+  处理前 → 处理后 → 目标评级、处理策略、负责人、速度、关联的蝴蝶结分析图
+  （屏障有效性、后果成本估算）、评级趋势、评审备注、
+  文档和链接、“另存为模板”。
+- 旧版单页版本仍可通过 Git 标签 `v-une-page` 获取。
+
+### 风险管理
+- 对所有字段（标题、描述、类别）进行**内联编辑**
+- **新增/删除**风险和风险组
+- **拖拽排序**风险
+- 基于位置的**自动编号**（新增、删除、拖拽）
+- 带负责人、可选到期日期和状态
+  （待办、进行中、已完成）的**整改措施**；逾期日期以红色显示
+- **行动计划**：进度、按状态/负责人/到期日期分组的措施、
+  “我的措施”、预防/防护标签、逾期项优先显示、卡片
+  拖拽：列内顺序保留，可更改状态（状态视图）或负责人
+  （负责人视图）
+- **声明式身份**：右上角徽章（姓名首字母，每个姓名对应稳定颜色，
+  匿名时显示“—”）。姓名为可选项；在匿名状态下，会在每次
+  会话的首次修改时询问（仅浏览时不会询问）；该姓名保存在
+  浏览器中，用于签署变更记录，并预填备注和评审的作者。
+  没有任何验证：这是一种自我声明。
+- **变更记录**：谁在何时更改了什么（评级、处理策略、负责人、措施、
+  备注……），显示在风险卡片中，对整个分析而言则显示在
+  “评审”标签（“最新变更”）中；撤销操作也会移除相应的记录行
+- **关键风险指标（KRI）**：在风险卡片中，每个风险的量化指标，
+  带预警和临界阈值、带日期并签名的读数、迷你趋势图；
+  登记册中的“预警中的 KRI”计数器，委员会视图待决事项中的
+  临界 KRI
+- **成本估算与风险准备金**：卡片中每个风险的成本区间
+  （以及用于比较的加权成本），以及委员会视图（和 PDF）中的
+  **应预留金额**，分别在有措施和无措施两种情况下计算：其差额即为
+  行动计划带来的节省，前提是完成剩余措施。文本根据评级、
+  成本和措施自动生成，不含统计学术语：先是正常情形
+  （未发生重大风险），再针对每个重大风险给出其发生时的成本、
+  措施带来的效果（预防措施使概率从“3 次中 1 次”降为
+  “7 次中 1 次”，防护措施降低发生时的成本）及其进度。
+  基于 10000 次蒙特卡洛模拟计算（三角分布，结果稳定）
+- **不一致检测器**：当输入的概率超出 P 评级的区间、
+  成本按分析的欧元刻度（在“设置”标签中设置的
+  `settings.echelleImpact`）与影响评级不符、KRI 在评为
+  不太可能的风险上处于临界状态，或评级之间相互矛盾时，
+  会出现“待核实”提示（不会阻止任何操作）；登记册中有计数器
+  和筛选项，详情见风险卡片
+- **评审节奏**：每个风险都有下次评审时间（选定日期，
+  否则为上次评审加上在“设置”标签中设置的 30、60、90 或
+  180 天节奏，并在“评审”标签和卡片中回显）；卡片中的
+  “标记为已评审”；到期待评审的风险会被标记，并可在登记册中
+  筛选；提醒可导出为 `.ics`（Outlook、Google 日历、日历）
+- **合并两个文件**（导入菜单 ›“合并文件…”，JSON 或 `riskr-data.js`）：
+  轻量级多用户协作。风险按稳定标识符匹配；同一风险
+  在两边都有变更时，保留变更记录中最新变更时间更靠后的版本，
+  否则保留本地版本（并报告冲突）；备注、链接、
+  读数、评审和变更记录会去重合并。应用前会显示摘要以供确认，
+  且可撤销（Cmd+Z）
+- **随处可编辑负责人**：点击负责人徽章（登记册、行动计划、
+  卡片）会打开同一个带建议和徽章的选择器，也可以在其中
+  创建新的负责人
+- **评审**：带日期的评级快照（“记录新的评审”，作者或
+  委员会）、时间线、两次评审之间或某次评审与当前状态之间的
+  比较（计数器、按差异排序的变更）、按组划分的平均敞口曲线
+  以及每个风险的趋势
+- 每个风险的**处理策略**（降低、接受、转移、规避）和**目标评级**
+- **筛选**：搜索、组、剩余等级、处理策略、负责人、超出风险偏好的风险
+- 按主题**分类**为不同的组
+- 每个风险的**蝴蝶结分析图**：原因、预防屏障、危险事件、防护
+  屏障、后果（屏障即该风险的措施）
+- 内置**典型风险库**（离线，6 个主题，5 种语言，
+  含描述和典型评级）以及“我的模板”：只需几次点击即可添加，
+  可选择是否附带建议措施
+- **委员会视图**（标签）：单页摘要（指标、轨迹、剩余风险最高的
+  5 项、处理策略、按评审的敞口、待决事项），可复制到
+  Word 或 PowerPoint，也可导出为单页 PDF
+
+### 可视化
+- 基于 Chart.js 的**处理前/处理后矩阵**
+- **处理前、处理后、并排或轨迹矩阵**：在轨迹视图中，
+  每个风险从其处理前位置（空心气泡）移动到处理后位置
+  （实心气泡）
+- **某评审日期时的矩阵**：表头下方的时间线显示当前
+  状态（“自第 5 次评审以来的 1 项变更”）或任意历史评审，
+  只读；矩阵、面板和表格随之联动。委员会视图和 PDF 导出
+  始终保持在当前状态。
+- **显示选项**：矩阵下方的一行，每个选项都带有其图例
+  符号（每格计数、带在“设置”标签中设置等级的风险偏好、
+  以绿色菱形表示的目标、按速度决定的气泡大小，效果可在
+  “设置”中设为轻微、明显或强烈；悬停可查看说明）
+- **侧边面板**：所点击单元格中的风险，以及超出风险偏好的风险
+- **目标**：蓝色菱形徽章 = 已达成目标；带绿色轮廓的白色菱形，
+  位于其评级处 = 目标方向，尚未达成
+- 以虚线表示的**风险偏好**，**每格风险数量**
+  （显示选项），点击某单元格可筛选登记册
+- 整改影响的对比视图
+- 按风险组划分的平均值
+- 按组划分的摘要解读与整改方向
+- 带颜色代码的交互式图例
+- 将摘要表复制到 Word，保留评级颜色
+- 将某个矩阵（标题、矩阵图和图例）复制为图片，粘贴到其他地方
+
+### 历史记录
+- 最多 50 步的**撤销/重做**（Mac 为 Cmd+Z / Cmd+Y，Windows/Linux 为 Ctrl+Z / Ctrl+Y）
+- 每次变更（评级、文本、状态、新增、删除、移动、导入）都会被记录
+
+### 数据持久化
+- **保存到文件**：在 Chrome/Edge 中，点击一次“保存到文件”后，
+  之后每次变更都会自动写入 `riskr-data.js`（若分析来自私密文件，
+  则写入 `riskr-data.local.js`）。在 Firefox/Safari 中，“保存”按钮
+  会下载文件，用于替换 `riskr.html` 旁的原文件。有一个指示器
+  显示保存状态，若有未保存的变更，关闭页面时会要求确认。
+- **本地存储（localStorage）**：整个分析在每次变更时也会保存在
+  浏览器中，并在重新加载时恢复
+- 若在两次打开之间 `riskr-data.js` 发生了变化，**文件优先生效**，
+  浏览器中所做的变更将被丢弃（会有提示信息）：请在替换文件前
+  先导出
+- **JSON 导出/导入**，用于分享和备份
+- 无需任何服务器连接
+
+### 界面
+- 适配移动端、平板和桌面的**响应式设计**
+- 便于浏览的**可折叠区块**
+- 带视觉反馈的流畅**内联编辑**
+- **浅色和深色主题**：跟随系统设置，也可用太阳/月亮
+  图标切换（偏好保存在浏览器中）。图片复制和 PDF 始终保持
+  浅色版本
+- **图标式命令**（导入、导出、保存、语言、主题），提示文字显示为悬浮提示
+- **5 种语言**：法语、英语、西班牙语、阿拉伯语（从右到左）和中文。
+  PDF 中阿拉伯语和中文使用英文显示（jsPDF 拉丁字体所限）
+
+## 🚀 使用方法
+
+**Riskr 是一个单页应用**——单个自包含的 HTML 文件。
+
+1. 下载 `riskr.html`
+2. 在浏览器中打开该文件
+3. 就是这样！无需安装
+
+## 🛠️ 技术栈
+
+### 前端
+- **HTML5** - 语义化结构
+- **CSS3** - 使用 flexbox/grid 的现代样式
+- **JavaScript (ES6+)** - 原生 JS，不依赖任何框架
+
+### 库
+- **Chart.js** - 风险矩阵可视化
+- 无其他外部依赖
+
+### 持久化
+- **localStorage** - 原生浏览器存储，按分析隔离
+- 导入/导出使用 JSON 格式
+
+### 架构
+- **单页应用** - 所有内容都在单个 HTML 文件中
+- 无需构建或打包工具
+- 加载完成后可离线使用
+
+## 📄 许可证
+
+本项目基于 **GNU Affero 通用公共许可证 v3.0（AGPL-3.0）** 授权。
+
+### 许可证摘要
+- ✅ 可自由使用、修改和分发
+- ✅ 源代码公开且可修改
+- ⚠️ **对 SaaS 的重要提示**：如果你在可通过网络访问的服务器上运行 Riskr（SaaS 方式），必须向用户提供修改后的源代码
+
+详情请见 [LICENSE](LICENSE) 文件。
+
+## 🤝 贡献
+
+欢迎贡献！
+
+1. Fork 本项目
+2. 为你的功能创建一个分支（`git checkout -b feature/AmazingFeature`）
+3. 提交你的更改（`git commit -m 'Add some AmazingFeature'`）
+4. 推送到该分支（`git push origin feature/AmazingFeature`）
+5. 发起一个 Pull Request
+
+## 📞 支持
+
+如有任何问题或建议：
+- 提交一个 [issue](https://github.com/guthubrx/Riskr/issues)
+- 查看源代码中的文档
+
+---
+
+© 2025 Riskr — 风险分析与风险地图绘制应用
