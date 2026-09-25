@@ -8,6 +8,41 @@
 
 **Riskr** est une application web one-page complète pour l'analyse et la gestion des risques. Elle permet de visualiser l'évolution des risques avant et après la mise en place de mesures de remédiation, à travers des matrices interactives et des tableaux détaillés.
 
+## 🖼️ Captures d'écran
+
+Captures réalisées avec les données de démonstration de `riskr-data.js`,
+entièrement fictives (projet imaginaire de modernisation d'un système d'information).
+
+**Matrices** : trajectoire avant → après, cible (pastille en losange bleu = cible
+atteinte, losange blanc = cible visée), appétence, état à la date d'une revue.
+
+![Matrices : trajectoire des risques, options d'affichage et risques au-dessus de l'appétence](docs/captures/matrices.png)
+
+![Matrice après remédiation par groupe, cibles atteintes en losange bleu](docs/captures/matrices-groupes.png)
+
+**Registre** : cotations avant → après · cible, tendance sur les revues, traitement,
+porteur, prochaine échéance et mesures.
+
+![Registre des risques](docs/captures/registre.png)
+
+**Fiche du risque** : nœud papillon (causes, barrières et leur efficacité,
+conséquences chiffrées), évolution de la cotation, notes de revue, pièces et liens.
+
+![Fiche d'un risque avec son nœud papillon](docs/captures/fiche.png)
+
+**Plan d'actions** : mesures par état, porteur ou échéance, retards en évidence.
+
+![Plan d'actions](docs/captures/plan-actions.png)
+
+**Revues** : frise des revues figées, comparaison au choix, changements de
+cotation et exposition moyenne par groupe.
+
+![Revues et comparaison](docs/captures/revues.png)
+
+**Vue comité** : synthèse d'une page, copiable dans Word ou PowerPoint et exportable en PDF.
+
+![Vue comité](docs/captures/comite.png)
+
 ## 📦 Données séparées (riskr-data.js)
 
 Les données vivent dans `riskr-data.js` (format `window.RISKR_DATA`), chargé
