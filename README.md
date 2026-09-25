@@ -133,9 +133,12 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   (« 1 changement depuis la revue n°5 ») ou n'importe quelle revue passée, en
   lecture seule ; matrices, panneau et tableaux suivent. La vue comité et l'export
   PDF restent sur l'état actuel.
-- **Panneau latéral** : options (nombre par case, appétence, cible en losange vert,
-  taille des bulles selon la vélocité), légende, risques de la case cliquée,
-  risques au-dessus de l'appétence
+- **Panneau latéral** : une carte compacte « Affichage » où chaque option porte son
+  symbole de légende (nombre par case, appétence, cible en losange vert, taille des
+  bulles selon la vélocité ; explication au survol) et le seuil d'appétence, puis les
+  risques de la case cliquée et ceux au-dessus de l'appétence
+- **Cible** : bulle au centre de son losange vert = cible atteinte ; losange seul, à
+  sa cotation = cible pas encore atteinte
 - **Appétence au risque** tracée en pointillé, **nombre de risques par case**
   (options d'affichage), clic sur une case pour filtrer le registre
 - Visualisation comparative de l'impact des remédiations

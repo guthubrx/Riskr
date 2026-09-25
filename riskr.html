@@ -1624,19 +1624,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .option-chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
         .option-chip {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px;
+            padding: 5px 10px;
             border: none;
             border-radius: 8px;
             background: var(--surface-2);
             color: var(--text-2);
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
         }
 
@@ -1646,41 +1646,49 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             font-weight: 500;
         }
 
-        .option-chip .icon {
+        .option-chip svg,
+        .legend-inline svg {
+            flex-shrink: 0;
             width: 14px;
             height: 14px;
         }
 
+        .option-chip:not(.on) svg {
+            opacity: 0.5;
+        }
+
         .panel-appetite {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 8px;
-            margin-top: 12px;
-            font-size: 13px;
+            gap: 6px 10px;
+            margin-top: 10px;
+            font-size: 12px;
             color: var(--text-2);
         }
 
-        .legend-list {
+        .panel-appetite .segmented-btn {
+            height: 24px;
+            font-size: 12px;
+        }
+
+        /* Légende de la trajectoire : une ligne, explications au survol */
+        .legend-inline {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 0;
+            flex-wrap: wrap;
+            gap: 4px 14px;
+            margin: 0 0 10px;
             padding: 0;
             list-style: none;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-2);
         }
 
-        .legend-list li {
-            display: flex;
+        .legend-inline li {
+            display: inline-flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .legend-list svg {
-            flex-shrink: 0;
-            width: 24px;
-            height: 24px;
+            gap: 6px;
+            cursor: help;
         }
 
         .panel-hint {
@@ -6494,7 +6502,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 viewRisksShort: "Risques",
                 viewGroupsShort: "Groupes",
                 panelDisplay: "Affichage",
-                panelLegend: "Légende",
                 optionCounts: "Nombre par case",
                 optionAppetite: "Appétence",
                 optionTarget: "Cible",
@@ -6502,8 +6509,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendBefore: "Position avant remédiation (inhérent)",
                 legendAfter: "Position après remédiation (résiduel)",
                 legendArrow: "Effet des mesures : plus la flèche est longue, plus la réduction est forte",
+                legendArrowShort: "Effet des mesures",
                 legendAppetite: "Frontière d’appétence : au-delà, le risque doit être traité ou accepté formellement",
-                legendTarget: "Cotation cible",
+                legendTarget: "Cotation cible : bulle au centre de son losange = cible atteinte ; losange seul = cible pas encore atteinte",
                 legendVelocity: "Taille de la bulle : vélocité (vitesse de survenue, 1 à 5)",
                 selectedCell: "Case sélectionnée · P{p} × I{i} ({score}, {level})",
                 selectedCellHint: "Un clic sur une case filtre le registre et ce panneau.",
@@ -6856,7 +6864,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 viewRisksShort: "Risks",
                 viewGroupsShort: "Groups",
                 panelDisplay: "Display",
-                panelLegend: "Legend",
                 optionCounts: "Count per cell",
                 optionAppetite: "Appetite",
                 optionTarget: "Target",
@@ -6864,8 +6871,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendBefore: "Position before remediation (inherent)",
                 legendAfter: "Position after remediation (residual)",
                 legendArrow: "Effect of the measures: the longer the arrow, the stronger the reduction",
+                legendArrowShort: "Effect of the measures",
                 legendAppetite: "Appetite boundary: beyond it, the risk must be treated or formally accepted",
-                legendTarget: "Target rating",
+                legendTarget: "Target rating: bubble centred in its diamond = target reached; diamond alone = target not reached yet",
                 legendVelocity: "Bubble size: velocity (speed of onset, 1 to 5)",
                 selectedCell: "Selected cell · P{p} × I{i} ({score}, {level})",
                 selectedCellHint: "Clicking a cell filters the register and this panel.",
@@ -7218,7 +7226,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 viewRisksShort: "Riesgos",
                 viewGroupsShort: "Grupos",
                 panelDisplay: "Visualización",
-                panelLegend: "Leyenda",
                 optionCounts: "Número por casilla",
                 optionAppetite: "Apetito",
                 optionTarget: "Objetivo",
@@ -7226,8 +7233,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendBefore: "Posición antes de la remediación (inherente)",
                 legendAfter: "Posición después de la remediación (residual)",
                 legendArrow: "Efecto de las medidas: cuanto más larga la flecha, mayor la reducción",
+                legendArrowShort: "Efecto de las medidas",
                 legendAppetite: "Frontera de apetito: más allá, el riesgo debe tratarse o aceptarse formalmente",
-                legendTarget: "Calificación objetivo",
+                legendTarget: "Calificación objetivo: burbuja en el centro de su rombo = objetivo alcanzado; rombo solo = objetivo aún no alcanzado",
                 legendVelocity: "Tamaño de la burbuja: velocidad (rapidez de aparición, 1 a 5)",
                 selectedCell: "Casilla seleccionada · P{p} × I{i} ({score}, {level})",
                 selectedCellHint: "Un clic en una casilla filtra el registro y este panel.",
@@ -7580,7 +7588,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 viewRisksShort: "风险",
                 viewGroupsShort: "组",
                 panelDisplay: "显示",
-                panelLegend: "图例",
                 optionCounts: "每格数量",
                 optionAppetite: "风险偏好",
                 optionTarget: "目标",
@@ -7588,8 +7595,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendBefore: "处理前位置（固有）",
                 legendAfter: "处理后位置（剩余）",
                 legendArrow: "措施效果：箭头越长，降低越多",
+                legendArrowShort: "措施效果",
                 legendAppetite: "风险偏好边界：超出后必须处理或正式接受风险",
-                legendTarget: "目标评级",
+                legendTarget: "目标评级：气泡位于菱形中央 = 已达目标；单独的菱形 = 尚未达到目标",
                 legendVelocity: "气泡大小：速度（发生速度，1 至 5）",
                 selectedCell: "所选格 · P{p} × I{i}（{score}，{level}）",
                 selectedCellHint: "点击某格会筛选登记册和此面板。",
@@ -7942,7 +7950,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 viewRisksShort: "المخاطر",
                 viewGroupsShort: "المجموعات",
                 panelDisplay: "العرض",
-                panelLegend: "مفتاح الرموز",
                 optionCounts: "العدد في كل خانة",
                 optionAppetite: "التقبّل",
                 optionTarget: "المستهدف",
@@ -7950,8 +7957,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 legendBefore: "الموضع قبل المعالجة (الخطر الأصلي)",
                 legendAfter: "الموضع بعد المعالجة (الخطر المتبقي)",
                 legendArrow: "أثر الإجراءات: كلما طال السهم زاد الخفض",
+                legendArrowShort: "أثر الإجراءات",
                 legendAppetite: "حد التقبّل: بعده يجب معالجة الخطر أو قبوله رسميًا",
-                legendTarget: "التقييم المستهدف",
+                legendTarget: "التقييم المستهدف: فقاعة في وسط معيّنها = تم بلوغ الهدف؛ معيّن وحده = لم يُبلغ الهدف بعد",
                 legendVelocity: "حجم الفقاعة: السرعة (سرعة الوقوع، من 1 إلى 5)",
                 selectedCell: "الخانة المحددة · P{p} × I{i} ({score}، {level})",
                 selectedCellHint: "النقر على خانة يصفّي السجل وهذه اللوحة.",
@@ -9894,6 +9902,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     ctx.shadowBlur = light ? 0 : 4;
                     ctx.fillStyle = dataset.target ? TARGET_COLOR : dataset.hollow ? BUBBLE_COLOR : 'white';
                     dataset.data.forEach(point => {
+                        if (point.bubble) return; // cible atteinte : le numéro est dans la bulle
                         // La police suit la taille de la bulle : le numéro n'est jamais coupé
                         ctx.font = `bold ${Math.max(6, Math.round(fontSize * (point.scale ?? 1) * (dataset.target ? 0.8 : 1)))}px Arial`;
                         ctx.fillText(point.shortLabel, x.getPixelForValue(point.x), y.getPixelForValue(point.y));
@@ -10015,23 +10024,45 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             })).filter(Boolean);
         }
 
+        // Cible atteinte (même cotation que sa bulle « après ») : le losange n'est pas rangé comme une bulle,
+        // il est posé agrandi derrière sa bulle (cf. frameReachedTargets) — bulle au centre de son losange =
+        // cible atteinte. Renvoie les cibles non atteintes, rangées à leur cotation. Complexité : O(n)
+        const TARGET_FRAME = 1.6; // losange (sommets à 1,6 rayon) qui entoure entièrement la bulle
+        function pendingTargets(after, targets) {
+            const bubbles = new Map(after.map(point => [point.shortLabel, point]));
+            return targets.filter(target => {
+                const bubble = bubbles.get(target.shortLabel);
+                if (bubble && bubble.baseX === target.baseX && bubble.baseY === target.baseY) target.bubble = bubble;
+                return !target.bubble;
+            });
+        }
+
+        // Après le rangement : chaque cible atteinte suit sa bulle. Complexité : O(n)
+        function frameReachedTargets(targets) {
+            targets.forEach(target => {
+                if (target.bubble) Object.assign(target, { x: target.bubble.x, y: target.bubble.y, scale: target.bubble.scale * TARGET_FRAME });
+            });
+        }
+
         // Jeux de données d'une matrice 'before' ou 'after', bulles rangées sans chevauchement
         function matrixChartData(type) {
-            const target = () => matrixOptions.target ? [{ data: matrixPoints('Target'), phase: 'Target', target: true }] : [];
+            const targets = matrixOptions.target && type !== 'before' ? matrixPoints('Target') : [];
+            const extra = targets.length ? [{ data: targets, phase: 'Target', target: true }] : [];
             if (type === 'trajectory') {
                 // Avant et après sur la même matrice : bulles rangées ensemble, sans chevauchement
-                const before = matrixPoints('Before'), after = matrixPoints('After'), extra = target();
-                const all = [...before, ...after, ...extra.flatMap(dataset => dataset.data)];
+                const before = matrixPoints('Before'), after = matrixPoints('After');
+                const all = [...before, ...after, ...pendingTargets(after, targets)];
                 const bubble = bubbleRatios(all);
                 resolveCollisions(all, bubble.radius * 2);
+                frameReachedTargets(targets);
                 return { bubble, datasets: [{ data: before, phase: 'Before', hollow: true }, { data: after, phase: 'After', main: true }, ...extra] };
             }
             const phase = type === 'before' ? 'Before' : 'After';
             const data = matrixPoints(phase);
-            const extra = phase === 'After' ? target() : [];
-            const all = [...data, ...extra.flatMap(dataset => dataset.data)];
+            const all = [...data, ...pendingTargets(data, targets)];
             const bubble = bubbleRatios(all);
             resolveCollisions(all, bubble.radius * 2);
+            frameReachedTargets(targets);
             return { bubble, datasets: [{ data, phase, main: true }, ...extra] };
         }
 
@@ -10042,10 +10073,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 data: {
                     datasets: datasets.map(({ data, phase, hollow = false, main = false, target = false }) => ({
                         data, phase, hollow, main, target, bubble,
-                        // creuse ou cible : fond blanc, lisible dans les deux thèmes
-                        backgroundColor: hollow || target ? '#ffffff' : BUBBLE_COLOR,
+                        // creuse ou cible : fond blanc, lisible dans les deux thèmes ; cible atteinte : contour seul
+                        backgroundColor: target ? context => context.raw?.bubble ? 'transparent' : '#ffffff' : hollow ? '#ffffff' : BUBBLE_COLOR,
                         borderColor: target ? TARGET_COLOR : hollow ? BUBBLE_COLOR : 'white',
                         borderWidth: hollow || target ? 2 : 1.5,
+                        order: target ? 1 : 0, // cibles dessinées sous les bulles
                         pointRadius: bubbleRadius,
                         pointHoverRadius: context => bubbleRadius(context) * 1.1,
                         pointStyle: target ? 'rectRot' : 'circle'
@@ -10706,19 +10738,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderMatrixPanel() {
             const panel = document.getElementById('matrix-panel');
             if (!panel) return;
-            const chip = (name, label) => `<button type="button" class="option-chip${matrixOptions[name] ? ' on' : ''}" aria-pressed="${matrixOptions[name]}" onclick="toggleMatrixOption('${name}')">${matrixOptions[name] ? icon('check') : ''}${label}</button>`;
+            // Options et légende réunies : chaque option porte son symbole, l'explication est au survol
+            const svg = inner => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
+            const chip = (name, label, symbol, tip) => `<button type="button" class="option-chip${matrixOptions[name] ? ' on' : ''}" aria-pressed="${matrixOptions[name]}"
+                ${tip ? `data-tip="${escapeHtml(t(tip))}"` : ''} onclick="toggleMatrixOption('${name}')">${svg(symbol)}${t(label)}</button>`;
             const levels = [[CRITICALITY_THRESHOLDS.medium - 1, 'critLow'], [CRITICALITY_THRESHOLDS.high - 1, 'critMedium'],
                 [CRITICALITY_THRESHOLDS.critical - 1, 'critHigh'], [0, 'appetiteNone']];
-            const svg = inner => `<svg viewBox="0 0 24 24" aria-hidden="true">${inner}</svg>`;
-            const legend = [
-                matrixLayout === 'trajectory' || matrixLayout === 'before' || matrixLayout === 'split'
-                    ? [svg(`<circle cx="12" cy="12" r="9" fill="${matrixLayout === 'trajectory' ? '#fff' : BUBBLE_COLOR}" stroke="${BUBBLE_COLOR}" stroke-width="2"/>`), 'legendBefore'] : null,
-                matrixLayout !== 'before' ? [svg(`<circle cx="12" cy="12" r="9" fill="${BUBBLE_COLOR}"/>`), 'legendAfter'] : null,
-                matrixLayout === 'trajectory' ? [svg(`<path d="M2 12h17M14 7l5 5-5 5" fill="none" stroke="${BUBBLE_COLOR}" stroke-width="2"/>`), 'legendArrow'] : null,
-                matrixOptions.target ? [svg(`<rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)" fill="#fff" stroke="${TARGET_COLOR}" stroke-width="2"/>`), 'legendTarget'] : null,
-                matrixOptions.appetite && settings.riskAppetite ? [svg('<path d="M1 12h22" stroke="currentColor" stroke-width="2.5" stroke-dasharray="4 3"/>'), 'legendAppetite'] : null,
-                matrixOptions.velocity ? [svg(`<circle cx="7" cy="14" r="4" fill="${BUBBLE_COLOR}"/><circle cx="17" cy="12" r="6.5" fill="${BUBBLE_COLOR}"/>`), 'legendVelocity'] : null
-            ].filter(Boolean);
+            // Avant (creuse), après (pleine) et flèche : seulement en trajectoire, où les deux se côtoient
+            const legend = matrixLayout !== 'trajectory' ? [] : [
+                [`<circle cx="12" cy="12" r="8" fill="#fff" stroke="${BUBBLE_COLOR}" stroke-width="2.5"/>`, 'modeBefore', 'legendBefore'],
+                [`<circle cx="12" cy="12" r="9" fill="${BUBBLE_COLOR}"/>`, 'modeAfter', 'legendAfter'],
+                [`<path d="M2 12h17M14 7l5 5-5 5" fill="none" stroke="${BUBBLE_COLOR}" stroke-width="2.5"/>`, 'legendArrowShort', 'legendArrow']
+            ];
 
             const riskRow = risk => `<div class="panel-risk" data-risk-uid="${escapeHtml(risk.uid)}" title="${t('openRiskSheet')}">
                 <span class="id-bubble">${escapeHtml(risk.id)}</span><span>${escapeHtml(risk.title)}</span>
@@ -10734,13 +10765,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             panel.innerHTML = `
                 <section class="panel-card"><h3>${t('panelDisplay')}</h3>
-                    <div class="option-chips">${chip('counts', t('optionCounts'))}${chip('appetite', t('optionAppetite'))}${chip('target', t('optionTarget'))}${chip('velocity', t('optionVelocity'))}</div>
-                    <label class="panel-appetite">${t('appetiteLabel')}
-                        <select class="filter-select" onchange="setRiskAppetite(Number(this.value))">${levels.map(([max, key]) =>
-                            `<option value="${max}" ${settings.riskAppetite === max ? 'selected' : ''}>${t(key)}${max ? ` (≤ ${max})` : ''}</option>`).join('')}</select></label>
-                </section>
-                <section class="panel-card"><h3>${t('panelLegend')}</h3>
-                    <ul class="legend-list">${legend.map(([symbol, key]) => `<li>${symbol}${t(key)}</li>`).join('')}</ul>
+                    ${legend.length ? `<ul class="legend-inline">${legend.map(([symbol, label, tip]) =>
+                        `<li data-tip="${escapeHtml(t(tip))}">${svg(symbol)}${t(label)}</li>`).join('')}</ul>` : ''}
+                    <div class="option-chips">
+                        ${chip('counts', 'optionCounts', '<rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><text x="15" y="12" font-size="9" font-weight="700" font-family="Arial" text-anchor="middle" fill="currentColor">3</text>')}
+                        ${chip('appetite', 'optionAppetite', '<path d="M1 12h22" stroke="currentColor" stroke-width="2.5" stroke-dasharray="4 3"/>', 'legendAppetite')}
+                        ${chip('target', 'optionTarget', `<rect x="6" y="6" width="12" height="12" transform="rotate(45 12 12)" fill="none" stroke="${TARGET_COLOR}" stroke-width="2.5"/>`, 'legendTarget')}
+                        ${chip('velocity', 'optionVelocity', `<circle cx="7" cy="14" r="4" fill="currentColor"/><circle cx="17" cy="12" r="6.5" fill="currentColor"/>`, 'legendVelocity')}
+                    </div>
+                    <div class="panel-appetite"><span>${t('appetiteLabel')}</span>
+                        <div class="segmented labeled" role="radiogroup" aria-label="${escapeHtml(t('appetiteLabel'))}">${levels.map(([max, key]) =>
+                            `<button type="button" class="segmented-btn${settings.riskAppetite === max ? ' active' : ''}" role="radio" aria-checked="${settings.riskAppetite === max}"
+                                ${max ? `data-tip="≤ ${max}"` : ''} onclick="setRiskAppetite(${max})">${t(key)}</button>`).join('')}</div></div>
                 </section>
                 <section class="panel-card"><h3>${cell ? t('selectedCell', { p: cell.p, i: cell.i, score: cellScore, level: t(FILTER_LEVELS[getCriticalityLevel(cellScore)]).toLocaleLowerCase() })
                         : t('selectedCell', {}).split(' · ')[0]}</h3>
@@ -10855,9 +10891,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const before = matrixPoints('Before');
             const after = matrixPoints('After');
             const target = matrixOptions.target ? matrixPoints('Target') : [];
-            const bubble = bubbleRatios(before, [...after, ...target]);
+            const afterAll = [...after, ...pendingTargets(after, target)];
+            const bubble = bubbleRatios(before, afterAll);
             resolveCollisions(before, bubble.radius * 2);
-            resolveCollisions([...after, ...target], bubble.radius * 2);
+            resolveCollisions(afterAll, bubble.radius * 2);
+            frameReachedTargets(target);
 
             chartBefore = createRiskChart(document.getElementById('chartBefore'), [{ data: before, phase: 'Before', main: true }], bubble);
             chartAfter = createRiskChart(document.getElementById('chartAfter'),
