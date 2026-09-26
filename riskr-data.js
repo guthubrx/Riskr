@@ -25,6 +25,20 @@ window.RISKR_DATA = {
         2,
         2
       ],
+      "assessmentCurrent": [
+        2,
+        3
+      ],
+      "kind": "threat",
+      "event": "Un arbitrage tardif reporte une décision structurante.",
+      "objective": "Respecter les jalons et limiter les reprises de travaux.",
+      "raisedAt": "2026-01-15",
+      "raisedBy": "Direction de projet",
+      "proximityDate": "2026-10-15",
+      "milestone": "Validation de la feuille de route",
+      "impactAxes": { "cost": 3, "delay": 3, "quality": 1, "service": 1, "benefit": 2 },
+      "decisions": [{ "id": "demo-decision-1", "date": "2026-09-22", "author": "Comité de pilotage", "type": "moreAction",
+        "reason": "Conserver un suivi renforcé jusqu'à la validation du tableau de bord.", "reviewDate": "2026-11-15", "scoreAtDecision": 6 }],
       "assessmentTarget": [
         2,
         2
@@ -53,6 +67,7 @@ window.RISKR_DATA = {
           "porteur": "Direction de projet",
           "echeance": "31/03/2026",
           "etat": "done",
+          "verification": "Compte rendu du comité du 16/03/2026.",
           "barriere": "prevention",
           "efficacite": 4
         },
@@ -788,6 +803,26 @@ window.RISKR_DATA = {
         "probable": 100000,
         "max": 800000
       }
+    },
+    {
+      "uid": "demo-1-3",
+      "id": "1.3",
+      "title": "Adoption plus rapide que prévu des nouveaux outils",
+      "kind": "opportunity",
+      "event": "Les équipes adoptent les nouveaux outils avant le jalon prévu.",
+      "objective": "Accélérer la valeur obtenue par les utilisateurs.",
+      "assessmentBefore": [2, 3],
+      "assessmentCurrent": [3, 3],
+      "assessmentAfter": [4, 4],
+      "assessmentTarget": [4, 4],
+      "impactAxes": { "cost": 1, "delay": 2, "quality": 2, "service": 3, "benefit": 4 },
+      "traitement": "enhance",
+      "lifecycle": "active",
+      "responsable": "Direction de projet",
+      "causes": ["Formation pilote bien accueillie"],
+      "consequences": [{ "texte": "Bénéfices d'usage obtenus plus tôt", "chiffrage": "" }],
+      "mesures": [{ "texte": "Étendre le parcours pilote aux autres équipes.", "porteur": "PMO", "echeance": "2026-12-15", "etat": "todo", "barriere": "prevention", "efficacite": 3 }],
+      "notes": [], "liens": [], "kri": [], "cout": {}
     }
   ],
   "riskGroups": [
@@ -800,7 +835,8 @@ window.RISKR_DATA = {
       "color": "#2E86C1",
       "riskIds": [
         "1.1",
-        "1.2"
+        "1.2",
+        "1.3"
       ]
     },
     {

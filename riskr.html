@@ -6753,6 +6753,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Export Excel (XLSX) avec SheetJS
         // ========================================
 
+        const riskExportHeaders = () => [t('colCurrentShort'), t('colForecastShort'), t('riskKind'), t('riskLifecycle'),
+            t('riskEvent'), t('riskObjective'), t('riskRaisedAt'), t('riskRaisedBy'), t('riskProximity'), t('riskMilestone'),
+            t('riskImpactAxes'), t('riskLifeDate'), t('riskLifeReason'), t('riskTransferOwner'), t('riskIssue'), t('riskDecisions')];
+        const riskExportValues = risk => [scoreOf(currentAssessment(risk)), scoreOf(risk.assessmentAfter), t(risk.kind === 'opportunity' ? 'riskOpportunity' : 'riskThreat'),
+            t(`lifecycle_${risk.lifecycle}`), risk.event, risk.objective, risk.raisedAt, risk.raisedBy, risk.proximityDate, risk.milestone,
+            IMPACT_AXES.map(axis => `${t(`impact_${axis}`)}: ${risk.impactAxes[axis]}`).join(' · '), risk.lifeDate, risk.lifeReason,
+            risk.transferOwner, risk.issue.description,
+            risk.decisions.map(decision => `${decision.date} · ${decision.author} · ${t(`decision_${decision.type}`)} · ${decision.reason} · ${decision.reviewDate}`).join(' | ')];
+
         function exportToExcel() {
             const wb = XLSX.utils.book_new();
 
@@ -6761,7 +6770,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const sheetData = [];
 
                 // En-têtes
-                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget')]);
+                sheetData.push(['#', t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget'), ...riskExportHeaders()]);
 
                 // Données des risques
                 group.risks.forEach(risk => {
@@ -6792,7 +6801,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         risk.statut ? t(risk.statut) : '',
                         risk.responsable || '',
                         treatmentLabel(risk.traitement),
-                        calculateCriticality(...risk.assessmentTarget) || ''
+                        calculateCriticality(...risk.assessmentTarget) || '',
+                        ...riskExportValues(risk)
                     ]);
                 });
 
@@ -6836,7 +6846,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             let csvContent = '';
 
             // En-têtes CSV
-            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget')].join(',') + '\n';
+            csvContent += ['#', t('colGroup'), t('colRisk'), t('colRemediations'), ...t('exportColumns').split('|'), t('colReduction'), t('colStatus'), t('colResponsible'), t('colTreatment'), t('colTarget'), ...riskExportHeaders()].join(',') + '\n';
 
             // Données
             riskGroups.forEach(group => {
@@ -6878,7 +6888,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         escapeCSV(risk.statut ? t(risk.statut) : ''),
                         escapeCSV(risk.responsable || ''),
                         escapeCSV(treatmentLabel(risk.traitement)),
-                        calculateCriticality(...risk.assessmentTarget) || ''
+                        calculateCriticality(...risk.assessmentTarget) || '',
+                        ...riskExportValues(risk).map(escapeCSV)
                     ].join(',') + '\n';
                 });
             });
@@ -9653,6 +9664,110 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
         };
 
+        // Libellés des capacités de gouvernance introduites après les cinq dictionnaires historiques.
+        Object.assign(translations.fr, {
+            scoresFour: 'Inhérent → actuel → prévision → cible', colCurrentShort: 'Actuel', colForecastShort: 'Prévision',
+            notionCurrent: 'Situation constatée à la dernière revue. Les actions non terminées ne réduisent pas cette cotation.',
+            riskGovernance: 'Qualification et gouvernance', currentReviewNeeded: 'Cotation actuelle provisoire : confirmez-la à la prochaine revue.',
+            riskKind: 'Nature', riskThreat: 'Menace', riskOpportunity: 'Opportunité', riskLifecycle: 'État de vie',
+            lifecycle_active: 'Actif', lifecycle_materialized: 'Survenu', lifecycle_closed: 'Clos', lifecycle_transferred: 'Transféré',
+            riskRaisedAt: 'Déclaré le', riskRaisedBy: 'Déclaré par', riskProximity: 'Date probable de survenue', riskMilestone: 'Jalon lié',
+            riskLifeDate: 'Date du changement', riskTransferOwner: 'Responsable destinataire', riskEvent: 'Événement incertain',
+            riskObjective: 'Objectif concerné', riskLifeReason: 'Motif de clôture ou transfert', riskImpactAxes: 'Impacts par objectif (0 à 5)',
+            impact_cost: 'Coût', impact_delay: 'Délai', impact_quality: 'Qualité', impact_service: 'Service', impact_benefit: 'Bénéfice',
+            riskIssue: 'Problème survenu', riskIssueDescription: 'Description', riskIssueOwner: 'Responsable', riskIssueStatus: 'État',
+            issueOpen: 'Ouvert', issueResolved: 'Résolu', riskDecisions: 'Décisions formelles', noDecisions: 'Aucune décision',
+            decision_accept: 'Accepter', decision_reject: 'Refuser', decision_moreAction: 'Action supplémentaire',
+            decisionReason: 'Motif', decisionReviewDate: 'Date de réexamen',
+            decisionRequired: 'Indiquez un décideur et un motif. Une acceptation exige une date de réexamen.',
+            treatEscalate: 'Escalader', treatExploit: 'Exploiter', treatEnhance: 'Renforcer', treatShare: 'Partager',
+            mesureVerification: 'Preuve de vérification', provisionCurrent: 'Situation actuelle',
+            provisionForecast: 'Prévision après actions : {amount}', provisionUncosted: '{count} risques actifs sans coût estimé',
+            provisionAssumption: 'Simulation P80 indicative : risques supposés indépendants, coûts triangulaires.',
+            provisionPdfCurrent: '{amount} à prévoir actuellement ; {forecast} prévus après actions'
+        });
+        Object.assign(translations.en, {
+            scoresFour: 'Inherent → current → forecast → target', colCurrentShort: 'Current', colForecastShort: 'Forecast',
+            notionCurrent: 'Observed position at the last review. Unfinished actions do not reduce this rating.',
+            riskGovernance: 'Assessment and governance', currentReviewNeeded: 'Current rating is provisional: confirm it at the next review.',
+            riskKind: 'Kind', riskThreat: 'Threat', riskOpportunity: 'Opportunity', riskLifecycle: 'Lifecycle',
+            lifecycle_active: 'Active', lifecycle_materialized: 'Occurred', lifecycle_closed: 'Closed', lifecycle_transferred: 'Transferred',
+            riskRaisedAt: 'Raised on', riskRaisedBy: 'Raised by', riskProximity: 'Likely occurrence date', riskMilestone: 'Related milestone',
+            riskLifeDate: 'Change date', riskTransferOwner: 'Receiving owner', riskEvent: 'Uncertain event',
+            riskObjective: 'Affected objective', riskLifeReason: 'Closure or transfer reason', riskImpactAxes: 'Impacts by objective (0 to 5)',
+            impact_cost: 'Cost', impact_delay: 'Schedule', impact_quality: 'Quality', impact_service: 'Service', impact_benefit: 'Benefit',
+            riskIssue: 'Occurred issue', riskIssueDescription: 'Description', riskIssueOwner: 'Owner', riskIssueStatus: 'Status',
+            issueOpen: 'Open', issueResolved: 'Resolved', riskDecisions: 'Formal decisions', noDecisions: 'No decision',
+            decision_accept: 'Accept', decision_reject: 'Reject', decision_moreAction: 'Further action',
+            decisionReason: 'Reason', decisionReviewDate: 'Review date',
+            decisionRequired: 'Enter a decision maker and a reason. Acceptance requires a review date.',
+            treatEscalate: 'Escalate', treatExploit: 'Exploit', treatEnhance: 'Enhance', treatShare: 'Share',
+            mesureVerification: 'Verification evidence', provisionCurrent: 'Current position',
+            provisionForecast: 'Forecast after actions: {amount}', provisionUncosted: '{count} active risks without a cost estimate',
+            provisionAssumption: 'Indicative P80 simulation: risks assumed independent, triangular costs.',
+            provisionPdfCurrent: '{amount} needed now; {forecast} forecast after actions'
+        });
+        Object.assign(translations.es, {
+            scoresFour: 'Inherente → actual → previsión → objetivo', colCurrentShort: 'Actual', colForecastShort: 'Previsión',
+            notionCurrent: 'Situación observada en la última revisión. Las acciones pendientes no reducen esta valoración.',
+            riskGovernance: 'Evaluación y gobernanza', currentReviewNeeded: 'Valoración actual provisional: confírmela en la próxima revisión.',
+            riskKind: 'Tipo', riskThreat: 'Amenaza', riskOpportunity: 'Oportunidad', riskLifecycle: 'Estado',
+            lifecycle_active: 'Activo', lifecycle_materialized: 'Ocurrido', lifecycle_closed: 'Cerrado', lifecycle_transferred: 'Transferido',
+            riskRaisedAt: 'Declarado el', riskRaisedBy: 'Declarado por', riskProximity: 'Fecha probable', riskMilestone: 'Hito relacionado',
+            riskLifeDate: 'Fecha del cambio', riskTransferOwner: 'Responsable receptor', riskEvent: 'Evento incierto',
+            riskObjective: 'Objetivo afectado', riskLifeReason: 'Motivo de cierre o transferencia', riskImpactAxes: 'Impactos por objetivo (0 a 5)',
+            impact_cost: 'Coste', impact_delay: 'Plazo', impact_quality: 'Calidad', impact_service: 'Servicio', impact_benefit: 'Beneficio',
+            riskIssue: 'Incidencia ocurrida', riskIssueDescription: 'Descripción', riskIssueOwner: 'Responsable', riskIssueStatus: 'Estado',
+            issueOpen: 'Abierta', issueResolved: 'Resuelta', riskDecisions: 'Decisiones formales', noDecisions: 'Sin decisiones',
+            decision_accept: 'Aceptar', decision_reject: 'Rechazar', decision_moreAction: 'Más acciones',
+            decisionReason: 'Motivo', decisionReviewDate: 'Fecha de revisión',
+            decisionRequired: 'Indique quién decide y el motivo. La aceptación exige fecha de revisión.',
+            treatEscalate: 'Escalar', treatExploit: 'Aprovechar', treatEnhance: 'Potenciar', treatShare: 'Compartir',
+            mesureVerification: 'Prueba de verificación', provisionCurrent: 'Situación actual',
+            provisionForecast: 'Previsión tras las acciones: {amount}', provisionUncosted: '{count} riesgos activos sin coste estimado',
+            provisionAssumption: 'Simulación P80 orientativa: riesgos independientes y costes triangulares.',
+            provisionPdfCurrent: '{amount} necesarios ahora; {forecast} previstos tras las acciones'
+        });
+        Object.assign(translations.zh, {
+            scoresFour: '固有 → 当前 → 预测 → 目标', colCurrentShort: '当前', colForecastShort: '预测',
+            notionCurrent: '上次审查时的实际情况。未完成的措施不会降低此评分。', riskGovernance: '评估与治理',
+            currentReviewNeeded: '当前评分为暂定值：请在下次审查时确认。', riskKind: '类别', riskThreat: '威胁', riskOpportunity: '机会', riskLifecycle: '生命周期',
+            lifecycle_active: '活跃', lifecycle_materialized: '已发生', lifecycle_closed: '已关闭', lifecycle_transferred: '已移交',
+            riskRaisedAt: '提出日期', riskRaisedBy: '提出人', riskProximity: '预计发生日期', riskMilestone: '相关里程碑',
+            riskLifeDate: '变更日期', riskTransferOwner: '接收负责人', riskEvent: '不确定事件', riskObjective: '受影响目标',
+            riskLifeReason: '关闭或移交原因', riskImpactAxes: '按目标划分的影响（0至5）',
+            impact_cost: '成本', impact_delay: '进度', impact_quality: '质量', impact_service: '服务', impact_benefit: '收益',
+            riskIssue: '已发生的问题', riskIssueDescription: '描述', riskIssueOwner: '负责人', riskIssueStatus: '状态',
+            issueOpen: '未解决', issueResolved: '已解决', riskDecisions: '正式决定', noDecisions: '暂无决定',
+            decision_accept: '接受', decision_reject: '拒绝', decision_moreAction: '追加措施', decisionReason: '理由', decisionReviewDate: '复查日期',
+            decisionRequired: '请填写决策人和理由。接受风险还需要复查日期。',
+            treatEscalate: '上报', treatExploit: '利用', treatEnhance: '增强', treatShare: '共享',
+            mesureVerification: '验证证据', provisionCurrent: '当前状况', provisionForecast: '措施完成后预测：{amount}',
+            provisionUncosted: '{count} 项活跃风险尚无成本估算', provisionAssumption: 'P80 估算：假设风险独立，成本服从三角分布。',
+            provisionPdfCurrent: '当前需要 {amount}；完成措施后预计需要 {forecast}'
+        });
+        Object.assign(translations.ar, {
+            scoresFour: 'أصلي ← حالي ← متوقع ← هدف', colCurrentShort: 'حالي', colForecastShort: 'متوقع',
+            notionCurrent: 'الوضع المرصود عند المراجعة الأخيرة. لا تقلل الإجراءات غير المكتملة هذا التقييم.',
+            riskGovernance: 'التقييم والحوكمة', currentReviewNeeded: 'التقييم الحالي مؤقت: أكده في المراجعة القادمة.',
+            riskKind: 'النوع', riskThreat: 'تهديد', riskOpportunity: 'فرصة', riskLifecycle: 'الحالة',
+            lifecycle_active: 'نشط', lifecycle_materialized: 'وقع', lifecycle_closed: 'مغلق', lifecycle_transferred: 'منقول',
+            riskRaisedAt: 'تاريخ التسجيل', riskRaisedBy: 'سجله', riskProximity: 'تاريخ الوقوع المحتمل', riskMilestone: 'المرحلة المرتبطة',
+            riskLifeDate: 'تاريخ التغيير', riskTransferOwner: 'المسؤول المستلم', riskEvent: 'الحدث غير المؤكد',
+            riskObjective: 'الهدف المتأثر', riskLifeReason: 'سبب الإغلاق أو النقل', riskImpactAxes: 'الأثر حسب الهدف (0 إلى 5)',
+            impact_cost: 'التكلفة', impact_delay: 'المدة', impact_quality: 'الجودة', impact_service: 'الخدمة', impact_benefit: 'المنفعة',
+            riskIssue: 'مشكلة وقعت', riskIssueDescription: 'الوصف', riskIssueOwner: 'المسؤول', riskIssueStatus: 'الحالة',
+            issueOpen: 'مفتوحة', issueResolved: 'محلولة', riskDecisions: 'قرارات رسمية', noDecisions: 'لا قرارات',
+            decision_accept: 'قبول', decision_reject: 'رفض', decision_moreAction: 'إجراء إضافي',
+            decisionReason: 'السبب', decisionReviewDate: 'تاريخ المراجعة',
+            decisionRequired: 'أدخل صاحب القرار والسبب. يتطلب القبول تاريخ مراجعة.',
+            treatEscalate: 'تصعيد', treatExploit: 'استغلال', treatEnhance: 'تعزيز', treatShare: 'مشاركة',
+            mesureVerification: 'دليل التحقق', provisionCurrent: 'الوضع الحالي',
+            provisionForecast: 'التوقع بعد الإجراءات: {amount}', provisionUncosted: '{count} مخاطر نشطة دون تقدير تكلفة',
+            provisionAssumption: 'محاكاة P80 تقريبية: المخاطر مستقلة والتكاليف مثلثية.',
+            provisionPdfCurrent: '{amount} مطلوبة حاليًا؛ {forecast} متوقعة بعد الإجراءات'
+        });
+
         const rawStorageNamespace = window.RISKR_DATA && window.RISKR_DATA.appState
             ? window.RISKR_DATA.appState.storageNamespace
             : 'default';
@@ -9907,7 +10022,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         const STATUS_KEYS = ['statusNotTreated', 'statusInProgress', 'statusTreated', 'statusAccepted'];
         // Stratégie de traitement d'un risque ('' = non définie) → clé de traduction
-        const TREATMENTS = { reduce: 'treatReduce', accept: 'treatAccept', transfer: 'treatTransfer', avoid: 'treatAvoid' };
+        const TREATMENTS = { reduce: 'treatReduce', accept: 'treatAccept', transfer: 'treatTransfer', avoid: 'treatAvoid', escalate: 'treatEscalate', exploit: 'treatExploit', enhance: 'treatEnhance', share: 'treatShare' };
+        const treatmentKeys = risk => risk.kind === 'opportunity'
+            ? ['exploit', 'enhance', 'share', 'accept', 'escalate'] : ['reduce', 'transfer', 'accept', 'avoid', 'escalate'];
         const treatmentLabel = key => t(TREATMENTS[key] || 'treatNone');
         const LEGACY_STATUS_LABELS = {
             'Non traité': 'statusNotTreated', 'En cours': 'statusInProgress',
@@ -9939,6 +10056,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 porteur: String(mesure.porteur || ''),
                 echeance: String(mesure.echeance || ''),
                 etat: mesure.etat in MESURE_STATES ? mesure.etat : 'todo',
+                verification: String(mesure.verification || ''),
                 // Côté de la barrière dans le nœud papillon, et son efficacité (0 = non évaluée, 1 à 5)
                 barriere: mesure.barriere === 'protection' ? 'protection' : 'prevention',
                 efficacite: toScore(mesure.efficacite),
@@ -9968,6 +10086,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             mesures: stringList(raw.mesures)
         });
 
+        const RISK_KINDS = ['threat', 'opportunity'];
+        const RISK_LIFECYCLES = ['active', 'materialized', 'closed', 'transferred'];
+        const IMPACT_AXES = ['cost', 'delay', 'quality', 'service', 'benefit'];
+        const DECISION_TYPES = ['accept', 'reject', 'moreAction'];
+        const normalizeDecision = raw => ({
+            id: String(raw.id || newUid()), date: isIsoDate(raw.date) ? raw.date : '',
+            author: String(raw.author || ''), type: DECISION_TYPES.includes(raw.type) ? raw.type : 'moreAction',
+            reason: String(raw.reason || ''), reviewDate: isIsoDate(raw.reviewDate) ? raw.reviewDate : '',
+            scoreAtDecision: Number.isInteger(raw.scoreAtDecision) ? raw.scoreAtDecision : 0
+        });
+
         // Échéance saisie librement : date reconnue (AAAA-MM-JJ ou JJ/MM/AAAA), sinon null
         function mesureDueDate(text) {
             const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text.trim());
@@ -9990,7 +10119,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Texte d'une mesure pour les exports : « texte (porteur, échéance) »
         function formatMesure(mesure) {
             const state = mesure.etat === 'todo' ? '' : t(MESURE_STATES[mesure.etat]);
-            const details = [mesure.porteur, mesure.echeance, state].filter(Boolean).join(', ');
+            const details = [mesure.porteur, mesure.echeance, state, mesure.verification].filter(Boolean).join(', ');
             return details ? `${mesure.texte} (${details})` : mesure.texte;
         }
 
@@ -9999,15 +10128,22 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function normalizeRisk(raw) {
             const id = String(raw && raw.id !== undefined ? raw.id : '');
             if (!SAFE_ID.test(id)) throw new Error(t('invalidRiskId', { id }));
+            const mesures = Array.isArray(raw.mesures) ? raw.mesures.map(normalizeMesure) : [];
+            const hasOpenMeasures = mesures.some(mesure => mesure.texte && mesure.etat !== 'done');
+            const assessmentBefore = firstEvaluated(raw.assessmentBefore, raw.assessmentBBefore,
+                raw.gcBefore, raw.assessmentABefore, raw.dtuBefore);
+            const assessmentAfter = firstEvaluated(raw.assessmentAfter, raw.assessmentBAfter,
+                raw.gcAfter, raw.assessmentAAfter, raw.dtuAfter);
+            const hasCurrent = Array.isArray(raw.assessmentCurrent) && raw.assessmentCurrent.length === 2;
             const risk = Object.assign({}, raw, {
                 id,
                 uid: typeof raw.uid === 'string' && raw.uid ? raw.uid : newUid(),
                 title: String(raw.title || ''),
-                assessmentBefore: firstEvaluated(raw.assessmentBefore, raw.assessmentBBefore,
-                    raw.gcBefore, raw.assessmentABefore, raw.dtuBefore),
-                assessmentAfter: firstEvaluated(raw.assessmentAfter, raw.assessmentBAfter,
-                    raw.gcAfter, raw.assessmentAAfter, raw.dtuAfter),
-                mesures: Array.isArray(raw.mesures) ? raw.mesures.map(normalizeMesure) : [],
+                assessmentBefore, assessmentAfter,
+                assessmentCurrent: hasCurrent ? toAssessment(raw.assessmentCurrent)
+                    : [...(hasOpenMeasures ? assessmentBefore : assessmentAfter)],
+                currentNeedsReview: hasCurrent ? Boolean(raw.currentNeedsReview) : hasOpenMeasures,
+                mesures,
                 statut: STATUS_KEYS.includes(raw.statut)
                     ? raw.statut
                     : (LEGACY_STATUS_LABELS[raw.statut] || 'statusNotTreated'),
@@ -10016,14 +10152,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 assessmentTarget: toAssessment(raw.assessmentTarget),
                 causes: stringList(raw.causes),
                 consequences: objectList(raw.consequences).map(normalizeConsequence),
-                velocite: toScore(raw.velocite), // vitesse de survenue (1 à 5), 0 = non évaluée
+                velocite: toScore(raw.velocite), // vitesse entre déclenchement et conséquence (1 à 5)
                 notes: objectList(raw.notes).map(normalizeNote),
                 liens: objectList(raw.liens).map(normalizeLink),
                 // Cadence de revue : dernière revue déclarée et prochaine revue choisie (AAAA-MM-JJ, facultatives)
                 kri: objectList(raw.kri).map(normalizeKri), // indicateurs clés de risque
                 cout: normalizeCout(raw.cout), // coût si le risque survient (€) et probabilité (%)
                 revuLe: isIsoDate(raw.revuLe) ? raw.revuLe : '',
-                prochaineRevue: isIsoDate(raw.prochaineRevue) ? raw.prochaineRevue : ''
+                prochaineRevue: isIsoDate(raw.prochaineRevue) ? raw.prochaineRevue : '',
+                kind: RISK_KINDS.includes(raw.kind) ? raw.kind : 'threat',
+                event: String(raw.event || ''), objective: String(raw.objective || ''),
+                raisedAt: isIsoDate(raw.raisedAt) ? raw.raisedAt : '',
+                raisedBy: String(raw.raisedBy || ''),
+                proximityDate: isIsoDate(raw.proximityDate) ? raw.proximityDate : '',
+                milestone: String(raw.milestone || ''),
+                impactAxes: Object.fromEntries(IMPACT_AXES.map(axis => [axis, toScore(raw.impactAxes?.[axis])])),
+                lifecycle: RISK_LIFECYCLES.includes(raw.lifecycle) ? raw.lifecycle : 'active',
+                lifeDate: isIsoDate(raw.lifeDate) ? raw.lifeDate : '',
+                lifeReason: String(raw.lifeReason || ''), transferOwner: String(raw.transferOwner || ''),
+                issue: { description: String(raw.issue?.description || ''), owner: String(raw.issue?.owner || ''),
+                    status: raw.issue?.status === 'resolved' ? 'resolved' : 'open' },
+                decisions: objectList(raw.decisions).map(normalizeDecision)
             });
             LEGACY_RISK_FIELDS.forEach(field => delete risk[field]);
             return risk;
@@ -10665,8 +10814,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return {
                 uid: newUid(),
                 assessmentBefore: [0, 0], assessmentAfter: [0, 0], assessmentTarget: [0, 0],
+                assessmentCurrent: [0, 0], currentNeedsReview: false,
                 mesures: [], statut: 'statusNotTreated', responsable: '', traitement: '',
-                causes: [], consequences: [], notes: [], liens: [], velocite: 0
+                causes: [], consequences: [], notes: [], liens: [], velocite: 0,
+                kind: 'threat', event: '', objective: '', raisedAt: '', raisedBy: '',
+                proximityDate: '', milestone: '', impactAxes: Object.fromEntries(IMPACT_AXES.map(axis => [axis, 0])),
+                lifecycle: 'active', lifeDate: '', lifeReason: '', transferOwner: '',
+                issue: { description: '', owner: '', status: 'open' }, decisions: []
             };
         }
 
@@ -10971,7 +11125,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <tr>
                             <th rowspan="2">${t('colRisk')}</th>
                             <th colspan="3" style="text-align: center;">${t('colBefore')}</th>
-                            <th colspan="3" style="text-align: center;">${t('colAfter')}</th>
+                            <th colspan="3" style="text-align: center;">${t('colForecastShort')}</th>
                             <th rowspan="2">${t('colReduction')}</th>
                             <th rowspan="2">${t('colStatus')}</th>
                             <th rowspan="2">${t('colResp')}</th>
@@ -11072,7 +11226,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 </select>
                             </td>
                             <td class="criticality-cell" id="crit-after-${index}">
-                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}${appetiteAlert(risk.assessmentAfter)}
+                                ${getCriticalityBadge(risk.assessmentAfter[0], risk.assessmentAfter[1])}
                             </td>
                             <td class="reduction-cell" id="reduction-${index}">
                                 ${getRiskReductionBadge(risk.assessmentBefore[0], risk.assessmentBefore[1], risk.assessmentAfter[0], risk.assessmentAfter[1])}
@@ -11101,7 +11255,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <div class="risk-plan">
                                     <label class="risk-plan-field"><span>${t('colTreatment')}</span>
                                         <select class="plan-select" data-risk-id="${risk.id}" data-field="traitement">
-                                            ${['', ...Object.keys(TREATMENTS)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}
+                                            ${['', ...treatmentKeys(risk)].map(key => `<option value="${key}" ${key === risk.traitement ? 'selected' : ''}>${treatmentLabel(key)}</option>`).join('')}
                                         </select></label>
                                     <div class="risk-plan-field" title="${escapeHtml(t('targetHint'))}"><span>${t('colTarget')}</span>
                                         <select class="plan-select" data-risk-id="${risk.id}" data-field="target" data-axis="0" aria-label="${t('colProb')}">${generateOptions(getProbabilityScale(), risk.assessmentTarget[0])}</select>
@@ -11243,7 +11397,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 label: t('reviewLabel', { n: reviews.length + 1 }),
                 auteur: currentUser,
                 risks: risks.map(risk => ({ uid: risk.uid, id: risk.id, title: risk.title, groupe: groupOf.get(risk.uid) || '',
-                    before: [...risk.assessmentBefore], after: [...risk.assessmentAfter] }))
+                    before: [...risk.assessmentBefore], after: [...currentAssessment(risk)] }))
             };
             reviews.push(frozen);
             Object.assign(comparison, { from: reviews.length > 1 ? reviews[reviews.length - 2].id : frozen.id, to: frozen.id });
@@ -11268,7 +11422,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (frozen) return { label: frozen.label, risks: new Map(frozen.risks.map(r => [r.uid, r])) };
             const groupOf = new Map(riskGroups.flatMap(group => group.risks.map(risk => [risk.uid, group.name])));
             return { label: t('reviewCurrent'), risks: new Map(risks.map(risk => [risk.uid,
-                { uid: risk.uid, id: risk.id, title: risk.title, groupe: groupOf.get(risk.uid), after: risk.assessmentAfter }])) };
+                { uid: risk.uid, id: risk.id, title: risk.title, groupe: groupOf.get(risk.uid), after: currentAssessment(risk) }])) };
         }
 
         function renderReviews() {
@@ -11285,7 +11439,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (!reviews.some(r => r.id === comparison.from)) {
                 // Par défaut : la dernière revue ; si rien n'a bougé depuis, la précédente (sinon tout serait « stable »). O(n)
                 const latest = reviews[reviews.length - 1];
-                const current = new Map(risks.map(risk => [risk.uid, scoreOf(risk.assessmentAfter)]));
+                const current = new Map(risks.map(risk => [risk.uid, currentScore(risk)]));
                 const unchanged = latest && latest.risks.length === risks.length
                     && latest.risks.every(entry => current.get(entry.uid) === scoreOf(entry.after));
                 comparison.from = !latest ? null : unchanged && reviews.length > 1 ? reviews[reviews.length - 2].id : latest.id;
@@ -11775,7 +11929,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Cotation d'un risque pour une phase ('Before' ou 'After'), ou null si non évaluée
         function evaluatedAssessment(risk, phase) {
-            const assessment = risk[`assessment${phase}`];
+            const assessment = phase === 'After' && !matrixReviewId ? currentAssessment(risk) : risk[`assessment${phase}`];
             return assessment[0] > 0 && assessment[1] > 0 ? assessment : null;
         }
         
@@ -12648,7 +12802,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             if (f.level && (score === null ? 'none' : getCriticalityLevel(score)) !== f.level) return false;
             if (f.treatment && (risk.traitement || '-') !== f.treatment) return false;
             if (f.owner && risk.responsable !== f.owner) return false;
-            if (f.aboveAppetite && !(settings.riskAppetite && score > settings.riskAppetite)) return false;
+            if (f.aboveAppetite && !(isActiveThreat(risk) && settings.riskAppetite && score > settings.riskAppetite)) return false;
             if (f.toReview && !reviewStatus(risk, dates).due) return false;
             if (f.issues && !riskIssues(risk).length) return false;
             if (f.cell) {
@@ -12792,7 +12946,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             const riskRow = risk => `<div class="panel-risk" data-risk-uid="${escapeHtml(risk.uid)}" title="${t('openRiskSheet')}">
                 <span class="id-bubble">${escapeHtml(risk.id)}</span><span>${escapeHtml(risk.title)}</span>
-                <span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)}</span></div>`;
+                <span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(evaluatedAssessment(risk, 'After'))}</span></div>`;
             const cell = riskFilter.cell;
             const shown = matrixGroups().flatMap(group => group.risks);
             const cellRisks = cell ? shown.filter(risk => {
@@ -12800,7 +12954,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 return assessment && assessment[0] === cell.p && assessment[1] === cell.i;
             }) : [];
             const cellScore = cell ? cell.p * cell.i : 0;
-            const above = settings.riskAppetite ? shown.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [];
+            const above = settings.riskAppetite ? shown.filter(risk => risk.kind !== 'opportunity' && risk.lifecycle !== 'closed' && scoreOf(evaluatedAssessment(risk, 'After')) > settings.riskAppetite) : [];
 
             // Affichage : une ligne sous les matrices (légende, options, rappel de l'appétence)
             document.getElementById('matrix-display').innerHTML = `
@@ -12846,7 +13000,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     groups.set(name, { ...(liveGroup || { description: '' }), id: liveGroup ? liveGroup.id : groups.size + 1, name, risks: [] });
                 }
                 groups.get(name).risks.push({ uid: entry.uid, id: entry.id, title: entry.title, assessmentBefore: entry.before,
-                    assessmentAfter: entry.after, assessmentTarget: [0, 0], velocite: live.get(entry.uid)?.velocite || 0 });
+                    assessmentCurrent: entry.after, assessmentAfter: entry.after, assessmentTarget: [0, 0], velocite: live.get(entry.uid)?.velocite || 0 });
             });
             return [...groups.values()];
         }
@@ -12881,7 +13035,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             } else {
                 const latest = reviews[reviews.length - 1];
                 const frozen = new Map(latest.risks.map(entry => [entry.uid, scoreOf(entry.after)]));
-                const changes = risks.filter(risk => frozen.get(risk.uid) !== scoreOf(risk.assessmentAfter)).length
+                const changes = risks.filter(risk => frozen.get(risk.uid) !== currentScore(risk)).length
                     + latest.risks.filter(entry => !risks.some(risk => risk.uid === entry.uid)).length;
                 const key = changes === 0 ? 'matrixStateSame' : changes === 1 ? 'matrixStateChangedOne' : 'matrixStateChangedMany';
                 text = `<span>${escapeHtml(t(key, { count: changes, review: name(latest) }))}</span>`;
@@ -13089,31 +13243,43 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Vue comité : synthèse d'une page, copiable et exportable en PDF
         // ========================================
 
-        const TREATMENT_COLORS = { reduce: '#0a84ff', transfer: '#8e5cf0', accept: '#ff9f0a', avoid: '#34c759', '': '#aeaeb2' };
+        const TREATMENT_COLORS = { reduce: '#0a84ff', transfer: '#8e5cf0', accept: '#ff9f0a', avoid: '#34c759', escalate: '#d35400', exploit: '#229954', enhance: '#16a085', share: '#5b60b9', '': '#aeaeb2' };
         // Vue comité : une seule teinte, plus ou moins soutenue selon la stratégie (non définie : neutre)
-        const TREATMENT_SHADES = { reduce: 100, transfer: 70, accept: 45, avoid: 25, '': 0 };
+        const TREATMENT_SHADES = { reduce: 100, transfer: 70, accept: 45, avoid: 25, escalate: 85, exploit: 65, enhance: 55, share: 40, '': 0 };
         const treatmentShade = key => `color-mix(in srgb, var(--accent) ${TREATMENT_SHADES[key]}%, var(--border))`;
         const scoreOf = assessment => residualScore(assessment) || 0;
+        const isActiveThreat = risk => risk.kind !== 'opportunity' && risk.lifecycle === 'active';
+        const currentAssessment = risk => risk.assessmentCurrent || risk.assessmentAfter;
+        const currentScore = risk => scoreOf(currentAssessment(risk));
+        const validRiskDecision = risk => {
+            const decision = risk.decisions?.at(-1);
+            return decision && decision.type === 'accept' && decision.date &&
+                (!decision.reviewDate || decision.reviewDate >= todayIso()) &&
+                currentScore(risk) <= decision.scoreAtDecision ? decision : null;
+        };
 
         // Chiffres de la synthèse. Complexité : O(n log n + m), n = risques, m = mesures
         function committeeStats() {
-            const exposureBefore = meanExposure(risks.map(risk => risk.assessmentBefore));
-            const exposureAfter = meanExposure(risks.map(risk => risk.assessmentAfter));
-            const high = phase => risks.filter(risk => scoreOf(risk[`assessment${phase}`]) >= CRITICALITY_THRESHOLDS.high).length;
-            const mesures = risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte);
+            const threats = risks.filter(isActiveThreat);
+            const exposureBefore = meanExposure(threats.map(risk => risk.assessmentBefore));
+            const exposureAfter = meanExposure(threats.map(currentAssessment));
+            const exposureForecast = meanExposure(threats.map(risk => risk.assessmentAfter));
+            const high = assessment => threats.filter(risk => scoreOf(assessment(risk)) >= CRITICALITY_THRESHOLDS.high).length;
+            const mesures = threats.flatMap(risk => risk.mesures).filter(mesure => mesure.texte);
             const treatments = { reduce: 0, transfer: 0, accept: 0, avoid: 0, '': 0 };
-            risks.forEach(risk => treatments[risk.traitement]++);
+            threats.forEach(risk => { treatments[risk.traitement] = (treatments[risk.traitement] || 0) + 1; });
             const last = reviews[reviews.length - 1];
             return {
                 subtitle: last ? `${last.label} · ${formatReviewDate(last.date)}` : new Date().toLocaleDateString(currentLanguage),
-                exposureBefore, exposureAfter,
+                exposureBefore, exposureAfter, exposureForecast,
                 delta: exposureBefore && exposureAfter !== null ? Math.round((exposureAfter / exposureBefore - 1) * 100) : null,
-                highBefore: high('Before'), highAfter: high('After'),
-                above: settings.riskAppetite ? risks.filter(risk => scoreOf(risk.assessmentAfter) > settings.riskAppetite) : [],
-                kriCritical: risks.flatMap(risk => risk.kri.filter(kri => kriStatus(kri) === 'critical').map(kri => ({ risk, kri }))),
+                highBefore: high(risk => risk.assessmentBefore), highAfter: high(currentAssessment),
+                above: settings.riskAppetite ? threats.filter(risk => currentScore(risk) > settings.riskAppetite) : [],
+                pendingAbove: settings.riskAppetite ? threats.filter(risk => currentScore(risk) > settings.riskAppetite && !validRiskDecision(risk)) : [],
+                kriCritical: threats.flatMap(risk => risk.kri.filter(kri => kriStatus(kri) === 'critical').map(kri => ({ risk, kri }))),
                 late: mesures.filter(isMesureLate).length, mesureCount: mesures.length,
-                top: risks.filter(risk => scoreOf(risk.assessmentAfter))
-                    .sort((a, b) => scoreOf(b.assessmentAfter) - scoreOf(a.assessmentAfter) || scoreOf(b.assessmentBefore) - scoreOf(a.assessmentBefore))
+                top: threats.filter(risk => currentScore(risk))
+                    .sort((a, b) => currentScore(b) - currentScore(a) || scoreOf(b.assessmentBefore) - scoreOf(a.assessmentBefore))
                     .slice(0, 5),
                 treatments,
                 exposures: [...reviews.map(review => ({ label: review.label, value: meanExposure(review.risks.map(r => r.after)) })),
@@ -13131,7 +13297,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const kpi = (label, value, detail = '', tone = '', tip = '') => `<div class="committee-kpi">
                 <span class="kpi-label"${tip ? ` data-tip="${escapeHtml(t(tip))}"` : ''}>${label}</span><span class="kpi-value">${value}</span>
                 <span class="kpi-detail ${tone}">${detail}</span></div>`;
-            const totalRisks = risks.length || 1;
+            const totalRisks = risks.filter(isActiveThreat).length || 1;
             return {
                 title: t('committeeTitle'),
                 actions: `<button type="button" class="sheet-btn" onclick="copyCommitteeView()">${t('committeeCopy')}</button>
@@ -13141,7 +13307,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         ${kpi(t('kpiExposure'), `${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} <small>/5</small>`,
                             stats.delta === null ? '' : t('kpiExposureDelta', { delta: signedPercent(stats.delta) }), stats.delta < 0 ? 'good' : stats.delta > 0 ? 'bad' : '', 'tipKpiExposure')}
                         ${kpi(t('kpiHighRisks'), `${stats.highBefore} → ${stats.highAfter}`, t('kpiHighDelta'), '', 'tipKpiHigh')}
-                        ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${risks.length}</small>`,
+                        ${kpi(t('kpiAboveAppetite'), `${stats.above.length} <small>/ ${totalRisks}</small>`,
                             escapeHtml(stats.above.map(risk => risk.id).join(', ')), stats.above.length ? 'bad' : 'good', 'tipKpiAppetite')}
                         ${kpi(t('kpiLate'), `${stats.late} <small>/ ${stats.mesureCount}</small>`, '', stats.late ? 'bad' : 'good', 'tipKpiLate')}
                     </div>
@@ -13149,9 +13315,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <section class="committee-card"><h3 data-tip="${t('tipTrajectory')}">${t('matrixTrajectory')}</h3><canvas id="committee-chart"></canvas></section>
                         <section class="committee-card"><h3 data-tip="${t('tipTop5')}">${t('committeeTop')}</h3>
                             <table class="committee-table">
-                                <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colAfterShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
+                                <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th>${t('colBeforeShort')} → ${t('colCurrentShort')}</th><th>${t('colTreatment')}</th><th>${t('colResp')}</th></tr></thead>
                                 <tbody>${stats.top.map(risk => `<tr><td><b>${escapeHtml(risk.id)}</b></td><td>${escapeHtml(risk.title)}</td>
-                                    <td class="nowrap">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)}</td>
+                                    <td class="nowrap">${scoreChip(risk.assessmentBefore)} → ${scoreChip(currentAssessment(risk))}</td>
                                     <td>${treatmentLabel(risk.traitement)}</td><td>${escapeHtml(risk.responsable) || '—'}</td></tr>`).join('')}</tbody>
                             </table></section>
                     </div>
@@ -13166,16 +13332,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <b style="width:${(value || 0) / 5 * 100}%"></b>
                                 <span>${formatExposure(value)}</span></div>`).join('')}</section>
                         <section class="committee-card"><h3 data-tip="${t('tipDecisions')}">${t('committeeDecisions')}</h3>
-                            <ul class="committee-list">${[...stats.above.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)}${colon()}${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`),
+                            <ul class="committee-list">${[...stats.pendingAbove.map(risk => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(risk.title)}${colon()}${t('decisionHint', { score: currentScore(risk) })}</li>`),
                                 ...stats.kriCritical.map(({ risk, kri }) => `<li><b>${escapeHtml(risk.id)}</b> · ${escapeHtml(t('kriDecision', { name: kri.nom, value: formatKri(kri) }))}</li>`)]
                                 .join('') || `<li>${t('committeeNoDecision')}</li>`}</ul></section>
                     </div>
                     ${provision ? `<section class="committee-card provision-card"><h3 data-tip="${t('tipProvision')}">${t('provisionTitle')}</h3>
                         <div class="provision-body">
-                            <div class="provision-headline"><span>${t('provisionAmount')}</span><b>${escapeHtml(approxMoney(provision.amount))}</b>
-                                <p>${escapeHtml(t('provisionAmountLine'))}${provision.savings > 0 ? escapeHtml(t('provisionWithout', { amount: approxMoney(provision.without) })) : '.'}</p>
-                                ${provision.savings > 0 ? `<p class="provision-savings">${escapeHtml(t('provisionSavings', { amount: approxMoney(provision.savings) }))}${provision.pending
-                                    ? escapeHtml(t('provisionCondition', { count: provision.pending }) + (provision.late ? t('provisionConditionLate', { late: provision.late }) : '')) : ''}.</p>` : ''}</div>
+                            <div class="provision-headline"><span>${t('provisionCurrent')}</span><b>${escapeHtml(approxMoney(provision.amount))}</b>
+                                <p>${escapeHtml(t('provisionForecast', { amount: approxMoney(provision.forecast) }))}</p>
+                                <p>${escapeHtml(t('provisionUncosted', { count: provision.uncosted }))}</p></div>
                             <div>
                                 ${provision.big.length ? `<p class="provision-normal">${provision.normalCount ? escapeHtml(provision.normal > 0
                                     ? t('provisionNormal', { amount: approxMoney(provision.normal), count: provision.normalCount })
@@ -13185,7 +13350,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                     <small>${escapeHtml(measureEffectText(risk))}</small></li>`).join('')}</ul>` : `<p class="provision-normal">${escapeHtml(t('provisionNoBig'))}</p>`}
                             </div>
                         </div>
-                        <p class="review-meta">${t('provisionCaption', { count: provision.count })}</p></section>` : ''}`,
+                        <p class="review-meta">${t('provisionCaption', { count: provision.count })} ${t('provisionAssumption')}</p></section>` : ''}`,
                 mount: body => {
                     const { datasets, bubble } = matrixChartData('trajectory');
                     committeeChart = createRiskChart(body.querySelector('#committee-chart'), datasets, bubble);
@@ -13217,18 +13382,18 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <table style="border-collapse:collapse;width:100%"><tr>
                     <td style="${cell}"><b>${t('kpiExposure')}</b><br>${formatExposure(stats.exposureBefore)} → ${formatExposure(stats.exposureAfter)} /5${stats.delta === null ? '' : ` (${signedPercent(stats.delta)} %)`}</td>
                     <td style="${cell}"><b>${t('kpiHighRisks')}</b><br>${stats.highBefore} → ${stats.highAfter}</td>
-                    <td style="${cell}"><b>${t('kpiAboveAppetite')}</b><br>${stats.above.length} / ${risks.length}</td>
+                    <td style="${cell}"><b>${t('kpiAboveAppetite')}</b><br>${stats.above.length} / ${risks.filter(isActiveThreat).length}</td>
                     <td style="${cell}"><b>${t('kpiLate')}</b><br>${stats.late} / ${stats.mesureCount}</td></tr></table>
                 <p><img src="${committeeImage()}" width="360" height="360" alt="${escapeHtml(t('matrixTrajectory'))}"></p>
                 <h3 style="font-family:Arial,sans-serif">${t('committeeTop')}</h3>
                 <table style="border-collapse:collapse;width:100%"><tr><th style="${head}">${t('colNumber')}</th><th style="${head}">${t('colRisk')}</th>
-                    <th style="${head}">${t('colBeforeShort')}</th><th style="${head}">${t('colAfterShort')}</th><th style="${head}">${t('colTreatment')}</th><th style="${head}">${t('colResp')}</th></tr>
+                    <th style="${head}">${t('colBeforeShort')}</th><th style="${head}">${t('colCurrentShort')}</th><th style="${head}">${t('colTreatment')}</th><th style="${head}">${t('colResp')}</th></tr>
                     ${stats.top.map(risk => `<tr><td style="${cell}">${escapeHtml(risk.id)}</td><td style="${cell}">${escapeHtml(risk.title)}</td>
                         <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentBefore))]}">${scoreOf(risk.assessmentBefore)}</td>
-                        <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(scoreOf(risk.assessmentAfter))]}">${scoreOf(risk.assessmentAfter)}</td>
+                        <td style="${cell};background:${CRITICALITY_COLORS[getCriticalityLevel(currentScore(risk))]}">${currentScore(risk)}</td>
                         <td style="${cell}">${treatmentLabel(risk.traitement)}</td><td style="${cell}">${escapeHtml(risk.responsable)}</td></tr>`).join('')}</table>
                 <h3 style="font-family:Arial,sans-serif">${t('committeeDecisions')}</h3>
-                <ul style="font-family:Arial,sans-serif;font-size:10pt">${[...stats.above.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)}${colon()}${t('decisionHint', { score: scoreOf(risk.assessmentAfter) })}</li>`),
+                <ul style="font-family:Arial,sans-serif;font-size:10pt">${[...stats.pendingAbove.map(risk => `<li>${escapeHtml(risk.id)} · ${escapeHtml(risk.title)}${colon()}${t('decisionHint', { score: currentScore(risk) })}</li>`),
                     ...stats.kriCritical.map(({ risk, kri }) => `<li>${escapeHtml(risk.id)} · ${escapeHtml(t('kriDecision', { name: kri.nom, value: formatKri(kri) }))}</li>`)].join('') || `<li>${t('committeeNoDecision')}</li>`}</ul>`;
             if (await copyRichHtml(html, document.getElementById('committee-panel').innerText)) {
                 showToast(t('committeeCopied'));
@@ -13248,7 +13413,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const kpis = [
                 [pdfText('kpiExposure'), `${formatExposure(stats.exposureBefore)} -> ${formatExposure(stats.exposureAfter)} /5${stats.delta === null ? '' : ` (${stats.delta > 0 ? '+' : ''}${stats.delta} %)`}`],
                 [pdfText('kpiHighRisks'), `${stats.highBefore} -> ${stats.highAfter}`],
-                [pdfText('kpiAboveAppetite'), `${stats.above.length} / ${risks.length}`],
+                [pdfText('kpiAboveAppetite'), `${stats.above.length} / ${risks.filter(isActiveThreat).length}`],
                 [pdfText('kpiLate'), `${stats.late} / ${stats.mesureCount}`]
             ];
             kpis.forEach(([label, value], index) => {
@@ -13265,8 +13430,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             doc.autoTable({
                 startY: 48,
                 margin: { left: 116 },
-                head: [[pdfText('colNumber'), pdfText('colRisk'), pdfText('colBeforeShort'), pdfText('colAfterShort'), pdfText('colTreatment'), pdfText('colResp')]],
-                body: stats.top.map(risk => [risk.id, risk.title, scoreOf(risk.assessmentBefore), scoreOf(risk.assessmentAfter),
+                head: [[pdfText('colNumber'), pdfText('colRisk'), pdfText('colBeforeShort'), pdfText('colCurrentShort'), pdfText('colTreatment'), pdfText('colResp')]],
+                body: stats.top.map(risk => [risk.id, risk.title, scoreOf(risk.assessmentBefore), currentScore(risk),
                     currentLanguage === 'ar' || currentLanguage === 'zh' ? translations.en[TREATMENTS[risk.traitement] || 'treatNone'] : treatmentLabel(risk.traitement), risk.responsable]),
                 theme: 'grid',
                 styles: { fontSize: 8, cellPadding: 2 },
@@ -13278,7 +13443,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             doc.text(pdfText('committeeDecisions'), 14, y);
             doc.setFontSize(9);
             doc.setFont(undefined, 'normal');
-            const decisions = [...stats.above.map(risk => `${risk.id} · ${risk.title} (${scoreOf(risk.assessmentAfter)})`),
+            const decisions = [...stats.pendingAbove.map(risk => `${risk.id} · ${risk.title} (${currentScore(risk)})`),
                 ...stats.kriCritical.map(({ risk, kri }) => `${risk.id} · ${t('kriDecision', { name: kri.nom, value: formatKri(kri) })}`)];
             if (!decisions.length) decisions.push(pdfText('committeeNoDecision'));
             // Montants : espaces fines insécables remplacées (non gérées par la police du PDF)
@@ -13287,8 +13452,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Polices latines du PDF : texte anglais pour l'arabe et le chinois, comme pdfText
             if (provision) {
                 const latin = currentLanguage === 'ar' || currentLanguage === 'zh';
-                const values = { amount: pdfMoney(provision.amount), without: pdfMoney(provision.without), savings: pdfMoney(Math.max(0, provision.savings)) };
-                const line = (latin ? translations.en.provisionPdf : t('provisionPdf')).replace(/\{(\w+)\}/g, (match, name) => values[name]);
+                const values = { amount: pdfMoney(provision.amount), forecast: pdfMoney(provision.forecast) };
+                const line = (latin ? translations.en.provisionPdfCurrent : t('provisionPdfCurrent')).replace(/\{(\w+)\}/g, (match, name) => values[name]);
                 decisions.push(`${pdfText('provisionTitle')}${currentLanguage === 'fr' ? ' : ' : ': '}${line}`);
             }
             decisions.slice(0, 8).forEach(line => {
@@ -13496,7 +13661,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const background = target || score === null ? 'transparent' : CRITICALITY_COLORS[getCriticalityLevel(score)];
             return `<span class="score-chip${target ? ' target' : ''}" style="background:${background}">${score ?? '—'}</span>`;
         };
-        const scoreChips = risk => `<span class="score-chips">${scoreChip(risk.assessmentBefore)} → ${scoreChip(risk.assessmentAfter)} ${scoreChip(risk.assessmentTarget, true)}</span>`;
+        const scoreChips = risk => `<span class="score-chips" title="${escapeHtml(t('scoresFour'))}">${scoreChip(risk.assessmentBefore)} → ${scoreChip(currentAssessment(risk))} → ${scoreChip(risk.assessmentAfter)} ${scoreChip(risk.assessmentTarget, true)}</span>`;
         const treatmentPill = key => `<span class="treat-pill">${treatmentLabel(key)}</span>`;
 
         // Échéance la plus proche parmi les mesures non faites. O(m) par risque
@@ -13533,28 +13698,30 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             const last = reviews[reviews.length - 1];
             const lastScores = last ? new Map(last.risks.map(r => [r.uid, scoreOf(r.after)])) : new Map();
-            const isAbove = risk => Boolean(settings.riskAppetite) && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
+            const isAbove = risk => Boolean(settings.riskAppetite) && isActiveThreat(risk) && currentScore(risk) > settings.riskAppetite;
             const dates = lastReviewDates();
             const toReview = risk => reviewStatus(risk, dates).due;
             const summary = [
                 [risks.length, 'summaryRisks'],
                 [risks.filter(isAbove).length, 'summaryAbove'],
-                [risks.filter(risk => lastScores.has(risk.uid) && scoreOf(risk.assessmentAfter) > lastScores.get(risk.uid)).length, 'summaryUp'],
+                [risks.filter(risk => lastScores.has(risk.uid) && currentScore(risk) > lastScores.get(risk.uid)).length, 'summaryUp'],
                 [risks.flatMap(risk => risk.mesures).filter(mesure => mesure.texte && isMesureLate(mesure)).length, 'summaryLate'],
                 [risks.filter(toReview).length, 'summaryToReview'],
                 [risks.filter(risk => riskIssues(risk).length).length, 'summaryIssues'],
                 [risks.flatMap(risk => risk.kri).filter(kri => ['alert', 'critical'].includes(kriStatus(kri))).length, 'summaryKriAlert'],
-                ...(risks.some(costRange) ? [[escapeHtml(formatMoney(risks.reduce((sum, risk) => sum + expectedCost(risk), 0))), 'summaryExpectedCost']] : [])
+                ...(risks.some(risk => isActiveThreat(risk) && costRange(risk)) ? [[escapeHtml(formatMoney(risks.filter(isActiveThreat).reduce((sum, risk) => sum + expectedCost(risk, 'current'), 0))), 'summaryExpectedCost']] : [])
             ];
             document.getElementById('register-summary').innerHTML = summary.map(([count, key]) =>
                 `<span${key === 'summaryRisks' ? '' : ` data-tip="${escapeHtml(t(`${key}Tip`))}"`}><b>${count}</b> ${t(key)}</span>`).join('');
             if (registerMode === 'edit') return;
 
             const reviewScores = reviews.map(review => new Map(review.risks.map(r => [r.uid, residualScore(r.after)])));
-            const trend = risk => trendSparkline([...reviewScores.map(scores => scores.get(risk.uid) ?? null), residualScore(risk.assessmentAfter)]) || '—';
+            const trend = risk => trendSparkline([...reviewScores.map(scores => scores.get(risk.uid) ?? null), residualScore(currentAssessment(risk))]) || '—';
             const residual = risk => {
-                const after = evaluatedAssessment(risk, 'After');
+                const after = currentAssessment(risk);
                 return (after ? t('residualDetail', { p: after[0], i: after[1] }) : t('critNotEval'))
+                    + ` · ${t(risk.kind === 'opportunity' ? 'riskOpportunity' : 'riskThreat')} · ${t(`lifecycle_${risk.lifecycle}`)}`
+                    + (risk.currentNeedsReview ? ` · <span class="review-due-tag">${t('currentReviewNeeded')}</span>` : '')
                     + (toReview(risk) ? ` · <span class="review-due-tag">${t('reviewDueTag')}</span>` : '')
                     + (riskIssues(risk).length ? ` · <span class="review-due-tag">${t('issueTag')}</span>` : '');
             };
@@ -13562,7 +13729,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             view.innerHTML = registerMode === 'table'
                 ? `<table class="register-table">
-                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th data-tip="${t('tipColScores')}">${t('colBeforeAfterTarget')}</th>
+                    <thead><tr><th>${t('colNumber')}</th><th>${t('colRisk')}</th><th data-tip="${t('tipColScores')}">${t('scoresFour')}</th>
                         <th data-tip="${t('tipColTrend')}">${t('colTrendReviews', { count: reviews.length + 1 })}</th><th data-tip="${t('tipTreatments')}">${t('colTreatment')}</th><th>${t('mesureOwner')}</th>
                         <th data-tip="${t('tipColNextDue')}">${t('colNextDue')}</th><th data-tip="${t('tipColMesures')}">${t('colMesures')}</th></tr></thead>
                     <tbody>${riskGroups.map((group, index) => `
@@ -13714,7 +13881,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Probabilité par défaut selon la cotation P après remédiation (P1..P5), en %
         const DEFAULT_PROBABILITY = [0, 5, 15, 35, 60, 85];
-        const riskProbability = risk => risk.cout.probabilite ?? DEFAULT_PROBABILITY[risk.assessmentAfter[0]] ?? 0;
+        const riskProbability = (risk, stage = 'forecast') => stage === 'forecast'
+            ? (risk.cout.probabilite ?? DEFAULT_PROBABILITY[risk.assessmentAfter[0]] ?? 0)
+            : stage === 'current' && !risk.mesures.some(mesure => mesure.texte && mesure.etat !== 'done') && risk.cout.probabilite !== null
+                ? risk.cout.probabilite
+                : (DEFAULT_PROBABILITY[(stage === 'current' ? currentAssessment(risk) : risk.assessmentBefore)[0]] ?? 0);
         // Fourchette [min, probable, max] triée ; une seule valeur saisie vaut pour les trois. null si non chiffré
         function costRange(risk) {
             const values = [risk.cout.min, risk.cout.probable, risk.cout.max];
@@ -13725,23 +13896,29 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         }
         // Sans les mesures : probabilité de la cotation P avant (jamais inférieure à celle d'après) et coût sans les
         // protections s'il est renseigné (la fourchette est alors agrandie dans la même proportion)
-        const riskProbabilityBefore = risk => Math.max(DEFAULT_PROBABILITY[risk.assessmentBefore[0]] ?? 0, riskProbability(risk));
+        const riskProbabilityBefore = risk => Math.max(riskProbability(risk, 'inherent'), riskProbability(risk));
         function costRangeBefore(risk) {
             const range = costRange(risk);
             if (!range) return null;
             const factor = risk.cout.sansProtection > range[1] ? risk.cout.sansProtection / range[1] : 1;
             return range.map(value => value * factor);
         }
-        const expectedCost = risk => { const range = costRange(risk); return range ? riskProbability(risk) / 100 * (range[0] + range[1] + range[2]) / 3 : 0; };
+        const costRangeCurrent = risk => risk.mesures.some(mesure => mesure.barriere === 'protection' && mesure.etat !== 'done')
+            ? costRangeBefore(risk) : costRange(risk);
+        const expectedCost = (risk, stage = 'forecast') => {
+            const range = stage === 'forecast' ? costRange(risk) : stage === 'current' ? costRangeCurrent(risk) : costRangeBefore(risk);
+            return range ? riskProbability(risk, stage) / 100 * (range[0] + range[1] + range[2]) / 3 : 0;
+        };
         const formatMoney = (value, compact = true) => new Intl.NumberFormat(currentLanguage, { style: 'currency', currency: 'EUR',
             maximumFractionDigits: compact ? 1 : 0, notation: compact ? 'compact' : 'standard' }).format(value);
 
         // Provision pour risques : T tirages ; à chaque tirage, chaque risque chiffré survient avec sa probabilité
         // et coûte alors une valeur tirée dans sa fourchette (loi triangulaire). Générateur à graine fixe
         // (mulberry32) : mêmes résultats à chaque affichage. Complexité : O(T·r + T log T), r = risques chiffrés.
-        function simulateProvision(trials = 10000, { excluded = new Set(), before = false } = {}) {
-            const items = risks.filter(risk => !excluded.has(risk)).map(risk => ({ risk,
-                p: (before ? riskProbabilityBefore(risk) : riskProbability(risk)) / 100, range: before ? costRangeBefore(risk) : costRange(risk) }))
+        function simulateProvision(trials = 10000, { excluded = new Set(), stage = 'current' } = {}) {
+            const items = risks.filter(risk => isActiveThreat(risk) && !excluded.has(risk)).map(risk => ({ risk,
+                p: (stage === 'inherent' ? riskProbabilityBefore(risk) : riskProbability(risk, stage)) / 100,
+                range: stage === 'forecast' ? costRange(risk) : stage === 'current' ? costRangeCurrent(risk) : costRangeBefore(risk) }))
                 .filter(item => item.range && item.p > 0);
             if (!items.length) return null;
             let seed = 20260925;
@@ -13763,7 +13940,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             totals.sort();
             const quantile = q => totals[Math.min(trials - 1, Math.floor(q * trials))];
-            return { items, totals, expected: items.reduce((sum, item) => sum + expectedCost(item.risk), 0),
+            return { items, totals, expected: items.reduce((sum, item) => sum + expectedCost(item.risk, stage), 0),
                 p50: quantile(0.5), p80: quantile(0.8), p90: quantile(0.9) };
         }
 
@@ -13780,18 +13957,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // (coût probable d'au moins la moitié du montant à prévoir, 3 au plus) et effet de leurs mesures.
         // Tout est calculé à partir des cotations, des coûts et des mesures. Complexité : O(T · r) (trois simulations).
         function provisionSummary() {
-            const withMeasures = simulateProvision();
-            if (!withMeasures) return null;
-            const withoutMeasures = simulateProvision(10000, { before: true });
-            const big = withMeasures.items.filter(item => item.range[1] >= withMeasures.p80 / 2)
+            const current = simulateProvision();
+            if (!current) return null;
+            const forecast = simulateProvision(10000, { stage: 'forecast' });
+            const inherent = simulateProvision(10000, { stage: 'inherent' });
+            const big = current.items.filter(item => item.range[1] >= current.p80 / 2)
                 .sort((a, b) => b.range[1] - a.range[1]).slice(0, 3).map(item => item.risk);
-            const normal = big.length ? simulateProvision(10000, { excluded: new Set(big) }) : withMeasures;
+            const normal = big.length ? simulateProvision(10000, { excluded: new Set(big) }) : current;
             // Mesures restantes des risques dont la cotation est censée baisser grâce aux mesures
             const pending = risks.filter(risk => costRange(risk) && assessmentScore(risk.assessmentAfter) < assessmentScore(risk.assessmentBefore))
                 .flatMap(risk => risk.mesures).filter(mesure => mesure.texte && mesure.etat !== 'done');
-            return { amount: withMeasures.p80, without: withoutMeasures.p80, savings: withoutMeasures.p80 - withMeasures.p80,
-                normal: normal ? normal.p50 : 0, normalCount: withMeasures.items.length - big.length, big,
-                pending: pending.length, late: pending.filter(isMesureLate).length, count: withMeasures.items.length };
+            return { amount: current.p80, forecast: forecast?.p80 ?? current.p80,
+                without: inherent?.p80 ?? current.p80, savings: current.p80 - (forecast?.p80 ?? current.p80),
+                normal: normal ? normal.p50 : 0, normalCount: current.items.length - big.length, big,
+                pending: pending.length, late: pending.filter(isMesureLate).length, count: current.items.length,
+                uncosted: risks.filter(risk => isActiveThreat(risk) && !costRange(risk)).length };
         }
 
         // Phrase automatique sur l'effet des mesures d'un gros risque : prévention (probabilité), protection (coût)
@@ -14062,7 +14242,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             // Ordre du registre : groupe par groupe, pour passer au risque précédent ou suivant
             const ordered = riskGroups.flatMap(g => g.risks);
             const position = ordered.indexOf(risk);
-            const above = settings.riskAppetite && scoreOf(risk.assessmentAfter) > settings.riskAppetite;
+            const above = isActiveThreat(risk) && settings.riskAppetite && currentScore(risk) > settings.riskAppetite;
             const history = reviews.filter(r => r.risks.some(entry => entry.uid === risk.uid));
             const cadence = reviewStatus(risk);
             const issues = riskIssues(risk);
@@ -14074,7 +14254,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     `<button type="button" class="seg${item.value <= value ? ' on' : ''}" style="--c:${LEVEL_COLORS[value] || 'transparent'}" role="radio" aria-checked="${item.value === value}"
                         data-assess="${field}" data-axis="${axis}" data-level="${item.value}" data-tip="${letter}${item.value} · ${escapeHtml(item.label)}" aria-label="${letter}${item.value} · ${escapeHtml(item.label)}"></button>`).join('')}</span>`;
             };
-            const NOTIONS = { assessmentBefore: 'notionBefore', assessmentAfter: 'notionAfter', assessmentTarget: 'notionTarget' };
+            const NOTIONS = { assessmentBefore: 'notionBefore', assessmentCurrent: 'notionCurrent', assessmentAfter: 'notionAfter', assessmentTarget: 'notionTarget' };
             const cotation = (field, label, target = false) => `<div class="sheet-score"><span class="sheet-score-label" data-tip="${t(NOTIONS[field])}">${t(label)}</span>
                 ${scoreChip(risk[field], target)}
                 <span class="sheet-score-edit">
@@ -14092,6 +14272,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     ${editable(`data-mesure="${index}"`, mesure.texte)}
                     <span class="eff">${[1, 2, 3, 4, 5].map(n => `<button type="button" class="eff-dot${n <= mesure.efficacite ? ' on' : ''}" data-mesure="${index}" data-eff="${n}" aria-label="${t('efficacyLabel')} ${n}/5"></button>`).join('')} <span data-tip="${t('notionEfficacy')}">${t('efficacyLabel')}</span></span>
                     <span class="bt-sub">${t(MESURE_STATES[mesure.etat])}${mesure.porteur ? ` · ${escapeHtml(mesure.porteur)}` : ''}${mesure.echeance ? ` · ${escapeHtml(mesure.echeance)}` : ''}</span>
+                    <input class="kri-input" data-measure-verification="${index}" value="${escapeHtml(mesure.verification)}" placeholder="${t('mesureVerification')}" aria-label="${t('mesureVerification')}">
                     ${tools(`<button type="button" data-swap="${index}" title="${t('bowtieSwap')}" aria-label="${t('bowtieSwap')}">${icon('swap')}</button>`)}
                 </div>`).join('') || `<div class="bt-node missing">${t('bowtieNoBarrier')}</div>`;
 
@@ -14107,7 +14288,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <div>
                         <h2 class="sheet-risk-title"><span class="id-bubble big">${escapeHtml(risk.id)}</span>${editable('data-field="title"', risk.title, t('newRisk'))}</h2>
                         <div class="sheet-facts">
-                            <span class="seg-control" role="radiogroup" aria-label="${t('colTreatment')}" data-tip="${t('notionTreatment')}">${Object.keys(TREATMENTS).map(key =>
+                            <span class="seg-control" role="radiogroup" aria-label="${t('colTreatment')}" data-tip="${t('notionTreatment')}">${treatmentKeys(risk).map(key =>
                                 `<button type="button" class="seg-opt${key === risk.traitement ? ' on' : ''}" style="--c:${TREATMENT_COLORS[key]}" role="radio" aria-checked="${key === risk.traitement}" data-treatment="${key}">${treatmentLabel(key)}</button>`).join('')}</span>
                             <span class="owner">${avatar(risk.responsable || '?')}<button type="button" class="owner-field" data-action="edit-owner">${escapeHtml(risk.responsable || t('noOwner'))}</button></span>
                             ${above ? `<span class="appetite-pill">${t('aboveAppetite', { max: settings.riskAppetite })}</span>` : ''}
@@ -14122,8 +14303,29 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <button type="button" class="sheet-btn" data-action="mark-reviewed" data-tip="${t('tipMarkReviewed')}">${icon('check')} ${t('markReviewed')}</button></span>
                         </div>
                     </div>
-                    <div class="sheet-scores">${cotation('assessmentBefore', 'colBeforeShort')}<span class="sheet-arrow">→</span>${cotation('assessmentAfter', 'colAfterShort')}<span class="sheet-arrow">→</span>${cotation('assessmentTarget', 'colTarget', true)}</div>
+                    <div class="sheet-scores">${cotation('assessmentBefore', 'colBeforeShort')}<span class="sheet-arrow">→</span>${cotation('assessmentCurrent', 'colCurrentShort')}<span class="sheet-arrow">→</span>${cotation('assessmentAfter', 'colForecastShort')}<span class="sheet-arrow">→</span>${cotation('assessmentTarget', 'colTarget', true)}</div>
                 </div>
+                <section class="committee-card sheet-governance"><h3>${t('riskGovernance')}</h3>
+                    ${risk.currentNeedsReview ? `<p class="review-meta">${t('currentReviewNeeded')}</p>` : ''}
+                    <div class="cost-fields">
+                        <label>${t('riskKind')} <select class="kri-input" data-risk-field="kind"><option value="threat"${risk.kind === 'threat' ? ' selected' : ''}>${t('riskThreat')}</option><option value="opportunity"${risk.kind === 'opportunity' ? ' selected' : ''}>${t('riskOpportunity')}</option></select></label>
+                        <label>${t('riskLifecycle')} <select class="kri-input" data-risk-field="lifecycle">${RISK_LIFECYCLES.map(value => `<option value="${value}"${risk.lifecycle === value ? ' selected' : ''}>${t(`lifecycle_${value}`)}</option>`).join('')}</select></label>
+                        <label>${t('riskRaisedAt')} <input type="date" class="kri-input" data-risk-field="raisedAt" value="${escapeHtml(risk.raisedAt)}"></label>
+                        <label>${t('riskRaisedBy')} <input class="kri-input" data-risk-field="raisedBy" value="${escapeHtml(risk.raisedBy)}"></label>
+                        <label>${t('riskProximity')} <input type="date" class="kri-input" data-risk-field="proximityDate" value="${escapeHtml(risk.proximityDate)}"></label>
+                        <label>${t('riskMilestone')} <input class="kri-input" data-risk-field="milestone" value="${escapeHtml(risk.milestone)}"></label>
+                        <label>${t('riskLifeDate')} <input type="date" class="kri-input" data-risk-field="lifeDate" value="${escapeHtml(risk.lifeDate)}"></label>
+                        <label>${t('riskTransferOwner')} <input class="kri-input" data-risk-field="transferOwner" value="${escapeHtml(risk.transferOwner)}"></label>
+                    </div>
+                    <div class="sheet-form"><label>${t('riskEvent')} <textarea data-risk-field="event" rows="2">${escapeHtml(risk.event)}</textarea></label>
+                        <label>${t('riskObjective')} <textarea data-risk-field="objective" rows="2">${escapeHtml(risk.objective)}</textarea></label>
+                        <label>${t('riskLifeReason')} <textarea data-risk-field="lifeReason" rows="2">${escapeHtml(risk.lifeReason)}</textarea></label></div>
+                    <p class="review-meta">${t('riskImpactAxes')}</p><div class="cost-fields">${IMPACT_AXES.map(axis => `<label>${t(`impact_${axis}`)} <select class="kri-input" data-impact-axis="${axis}">${[0,1,2,3,4,5].map(value => `<option value="${value}"${risk.impactAxes[axis] === value ? ' selected' : ''}>${value || '—'}</option>`).join('')}</select></label>`).join('')}</div>
+                    <p class="review-meta">${t('riskIssue')}</p><div class="sheet-form"><label>${t('riskIssueDescription')} <textarea data-issue-field="description" rows="2">${escapeHtml(risk.issue.description)}</textarea></label>
+                        <label>${t('riskIssueOwner')} <input data-issue-field="owner" value="${escapeHtml(risk.issue.owner)}"></label><label>${t('riskIssueStatus')} <select data-issue-field="status"><option value="open"${risk.issue.status === 'open' ? ' selected' : ''}>${t('issueOpen')}</option><option value="resolved"${risk.issue.status === 'resolved' ? ' selected' : ''}>${t('issueResolved')}</option></select></label></div>
+                    <p class="review-meta">${t('riskDecisions')}</p><ul class="sheet-list">${risk.decisions.map(decision => `<li>${escapeHtml(decision.date)} · ${escapeHtml(decision.author)} · ${t(`decision_${decision.type}`)} · ${escapeHtml(decision.reason)}${decision.reviewDate ? ` · ${escapeHtml(decision.reviewDate)}` : ''}</li>`).join('') || `<li class="review-empty">${t('noDecisions')}</li>`}</ul>
+                    <div class="sheet-form"><select data-new-decision="type">${DECISION_TYPES.map(type => `<option value="${type}">${t(`decision_${type}`)}</option>`).join('')}</select><input data-new-decision="author" value="${escapeHtml(currentUser)}" placeholder="${t('reviewAuthorPlaceholder')}"><input data-new-decision="reason" placeholder="${t('decisionReason')}"><input type="date" data-new-decision="reviewDate" title="${t('decisionReviewDate')}"><button type="button" class="sheet-btn" data-action="add-decision">${icon('plus')} ${t('addItem')}</button></div>
+                </section>
                 ${issues.length ? `<section class="issue-box"><h3>${t('issuesTitle')}</h3><ul>${issues.map(issue => `<li>${escapeHtml(issue.text)}</li>`).join('')}</ul></section>` : ''}
                 <div class="bowtie2">
                     <svg class="bowtie-links" aria-hidden="true"></svg>
@@ -14216,6 +14418,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
             // Seuils et unité d'un KRI
             sheet.onchange = event => {
+                const riskField = event.target.closest('[data-risk-field]');
+                if (riskField) {
+                    const field = riskField.dataset.riskField;
+                    risk[field] = ['raisedAt', 'proximityDate', 'lifeDate'].includes(field) && !isIsoDate(riskField.value) ? '' : riskField.value.trim();
+                    if (field === 'kind' && !treatmentKeys(risk).includes(risk.traitement)) risk.traitement = '';
+                    if (field === 'lifecycle' && risk.lifecycle === 'materialized' && !risk.issue.description) risk.issue.description = risk.event || risk.title;
+                    if (field === 'lifecycle' && risk.lifecycle !== 'active' && !risk.lifeDate) risk.lifeDate = todayIso();
+                    return save('all');
+                }
+                const impact = event.target.closest('[data-impact-axis]');
+                if (impact) { risk.impactAxes[impact.dataset.impactAxis] = toScore(Number(impact.value)); return save('all'); }
+                const issue = event.target.closest('[data-issue-field]');
+                if (issue) { risk.issue[issue.dataset.issueField] = issue.value.trim(); return save('all'); }
+                const verification = event.target.closest('[data-measure-verification]');
+                if (verification) { risk.mesures[Number(verification.dataset.measureVerification)].verification = verification.value.trim(); return save('all'); }
                 const cost = event.target.closest('[data-cost-field]');
                 if (cost) {
                     risk.cout[cost.dataset.costField] = toNumber(cost.value);
@@ -14245,6 +14462,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     // Second clic sur le niveau actuel : non évalué
                     const assessment = risk[target.dataset.assess], axis = Number(target.dataset.axis), level = Number(target.dataset.level);
                     assessment[axis] = assessment[axis] === level ? 0 : level;
+                    if (target.dataset.assess === 'assessmentCurrent') risk.currentNeedsReview = false;
                     save('all');
                 } else if (target.dataset.velocity) {
                     const velocity = Number(target.dataset.velocity);
@@ -14312,6 +14530,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     if (!texte) return;
                     risk.notes.push({ date: todayIso(), auteur: sheet.querySelector('[data-note="auteur"]').value.trim(), texte });
                     save();
+                } else if (action === 'add-decision') {
+                    const type = sheet.querySelector('[data-new-decision="type"]').value;
+                    const author = sheet.querySelector('[data-new-decision="author"]').value.trim();
+                    const reason = sheet.querySelector('[data-new-decision="reason"]').value.trim();
+                    const reviewDate = sheet.querySelector('[data-new-decision="reviewDate"]').value;
+                    if (!author || !reason || (type === 'accept' && !isIsoDate(reviewDate))) {
+                        alert(t('decisionRequired')); return;
+                    }
+                    risk.decisions.push(normalizeDecision({ date: todayIso(), author, type, reason, reviewDate,
+                        scoreAtDecision: currentScore(risk) }));
+                    save('all');
                 } else if (action === 'add-link') {
                     const url = sheet.querySelector('[data-link="url"]').value.trim();
                     if (!url) return;
@@ -14322,7 +14551,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
             // Évolution de la cotation résiduelle : revues puis état actuel, appétence et cible en pointillé
             if (riskSheetChart) riskSheetChart.destroy();
-            const values = [...history.map(r => scoreOf(r.risks.find(entry => entry.uid === risk.uid).after) || null), scoreOf(risk.assessmentAfter) || null];
+            const values = [...history.map(r => scoreOf(r.risks.find(entry => entry.uid === risk.uid).after) || null), currentScore(risk) || null];
             const flat = (value, color) => ({ data: values.map(() => value), borderColor: color, borderDash: [5, 5], borderWidth: 1.5, pointRadius: 0 });
             riskSheetChart = new Chart(sheet.querySelector('.sheet-evolution canvas'), {
                 type: 'line',

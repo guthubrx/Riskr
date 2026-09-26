@@ -105,12 +105,15 @@ est le contenu : pour une nouvelle analyse, seul `riskr-data.js` change.
   génériques. Il est ignoré par Git et ne doit contenir que des données privées
   qui ne doivent pas être publiées.
 
-Chaque risque porte **une cotation** avant et après remédiation :
-`assessmentBefore` et `assessmentAfter`, sous la forme `[probabilité, impact]`
+Chaque risque porte quatre cotations : `assessmentBefore` (sans mesures),
+`assessmentCurrent` (situation constatée), `assessmentAfter` (prévision après
+les actions ouvertes) et `assessmentTarget` (cible), sous la forme `[probabilité, impact]`
 (1 à 5 ; `[0, 0]` = non évalué). La criticité vaut probabilité × impact (sur 25) ;
 elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices.
+Pour un ancien fichier ayant encore des mesures ouvertes, la cotation actuelle
+reprend par prudence la cotation sans mesures et reste signalée « à confirmer ».
 
-- `mesures` : liste de mesures `{ texte, porteur, echeance, etat }` (porteur et
+- `mesures` : liste de mesures `{ texte, porteur, echeance, etat, verification }` (porteur et
   échéance facultatifs ; `etat` vaut `todo`, `doing` ou `done` ; une simple chaîne
   de texte est aussi acceptée). Une échéance au format `AAAA-MM-JJ` ou
   `JJ/MM/AAAA` passée sur une mesure non faite la signale en retard.
@@ -119,8 +122,20 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   (`prevention` ou `protection`), son côté dans le nœud, et `efficacite` (0 à 5).
   `rang` (facultatif) garde la position choisie par glisser-déposer dans le plan
   d'actions ; sans rang, les mesures sont triées par retard puis par échéance.
-- `velocite` : vitesse de survenue du risque (1 à 5, 0 = non évaluée), utilisée
-  par l'option « Taille = vélocité » des matrices.
+- `velocite` : vitesse entre le déclenchement du risque et son effet (1 à 5,
+  0 = non évaluée), utilisée par l'option « Taille = vélocité » des matrices.
+  `proximityDate` indique séparément quand l'événement pourrait survenir ;
+  `milestone` désigne le jalon concerné.
+- `kind` distingue une menace d'une opportunité ; `impactAxes` cote les effets
+  sur coût, délai, qualité, service et bénéfice. `event`, `objective`,
+  `raisedAt` et `raisedBy` décrivent l'événement incertain, l'objectif touché
+  et la déclaration.
+- `lifecycle` vaut `active`, `materialized`, `closed` ou `transferred` ;
+  `lifeDate`, `lifeReason`, `transferOwner` et `issue` gardent le suivi de sortie
+  et du problème lorsque le risque s'est produit.
+- `decisions` conserve les arbitrages datés avec décideur, motif, date de
+  réexamen et score accepté. Une acceptation expirée ou aggravée revient en
+  liste des décisions attendues.
 - `notes` : notes de revue `{ date, auteur, texte }` ; `liens` : pièces et liens
   `{ libelle, url }`.
 - `settings.templates` : « Mes modèles » de la bibliothèque `{ titre, description,
@@ -148,7 +163,9 @@ elle est affichée ramenée sur 5 (score ÷ 5) dans les tableaux et les matrices
   comparaisons ; `note` résume la revue et `motif` explique une cotation.
 - `statut` vaut `statusNotTreated`, `statusInProgress`, `statusTreated` ou
   `statusAccepted`.
-- `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid` ou `''`
+- `traitement` (stratégie) vaut `reduce`, `accept`, `transfer`, `avoid`,
+  `escalate` pour les menaces, ou `exploit`, `enhance`, `share`, `accept`,
+  `escalate` pour les opportunités, ou `''`
   (non définie) ; `assessmentTarget` est la cotation visée `[probabilité, impact]`
   (`[0, 0]` = non définie).
 - `settings.riskAppetite` : score maximal acceptable (P × I, sur 25 ; `0` = aucun).
@@ -225,16 +242,17 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
   risque avec seuils d'alerte et critique, relevés datés et signés, mini-courbe ;
   compteur « KRI en alerte » dans le registre, KRI critiques dans les décisions
   attendues de la vue comité
-- **Chiffrage et provision pour risques** : fourchette de coût par risque dans la
-  fiche (et coût pondéré pour les comparer), et dans la vue comité (et le PDF) le
-  **montant à prévoir**, avec et sans les mesures : l'écart est l'économie apportée
-  par le plan d'actions, à condition de réaliser les mesures restantes. Le texte est
+- **Chiffrage et provision pour risques** : fourchette de coût par menace active
+  dans la fiche, et dans la vue comité (et le PDF) la provision P80 **actuelle**
+  et sa prévision après actions. Les opportunités et les risques clos sont exclus ;
+  les menaces sans coût estimé sont comptées à part. Le texte est
   généré automatiquement à partir des cotations, des coûts et des mesures, sans
   vocabulaire statistique : cas normal (aucun gros risque ne se réalise), puis pour
   chaque gros risque son coût s'il se réalise, l'effet de ses mesures (probabilité
   « 1 chance sur 3 → 1 chance sur 7 » pour la prévention, coût réduit pour la
   protection) et leur avancement. Calcul par 10 000 simulations Monte-Carlo (loi
-  triangulaire, résultats stables)
+  triangulaire, résultats stables). Le modèle suppose les risques indépendants :
+  il ne chiffre pas leur corrélation ni les scénarios combinés.
 - **Détecteur d'incohérences** : alertes « à vérifier » (rien n'est bloqué) quand
   une probabilité saisie sort de la tranche de la cotation P, qu'un coût ne
   correspond pas à la cotation d'impact selon l'échelle en euros de l'analyse

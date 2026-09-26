@@ -104,14 +104,17 @@ content: for a new analysis, only `riskr-data.js` changes.
 - When opened locally, `riskr-data.local.js` can override the generic data. It
   is ignored by Git and must only contain private data that must not be published.
 
-Each risk has **one rating** before and after remediation:
-`assessmentBefore` and `assessmentAfter`, as `[probability, impact]`
+Each risk has four ratings: `assessmentBefore` (inherent), `assessmentCurrent`
+(observed), `assessmentAfter` (forecast after open actions), and
+`assessmentTarget`, as `[probability, impact]`
 (1 to 5; `[0, 0]` = not assessed). Criticality is probability × impact (out of 25);
 it is shown scaled to 5 (score ÷ 5) in tables and matrices.
+For legacy files with unfinished actions, the current rating conservatively
+starts from the inherent rating and is flagged for review.
 
 The data field names are in French (the application's original language):
 
-- `mesures`: list of measures `{ texte, porteur, echeance, etat }` (text, owner,
+- `mesures`: list of measures `{ texte, porteur, echeance, etat, verification }` (text, owner,
   due date, status; owner and due date are optional; `etat` is `todo`, `doing` or
   `done`; a plain text string is also accepted). A due date in `YYYY-MM-DD` or
   `DD/MM/YYYY` format that has passed on a measure not done marks it as overdue.
@@ -120,8 +123,16 @@ The data field names are in French (the application's original language):
   (`prevention` or `protection`), its side of the bow-tie, and `efficacite`
   (effectiveness, 0 to 5). `rang` (optional) keeps the position chosen by drag and
   drop in the action plan; without a rank, measures are sorted by delay then due date.
-- `velocite`: speed of onset of the risk (1 to 5, 0 = not assessed), used by the
-  "Size = velocity" option of the matrices.
+- `velocite`: speed from event to impact (1 to 5, 0 = not assessed), used by the
+  "Size = velocity" option of the matrices. `proximityDate` separately records
+  when the event may occur; `milestone` names the related milestone.
+- `kind` distinguishes threats and opportunities; `impactAxes` scores cost,
+  schedule, quality, service and benefit effects. `event`, `objective`,
+  `raisedAt` and `raisedBy` record the uncertain event, affected objective and origin.
+- `lifecycle` is `active`, `materialized`, `closed` or `transferred`;
+  `lifeDate`, `lifeReason`, `transferOwner` and `issue` retain exit and issue details.
+- `decisions` records dated decisions, the decision maker, reason, review date
+  and accepted score. Expired or worsened acceptances require a new decision.
 - `notes`: review notes `{ date, auteur, texte }` (date, author, text); `liens`:
   documents and links `{ libelle, url }` (label, URL).
 - `settings.templates`: "My templates" of the library `{ titre, description,
@@ -149,7 +160,9 @@ The data field names are in French (the application's original language):
   comparisons; `note` summarises the review and `motif` explains a rating.
 - `statut` is `statusNotTreated`, `statusInProgress`, `statusTreated` or
   `statusAccepted`.
-- `traitement` (strategy) is `reduce`, `accept`, `transfer`, `avoid` or `''`
+- `traitement` (strategy) is `reduce`, `accept`, `transfer`, `avoid`, `escalate`
+  for threats, or `exploit`, `enhance`, `share`, `accept`, `escalate` for
+  opportunities, or `''`
   (not defined); `assessmentTarget` is the target rating `[probability, impact]`
   (`[0, 0]` = not defined).
 - `settings.riskAppetite`: maximum acceptable score (P × I, out of 25; `0` = none).
@@ -222,15 +235,16 @@ entirely without a network (single file of about 2 MB).
   risk with alert and critical thresholds, dated and signed readings, sparkline;
   "KRI in alert" counter in the register, critical KRIs in the expected decisions
   of the committee view
-- **Costing and risk contingency**: cost range per risk in the sheet (and a
-  weighted cost to compare them), and in the committee view (and the PDF) the
-  **amount to set aside**, with and without the measures: the difference is what
-  the action plan saves, provided the remaining measures are carried out. The
-  text is generated automatically from the ratings, costs and measures, with no
+- **Costing and risk contingency**: cost range per active threat in the sheet,
+  and in the committee view (and PDF) the **current P80 contingency** and its
+  forecast after actions. Opportunities and closed risks are excluded; active
+  threats without costs are counted separately. The text is generated from
+  ratings, costs and measures, with no
   statistical jargon: normal case (no big risk occurs), then for each big risk its
   cost if it occurs, the effect of its measures (probability "1 chance in 3 →
   1 chance in 7" for prevention, reduced cost for protection) and their progress.
-  Computed from 10,000 Monte Carlo simulations (triangular distribution, stable results)
+  Computed from 10,000 Monte Carlo simulations (triangular distribution, stable results).
+  The model assumes independent risks; it does not price correlations or combined scenarios.
 - **Inconsistency detector**: "to check" alerts (nothing is blocked) when an
   entered probability falls outside the band of the P rating, when a cost does
   not match the impact rating according to the analysis's euro scale

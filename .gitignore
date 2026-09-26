@@ -27,3 +27,6 @@ riskr-data.local.js
 
 # Specs SpecKit : documentation locale, non publiée
 specs/
+
+# Worktrees de développement locaux
+.worktrees/
