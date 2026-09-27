@@ -13538,6 +13538,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             return (0.5 - (perRow - 1) * BUBBLE.gap / 2) / perRow;
         }
 
+        // Numéro d'une bulle : dans un seul programme du portefeuille, le code du programme est superflu (« 1.2 » au lieu de « NORD 1.2 »)
+        const bubbleNumber = id => portfolio && viewScope ? String(id).split(' ').slice(1).join(' ') || String(id) : String(id);
         // Libellé d'une bulle : « NORD 1.2 » (portefeuille) sur deux lignes, sinon une seule
         const bubbleLines = label => String(label).includes(' ') ? String(label).split(' ') : [String(label)];
 
@@ -13625,7 +13627,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const y = assessments.reduce((sum, a) => sum + a[1], 0) / assessments.length;
                     const velocities = group.risks.map(risk => risk.velocite).filter(Boolean);
                     return { x, y, baseX: x, baseY: y, label: t('groupLabel', { id: group.id }),
-                        shortLabel: `${group.id}`, groupName: group.name,
+                        shortLabel: bubbleNumber(group.id), groupName: group.name,
                         scale: velocityScale(velocities.length ? velocities.reduce((sum, v) => sum + v, 0) / velocities.length : 0) };
                 }).filter(Boolean);
             }
@@ -13634,7 +13636,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (!assessment) return null;
                 const [x, y] = assessment;
                 return { x, y, baseX: x, baseY: y, label: t('riskLabel', { id: risk.id }),
-                    shortLabel: risk.id, riskTitle: risk.title, groupName: group.name, scale: velocityScale(risk.velocite) };
+                    shortLabel: bubbleNumber(risk.id), riskTitle: risk.title, groupName: group.name, scale: velocityScale(risk.velocite) };
             })).filter(Boolean);
             return !dense || points.length <= MATRIX_DENSE ? points : countByCell(points);
         }
@@ -16006,6 +16008,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ["improved", "Le panneau de gauche perd son titre au profit du champ de recherche ; flèches haut et bas pour parcourir résultats et niveaux, Entrée pour ouvrir.", "The left panel's title gives way to the search field; up and down arrows move through results and levels, Enter opens."],
                 ["new", "Recherche de l'onglet ouvert, à droite des onglets : registre, plan d'actions, revues et nouveautés (loupe compacte quand la place manque).", "Search for the open tab, right of the tabs: register, action plan, reviews and changelog (compact magnifier when space is short)."],
                 ["improved", "Filtre texte du registre sans accents ni casse, par mots.", "Register text filter ignores accents and case, word by word."],
+                ["improved", "Dans un seul programme du portefeuille, les bulles n'affichent que le numéro du risque (« 1.2 »), donc plus grosses et plus lisibles.", "Within a single portfolio programme, bubbles show only the risk number (\"1.2\"), so they are larger and easier to read."],
                 ["improved", "Options des matrices (cible, vélocité, nombre par case, appétence) mémorisées pour toutes les analyses ouvertes dans le navigateur.", "Matrix options (target, velocity, count per cell, appetite) remembered for every analysis opened in the browser."],
                 ["improved", "Registre : la bordure orange d'un risque au-dessus de l'appétence s'explique au survol, et le même trait précède le compteur du résumé.", "Register: the orange edge of a risk above appetite is explained on hover, and the same mark precedes the summary count."],
                 ["improved", "Au-delà de 30 risques, la matrice des risques montre une bulle par case avec le nombre de risques (survol : leurs numéros ; clic : leur liste) et un losange par case pour les cibles restantes ; en portefeuille, les changements se comptent depuis la dernière revue de chaque programme.", "Beyond 30 risks, the risk matrix shows one bubble per cell with the number of risks (hover: their numbers; click: their list) and one diamond per cell for remaining targets; in a portfolio, changes are counted since each programme’s latest review."],
