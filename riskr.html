@@ -5760,16 +5760,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .program-row-actions { white-space: nowrap; }
         /* ===== Arborescence de gauche (programme ou portefeuille) : mise en page à deux colonnes sous l'en-tête ===== */
         @media (min-width: 900px) {
-            body.has-tree .container { display: grid; grid-template-columns: 270px minmax(0, 1fr); column-gap: 24px; align-items: start; }
+            body.has-tree .container { display: grid; grid-template-columns: var(--tree-width, 270px) minmax(0, 1fr); column-gap: 24px; align-items: start; }
             body.has-tree .container > * { grid-column: 2; min-width: 0; }
             body.has-tree #register-view { overflow-x: auto; }
             body.has-tree .register-table td:nth-child(2) { min-width: 15rem; }
             body.has-tree .container > .app-header { grid-column: 1 / -1; }
-            body.has-tree .container > .scope-tree { grid-column: 1; grid-row: 2 / span 60; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; }
+            body.has-tree .container > .scope-tree { grid-column: 1; grid-row: 2 / span 60; align-self: stretch; position: relative; }
+            body.has-tree .scope-tree .tree-inner { position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow-y: auto; }
             body.has-tree.tree-collapsed .container { grid-template-columns: 36px minmax(0, 1fr); }
         }
         @media (max-width: 899px) { .scope-tree { display: none; } }
         .scope-tree { padding: 10px 6px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+        .tree-resizer { position: absolute; top: 0; bottom: 0; inset-inline-end: -13px; width: 10px; cursor: col-resize; touch-action: none; }
+        .tree-resizer::after { content: ''; position: absolute; top: 0; bottom: 0; inset-inline-start: 4px; width: 2px; border-radius: 2px; background: transparent; transition: background-color .15s ease; }
+        .tree-resizer:hover::after, .tree-resizer:focus-visible::after, body.tree-resizing .tree-resizer::after { background: var(--accent); }
+        .tree-resizer:focus-visible { outline: none; }
+        body.tree-resizing { cursor: col-resize; user-select: none; }
+        body.tree-collapsed .tree-resizer { display: none; }
         .scope-tree ul { margin: 0; padding: 0; list-style: none; }
         .tree-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 4px 8px 8px; font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--text-3); }
         .tree-collapse, .tree-twisty { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 22px; height: 22px; padding: 0; border: none; border-radius: 5px; background: none; color: var(--text-3); cursor: pointer; }
@@ -10158,7 +10165,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             riskObjectiveExample: 'مثال: بدء الخدمة قبل سبتمبر', programRiskScores: 'الحالي ← المتوقع', programDependencyDescription: 'وصف الاعتماد'
         });
         Object.assign(translations.fr, {
-            treeTitle: 'Navigation', treeCollapse: 'Replier le panneau', treeExpand: 'Déplier le panneau', treeCount: '{count} risques actifs', treeHot: '{count} au-delà de la tolérance',
+            treeResize: 'Régler la largeur du panneau (double-clic : largeur d’origine)', treeTitle: 'Navigation', treeCollapse: 'Replier le panneau', treeExpand: 'Déplier le panneau', treeCount: '{count} risques actifs', treeHot: '{count} au-delà de la tolérance',
             programP80Own: 'Provision P80 actuelle', tabProject: 'Projet', scopePrograms: 'Programmes ({count})', scopeProjects: 'Projets ({count})', scopeOpen: 'Ouvrir', portfolioCopyOf: 'copie du {date} ({source})', portfolioReadOnlyHint: 'Lecture seule : ce programme se modifie dans son propre fichier, puis se réimporte dans le portefeuille.', programLevelRisks: '{count} risques actifs portés directement par le programme (hors projets).', projectRisks: 'Risques du projet', projectOwned: 'Porté par ce projet', projectTouched: 'Touche ce projet',
             tabPortfolio: 'Portefeuille', portfolioFrame: 'Cadre du portefeuille', portfolioOwner: 'Responsable du portefeuille', portfolioStaleAfter: 'Copie ancienne après (jours)', portfolioCreate: 'Créer un portefeuille', portfolioCreateHint: 'Un portefeuille réunit plusieurs programmes tenus chacun dans leur propre fichier : il en importe une copie et les consulte ensemble.', portfolioCreateConfirm: 'Les {count} risques de cette analyse seront remplacés par un portefeuille vide. Continuer ?', portfolioImport: 'Importer un programme', portfolioImported: 'Programme importé', portfolioReplace: 'Remplacer la copie de « {name} » importée le {date} ?', portfolioNotProgram: 'Ce fichier ne contient pas de programme Riskr.', portfolioInvalid: 'Les données du portefeuille sont invalides.', portfolioReadOnly: 'Portefeuille : un risque se modifie dans le fichier de son programme, puis se réimporte.', portfolioPrograms: 'Programmes', portfolioCode: 'Code', portfolioImportedAt: 'Importé le', portfolioActiveRisks: 'Risques actifs', portfolioStale: 'Copie ancienne', portfolioGlobalP80: 'Provision globale P80', portfolioRemove: 'Retirer', portfolioRemoveConfirm: 'Retirer « {name} » du portefeuille ? Son fichier n’est pas touché.', portfolioEmpty: 'Aucun programme : « Importer un programme » ajoute la copie du fichier riskr-data.js (ou d’un export JSON) de chaque programme.', portfolioSimulationLimit: 'Chaque copie est figée à sa date d’import : réimportez le fichier d’un programme pour la mettre à jour. Les provisions P80 ne s’additionnent pas ; aucune corrélation entre programmes n’est simulée.', portfolioEscalations: 'Escalades vers le portefeuille', portfolioEscalationsHint: 'Risques escaladés au niveau organisation par les programmes. La décision se consigne dans le fichier du programme.', portfolioDecisions: 'Arbitrages du portefeuille', portfolioJournal: 'Imports', portfolioJournal_import: 'Import', portfolioJournal_update: 'Mise à jour', portfolioJournal_remove: 'Retrait', scopeNoteProgram: 'Vues limitées à ce programme',
             programDate: 'Date', scopeNote: 'Vues limitées à ce projet',
@@ -10232,7 +10239,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Rouvrez le programme avant de créer ou réactiver un risque.'
         });
         Object.assign(translations.en, {
-            treeTitle: 'Navigation', treeCollapse: 'Collapse the panel', treeExpand: 'Expand the panel', treeCount: '{count} active risks', treeHot: '{count} above tolerance',
+            treeResize: 'Adjust the panel width (double-click: original width)', treeTitle: 'Navigation', treeCollapse: 'Collapse the panel', treeExpand: 'Expand the panel', treeCount: '{count} active risks', treeHot: '{count} above tolerance',
             programP80Own: 'Current P80 contingency', tabProject: 'Project', scopePrograms: 'Programs ({count})', scopeProjects: 'Projects ({count})', scopeOpen: 'Open', portfolioCopyOf: 'copy of {date} ({source})', portfolioReadOnlyHint: 'Read-only: this program is edited in its own file, then imported into the portfolio again.', programLevelRisks: '{count} active risks owned directly by the program (outside projects).', projectRisks: 'Project risks', projectOwned: 'Owned by this project', projectTouched: 'Affects this project',
             tabPortfolio: 'Portfolio', portfolioFrame: 'Portfolio framework', portfolioOwner: 'Portfolio owner', portfolioStaleAfter: 'Copy outdated after (days)', portfolioCreate: 'Create a portfolio', portfolioCreateHint: 'A portfolio brings together several programs, each kept in its own file: it imports a copy of each and reviews them together.', portfolioCreateConfirm: 'The {count} risks of this analysis will be replaced by an empty portfolio. Continue?', portfolioImport: 'Import a program', portfolioImported: 'Program imported', portfolioReplace: 'Replace the copy of “{name}” imported on {date}?', portfolioNotProgram: 'This file does not contain a Riskr program.', portfolioInvalid: 'The portfolio data is invalid.', portfolioReadOnly: 'Portfolio: a risk is edited in its program’s file, then imported again.', portfolioPrograms: 'Programs', portfolioCode: 'Code', portfolioImportedAt: 'Imported on', portfolioActiveRisks: 'Active risks', portfolioStale: 'Outdated copy', portfolioGlobalP80: 'Global P80 contingency', portfolioRemove: 'Remove', portfolioRemoveConfirm: 'Remove “{name}” from the portfolio? Its file is not affected.', portfolioEmpty: 'No program yet: “Import a program” adds a copy of each program’s riskr-data.js file (or JSON export).', portfolioSimulationLimit: 'Each copy is frozen at its import date: import a program’s file again to update it. P80 contingencies cannot be added up; no correlation between programs is simulated.', portfolioEscalations: 'Escalations to the portfolio', portfolioEscalationsHint: 'Risks escalated to the organization level by the programs. The decision is recorded in the program’s file.', portfolioDecisions: 'Portfolio rulings', portfolioJournal: 'Imports', portfolioJournal_import: 'Import', portfolioJournal_update: 'Update', portfolioJournal_remove: 'Removal', scopeNoteProgram: 'Views limited to this program',
             programDate: 'Date', scopeNote: 'Views limited to this project',
@@ -10306,7 +10313,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Reopen the program before creating or reactivating a risk.'
         });
         Object.assign(translations.es, {
-            treeTitle: 'Navegación', treeCollapse: 'Plegar el panel', treeExpand: 'Desplegar el panel', treeCount: '{count} riesgos activos', treeHot: '{count} por encima de la tolerancia',
+            treeResize: 'Ajustar el ancho del panel (doble clic: ancho original)', treeTitle: 'Navegación', treeCollapse: 'Plegar el panel', treeExpand: 'Desplegar el panel', treeCount: '{count} riesgos activos', treeHot: '{count} por encima de la tolerancia',
             programP80Own: 'Provisión P80 actual', tabProject: 'Proyecto', scopePrograms: 'Programas ({count})', scopeProjects: 'Proyectos ({count})', scopeOpen: 'Abrir', portfolioCopyOf: 'copia del {date} ({source})', portfolioReadOnlyHint: 'Solo lectura: este programa se modifica en su propio archivo y luego se vuelve a importar en la cartera.', programLevelRisks: '{count} riesgos activos asumidos directamente por el programa (fuera de los proyectos).', projectRisks: 'Riesgos del proyecto', projectOwned: 'Asumido por este proyecto', projectTouched: 'Afecta a este proyecto',
             tabPortfolio: 'Cartera', portfolioFrame: 'Marco de la cartera', portfolioOwner: 'Responsable de la cartera', portfolioStaleAfter: 'Copia antigua tras (días)', portfolioCreate: 'Crear una cartera', portfolioCreateHint: 'Una cartera reúne varios programas, cada uno en su propio archivo: importa una copia de cada uno y los consulta juntos.', portfolioCreateConfirm: 'Los {count} riesgos de este análisis se sustituirán por una cartera vacía. ¿Continuar?', portfolioImport: 'Importar un programa', portfolioImported: 'Programa importado', portfolioReplace: '¿Sustituir la copia de «{name}» importada el {date}?', portfolioNotProgram: 'Este archivo no contiene un programa Riskr.', portfolioInvalid: 'Los datos de la cartera no son válidos.', portfolioReadOnly: 'Cartera: un riesgo se modifica en el archivo de su programa y luego se vuelve a importar.', portfolioPrograms: 'Programas', portfolioCode: 'Código', portfolioImportedAt: 'Importado el', portfolioActiveRisks: 'Riesgos activos', portfolioStale: 'Copia antigua', portfolioGlobalP80: 'Provisión global P80', portfolioRemove: 'Retirar', portfolioRemoveConfirm: '¿Retirar «{name}» de la cartera? Su archivo no se modifica.', portfolioEmpty: 'Ningún programa: «Importar un programa» añade la copia del archivo riskr-data.js (o de una exportación JSON) de cada programa.', portfolioSimulationLimit: 'Cada copia queda fijada en su fecha de importación: vuelva a importar el archivo de un programa para actualizarla. Las provisiones P80 no se suman; no se simula ninguna correlación entre programas.', portfolioEscalations: 'Escaladas hacia la cartera', portfolioEscalationsHint: 'Riesgos escalados al nivel de organización por los programas. La decisión se registra en el archivo del programa.', portfolioDecisions: 'Arbitrajes de la cartera', portfolioJournal: 'Importaciones', portfolioJournal_import: 'Importación', portfolioJournal_update: 'Actualización', portfolioJournal_remove: 'Retirada', scopeNoteProgram: 'Vistas limitadas a este programa',
             programDate: 'Fecha', scopeNote: 'Vistas limitadas a este proyecto',
@@ -10380,7 +10387,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Reabra el programa antes de crear o reactivar un riesgo.'
         });
         Object.assign(translations.zh, {
-            treeTitle: '导航', treeCollapse: '收起面板', treeExpand: '展开面板', treeCount: '{count} 项活跃风险', treeHot: '{count} 项超出容忍度',
+            treeResize: '调整面板宽度（双击恢复原始宽度）', treeTitle: '导航', treeCollapse: '收起面板', treeExpand: '展开面板', treeCount: '{count} 项活跃风险', treeHot: '{count} 项超出容忍度',
             programP80Own: '当前 P80 储备', tabProject: '项目', scopePrograms: '项目群（{count}）', scopeProjects: '项目（{count}）', scopeOpen: '打开', portfolioCopyOf: '{date} 的副本（{source}）', portfolioReadOnlyHint: '只读：请在该项目群自己的文件中修改，然后重新导入项目组合。', programLevelRisks: '{count} 项活跃风险直接由项目群负责（不属于任何项目）。', projectRisks: '项目风险', projectOwned: '由本项目负责', projectTouched: '影响本项目',
             tabPortfolio: '项目组合', portfolioFrame: '项目组合框架', portfolioOwner: '项目组合负责人', portfolioStaleAfter: '副本过期天数', portfolioCreate: '创建项目组合', portfolioCreateHint: '项目组合汇集多个项目群，每个项目群保存在各自的文件中：导入各自的副本并统一查看。', portfolioCreateConfirm: '本分析的 {count} 项风险将被一个空的项目组合取代。是否继续？', portfolioImport: '导入项目群', portfolioImported: '项目群已导入', portfolioReplace: '是否替换于 {date} 导入的“{name}”副本？', portfolioNotProgram: '此文件不包含 Riskr 项目群。', portfolioInvalid: '项目组合数据无效。', portfolioReadOnly: '项目组合：风险需在其项目群文件中修改，然后重新导入。', portfolioPrograms: '项目群', portfolioCode: '代码', portfolioImportedAt: '导入日期', portfolioActiveRisks: '活跃风险', portfolioStale: '副本已过期', portfolioGlobalP80: '整体 P80 储备', portfolioRemove: '移除', portfolioRemoveConfirm: '是否从项目组合中移除“{name}”？其文件不受影响。', portfolioEmpty: '尚无项目群：“导入项目群”会添加每个项目群的 riskr-data.js 文件（或 JSON 导出）副本。', portfolioSimulationLimit: '每个副本固定于导入日期：重新导入项目群文件即可更新。各 P80 储备不可相加；模拟未体现项目群之间的相关性。', portfolioEscalations: '上报至项目组合的风险', portfolioEscalationsHint: '各项目群上报至组织层级的风险。决定需在项目群文件中记录。', portfolioDecisions: '项目组合决策', portfolioJournal: '导入记录', portfolioJournal_import: '导入', portfolioJournal_update: '更新', portfolioJournal_remove: '移除', scopeNoteProgram: '所有视图仅显示该项目群',
             programDate: '日期', scopeNote: '所有视图仅显示该项目',
@@ -10454,7 +10461,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: '创建或重新启用风险前，请先重新开放项目群。'
         });
         Object.assign(translations.ar, {
-            treeTitle: 'التنقل', treeCollapse: 'طي اللوحة', treeExpand: 'توسيع اللوحة', treeCount: '{count} مخاطر نشطة', treeHot: '{count} فوق حد التحمل',
+            treeResize: 'ضبط عرض اللوحة (نقر مزدوج: العرض الأصلي)', treeTitle: 'التنقل', treeCollapse: 'طي اللوحة', treeExpand: 'توسيع اللوحة', treeCount: '{count} مخاطر نشطة', treeHot: '{count} فوق حد التحمل',
             programP80Own: 'احتياطي P80 الحالي', tabProject: 'المشروع', scopePrograms: 'البرامج ({count})', scopeProjects: 'المشاريع ({count})', scopeOpen: 'فتح', portfolioCopyOf: 'نسخة {date} ({source})', portfolioReadOnlyHint: 'للقراءة فقط: يُعدَّل هذا البرنامج في ملفه الخاص ثم يُعاد استيراده إلى المحفظة.', programLevelRisks: '{count} مخاطر نشطة يتحملها البرنامج مباشرة (خارج المشاريع).', projectRisks: 'مخاطر المشروع', projectOwned: 'يتحمله هذا المشروع', projectTouched: 'يمس هذا المشروع',
             tabPortfolio: 'المحفظة', portfolioFrame: 'إطار المحفظة', portfolioOwner: 'مسؤول المحفظة', portfolioStaleAfter: 'تصبح النسخة قديمة بعد (أيام)', portfolioCreate: 'إنشاء محفظة', portfolioCreateHint: 'تجمع المحفظة عدة برامج يُحفظ كل منها في ملفه الخاص: تستورد نسخة من كل برنامج وتعرضها معًا.', portfolioCreateConfirm: 'ستُستبدل مخاطر هذا التحليل وعددها {count} بمحفظة فارغة. هل تريد المتابعة؟', portfolioImport: 'استيراد برنامج', portfolioImported: 'تم استيراد البرنامج', portfolioReplace: 'هل تريد استبدال نسخة «{name}» المستوردة في {date}؟', portfolioNotProgram: 'لا يحتوي هذا الملف على برنامج Riskr.', portfolioInvalid: 'بيانات المحفظة غير صالحة.', portfolioReadOnly: 'المحفظة: يُعدَّل الخطر في ملف برنامجه ثم يُعاد استيراده.', portfolioPrograms: 'البرامج', portfolioCode: 'الرمز', portfolioImportedAt: 'تاريخ الاستيراد', portfolioActiveRisks: 'المخاطر النشطة', portfolioStale: 'نسخة قديمة', portfolioGlobalP80: 'الاحتياطي الإجمالي P80', portfolioRemove: 'إزالة', portfolioRemoveConfirm: 'هل تريد إزالة «{name}» من المحفظة؟ لن يتأثر ملفه.', portfolioEmpty: 'لا توجد برامج: يضيف «استيراد برنامج» نسخة من ملف riskr-data.js (أو تصدير JSON) لكل برنامج.', portfolioSimulationLimit: 'كل نسخة مثبتة عند تاريخ استيرادها: أعد استيراد ملف البرنامج لتحديثها. لا تُجمع احتياطيات P80، ولا تحاكي المحاكاة أي ترابط بين البرامج.', portfolioEscalations: 'التصعيدات إلى المحفظة', portfolioEscalationsHint: 'مخاطر صعّدتها البرامج إلى مستوى المنظمة. يُسجَّل القرار في ملف البرنامج.', portfolioDecisions: 'تحكيمات المحفظة', portfolioJournal: 'عمليات الاستيراد', portfolioJournal_import: 'استيراد', portfolioJournal_update: 'تحديث', portfolioJournal_remove: 'إزالة', scopeNoteProgram: 'العروض مقتصرة على هذا البرنامج',
             programDate: 'التاريخ', scopeNote: 'العروض مقتصرة على هذا المشروع',
@@ -14186,6 +14193,38 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // pour ceux au-delà de la tolérance. Un clic choisit le niveau (comme le fil d'Ariane) sans changer d'onglet ni de filtres.
         // Branches ouvertes et panneau replié : mémorisés dans le navigateur. Complexité : O(n · a + k) — a = projets touchés par risque
         const treeOpen = new Set(JSON.parse(riskrStorage.getItem('tree-open') || '[]'));
+        // Largeur du panneau : poignée à tirer (ou flèches du clavier), double-clic = largeur d'origine ; mémorisée
+        const TREE_WIDTH = { min: 180, max: 560, initial: 270 };
+        const setTreeWidth = width => {
+            const value = Math.round(Math.min(TREE_WIDTH.max, Math.max(TREE_WIDTH.min, width)));
+            document.body.style.setProperty('--tree-width', `${value}px`);
+            return value;
+        };
+        setTreeWidth(Number(riskrStorage.getItem('tree-width')) || TREE_WIDTH.initial);
+        function mountTreeResizer(handle) {
+            const tree = document.getElementById('scope-tree');
+            const save = width => { riskrStorage.setItem('tree-width', String(setTreeWidth(width))); Object.values(Chart.instances).forEach(chart => chart.resize()); };
+            const rtl = () => document.documentElement.dir === 'rtl';
+            handle.onpointerdown = event => {
+                event.preventDefault();
+                handle.setPointerCapture(event.pointerId);
+                const startX = event.clientX, startWidth = tree.getBoundingClientRect().width;
+                document.body.classList.add('tree-resizing');
+                handle.onpointermove = move => setTreeWidth(startWidth + (rtl() ? startX - move.clientX : move.clientX - startX));
+                handle.onpointerup = () => {
+                    handle.onpointermove = handle.onpointerup = null;
+                    document.body.classList.remove('tree-resizing');
+                    save(tree.getBoundingClientRect().width);
+                };
+            };
+            handle.ondblclick = () => save(TREE_WIDTH.initial);
+            handle.onkeydown = event => {
+                const step = { ArrowLeft: -16, ArrowRight: 16 }[event.key];
+                if (!step) return;
+                event.preventDefault();
+                save(tree.getBoundingClientRect().width + (rtl() ? -step : step));
+            };
+        }
         function renderScopeTree() {
             const tree = document.getElementById('scope-tree');
             document.body.classList.toggle('has-tree', Boolean(program));
@@ -14217,9 +14256,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 .map(item => node(item.uid, item.name, depth)).join('');
             const top = portfolio ? 'tabPortfolio' : 'tabProgram';
             const body = portfolio ? portfolio.programs.map(copy => node(copy.uid, copy.program.title, 1, projects(copy.uid, 2))).join('') : projects('', 1);
-            tree.innerHTML = `<div class="tree-head"><span>${t('treeTitle')}</span>
+            tree.innerHTML = `<div class="tree-inner"><div class="tree-head"><span>${t('treeTitle')}</span>
                 <button type="button" class="tree-collapse" data-tree-collapse aria-label="${escapeHtml(t(document.body.classList.contains('tree-collapsed') ? 'treeExpand' : 'treeCollapse'))}" title="${escapeHtml(t(document.body.classList.contains('tree-collapsed') ? 'treeExpand' : 'treeCollapse'))}">${icon('sidebar')}</button></div>
-                <ul role="tree" aria-label="${escapeHtml(t('treeTitle'))}">${node('', program.title || t(top), 0, body || ' ')}</ul>`;
+                <ul role="tree" aria-label="${escapeHtml(t('treeTitle'))}">${node('', program.title || t(top), 0, body || ' ')}</ul></div>
+                <div class="tree-resizer" role="separator" aria-orientation="vertical" tabindex="0" aria-label="${escapeHtml(t('treeResize'))}" title="${escapeHtml(t('treeResize'))}"></div>`;
+            mountTreeResizer(tree.querySelector('.tree-resizer'));
             tree.onclick = event => {
                 if (event.target.closest('[data-tree-collapse]')) {
                     riskrStorage.setItem('tree-collapsed', document.body.classList.contains('tree-collapsed') ? '0' : '1');
@@ -15686,7 +15727,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // affichent l'anglais. À compléter à chaque évolution (commits : dépôt GitHub).
         const CHANGELOG = [
             { date: "2026-09-27", commits: [], title: ["Arborescence de navigation", "Navigation tree"], items: [
-                ["new", "Arborescence à gauche : programme ou portefeuille, programmes et projets, avec le nombre de risques actifs et un repère pour ceux au-delà de la tolérance ; le panneau se replie.", "Tree on the left: programme or portfolio, programmes and projects, with the number of active risks and a marker for those above tolerance; the panel can be collapsed."],
+                ["new", "Arborescence à gauche, sur toute la hauteur : programme ou portefeuille, programmes et projets, avec le nombre de risques actifs et un repère pour ceux au-delà de la tolérance ; le panneau se replie et sa largeur se règle.", "Full-height tree on the left: programme or portfolio, programmes and projects, with the number of active risks and a marker for those above tolerance; the panel can be collapsed and resized."],
                 ["improved", "Chaque programme ou projet retrouve son onglet et ses filtres quand on y revient ; un niveau jamais ouvert reprend la vue en cours ; une fiche hors du nouveau niveau se referme.", "Each programme or project gets its own tab and filters back when you return to it; a level never opened keeps the current view; a risk sheet outside the new level closes."]] },
             { date: "2026-09-27", commits: [], title: ["Portefeuille de programmes", "Programme portfolio"], items: [
                 ["new", "Portefeuille : un fichier qui réunit la copie de plusieurs programmes, chacun restant tenu dans son propre fichier ; « Importer un programme » ajoute ou met à jour une copie.", "Portfolio: a file that brings together copies of several programmes, each still kept in its own file; \"Import a programme\" adds or updates a copy."],

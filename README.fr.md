@@ -244,7 +244,7 @@ clôture, les risques actifs ou survenus
 doivent être transférés avec responsable, date et motif ; les transferts
 s'exportent en CSV. Le format canonique conserve toutes les données programme.
 
-Sur un écran large, une arborescence à gauche montre le programme (ou le portefeuille), ses programmes et leurs projets, avec le nombre de risques actifs et un point orange s'il y en a au-delà de la tolérance. Un clic choisit le niveau ; chaque programme ou projet retrouve l'onglet et les filtres qu'on y avait laissés (un niveau jamais ouvert garde la vue en cours) ; une fiche ouverte hors du nouveau niveau se referme. Le panneau se replie, et ce choix est mémorisé par le navigateur.
+Sur un écran large, une arborescence à gauche montre le programme (ou le portefeuille), ses programmes et leurs projets, avec le nombre de risques actifs et un point orange s'il y en a au-delà de la tolérance. Un clic choisit le niveau ; chaque programme ou projet retrouve l'onglet et les filtres qu'on y avait laissés (un niveau jamais ouvert garde la vue en cours) ; une fiche ouverte hors du nouveau niveau se referme. Le panneau occupe toute la hauteur de la page ; il se replie et sa largeur se règle en tirant son bord (double-clic : largeur d'origine), choix mémorisés par le navigateur.
 
 ### Gestion de portefeuille
 
