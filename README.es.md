@@ -189,7 +189,7 @@ transversal que no es un proyecto, como la coordinación de proveedores), `benef
 `dependencies`, `scenarios`, `escalations`, `stages` y `decisions`. Los grupos de
 riesgos siguen siendo **categorías temáticas**.
 
-Una ruta de navegación encima de las pestañas muestra el camino programa › proyecto;
+El nombre del programa pasa a ser el título de la página (un clic en él vuelve arriba); debajo, una ruta de navegación muestra el camino programa › proyecto;
 cada nivel del camino se puede pulsar para subir. La lista desplegable
 «Proyectos (n)» al final del camino baja a un proyecto; su primera opción vuelve al
 programa. Al elegir un proyecto, las matrices, el registro, el plan de acción, las

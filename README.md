@@ -197,7 +197,7 @@ work that is not a project, such as supplier coordination), `benefits`,
 `dependencies`, `scenarios`, `escalations`, `stages` and `decisions`. Risk
 groups remain **thematic categories**.
 
-A breadcrumb above the tabs shows the path program › project; each level of the
+The program name becomes the page title (clicking it goes back to the top); below it, a breadcrumb shows the path program › project; each level of the
 path can be clicked to move up. The "Projects (n)" drop-down list at the end of
 the path moves down to a project; its first option returns to the program.
 Selecting a project limits the matrices, register, action plan, reviews and

@@ -203,7 +203,7 @@ la coordination des fournisseurs), des `benefits`, `dependencies`, `scenarios`,
 `escalations`, `stages` et `decisions`. Les groupes de risques restent des
 **catégories thématiques**.
 
-Un fil d'Ariane au-dessus des onglets affiche le chemin programme › projet ;
+Le nom du programme devient le titre de la page (un clic dessus ramène en haut) ; dessous, un fil d'Ariane affiche le chemin programme › projet ;
 chaque niveau du chemin se clique pour remonter. La liste déroulante
 « Projets (n) » au bout du chemin descend vers un projet ; sa première option
 ramène au programme. Choisir un projet limite les matrices, le registre, le plan
