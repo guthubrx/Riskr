@@ -91,6 +91,14 @@ async function shot(dir, name, prepare, from, to, maxHeight = 1400) {
 }
 
 const tabs = '.view-tabs, nav[role="tablist"]';
+// Portefeuille de démonstration fabriqué pendant la capture (jamais enregistré) : la démonstration + une seconde copie renommée
+const PORTFOLIO = {
+    fr: { title: 'Portefeuille de transformation', objective: 'Coordonner les programmes de modernisation (exemple fictif)', second: 'Programme agences' },
+    en: { title: 'Transformation portfolio', objective: 'Coordinate the modernisation programmes (fictitious example)', second: 'Branch programme' },
+    es: { title: 'Cartera de transformación', objective: 'Coordinar los programas de modernización (ejemplo ficticio)', second: 'Programa de agencias' },
+    zh: { title: '转型项目组合', objective: '协调各现代化项目群（虚构示例）', second: '分支机构项目群' },
+    ar: { title: 'محفظة التحول', objective: 'تنسيق برامج التحديث (مثال خيالي)', second: 'برنامج الفروع' }
+};
 const reset = `window.scrollTo(0, 0); if (openRiskUid) closeRiskSheet();`;
 await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
 for (const lang of LANGUAGES) {
@@ -116,6 +124,18 @@ for (const lang of LANGUAGES) {
         await shot(dir, 'revues', `${reset} showTab('revues');`, tabs, '[data-panel="revues"]', 1700);
         await shot(dir, 'comite', `${reset} showTab('comite');`, tabs, '[data-panel="comite"]', 1900);
         await shot(dir, 'parametres', `${reset} showTab('parametres');`, tabs, '[data-panel="parametres"]', 1200);
+        await shot(dir, 'programme', `${reset} setViewScope(''); showTab('programme');`, 'header', '[data-panel="programme"]', 1500);
+        const pf = PORTFOLIO[lang];
+        await shot(dir, 'portefeuille', `${reset} window.confirm = () => true;
+            const first = JSON.parse(JSON.stringify(window.RISKR_DATA)), second = JSON.parse(JSON.stringify(window.RISKR_DATA));
+            second.program.uid = 'demo-program-b'; second.program.title = ${JSON.stringify(pf.second)};
+            applyModel(buildModel({ settings: serializeModel().settings, risks: [], riskGroups: [], portfolio: { uid: 'demo-portfolio',
+                title: ${JSON.stringify(pf.title)}, objective: ${JSON.stringify(pf.objective)}, programs: [], decisions: [], journal: [] } }));
+            addPortfolioProgram(first, 'riskr-data.js'); addPortfolioProgram(second, 'riskr-data-b.js');
+            changePortfolio(next => { next.programs[0].code = 'SI'; next.programs[1].code = 'AG'; }); setViewScope(''); showTab('programme');`,
+            'header', '[data-panel="programme"]', 1300);
+        // Le portefeuille est resté dans le stockage du navigateur : on l'efface avant la vue suivante
+        await send('Storage.clearDataForOrigin', { origin: ORIGIN, storageTypes: 'all' });
     }
 }
 

@@ -19,11 +19,14 @@
 ## 🖼️ Capturas de pantalla
 
 Capturas realizadas con los datos de demostración de `riskr-data.js`, totalmente
-ficticios (un proyecto imaginario de modernización de un sistema de información),
+ficticios (un programa imaginario de modernización de un sistema de información),
 mostrados en tema claro. Cada versión de este README
 tiene sus propias capturas en su idioma (interfaz y datos de demostración traducidos
 para la ocasión, `docs/captures/traductions/`). Para regenerarlas tras un cambio de
 interfaz: `node docs/captures/generer-captures.mjs` (requiere Chrome).
+La demostración es un programa (proyectos, árbol a la izquierda, ruta de navegación
+y búsqueda); la captura de la cartera se genera sobre la marcha a partir de esa misma
+demostración (dos programas ficticios), sin guardarse.
 
 **Matrices**: trayectoria antes → después, objetivo (insignia de rombo azul = objetivo
 alcanzado, rombo blanco = objetivo buscado), apetito de riesgo, estado a la fecha de una revisión.
@@ -36,8 +39,8 @@ alcanzado, rombo blanco = objetivo buscado), apetito de riesgo, estado a la fech
   <img src="docs/captures/es/light/matrices-groupes.webp" alt="Matriz tras la remediación por grupo, objetivos alcanzados mostrados como rombos azules">
 </picture>
 
-**Registro**: calificaciones antes → después · objetivo, tendencia entre revisiones, tratamiento,
-responsable, próxima fecha límite y medidas.
+**Registro**: calificaciones inherente → actual → previsión → objetivo, tendencia
+entre revisiones, tratamiento, responsable, próxima fecha límite y medidas.
 
 <picture>
   <img src="docs/captures/es/light/registre.webp" alt="Registro de riesgos">
@@ -79,6 +82,21 @@ recordados con un enlace «modificar» allí donde se utilizan.
 
 <picture>
   <img src="docs/captures/es/light/parametres.webp" alt="Parámetros del análisis">
+</picture>
+
+**Programa**: página del programa con sus proyectos, beneficios, escaladas y reservas;
+árbol programa › proyectos a la izquierda con búsqueda de texto completo; ruta de
+navegación bajo el título.
+
+<picture>
+  <img src="docs/captures/es/light/programme.webp" alt="Página del programa y árbol de proyectos">
+</picture>
+
+**Cartera**: varios programas importados en modo lectura, resumen por programa (riesgos
+activos, tolerancia, provisión, actualidad de la copia), escaladas y arbitrajes.
+
+<picture>
+  <img src="docs/captures/es/light/portefeuille.webp" alt="Cartera de programas">
 </picture>
 
 ## 📦 Datos separados (riskr-data.js)

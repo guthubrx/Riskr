@@ -19,11 +19,14 @@
 ## 🖼️ Captures d'écran
 
 Captures réalisées avec les données de démonstration de `riskr-data.js`,
-entièrement fictives (projet imaginaire de modernisation d'un système d'information),
+entièrement fictives (programme imaginaire de modernisation d'un système d'information),
 affichées en thème clair ou sombre selon celui de GitHub. Chaque version de ce
 README a ses captures dans sa langue (interface et données de démonstration
 traduites pour l'occasion, `docs/captures/traductions/`). Pour les régénérer après
 une évolution de l'interface : `node docs/captures/generer-captures.mjs` (Chrome requis).
+La démonstration est un programme (projets, arborescence à gauche, fil d'Ariane
+et recherche) ; la capture du portefeuille est fabriquée à la volée à partir de
+cette même démonstration (deux programmes fictifs), sans être enregistrée.
 
 **Matrices** : trajectoire avant → après, cible (pastille en losange bleu = cible
 atteinte, losange blanc = cible visée), appétence, état à la date d'une revue.
@@ -38,8 +41,8 @@ atteinte, losange blanc = cible visée), appétence, état à la date d'une revu
   <img src="docs/captures/fr/light/matrices-groupes.webp" alt="Matrice après remédiation par groupe, cibles atteintes en losange bleu">
 </picture>
 
-**Registre** : cotations avant → après · cible, tendance sur les revues, traitement,
-porteur, prochaine échéance et mesures.
+**Registre** : cotations inhérent → actuel → prévision → cible, tendance sur les
+revues, traitement, porteur, prochaine échéance et mesures.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/fr/dark/registre.webp">
@@ -87,6 +90,24 @@ rappelés avec un lien « modifier » là où ils servent.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/fr/dark/parametres.webp">
   <img src="docs/captures/fr/light/parametres.webp" alt="Paramètres de l'analyse">
+</picture>
+
+**Programme** : page du programme avec ses projets, bénéfices, escalades et
+réserves ; arborescence programme › projets à gauche avec recherche plein texte ;
+fil d'Ariane sous le titre.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/fr/dark/programme.webp">
+  <img src="docs/captures/fr/light/programme.webp" alt="Page du programme et arborescence des projets">
+</picture>
+
+**Portefeuille** : plusieurs programmes importés en lecture seule, synthèse par
+programme (risques actifs, tolérance, provision, fraîcheur de la copie), escalades
+et arbitrages.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/fr/dark/portefeuille.webp">
+  <img src="docs/captures/fr/light/portefeuille.webp" alt="Portefeuille de programmes">
 </picture>
 
 ## 📦 Données séparées (riskr-data.js)

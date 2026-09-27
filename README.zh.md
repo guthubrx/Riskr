@@ -18,7 +18,7 @@
 
 ## 🖼️ 截图
 
-截图使用 `riskr-data.js` 中的演示数据，该数据完全是虚构的（一个信息系统现代化改造的假想项目），以浅色主题展示。本 README 的每个语言版本都配有其自身语言的截图（界面和演示数据均为该场合专门翻译，见 `docs/captures/traductions/`）。界面变更后如需重新生成截图：`node docs/captures/generer-captures.mjs`（需要 Chrome）。
+截图使用 `riskr-data.js` 中的演示数据，该数据完全是虚构的（一个信息系统现代化改造的假想项目群），以浅色主题展示。本 README 的每个语言版本都配有其自身语言的截图（界面和演示数据均为该场合专门翻译，见 `docs/captures/traductions/`）。界面变更后如需重新生成截图：`node docs/captures/generer-captures.mjs`（需要 Chrome）。演示数据是一个项目群（包含项目、左侧树状导航、导航路径和搜索）；项目组合截图则基于同一演示数据即时生成（两个虚构的项目群），不会被保存。
 
 **矩阵**：处理前 → 处理后轨迹、目标（蓝色菱形徽章 = 已达成目标，白色菱形 = 目标方向），风险偏好，某评审日期时的状态。
 
@@ -30,7 +30,7 @@
   <img src="docs/captures/zh/light/matrices-groupes.webp" alt="按组划分的整改后矩阵，已达成目标以蓝色菱形显示">
 </picture>
 
-**登记册**：处理前 → 处理后评级 · 目标、跨评审趋势、处理策略、负责人、下次到期日期和措施。
+**登记册**：固有 → 当前 → 预测 → 目标评级、跨评审趋势、处理策略、负责人、下次到期日期和措施。
 
 <picture>
   <img src="docs/captures/zh/light/registre.webp" alt="风险登记册">
@@ -64,6 +64,18 @@
 
 <picture>
   <img src="docs/captures/zh/light/parametres.webp" alt="分析设置">
+</picture>
+
+**项目群**：项目群页面，包含其项目、收益、上报和准备金；左侧为“项目群 › 项目”树状导航，带全文搜索；标题下方为导航路径。
+
+<picture>
+  <img src="docs/captures/zh/light/programme.webp" alt="项目群页面与项目树状导航">
+</picture>
+
+**项目组合**：以只读方式导入的多个项目群，按项目群汇总（活跃风险、容忍度、准备金、副本新鲜度），以及上报和项目组合决策。
+
+<picture>
+  <img src="docs/captures/zh/light/portefeuille.webp" alt="由多个项目群组成的项目组合">
 </picture>
 
 ## 📦 数据分离（riskr-data.js）

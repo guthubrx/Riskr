@@ -19,11 +19,14 @@
 ## 🖼️ Screenshots
 
 Screenshots taken with the demo data from `riskr-data.js`, which is entirely
-fictitious (an imaginary project to modernise an information system), shown in
+fictitious (an imaginary program to modernise an information system), shown in
 the light or dark theme to match GitHub's. Each version of this README has
 screenshots in its own language (interface and demo data translated for the
 occasion, `docs/captures/traductions/`). To regenerate them after an interface
 change: `node docs/captures/generer-captures.mjs` (requires Chrome).
+The demo is a program (projects, tree on the left, breadcrumb and search); the
+portfolio screenshot is built on the fly from that same demo (two fictitious
+programs), without being saved.
 
 **Matrices**: before → after trajectory, target (blue diamond badge = target
 reached, white diamond = target aimed for), risk appetite, state as of a review date.
@@ -38,8 +41,8 @@ reached, white diamond = target aimed for), risk appetite, state as of a review 
   <img src="docs/captures/en/light/matrices-groupes.webp" alt="Matrix after remediation by group, targets reached shown as blue diamonds">
 </picture>
 
-**Register**: before → after ratings · target, trend across reviews, treatment,
-owner, next due date and measures.
+**Register**: inherent → current → forecast → target ratings, trend across
+reviews, treatment, owner, next due date and measures.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/en/dark/registre.webp">
@@ -87,6 +90,22 @@ a "change" link wherever they are used.
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/captures/en/dark/parametres.webp">
   <img src="docs/captures/en/light/parametres.webp" alt="Analysis settings">
+</picture>
+
+**Program**: program page with its projects, benefits, escalations and reserves;
+program › projects tree on the left with full-text search; breadcrumb below the title.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/en/dark/programme.webp">
+  <img src="docs/captures/en/light/programme.webp" alt="Program page and project tree">
+</picture>
+
+**Portfolio**: several programs imported read-only, summary by program (active
+risks, tolerance, contingency, freshness of the copy), escalations and rulings.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/captures/en/dark/portefeuille.webp">
+  <img src="docs/captures/en/light/portefeuille.webp" alt="Portfolio of programs">
 </picture>
 
 ## 📦 Separate data (riskr-data.js)
