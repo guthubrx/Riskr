@@ -228,6 +228,8 @@ que la pestaña siga siendo fluida. Antes del cierre, los riesgos activos u ocur
 deben transferirse con un responsable, una fecha y un motivo; las transferencias pueden
 exportarse en CSV. El formato canónico de datos conserva todos los datos del programa.
 
+En una pantalla ancha, un árbol a la izquierda muestra el programa (o la cartera), sus programas y sus proyectos, con el número de riesgos activos y un punto naranja si alguno supera la tolerancia. Un clic elige el nivel sin cambiar de pestaña ni de filtros; una ficha abierta fuera del nuevo nivel se cierra. El panel se puede plegar y el navegador recuerda esta elección.
+
 ### Gestión de cartera
 
 Una cartera reúne varios programas, cada uno en su propio archivo. Contiene
