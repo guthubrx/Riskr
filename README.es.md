@@ -223,6 +223,42 @@ que la pestaña siga siendo fluida. Antes del cierre, los riesgos activos u ocur
 deben transferirse con un responsable, una fecha y un motivo; las transferencias pueden
 exportarse en CSV. El formato canónico de datos conserva todos los datos del programa.
 
+### Gestión de cartera
+
+Una cartera reúne varios programas, cada uno en su propio archivo. Contiene
+`portfolio` (`uid`, `title`, `objective`, `owner`, `staleAfterDays`,
+`programs`, `decisions`, `journal`) y ningún riesgo propio (`risks` y
+`riskGroups` vacíos): el mismo `riskr.html` pasa entonces al modo cartera. Un
+archivo sin `portfolio` funciona como antes. La cartera se crea desde la
+pestaña Programa de un análisis sin programa (**Crear una cartera**).
+
+**Importar un programa** lee el `riskr-data.js` o la exportación JSON de un
+programa y guarda una copia fija en `programs` (`uid` del programa, `code`,
+`importedAt`, `source`, `data`). Volver a importar el mismo programa sustituye
+su copia tras confirmación; un archivo sin programa se rechaza. El navegador
+nunca lee otras carpetas: una copia solo se actualiza con una nueva
+importación, y se señala la copia más antigua que `staleAfterDays` (30 días
+por defecto). Cada programa sigue siendo propietario de sus datos: las copias
+son de solo lectura (cualquier modificación de un riesgo se anula con un
+mensaje); se corrige en el archivo del programa y después se vuelve a importar.
+
+Solo en la vista consolidada, los números mostrados llevan como prefijo el
+código del programa (por ejemplo `NORD 1.1`) y los identificadores estables, el
+`uid` del programa. La barra «Cartera › programa › proyecto» limita las
+matrices, el registro, el plan de acción, las revisiones y la vista comité;
+volver a hacer clic en el nivel elegido sube un nivel.
+
+La pestaña Programa, renombrada **Cartera**, presenta un resumen por programa
+(código, fecha de importación, riesgos activos, por encima de la tolerancia,
+P80, escaladas pendientes) y una provisión global P80 simulada sobre el
+conjunto: los P80 por programa no se suman y no se modela ninguna correlación
+entre programas. Muestra en modo lectura las escaladas de nivel organización de
+los programas (la decisión se toma en el archivo del programa), los arbitrajes
+de la cartera (fecha, asunto, decisión, responsable de la decisión, motivo) y el
+registro de importaciones. Las revisiones de los programas se incluyen,
+etiquetadas con el código del programa; desde la cartera no se registra ninguna
+revisión nueva.
+
 ## 🔌 100% sin conexión
 
 Todas las bibliotecas (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,

@@ -230,6 +230,39 @@ Before closure, active or
 occurred risks must be transferred with an owner, date and reason; transfers
 can be exported as CSV. The canonical data format retains all program data.
 
+### Portfolio management
+
+A portfolio brings together several programs, each kept in its own file. It
+contains `portfolio` (`uid`, `title`, `objective`, `owner`, `staleAfterDays`,
+`programs`, `decisions`, `journal`) and no risks of its own (`risks` and
+`riskGroups` are empty): the same `riskr.html` then switches to portfolio mode.
+A file without `portfolio` works as before. A portfolio is created from the
+Program tab of an analysis without a program (**Create a portfolio**).
+
+**Import a program** reads a program's `riskr-data.js` or JSON export and keeps
+a frozen copy in `programs` (program `uid`, `code`, `importedAt`, `source`,
+`data`). Re-importing the same program replaces its copy after confirmation; a
+file without a program is rejected. The browser never reads other folders: a
+copy is updated only by a new import, and a copy older than `staleAfterDays`
+(30 days by default) is flagged. Each program keeps ownership of its data:
+copies are read-only (any risk change is undone with a message); corrections
+are made in the program's file, then re-imported.
+
+In the consolidated view only, display numbers are prefixed with the program
+code (for example `NORD 1.1`) and stable IDs with the program `uid`. The
+"Portfolio › program › project" bar restricts the matrices, register, action
+plan, reviews and committee view; clicking the selected level again moves up
+one level.
+
+The Program tab, renamed **Portfolio**, shows a summary per program (code,
+import date, active risks, risks above tolerance, P80, pending escalations) and
+a global P80 contingency simulated across all programs: per-program P80 values
+do not add up, and no correlation between programs is modeled. It shows the
+programs' organization-level escalations read-only (the decision is made in the
+program's file), portfolio rulings (date, subject, decision, decision maker,
+reason) and the import log. Program reviews are carried over, labeled with the
+program code; no new review can be recorded from the portfolio.
+
 ## 🔌 100% offline
 
 All libraries (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,

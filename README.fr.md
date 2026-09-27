@@ -239,6 +239,42 @@ clôture, les risques actifs ou survenus
 doivent être transférés avec responsable, date et motif ; les transferts
 s'exportent en CSV. Le format canonique conserve toutes les données programme.
 
+### Gestion de portefeuille
+
+Un portefeuille réunit plusieurs programmes, chacun tenu dans son propre
+fichier. Il contient `portfolio` (`uid`, `title`, `objective`, `owner`,
+`staleAfterDays`, `programs`, `decisions`, `journal`) et aucun risque propre
+(`risks` et `riskGroups` vides) : le même `riskr.html` passe alors en mode
+portefeuille. Un fichier sans `portfolio` fonctionne comme avant. On le crée
+depuis l'onglet Programme d'une analyse sans programme (**Créer un portefeuille**).
+
+**Importer un programme** lit le `riskr-data.js` ou l'export JSON d'un
+programme et en garde une copie figée dans `programs` (`uid` du programme,
+`code`, `importedAt`, `source`, `data`). Réimporter le même programme remplace
+sa copie après confirmation ; un fichier sans programme est refusé. Le
+navigateur ne lit jamais les autres dossiers : une copie se met à jour
+uniquement par un nouvel import, et une copie plus ancienne que
+`staleAfterDays` (30 jours par défaut) est signalée. Chaque programme reste
+propriétaire de ses données : les copies sont en lecture seule (toute
+modification d'un risque est annulée avec un message) ; on corrige dans le
+fichier du programme, puis on réimporte.
+
+Dans la vue consolidée seulement, les numéros affichés sont préfixés par le
+code du programme (par exemple `NORD 1.1`) et les identifiants stables par son
+`uid`. Le bandeau « Portefeuille › programme › projet » restreint les matrices,
+le registre, le plan d'actions, les revues et la vue comité ; recliquer le
+niveau choisi remonte d'un cran.
+
+L'onglet Programme, renommé **Portefeuille**, présente une synthèse par
+programme (code, date d'import, risques actifs, au-delà de la tolérance, P80,
+escalades en attente) et une provision globale P80 simulée sur l'ensemble : les
+P80 par programme ne s'additionnent pas et aucune corrélation entre programmes
+n'est modélisée. Il montre en lecture les escalades de niveau organisation des
+programmes (la décision se prend dans le fichier du programme), les arbitrages
+du portefeuille (date, objet, décision, décideur, motif) et le journal des
+imports. Les revues des programmes y sont reprises, libellées avec le code du
+programme ; aucune nouvelle revue ne se fige depuis le portefeuille.
+
 ## 🔌 100 % hors-ligne
 
 Toutes les bibliothèques (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,
