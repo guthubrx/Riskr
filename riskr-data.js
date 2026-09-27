@@ -8,6 +8,53 @@ window.RISKR_DATA = {
     "language": "fr",
     "storageNamespace": "riskr-demo"
   },
+  "program": {
+    "uid": "demo-program-1",
+    "title": "Modernisation du système d'information",
+    "objective": "Améliorer la continuité de service et l'adoption des outils par les équipes.",
+    "sponsor": "Direction générale",
+    "manager": "Direction de programme",
+    "status": "active",
+    "appetite": 9,
+    "reserve": 250000,
+    "components": [
+      { "uid": "demo-project-tech", "name": "Migration technique", "type": "project", "owner": "DSI", "status": "active", "tolerance": 9, "reserve": 100000 },
+      { "uid": "demo-project-adoption", "name": "Adoption des outils", "type": "project", "owner": "Direction métiers", "status": "active", "tolerance": 8, "reserve": 50000 },
+      { "uid": "demo-work-contracts", "name": "Coordination fournisseurs", "type": "work", "owner": "Achats", "status": "active", "tolerance": 9, "reserve": 30000 }
+    ],
+    "benefits": [
+      { "uid": "demo-benefit-adoption", "name": "Utilisateurs actifs", "owner": "Direction métiers", "unit": "%", "baseline": 20, "target": 75, "actual": 38,
+        "dueDate": "2027-03-31", "measuredAt": "2026-09-20", "riskUids": ["demo-1-1", "demo-1-3", "demo-4-2"] },
+      { "uid": "demo-benefit-service", "name": "Disponibilité du service", "owner": "DSI", "unit": "%", "baseline": 98.5, "target": 99.9, "actual": null,
+        "dueDate": "2027-06-30", "measuredAt": "", "riskUids": ["demo-2-1", "demo-3-1", "demo-3-2"] }
+    ],
+    "dependencies": [
+      { "uid": "demo-dep-1", "sourceId": "demo-project-tech", "targetId": "demo-project-adoption", "kind": "finishStart",
+        "description": "La formation dépend de la disponibilité de la nouvelle plateforme.", "owner": "PMO", "dueDate": "2027-01-15", "status": "active",
+        "riskUids": ["demo-3-2", "demo-1-3"] },
+      { "uid": "demo-dep-2", "sourceId": "demo-work-contracts", "targetId": "demo-project-tech", "kind": "resource",
+        "description": "Le fournisseur fournit une compétence rare à la migration.", "owner": "Achats", "dueDate": "2026-12-15", "status": "active",
+        "riskUids": ["demo-4-2", "demo-3-2"] }
+    ],
+    "scenarios": [
+      { "uid": "demo-scenario-1", "name": "Retard conjoint de la migration et du fournisseur", "riskUids": ["demo-3-2", "demo-4-1"],
+        "probability": 20, "min": 30000, "likely": 80000, "max": 160000, "status": "active", "owner": "PMO",
+        "reason": "Coût additionnel de coordination et de maintien temporaire de deux plateformes." }
+    ],
+    "escalations": [
+      { "uid": "demo-escalation-1", "riskUid": "demo-3-1", "fromLevel": "component", "toLevel": "program", "fromComponentId": "demo-project-tech",
+        "targetComponentId": "", "reason": "Décision de financement au-delà de la réserve du projet.", "author": "DSI", "raisedAt": "2026-09-22",
+        "status": "pending", "decision": "", "decisionAuthor": "", "decidedAt": "", "decisionReason": "" }
+    ],
+    "stages": [
+      { "uid": "demo-stage-1", "name": "Socle et migration", "startDate": "2026-01-01", "endDate": "2027-01-31", "status": "active" },
+      { "uid": "demo-stage-2", "name": "Déploiement et bénéfices", "startDate": "2027-02-01", "endDate": "2027-12-31", "status": "active" }
+    ],
+    "decisions": [
+      { "uid": "demo-program-decision-1", "date": "2026-09-15", "author": "Comité de programme", "subject": "Priorité de migration",
+        "decision": "Prioriser les applications critiques", "reason": "Préserver la continuité de service.", "reviewDate": "2026-12-15" }
+    ]
+  },
   "settings": {
     "riskAppetite": 9,
     "cadenceRevue": 90
@@ -336,6 +383,8 @@ window.RISKR_DATA = {
     },
     {
       "uid": "demo-3-1",
+      "scopeLevel": "component",
+      "componentId": "demo-project-tech",
       "id": "3.1",
       "title": "Obsolescence ou vulnérabilité des systèmes",
       "assessmentBefore": [
@@ -462,6 +511,8 @@ window.RISKR_DATA = {
     },
     {
       "uid": "demo-3-2",
+      "scopeLevel": "component",
+      "componentId": "demo-project-tech",
       "id": "3.2",
       "title": "Qualité ou intégration technique insuffisante",
       "assessmentBefore": [
@@ -512,6 +563,8 @@ window.RISKR_DATA = {
     },
     {
       "uid": "demo-4-1",
+      "scopeLevel": "component",
+      "componentId": "demo-work-contracts",
       "id": "4.1",
       "title": "Engagement fournisseur non maîtrisé",
       "assessmentBefore": [
@@ -611,6 +664,9 @@ window.RISKR_DATA = {
     },
     {
       "uid": "demo-4-2",
+      "scopeLevel": "component",
+      "componentId": "demo-work-contracts",
+      "affectedComponentIds": ["demo-project-tech", "demo-project-adoption"],
       "id": "4.2",
       "title": "Dépendance excessive à un partenaire ou à une compétence",
       "assessmentBefore": [
@@ -806,6 +862,8 @@ window.RISKR_DATA = {
     },
     {
       "uid": "demo-1-3",
+      "scopeLevel": "component",
+      "componentId": "demo-project-adoption",
       "id": "1.3",
       "title": "Adoption plus rapide que prévu des nouveaux outils",
       "kind": "opportunity",

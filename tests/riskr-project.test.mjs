@@ -77,19 +77,41 @@ try {
     assert.equal(facts.topHasOpportunity, false);
     assert.equal(facts.provisionHasOpportunity, false);
     assert.ok(facts.currentProvision >= facts.forecastProvision);
-    const ui = await evaluate(`(() => {
+    const ui = await evaluate(`(async () => {
         openRiskSheet('demo-1-1');
         const sheet = document.querySelector('#risk-sheet');
         const scores = [...sheet.querySelectorAll('.sheet-score-label')].map(element => element.textContent.trim());
+        const active = {
+            event: !!sheet.querySelector('[data-risk-field="event"]'),
+            objective: !!sheet.querySelector('[data-risk-field="objective"]'),
+            issueHidden: !sheet.querySelector('[data-issue-field="status"]'),
+            closureHidden: !sheet.querySelector('[data-risk-field="lifeReason"]'),
+            extraCollapsed: !sheet.querySelector('[data-risk-panel="extra"]').open,
+            decisionsCollapsed: !sheet.querySelector('[data-risk-panel="decisions"]').open
+        };
+        sheet.querySelector('[data-risk-panel="decisions"]').open = true;
+        const author = sheet.querySelector('[data-risk-field="raisedBy"]');
+        author.value = 'Test'; author.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 40));
+        const decisionsStayedOpen = sheet.querySelector('[data-risk-panel="decisions"]').open;
         const lifecycle = sheet.querySelector('[data-risk-field="lifecycle"]');
         lifecycle.value = 'materialized';
         lifecycle.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise(resolve => setTimeout(resolve, 40));
         const risk = risks.find(item => item.uid === 'demo-1-1');
-        return { scores, lifecycle: risk.lifecycle, issue: risk.issue.description, governance: !!sheet.querySelector('.sheet-governance') };
+        return { scores, active, decisionsStayedOpen, lifecycle: risk.lifecycle, issue: risk.issue.description,
+            issueVisible: !!sheet.querySelector('[data-issue-field="status"]'),
+            closureHidden: !sheet.querySelector('[data-risk-field="lifeReason"]'),
+            governance: !!sheet.querySelector('.sheet-governance') };
     })()`);
     assert.equal(ui.scores.length, 4);
+    assert.deepEqual(ui.active, { event: true, objective: true, issueHidden: true,
+        closureHidden: true, extraCollapsed: true, decisionsCollapsed: true });
+    assert.equal(ui.decisionsStayedOpen, true);
     assert.equal(ui.lifecycle, 'materialized');
     assert.ok(ui.issue);
+    assert.equal(ui.issueVisible, true);
+    assert.equal(ui.closureHidden, true);
     assert.equal(ui.governance, true);
     console.log('Projet : migration, décision, opportunité, provision et aller-retour validés.');
     await send('Browser.close');
