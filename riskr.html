@@ -15865,8 +15865,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             if (p && p <= 2 && risk.kri.some(kri => kriStatus(kri) === 'critical')) issues.push({ field: 'kri', text: t('issueKri', { p }) });
             const [before, after, target] = [risk.assessmentBefore, risk.assessmentAfter, risk.assessmentTarget].map(assessmentScore);
-            if (target && after && target > after) issues.push({ field: 'cotation', text: t('issueTarget') });
-            if (before && after && after > before) issues.push({ field: 'cotation', text: t('issueAfter') });
+            // Une opportunité se cote à la hausse quand on la renforce : ces deux contrôles ne valent que pour les menaces
+            if (risk.kind !== 'opportunity' && target && after && target > after) issues.push({ field: 'cotation', text: t('issueTarget') });
+            if (risk.kind !== 'opportunity' && before && after && after > before) issues.push({ field: 'cotation', text: t('issueAfter') });
             return issues;
         }
 
@@ -15958,6 +15959,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ["improved", "Le panneau de gauche perd son titre au profit du champ de recherche ; flèches haut et bas pour parcourir résultats et niveaux, Entrée pour ouvrir.", "The left panel's title gives way to the search field; up and down arrows move through results and levels, Enter opens."],
                 ["new", "Recherche de l'onglet ouvert, à droite des onglets : registre, plan d'actions, revues et nouveautés (loupe compacte quand la place manque).", "Search for the open tab, right of the tabs: register, action plan, reviews and changelog (compact magnifier when space is short)."],
                 ["improved", "Filtre texte du registre sans accents ni casse, par mots.", "Register text filter ignores accents and case, word by word."],
+                ["fixed", "Plus d'alerte « cotation après plus grave qu'avant » sur une opportunité, qu'on cote à la hausse quand on la renforce.", "No more \"rating after is worse than before\" warning on an opportunity, which is rated higher when it is enhanced."],
                 ["fixed", "Page Programme sans débordement quand le panneau de gauche est ouvert ; démonstration avec une cotation actuelle pour chaque risque.", "Programme page no longer overflows with the left panel open; demo gives every risk a current rating."],
                 ["fixed", "Numéros préfixés (« NORD 1.2 ») : pastille allongée et centrée, bulles des matrices sur deux lignes ; onglet Revues lisible avec le panneau ouvert (dates courtes sous le graphique, comparaison limitée aux programmes de la revue).", "Prefixed numbers (\"NORTH 1.2\"): wider centred badge, two-line matrix bubbles; Reviews tab readable with the panel open (short dates under the chart, comparison limited to the review's programmes)."],
                 ["improved", "Date modifiable pour les décisions d'un risque et les arbitrages du programme ou du portefeuille, y compris à la saisie (décision prise un autre jour).", "Editable date for risk decisions and programme or portfolio rulings, including when entering them (decision taken on another day)."]] },
