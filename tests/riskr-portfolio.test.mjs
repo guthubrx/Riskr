@@ -100,13 +100,23 @@ try {
         document.querySelector('#portfolio-decision-reason').value = 'Échéance plus proche';
         document.querySelector('[data-portfolio-action="add-decision"]').click();
         const escalations = document.querySelectorAll('[data-program-section="portfolioEscalations"] .program-item').length;
+        // Arborescence : un nœud par niveau ; changer de projet garde l'onglet et les filtres, referme une fiche hors périmètre
+        const treeNodes = document.querySelectorAll('#scope-tree [data-scope]').length;
+        const expectedNodes = 1 + portfolio.programs.length + program.components.filter(item => treeOpen.has(item.portfolioCopy)).length;
+        showTab('registre'); setFilter('level', 'high');
+        const outside = risks.find(risk => risk.portfolioCopy !== 'prog-south');
+        openRiskSheet(outside.uid);
+        document.querySelector('#scope-tree [data-scope="prog-south"]').click();
+        const treeKeeps = activeTab === 'registre' && riskFilter.level === 'high' && viewScope === 'prog-south' && openRiskUid === null;
+        setFilter('level', ''); setViewScope(''); showTab('programme');
         const riskCount = risks.length;
         const saved = serializeModel();
         const roundTrip = buildModel(saved);
         document.querySelector('[data-portfolio-action="remove"][data-portfolio-uid="prog-south"]').click();
         return { empty, codes, uniqueIds, uniqueUids, refused: Boolean(refused),
             copies: saved.portfolio.programs.length, journal: saved.portfolio.journal.map(entry => entry.kind),
-            southThreats, componentThreats, backToProgram, programPage, projectPage, allThreats, readOnly, escalations,
+            southThreats, componentThreats, backToProgram, programPage, projectPage, treeNodes, treeKeeps,
+            expectedNodes, allThreats, readOnly, escalations,
             decisions: roundTrip.portfolio.decisions.length, roundTripRisks: roundTrip.risks.length, riskCount, savedRisks: saved.risks.length,
             sourceUntouched: JSON.stringify(south) === fileBefore, afterRemove: portfolio.programs.length,
             tab: document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() };
@@ -125,6 +135,8 @@ try {
     assert.equal(result.programPage, true, 'choisir un programme ouvre sa page avec ses projets');
     assert.equal(result.projectPage, true, 'ouvrir un projet affiche sa page');
     assert.equal(result.readOnly, true, 'les risques importés sont en lecture seule');
+    assert.equal(result.treeNodes, result.expectedNodes, 'arborescence : portefeuille, programmes et projets des branches ouvertes');
+    assert.equal(result.treeKeeps, true, 'l\'arborescence garde l\'onglet et les filtres, et referme une fiche hors périmètre');
     assert.equal(result.escalations, 1, 'escalade de niveau organisation consolidée');
     assert.equal(result.decisions, 1, 'arbitrage du portefeuille conservé');
     assert.equal(result.roundTripRisks, result.riskCount, 'aller-retour du fichier portefeuille');
