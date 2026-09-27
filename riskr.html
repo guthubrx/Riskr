@@ -11550,7 +11550,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     model.reviews.push(review);
                 });
                 // program : programme normalisé de la copie (dérivé, non enregistré)
-                return { uid, code, importedAt: String(item.importedAt || ''), source: String(item.source || ''), data: item.data, program: copy.program };
+                return { uid, code, importedAt: String(item.importedAt || ''), source: String(item.source || ''), data: item.data, program: copy.program, settings: copy.settings };
             });
             if (new Set(programs.map(copy => copy.uid)).size !== programs.length) throw new Error(t('programDuplicateId'));
             model.reviews.sort((a, b) => a.date.localeCompare(b.date));
@@ -15847,7 +15847,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         // Détecteur d'incohérences : alertes « à vérifier », rien n'est bloqué. Complexité : O(k) par risque (k = KRI)
         const PROBABILITY_BANDS = [null, [0, 10], [10, 25], [25, 50], [50, 75], [75, 100]];
-        const impactLevelFor = cost => 1 + settings.echelleImpact.filter(limit => cost >= limit).length;
+        // Échelle d'impact en euros : en portefeuille, celle du programme d'origine du risque (chacun est calibré sur son budget)
+        const impactScaleOf = risk => (portfolio && portfolioCopy(risk?.portfolioCopy)?.settings?.echelleImpact) || settings.echelleImpact;
+        const impactLevelFor = (cost, risk) => 1 + impactScaleOf(risk).filter(limit => cost >= limit).length;
         const assessmentScore = ([p, i]) => p * i;
         function riskIssues(risk) {
             const issues = [];
@@ -15859,7 +15861,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             const range = costRange(risk);
             if (range && i) {
-                const level = impactLevelFor(range[1]);
+                const level = impactLevelFor(range[1], risk);
                 if (level > i) issues.push({ field: 'cout', text: t('issueCostHigh', { cost: formatMoney(range[1]), level, i }) });
                 else if (level < i) issues.push({ field: 'cout', text: t('issueCostLow', { cost: formatMoney(range[1]), level, i }) });
             }
@@ -15959,6 +15961,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ["improved", "Le panneau de gauche perd son titre au profit du champ de recherche ; flèches haut et bas pour parcourir résultats et niveaux, Entrée pour ouvrir.", "The left panel's title gives way to the search field; up and down arrows move through results and levels, Enter opens."],
                 ["new", "Recherche de l'onglet ouvert, à droite des onglets : registre, plan d'actions, revues et nouveautés (loupe compacte quand la place manque).", "Search for the open tab, right of the tabs: register, action plan, reviews and changelog (compact magnifier when space is short)."],
                 ["improved", "Filtre texte du registre sans accents ni casse, par mots.", "Register text filter ignores accents and case, word by word."],
+                ["fixed", "Portefeuille : le coût d'un risque se compare à l'échelle d'impact de son propre programme.", "Portfolio: a risk's cost is compared with its own programme's impact scale."],
                 ["fixed", "Plus d'alerte « cotation après plus grave qu'avant » sur une opportunité, qu'on cote à la hausse quand on la renforce.", "No more \"rating after is worse than before\" warning on an opportunity, which is rated higher when it is enhanced."],
                 ["fixed", "Page Programme sans débordement quand le panneau de gauche est ouvert ; démonstration avec une cotation actuelle pour chaque risque.", "Programme page no longer overflows with the left panel open; demo gives every risk a current rating."],
                 ["fixed", "Numéros préfixés (« NORD 1.2 ») : pastille allongée et centrée, bulles des matrices sur deux lignes ; onglet Revues lisible avec le panneau ouvert (dates courtes sous le graphique, comparaison limitée aux programmes de la revue).", "Prefixed numbers (\"NORTH 1.2\"): wider centred badge, two-line matrix bubbles; Reviews tab readable with the panel open (short dates under the chart, comparison limited to the review's programmes)."],
@@ -16299,7 +16302,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                             placeholder="${t('costAuto')}"> %</label>
                         ${risk.cout.probabilite === null && risk.assessmentAfter[0] ? `<small>${t('costProbabilityDefault', { p: risk.assessmentAfter[0], pct: DEFAULT_PROBABILITY[risk.assessmentAfter[0]] })}</small>` : ''}
                         <span class="cost-expected" data-tip="${t('tipCostExpected')}">${t('costExpected')}${colon()}<b>${costRange(risk) ? escapeHtml(formatMoney(expectedCost(risk))) : t('notCosted')}</b></span></div>
-                    <p class="impact-scale"><span data-tip="${t('tipImpactScale')}">${t('impactScaleLabel')}</span> ${escapeHtml(settings.echelleImpact.map((limit, index) =>
+                    <p class="impact-scale"><span data-tip="${t('tipImpactScale')}">${t('impactScaleLabel')}</span> ${escapeHtml(impactScaleOf(risk).map((limit, index) =>
                         `${t('impactScaleFrom', { n: index + 2 })} ${formatMoney(limit)}`).join(' · '))}
                         <button type="button" class="link-btn" data-action="goto-settings" data-setting="impact">${t('settingsChange')}</button></p></section>
                 <div class="sheet-cards">
