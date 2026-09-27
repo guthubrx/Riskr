@@ -128,6 +128,25 @@ try {
         document.querySelector('#scope-tree .tree-hit[data-risk]').click();
         const hitOpens = activeTab === 'registre' && Boolean(openRiskUid) && openRiskUid.startsWith('prog-south/');
         treeQuery = ''; closeRiskSheet({ hash: false }); setViewScope('');
+        // Recherche de l'onglet ouvert : plan d'actions filtré, sans toucher aux positions des mesures
+        showTab('actions');
+        const cardsBefore = document.querySelectorAll('#action-board .action-card').length;
+        const tabInput = document.getElementById('tab-search');
+        tabInput.value = 'fournisseur'; tabInput.dispatchEvent(new Event('input'));
+        const cardsAfter = document.querySelectorAll('#action-board .action-card').length;
+        tabInput.value = ''; tabInput.dispatchEvent(new Event('input'));
+        showTab('matrices');
+        const tabSearchHidden = document.querySelector('.tab-search').hidden;
+        // Arbitrage saisi après coup : date antérieure acceptée
+        showTab('programme');
+        const pastDate = document.querySelector('#portfolio-decision-date');
+        pastDate.value = '2026-01-09';
+        document.querySelector('#portfolio-decision-subject').value = 'Rattrapage';
+        document.querySelector('#portfolio-decision-text').value = 'Valider';
+        document.querySelector('#portfolio-decision-author').value = 'Comité national';
+        document.querySelector('#portfolio-decision-reason').value = 'Décision prise en séance';
+        document.querySelector('[data-portfolio-action="add-decision"]').click();
+        const backdated = portfolio.decisions.some(item => item.subject === 'Rattrapage' && item.date === '2026-01-09');
         const riskCount = risks.length;
         const saved = serializeModel();
         const roundTrip = buildModel(saved);
@@ -135,7 +154,7 @@ try {
         return { empty, codes, uniqueIds, uniqueUids, refused: Boolean(refused),
             copies: saved.portfolio.programs.length, journal: saved.portfolio.journal.map(entry => entry.kind),
             southThreats, componentThreats, backToProgram, programPage, projectPage, treeNodes, treeKeeps,
-            expectedNodes, southBack, northBack, rootHits, upperHits, southHits, hitOpens, allThreats, readOnly, escalations,
+            expectedNodes, southBack, northBack, rootHits, upperHits, southHits, hitOpens, cardsBefore, cardsAfter, tabSearchHidden, backdated, allThreats, readOnly, escalations,
             decisions: roundTrip.portfolio.decisions.length, roundTripRisks: roundTrip.risks.length, riskCount, savedRisks: saved.risks.length,
             sourceUntouched: JSON.stringify(south) === fileBefore, afterRemove: portfolio.programs.length,
             tab: document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() };
@@ -158,11 +177,14 @@ try {
     assert.ok(result.rootHits > result.southHits && result.southHits > 0, 'la recherche porte sur le niveau affiché');
     assert.equal(result.upperHits, result.rootHits, 'recherche sans accents ni casse');
     assert.equal(result.hitOpens, true, 'un résultat ouvre la fiche du risque');
+    assert.ok(result.cardsAfter > 0 && result.cardsAfter < result.cardsBefore, 'la recherche de l\'onglet filtre le plan d\'actions');
+    assert.equal(result.tabSearchHidden, true, 'pas de recherche d\'onglet sur les matrices');
+    assert.equal(result.backdated, true, 'un arbitrage peut être daté après coup');
     assert.equal(result.southBack, true, 'revenir sur un programme rend son onglet et ses filtres');
     assert.equal(result.northBack, true, 'chaque programme garde sa propre vue');
     assert.equal(result.treeKeeps, true, 'l\'arborescence garde l\'onglet et les filtres, et referme une fiche hors périmètre');
     assert.equal(result.escalations, 1, 'escalade de niveau organisation consolidée');
-    assert.equal(result.decisions, 1, 'arbitrage du portefeuille conservé');
+    assert.equal(result.decisions, 2, 'arbitrages du portefeuille conservés');
     assert.equal(result.roundTripRisks, result.riskCount, 'aller-retour du fichier portefeuille');
     assert.equal(result.savedRisks, 0, 'le fichier portefeuille ne porte pas de risque propre');
     assert.equal(result.sourceUntouched, true, 'le fichier du programme importé n’est pas modifié');

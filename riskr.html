@@ -661,6 +661,17 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         /* Filtres du registre (recherche, listes, appétence, case de matrice) */
         /* Onglets de vues (Matrices, Registre, Plan d'actions, Revues, Vue comité) */
+        .tabs-row { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px 12px; margin: 0 0 18px; }
+        .tabs-row > .view-tabs { flex: 0 0 auto; margin: 0; }
+        .tabs-row > .tab-search { flex: 1 1 14rem; min-width: 14rem; max-width: 24rem; height: auto; min-height: 36px; margin-inline-start: auto; }
+        .tabs-row > .tab-search[hidden] { display: none; }
+        .tabs-row > .tab-search:focus-within { box-shadow: 0 0 0 2px var(--accent); }
+        .tabs-row.compact { position: relative; flex-wrap: nowrap; }
+        .tabs-row.compact > .view-tabs { max-width: calc(100% - 48px); }
+        .tabs-row.compact > .tab-search { position: absolute; top: 0; bottom: 0; inset-inline-end: 0; width: 40px; min-width: 0; padding: 0 11px; overflow: hidden; cursor: pointer; z-index: 2; transition: width .15s ease; }
+        .tabs-row.compact > .tab-search:focus-within { width: min(22rem, 100%); cursor: text; }
+        .tabs-row.compact > .tab-search.has-value:not(:focus-within) { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
         .view-tabs {
             display: flex;
             gap: 4px;
@@ -5593,7 +5604,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .risk-decision-form .sheet-btn { justify-self: start; align-self: end; }
         /* Décisions : une ligne, chaque champ à la largeur de son contenu, le motif prend le reste */
         .decision-table { display: grid; gap: 8px; margin-top: 12px; }
-        .decision-row { display: grid; grid-template-columns: 11rem 14rem minmax(8rem, 1fr) 9.5rem 6.5rem; gap: 10px; align-items: center; }
+        .decision-row { display: grid; grid-template-columns: 9.5rem 10rem 13rem minmax(8rem, 1fr) 9.5rem 6.5rem; gap: 10px; align-items: center; }
         .decision-row > .decision-delete { justify-self: start; }
         .decision-row.decision-new { padding: 10px 12px; border-radius: 8px; background: var(--surface-2); }
         .decision-head { font-size: 12px; color: var(--text-2); }
@@ -5778,7 +5789,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         body.tree-resizing { cursor: col-resize; user-select: none; }
         body.tree-collapsed .tree-resizer { display: none; }
         .scope-tree ul { margin: 0; padding: 0; list-style: none; }
-        .tree-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 2px 8px 4px; }
+        .tree-head { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 4px 8px; }
         .tree-search { flex: 1; min-width: 0; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; }
         .tree-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
         .tree-results { display: grid; gap: 2px; }
@@ -5898,6 +5909,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         <!-- Onglets de vues -->
         <aside id="scope-tree" class="scope-tree" hidden></aside>
+        <div class="tabs-row">
         <nav class="view-tabs" role="tablist" data-i18n-title="tabsLabel">
             <button type="button" class="view-tab" role="tab" data-tab="programme" onclick="showTab('programme')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="8" height="7" rx="1"/><rect x="14" y="3" width="8" height="7" rx="1"/><rect x="8" y="15" width="8" height="7" rx="1"/><path d="M6 10v3h12v-3M12 13v2"/></svg><span data-i18n="tabProgram">Programme</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="matrices" onclick="showTab('matrices')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="tabMatrices">Matrices</span></button>
@@ -5908,6 +5920,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             <button type="button" class="view-tab" role="tab" data-tab="parametres" onclick="showTab('parametres')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg><span data-i18n="tabSettings">Paramètres</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="nouveautes" onclick="showTab('nouveautes')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span data-i18n="tabChangelog">Nouveautés</span></button>
         </nav>
+            <label class="filter-search tab-search" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input type="search" id="tab-search"></label>
+        </div>
 
         <section class="tab-panel" data-panel="matrices" role="tabpanel">
         <div class="sticky-charts-section" id="sticky-section">
@@ -6052,8 +6067,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <!-- Registre : filtres et risques par groupe -->
         <section class="tab-panel" data-panel="registre" role="tabpanel" hidden>
         <div class="risk-filters" id="risk-filters">
-            <label class="filter-search"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                <input type="search" id="filter-text" data-i18n-placeholder="filterSearch" data-i18n-title="filterSearch" oninput="setFilter('text', this.value)"></label>
             <select id="filter-group" class="filter-select" onchange="setFilter('group', this.value)"></select>
             <select id="filter-level" class="filter-select" onchange="setFilter('level', this.value)"></select>
             <select id="filter-treatment" class="filter-select" onchange="setFilter('treatment', this.value)"></select>
@@ -10177,6 +10190,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             riskObjectiveExample: 'مثال: بدء الخدمة قبل سبتمبر', programRiskScores: 'الحالي ← المتوقع', programDependencyDescription: 'وصف الاعتماد'
         });
         Object.assign(translations.fr, {
+            tabSearchActions: 'Filtrer les mesures (texte, porteur, risque)…', tabSearchReviews: 'Filtrer les changements (risque, motif)…', tabSearchChangelog: 'Filtrer les nouveautés…',
             treeSearch: 'Rechercher dans {name}', treeSearchCount: '{count} résultats', treeSearchNone: 'Aucun résultat', treeSearchMore: '{count} autres résultats : précisez la recherche', hitRisk: 'Risque', hitCause: 'Cause', hitConsequence: 'Conséquence', hitMeasure: 'Mesure', hitNote: 'Note', hitKri: 'Indicateur', hitLink: 'Lien', hitDecision: 'Décision', hitReview: 'Revue', hitProject: 'Projet', hitBenefit: 'Bénéfice', hitDependency: 'Dépendance', hitEscalation: 'Escalade',
             treeResize: 'Régler la largeur du panneau (double-clic : largeur d’origine)', treeTitle: 'Navigation', treeCollapse: 'Replier le panneau', treeExpand: 'Déplier le panneau', treeCount: '{count} risques actifs', treeHot: '{count} au-delà de la tolérance',
             programP80Own: 'Provision P80 actuelle', tabProject: 'Projet', scopePrograms: 'Programmes ({count})', scopeProjects: 'Projets ({count})', scopeOpen: 'Ouvrir', portfolioCopyOf: 'copie du {date} ({source})', portfolioReadOnlyHint: 'Lecture seule : ce programme se modifie dans son propre fichier, puis se réimporte dans le portefeuille.', programLevelRisks: '{count} risques actifs portés directement par le programme (hors projets).', projectRisks: 'Risques du projet', projectOwned: 'Porté par ce projet', projectTouched: 'Touche ce projet',
@@ -10252,6 +10266,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Rouvrez le programme avant de créer ou réactiver un risque.'
         });
         Object.assign(translations.en, {
+            tabSearchActions: 'Filter measures (text, owner, risk)…', tabSearchReviews: 'Filter changes (risk, reason)…', tabSearchChangelog: 'Filter the changelog…',
             treeSearch: 'Search in {name}', treeSearchCount: '{count} results', treeSearchNone: 'No results', treeSearchMore: '{count} more results: refine the search', hitRisk: 'Risk', hitCause: 'Cause', hitConsequence: 'Consequence', hitMeasure: 'Measure', hitNote: 'Note', hitKri: 'Indicator', hitLink: 'Link', hitDecision: 'Decision', hitReview: 'Review', hitProject: 'Project', hitBenefit: 'Benefit', hitDependency: 'Dependency', hitEscalation: 'Escalation',
             treeResize: 'Adjust the panel width (double-click: original width)', treeTitle: 'Navigation', treeCollapse: 'Collapse the panel', treeExpand: 'Expand the panel', treeCount: '{count} active risks', treeHot: '{count} above tolerance',
             programP80Own: 'Current P80 contingency', tabProject: 'Project', scopePrograms: 'Programs ({count})', scopeProjects: 'Projects ({count})', scopeOpen: 'Open', portfolioCopyOf: 'copy of {date} ({source})', portfolioReadOnlyHint: 'Read-only: this program is edited in its own file, then imported into the portfolio again.', programLevelRisks: '{count} active risks owned directly by the program (outside projects).', projectRisks: 'Project risks', projectOwned: 'Owned by this project', projectTouched: 'Affects this project',
@@ -10327,6 +10342,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Reopen the program before creating or reactivating a risk.'
         });
         Object.assign(translations.es, {
+            tabSearchActions: 'Filtrar medidas (texto, responsable, riesgo)…', tabSearchReviews: 'Filtrar cambios (riesgo, motivo)…', tabSearchChangelog: 'Filtrar las novedades…',
             treeSearch: 'Buscar en {name}', treeSearchCount: '{count} resultados', treeSearchNone: 'Sin resultados', treeSearchMore: '{count} resultados más: precise la búsqueda', hitRisk: 'Riesgo', hitCause: 'Causa', hitConsequence: 'Consecuencia', hitMeasure: 'Medida', hitNote: 'Nota', hitKri: 'Indicador', hitLink: 'Enlace', hitDecision: 'Decisión', hitReview: 'Revisión', hitProject: 'Proyecto', hitBenefit: 'Beneficio', hitDependency: 'Dependencia', hitEscalation: 'Escalada',
             treeResize: 'Ajustar el ancho del panel (doble clic: ancho original)', treeTitle: 'Navegación', treeCollapse: 'Plegar el panel', treeExpand: 'Desplegar el panel', treeCount: '{count} riesgos activos', treeHot: '{count} por encima de la tolerancia',
             programP80Own: 'Provisión P80 actual', tabProject: 'Proyecto', scopePrograms: 'Programas ({count})', scopeProjects: 'Proyectos ({count})', scopeOpen: 'Abrir', portfolioCopyOf: 'copia del {date} ({source})', portfolioReadOnlyHint: 'Solo lectura: este programa se modifica en su propio archivo y luego se vuelve a importar en la cartera.', programLevelRisks: '{count} riesgos activos asumidos directamente por el programa (fuera de los proyectos).', projectRisks: 'Riesgos del proyecto', projectOwned: 'Asumido por este proyecto', projectTouched: 'Afecta a este proyecto',
@@ -10402,6 +10418,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Reabra el programa antes de crear o reactivar un riesgo.'
         });
         Object.assign(translations.zh, {
+            tabSearchActions: '筛选措施（文本、负责人、风险）…', tabSearchReviews: '筛选变化（风险、理由）…', tabSearchChangelog: '筛选更新记录…',
             treeSearch: '在{name}中搜索', treeSearchCount: '{count} 条结果', treeSearchNone: '没有结果', treeSearchMore: '还有 {count} 条结果：请细化搜索', hitRisk: '风险', hitCause: '原因', hitConsequence: '后果', hitMeasure: '措施', hitNote: '备注', hitKri: '指标', hitLink: '链接', hitDecision: '决定', hitReview: '评审', hitProject: '项目', hitBenefit: '收益', hitDependency: '依赖', hitEscalation: '上报',
             treeResize: '调整面板宽度（双击恢复原始宽度）', treeTitle: '导航', treeCollapse: '收起面板', treeExpand: '展开面板', treeCount: '{count} 项活跃风险', treeHot: '{count} 项超出容忍度',
             programP80Own: '当前 P80 储备', tabProject: '项目', scopePrograms: '项目群（{count}）', scopeProjects: '项目（{count}）', scopeOpen: '打开', portfolioCopyOf: '{date} 的副本（{source}）', portfolioReadOnlyHint: '只读：请在该项目群自己的文件中修改，然后重新导入项目组合。', programLevelRisks: '{count} 项活跃风险直接由项目群负责（不属于任何项目）。', projectRisks: '项目风险', projectOwned: '由本项目负责', projectTouched: '影响本项目',
@@ -10477,6 +10494,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: '创建或重新启用风险前，请先重新开放项目群。'
         });
         Object.assign(translations.ar, {
+            tabSearchActions: 'تصفية الإجراءات (النص، المسؤول، الخطر)…', tabSearchReviews: 'تصفية التغييرات (الخطر، السبب)…', tabSearchChangelog: 'تصفية المستجدات…',
             treeSearch: 'البحث في {name}', treeSearchCount: '{count} نتائج', treeSearchNone: 'لا نتائج', treeSearchMore: '{count} نتائج أخرى: حدّد البحث', hitRisk: 'خطر', hitCause: 'سبب', hitConsequence: 'نتيجة', hitMeasure: 'إجراء', hitNote: 'ملاحظة', hitKri: 'مؤشر', hitLink: 'رابط', hitDecision: 'قرار', hitReview: 'مراجعة', hitProject: 'مشروع', hitBenefit: 'منفعة', hitDependency: 'اعتماد', hitEscalation: 'تصعيد',
             treeResize: 'ضبط عرض اللوحة (نقر مزدوج: العرض الأصلي)', treeTitle: 'التنقل', treeCollapse: 'طي اللوحة', treeExpand: 'توسيع اللوحة', treeCount: '{count} مخاطر نشطة', treeHot: '{count} فوق حد التحمل',
             programP80Own: 'احتياطي P80 الحالي', tabProject: 'المشروع', scopePrograms: 'البرامج ({count})', scopeProjects: 'المشاريع ({count})', scopeOpen: 'فتح', portfolioCopyOf: 'نسخة {date} ({source})', portfolioReadOnlyHint: 'للقراءة فقط: يُعدَّل هذا البرنامج في ملفه الخاص ثم يُعاد استيراده إلى المحفظة.', programLevelRisks: '{count} مخاطر نشطة يتحملها البرنامج مباشرة (خارج المشاريع).', projectRisks: 'مخاطر المشروع', projectOwned: 'يتحمله هذا المشروع', projectTouched: 'يمس هذا المشروع',
@@ -11739,7 +11757,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const was = oldDecisions.get(decision.id);
                     oldDecisions.delete(decision.id);
                     if (!was) return add(risk, 'decision', '', decisionLabel(decision));
-                    ['type', 'author', 'reason', 'reviewDate'].forEach(field => {
+                    ['date', 'type', 'author', 'reason', 'reviewDate'].forEach(field => {
                         const show = d => field === 'type' ? t(`decision_${d.type}`) : d[field];
                         if (journalText(show(was)) !== journalText(show(decision))) add(risk, `decision.${field}`, show(was), show(decision), decision.reason);
                     });
@@ -11778,7 +11796,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             deleted: 'journalDeleted', review: 'journalReview', revuLe: 'journalReviewed', prochaineRevue: 'journalNextReview',
             kri: 'journalKri', 'kri.releve': 'journalKriValue', 'kri.seuils': 'journalKriThresholds', merge: 'journalMerge',
             'cout.min': 'costMin', 'cout.probable': 'costLikely', 'cout.max': 'costMax', 'cout.probabilite': 'costProbability', 'cout.sansProtection': 'costWithoutProtection',
-            decision: 'journalDecision', 'decision.type': 'programDecision', 'decision.author': 'riskDecisionMaker', 'decision.reason': 'decisionReason', 'decision.reviewDate': 'decisionReviewDate' };
+            decision: 'journalDecision', 'decision.date': 'programDate', 'decision.type': 'programDecision', 'decision.author': 'riskDecisionMaker', 'decision.reason': 'decisionReason', 'decision.reviewDate': 'decisionReviewDate' };
         const JOURNAL_LISTS = new Set(['cause', 'consequence', 'mesure', 'note', 'lien', 'review', 'kri', 'kri.releve', 'decision']);
         function journalValue(champ, value) {
             if (value === '') return '';
@@ -12854,6 +12872,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const changes = [...to.values()].map(r => ({ risk: r, before: from.get(r.uid), kind: from.has(r.uid) ? 'kept' : 'new' }))
                 .concat([...from.values()].filter(r => !to.has(r.uid)).map(r => ({ risk: r, before: r, kind: 'closed' })))
                 .filter(change => !uids || uids.has(change.risk.uid));
+            const query = tabQueries.revues || '';
             changes.forEach(change => {
                 change.delta = change.kind === 'kept' ? scoreOf(change.risk.after) - scoreOf(change.before.after) : null;
             });
@@ -12870,7 +12889,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 : change.delta === 0 ? '=' : `${change.delta > 0 ? '+' : '−'}${Math.abs(change.delta)}`;
             const target = comparison.to === 'current' ? reviews[reviews.length - 1] : reviews.find(r => r.id === comparison.to);
             const motifs = new Map((target?.risks || []).filter(r => r.motif).map(r => [r.uid, r.motif]));
-            list.innerHTML = changes.map(change => `<div class="change-row">
+            const shownChanges = changes.filter(change => textMatches(query, change.risk.id, change.risk.title, motifs.get(change.risk.uid)));
+            list.innerHTML = (shownChanges.length || !query ? '' : `<p class="review-empty">${t('treeSearchNone')}</p>`) + shownChanges.map(change => `<div class="change-row">
                 <span class="id-bubble">${escapeHtml(change.risk.id)}</span>
                 <span>${escapeHtml(change.risk.title)}${change.kind !== 'closed' && motifs.has(change.risk.uid) ? `<small class="change-motif">${escapeHtml(motifs.get(change.risk.uid))}</small>` : ''}</span>
                 <span class="score-chips">${change.kind === 'new' ? '' : scoreChip(change.before.after)} → ${change.kind === 'closed' ? '—' : scoreChip(change.risk.after)}</span>
@@ -12946,10 +12966,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderActionPlan() {
             const board = document.getElementById('action-board');
             if (!board) return;
+            const query = tabQueries.actions || '';
             const all = risks.filter(inViewScope).flatMap(risk => risk.mesures.map((mesure, index) => {
                 const due = mesureDueDate(mesure.echeance);
                 return { risk, mesure, index, late: isMesureLate(mesure), due, dueKey: due ? due.getTime() : Number.MAX_SAFE_INTEGER };
-            })).filter(item => item.mesure.texte);
+            })).filter(item => item.mesure.texte && textMatches(query, item.mesure.texte, item.mesure.porteur, item.risk.id, item.risk.title, item.risk.responsable));
             // Rang posé par glisser-déposer d'abord (sans rang : après), puis retards et échéance la plus proche
             const rank = item => Number.isInteger(item.mesure.rang) ? item.mesure.rang : Infinity;
             all.sort((a, b) => (rank(a) - rank(b)) || (b.late - a.late) || (a.dueKey - b.dueKey));
@@ -14157,7 +14178,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const saved = scopeViews[uid];
             if (saved) {
                 Object.assign(riskFilter, saved.filter);
-                document.getElementById('filter-text').value = riskFilter.text;
+                renderTabSearch();
                 fillFilterOptions();
             }
             const sheetRisk = openRiskUid && risks.find(risk => risk.uid === openRiskUid);
@@ -14295,6 +14316,46 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ${hits.length > SEARCH_LIMIT ? `<p class="tree-results-count">${t('treeSearchMore', { count: hits.length - SEARCH_LIMIT })}</p>` : ''}`;
         }
 
+        // Recherche de l'onglet ouvert (champ à droite des onglets) : registre (filtre texte existant), plan d'actions,
+        // revues et nouveautés ; masquée ailleurs. Même règle que la recherche du panneau : tous les mots, sans accents ni casse.
+        const TAB_SEARCH = { registre: 'filterSearch', actions: 'tabSearchActions', revues: 'tabSearchReviews', nouveautes: 'tabSearchChangelog' };
+        const tabQueries = {};
+        const tabQuery = tab => tab === 'registre' ? riskFilter.text : tabQueries[tab] || '';
+        // Vrai si tous les mots de la recherche figurent dans l'un des textes. O(longueur des textes)
+        function textMatches(query, ...texts) {
+            const words = foldChars([...String(query).trim()]).folded.split(/\s+/).filter(Boolean);
+            if (!words.length) return true;
+            const folded = foldChars([...texts.filter(Boolean).join(' ')]).folded;
+            return words.every(word => folded.includes(word));
+        }
+        // Moins de 250 px libres à droite des onglets : le champ devient une loupe qui s'ouvre par-dessus au clic
+        function fitTabSearch() {
+            const row = document.querySelector('.tabs-row');
+            const nav = row.querySelector('.view-tabs');
+            row.classList.toggle('compact', row.clientWidth - nav.scrollWidth < 250);
+        }
+        new ResizeObserver(() => fitTabSearch()).observe(document.querySelector('.tabs-row'));
+
+        function renderTabSearch() {
+            const label = document.querySelector('.tab-search');
+            const input = document.getElementById('tab-search');
+            const key = TAB_SEARCH[activeTab];
+            label.hidden = !key || (activeTab === 'registre' && Boolean(openRiskUid));
+            if (!key) return;
+            input.placeholder = input.title = t(key);
+            if (input.value !== tabQuery(activeTab)) input.value = tabQuery(activeTab);
+            label.classList.toggle('has-value', Boolean(input.value));
+            fitTabSearch();
+            input.oninput = () => {
+                label.classList.toggle('has-value', Boolean(input.value));
+                if (activeTab === 'registre') { setFilter('text', input.value); return; }
+                tabQueries[activeTab] = input.value;
+                if (activeTab === 'actions') renderActionPlan();
+                else if (activeTab === 'revues') renderReviewComparison();
+                else if (activeTab === 'nouveautes') renderChangelog();
+            };
+        }
+
         // Ouvre un résultat : la fiche du risque, la page du projet ou du programme, ou l'onglet Revues
         function openSearchHit({ risk, scopeTarget, tab }) {
             if (risk) { openRiskSheet(risk); return; }
@@ -14380,7 +14441,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const search = tree.querySelector('.tree-search');
             let pending = null;
             search.oninput = () => { clearTimeout(pending); pending = setTimeout(() => { treeQuery = search.value; renderSearchResults(tree); }, 150); };
-            search.onkeydown = event => { if (event.key === 'Escape' && search.value) { event.preventDefault(); search.value = treeQuery = ''; renderSearchResults(tree); } };
+            search.onkeydown = event => {
+                if (event.key === 'Escape' && search.value) { event.preventDefault(); search.value = treeQuery = ''; renderSearchResults(tree); }
+                else if (event.key === 'Enter') { event.preventDefault(); clearTimeout(pending); treeQuery = search.value; renderSearchResults(tree); tree.querySelector('.tree-hit')?.click(); }
+            };
+            // Flèches haut / bas : de la recherche aux résultats (ou aux niveaux de l'arbre) et de l'un à l'autre ; Entrée ouvre
+            tree.onkeydown = event => {
+                if (event.key === 'Enter' && event.target.matches('.tree-hit, .tree-label')) { event.preventDefault(); event.target.click(); return; }
+                if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+                if (event.target === search && event.key === 'ArrowUp') return;
+                const items = [search, ...tree.querySelectorAll('.tree-results:not([hidden]) .tree-hit, [role="tree"]:not([hidden]) .tree-label')];
+                const index = items.indexOf(event.target);
+                if (index < 0) return;
+                event.preventDefault();
+                items[Math.max(0, Math.min(items.length - 1, index + (event.key === 'ArrowDown' ? 1 : -1)))].focus();
+            };
             renderSearchResults(tree);
             tree.onclick = event => {
                 const hit = event.target.closest('[data-hit]');
@@ -14414,7 +14489,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function clearFilters() {
             Object.assign(riskFilter, { text: '', group: '', level: '', treatment: '', owner: '', aboveAppetite: false, toReview: false, issues: false, cell: null });
-            document.getElementById('filter-text').value = '';
+            renderTabSearch();
             fillFilterOptions();
             applyFilters();
         }
@@ -14435,11 +14510,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 const cell = evaluatedAssessment(risk, f.cell.phase);
                 if (!cell || cell[0] !== f.cell.p || cell[1] !== f.cell.i) return false;
             }
-            if (f.text) {
-                const text = [risk.id, risk.title, risk.responsable, ...risk.mesures.flatMap(m => [m.texte, m.porteur])]
-                    .join(' ').toLocaleLowerCase();
-                if (!text.includes(f.text.trim().toLocaleLowerCase())) return false;
-            }
+            if (f.text && !textMatches(f.text, risk.id, risk.title, risk.responsable, ...risk.mesures.flatMap(m => [m.texte, m.porteur]))) return false;
             return true;
         }
 
@@ -15420,6 +15491,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const scroll = window.scrollY;
             showTab('registre', { hash: false });
             openRiskUid = uid;
+            renderTabSearch();
             if (!fromHistory) setViewHash(`#fiche:${encodeURIComponent(uid)}`, !keepScroll);
             renderRegister();
             window.scrollTo(0, keepScroll ? scroll : 0);
@@ -15427,6 +15499,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
         function closeRiskSheet({ hash = true } = {}) {
             openRiskUid = null;
+            renderTabSearch();
             if (hash) setViewHash('#registre');
             renderRegister();
             applyFilters();
@@ -15851,7 +15924,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const CHANGELOG = [
             { date: "2026-09-27", commits: [], title: ["Recherche par niveau", "Search by level"], items: [
                 ["new", "Recherche plein texte en haut du panneau de gauche, limitée au portefeuille, programme ou projet affiché : fiches, mesures, causes, conséquences, notes, indicateurs, liens, décisions, motifs de revue et éléments du programme ; sans accents ni casse, tous les mots dans n'importe quel ordre.", "Full-text search at the top of the left panel, limited to the portfolio, programme or project shown: risk sheets, measures, causes, consequences, notes, indicators, links, decisions, review reasons and programme items; ignores accents and case, all words in any order."],
-                ["improved", "Le panneau de gauche perd son titre au profit du champ de recherche.", "The left panel's title gives way to the search field."]] },
+                ["improved", "Le panneau de gauche perd son titre au profit du champ de recherche ; flèches haut et bas pour parcourir résultats et niveaux, Entrée pour ouvrir.", "The left panel's title gives way to the search field; up and down arrows move through results and levels, Enter opens."],
+                ["new", "Recherche de l'onglet ouvert, à droite des onglets : registre, plan d'actions, revues et nouveautés (loupe compacte quand la place manque).", "Search for the open tab, right of the tabs: register, action plan, reviews and changelog (compact magnifier when space is short)."],
+                ["improved", "Filtre texte du registre sans accents ni casse, par mots.", "Register text filter ignores accents and case, word by word."],
+                ["improved", "Date modifiable pour les décisions d'un risque et les arbitrages du programme ou du portefeuille, y compris à la saisie (décision prise un autre jour).", "Editable date for risk decisions and programme or portfolio rulings, including when entering them (decision taken on another day)."]] },
             { date: "2026-09-27", commits: [], title: ["Arborescence de navigation", "Navigation tree"], items: [
                 ["new", "Arborescence à gauche, sur toute la hauteur : programme ou portefeuille, programmes et projets, avec le nombre de risques actifs et un repère pour ceux au-delà de la tolérance ; le panneau se replie et sa largeur se règle.", "Full-height tree on the left: programme or portfolio, programmes and projects, with the number of active risks and a marker for those above tolerance; the panel can be collapsed and resized."],
                 ["improved", "Chaque programme ou projet retrouve son onglet et ses filtres quand on y revient ; un niveau jamais ouvert reprend la vue en cours ; une fiche hors du nouveau niveau se referme.", "Each programme or project gets its own tab and filters back when you return to it; a level never opened keeps the current view; a risk sheet outside the new level closes."]] },
@@ -15979,10 +16055,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const kinds = { new: 'changelogNew', improved: 'changelogImproved', fixed: 'changelogFixed' };
             const day = date => new Date(`${date}T12:00:00`).toLocaleDateString(currentLanguage, { day: 'numeric', month: 'long', year: 'numeric' });
             page.innerHTML = `<div class="sheet-head"><h2>${t('changelogTitle')}</h2></div><p class="committee-sub">${t('changelogIntro')}</p>
-                ${CHANGELOG.map(entry => `<section class="committee-card changelog-entry"><h3><time datetime="${entry.date}">${escapeHtml(day(entry.date))}</time> · ${escapeHtml(text(entry.title))}</h3>
+                ${(CHANGELOG.filter(entry => textMatches(tabQueries.nouveautes || '', text(entry.title), ...entry.items.map(([, ...texts]) => text(texts)), ...entry.commits))
+                    .map(entry => `<section class="committee-card changelog-entry"><h3><time datetime="${entry.date}">${escapeHtml(day(entry.date))}</time> · ${escapeHtml(text(entry.title))}</h3>
                     <ul>${entry.items.map(([kind, ...texts]) => `<li><span class="changelog-kind ${kind}">${t(kinds[kind])}</span><span>${escapeHtml(text(texts))}</span></li>`).join('')}</ul>
                     ${entry.commits.length ? `<p class="changelog-commits">${entry.commits.map(hash =>
-                        `<a href="${CHANGELOG_COMMIT_URL}${hash}" target="_blank" rel="noopener">${hash}</a>`).join(' ')}</p>` : ''}</section>`).join('')}`;
+                        `<a href="${CHANGELOG_COMMIT_URL}${hash}" target="_blank" rel="noopener">${hash}</a>`).join(' ')}</p>` : ''}</section>`).join('')) || `<p class="review-empty">${t('treeSearchNone')}</p>`}`;
         }
 
         // Choisir un effet l'affiche : l'option « Taille = vélocité » est allumée si besoin
@@ -16112,9 +16189,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     </div>` : ''}
                     <details class="risk-details" data-risk-panel="decisions"${panelOpen('decisions')}><summary><span class="section-symbol">${icon('check')}</span>${helpLabel('riskDecisionsCount', { count: risk.decisions.length })}</summary>
                         <div class="decision-table" role="table" aria-label="${escapeHtml(t('riskDecisionsCount', { count: risk.decisions.length }))}">
-                            <div class="decision-row decision-head" role="row"><span>${helpLabel('programDecision')}</span><span>${helpLabel('riskDecisionMaker')}</span>
+                            <div class="decision-row decision-head" role="row"><span>${helpLabel('programDate')}</span><span>${helpLabel('programDecision')}</span><span>${helpLabel('riskDecisionMaker')}</span>
                                 <span>${helpLabel('decisionReason')}</span><span>${helpLabel('decisionReviewDate')}</span><span></span></div>
-                            ${risk.decisions.map((decision, index) => `<div class="decision-row" role="row" data-decision-index="${index}" title="${escapeHtml(t('decisionRecorded', { date: formatReviewDate(decision.date) }))}">
+                            ${risk.decisions.map((decision, index) => `<div class="decision-row" role="row" data-decision-index="${index}">
+                                ${dateInput(decision.date, `aria-label="${escapeHtml(t('programDate'))}" data-decision-field="date"`, '')}
                                 <select aria-label="${escapeHtml(t('programDecision'))}" data-decision-field="type">${DECISION_TYPES.map(type => `<option value="${type}"${decision.type === type ? ' selected' : ''}>${t(`decision_${type}`)}</option>`).join('')}</select>
                                 ${personInput(decision.author, `data-decision-field="author"`, 'riskDecisionMaker')}
                                 <input aria-label="${escapeHtml(t('decisionReason'))}" data-decision-field="reason" value="${escapeHtml(decision.reason)}">
@@ -16122,6 +16200,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                                 <button type="button" class="icon-btn decision-delete" data-action="delete-decision" data-index="${index}" aria-label="${escapeHtml(t('decisionDelete'))}" title="${escapeHtml(t('decisionDelete'))}">${icon('trash')}</button>
                             </div>`).join('')}
                             <div class="decision-row decision-new risk-decision-form" role="row">
+                                ${dateInput(todayIso(), `aria-label="${escapeHtml(t('programDate'))}" data-new-decision="date"`, '')}
                                 <select aria-label="${escapeHtml(t('programDecision'))}" data-new-decision="type">${DECISION_TYPES.map(type => `<option value="${type}">${t(`decision_${type}`)}</option>`).join('')}</select>
                                 ${personInput(currentUser, `data-new-decision="author"`, 'riskDecisionMaker')}
                                 <input aria-label="${escapeHtml(t('decisionReason'))}" data-new-decision="reason" placeholder="${escapeHtml(t('decisionReasonPlaceholder'))}">
@@ -16245,8 +16324,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 if (decisionField) {
                     const decision = risk.decisions[Number(decisionField.closest('[data-decision-index]').dataset.decisionIndex)];
                     const field = decisionField.dataset.decisionField;
-                    const value = field === 'reviewDate' ? (isIsoDate(decisionField.value) ? decisionField.value : '') : decisionField.value.trim();
-                    if ((field === 'author' || field === 'reason') && !value) { alert(t('decisionRequired')); return renderRegister(); }
+                    const value = ['date', 'reviewDate'].includes(field) ? (isIsoDate(decisionField.value) ? decisionField.value : '') : decisionField.value.trim();
+                    if (['date', 'author', 'reason'].includes(field) && !value) { alert(t('decisionRequired')); return renderRegister(); }
                     decision[field] = value;
                     return save('all');
                 }
@@ -16403,10 +16482,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const author = sheet.querySelector('[data-new-decision="author"]').value.trim();
                     const reason = sheet.querySelector('[data-new-decision="reason"]').value.trim();
                     const reviewDate = sheet.querySelector('[data-new-decision="reviewDate"]').value;
+                    const date = sheet.querySelector('[data-new-decision="date"]').value;
                     if (!author || !reason || (type === 'accept' && !isIsoDate(reviewDate))) {
                         alert(t('decisionRequired')); return;
                     }
-                    risk.decisions.push(normalizeDecision({ date: todayIso(), author, type, reason, reviewDate,
+                    risk.decisions.push(normalizeDecision({ date: isIsoDate(date) ? date : todayIso(), author, type, reason, reviewDate,
                         scoreAtDecision: currentScore(risk) }));
                     save('all');
                 } else if (action === 'add-link') {
@@ -16827,7 +16907,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         <td>${programField('decisions', item, 'decision', 'programDecision')}</td><td>${programField('decisions', item, 'author', 'programDecisionMaker')}</td>
                         <td>${programField('decisions', item, 'reason', 'decisionReason')}</td><td>${programField('decisions', item, 'reviewDate', 'decisionReviewDate', 'date')}</td>
                         <td>${programButton('delete-decision', 'deleteItem', item.uid)}</td></tr>`).join('')}
-                    <tr class="program-new-row"><td class="program-muted">${escapeHtml(formatReviewDate(todayIso()))}</td><td><input aria-label="${escapeHtml(t('programSubject'))}" placeholder="${escapeHtml(t('programSubject'))}" id="program-decision-subject"></td>
+                    <tr class="program-new-row"><td>${dateInput(todayIso(), `aria-label="${escapeHtml(t('programDate'))}" id="program-decision-date"`, '')}</td><td><input aria-label="${escapeHtml(t('programSubject'))}" placeholder="${escapeHtml(t('programSubject'))}" id="program-decision-subject"></td>
                         <td><input aria-label="${escapeHtml(t('programDecision'))}" placeholder="${escapeHtml(t('programDecision'))}" id="program-decision-text"></td><td>${personInput(currentUser, `id="program-decision-author"`, 'programDecisionMaker')}</td>
                         <td><input aria-label="${escapeHtml(t('decisionReason'))}" placeholder="${escapeHtml(t('decisionReason'))}" id="program-decision-reason"></td><td>${dateInput('', `aria-label="${escapeHtml(t('decisionReviewDate'))}" id="program-decision-review"`, '')}</td>
                         <td>${programButton('add-decision', 'programRecordDecision')}</td></tr></tbody></table></div>`)}
@@ -17031,7 +17111,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     const subject = value('program-decision-subject'), decision = value('program-decision-text');
                     const author = value('program-decision-author'), reason = value('program-decision-reason');
                     if (!subject || !decision || !author || !reason) { alert(t('programDecisionRequired')); return; }
-                    program.decisions.push({ uid: newUid(), date: todayIso(), subject, decision, author, reason,
+                    const date = value('program-decision-date');
+                    program.decisions.push({ uid: newUid(), date: isIsoDate(date) ? date : todayIso(), subject, decision, author, reason,
                         reviewDate: value('program-decision-review') }); save();
                 } else if (action === 'delete-decision') {
                     program.decisions = program.decisions.filter(item => item.uid !== uid); save();
@@ -17159,7 +17240,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <tbody>${portfolio.decisions.map(item => `<tr><td>${decisionField(item, 'date', 'programDate', 'date')}</td><td>${decisionField(item, 'subject', 'programSubject')}</td>
                         <td>${decisionField(item, 'decision', 'programDecision')}</td><td>${decisionField(item, 'author', 'programDecisionMaker')}</td><td>${decisionField(item, 'reason', 'decisionReason')}</td>
                         <td><button type="button" class="sheet-btn" data-portfolio-action="delete-decision" data-portfolio-uid="${escapeHtml(item.uid)}">${t('deleteItem')}</button></td></tr>`).join('')}
-                    <tr class="program-new-row"><td class="program-muted">${escapeHtml(formatReviewDate(todayIso()))}</td><td><input aria-label="${escapeHtml(t('programSubject'))}" placeholder="${escapeHtml(t('programSubject'))}" id="portfolio-decision-subject"></td>
+                    <tr class="program-new-row"><td>${dateInput(todayIso(), `aria-label="${escapeHtml(t('programDate'))}" id="portfolio-decision-date"`, '')}</td><td><input aria-label="${escapeHtml(t('programSubject'))}" placeholder="${escapeHtml(t('programSubject'))}" id="portfolio-decision-subject"></td>
                         <td><input aria-label="${escapeHtml(t('programDecision'))}" placeholder="${escapeHtml(t('programDecision'))}" id="portfolio-decision-text"></td><td>${personInput(currentUser, 'id="portfolio-decision-author"', 'programDecisionMaker')}</td>
                         <td><input aria-label="${escapeHtml(t('decisionReason'))}" placeholder="${escapeHtml(t('decisionReason'))}" id="portfolio-decision-reason"></td>
                         <td><button type="button" class="sheet-btn" data-portfolio-action="add-decision">${t('programRecordDecision')}</button></td></tr></tbody></table></div>`)}
@@ -17274,7 +17355,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                         next.journal.push({ uid: newUid(), date: new Date().toISOString(), kind: 'remove', title: copy.program.title, source: copy.source });
                     });
                 } else if (action === 'add-decision') {
-                    const entry = { uid: newUid(), date: todayIso(), subject: value('portfolio-decision-subject'), decision: value('portfolio-decision-text'),
+                    const date = value('portfolio-decision-date');
+                    const entry = { uid: newUid(), date: isIsoDate(date) ? date : todayIso(), subject: value('portfolio-decision-subject'), decision: value('portfolio-decision-text'),
                         author: value('portfolio-decision-author'), reason: value('portfolio-decision-reason') };
                     if (REQUIRED.some(key => !entry[key])) { alert(t('programDecisionRequired')); return; }
                     changePortfolio(next => { next.decisions.push(entry); });
@@ -17310,6 +17392,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 tab.setAttribute('aria-selected', tab.dataset.tab === name);
             });
             document.querySelectorAll('.tab-panel').forEach(panel => { panel.hidden = panel.dataset.panel !== name; });
+            renderTabSearch();
             if (name === 'programme') renderProgramTab();
             if (name === 'registre' && openRiskUid) closeRiskSheet({ hash: false });
             // Les graphiques d'un onglet masqué n'ont pas de taille : on les redessine à l'affichage
