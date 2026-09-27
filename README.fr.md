@@ -193,6 +193,52 @@ décideurs :
 Riskr contrôle ces deux textes à 30 mots maximum. Le moteur reste compatible
 avec les anciens fichiers de données qui ne les contiennent pas.
 
+### Gestion des risques programme
+
+L'onglet **Programme** organise une analyse autour d'un objectif stratégique.
+`program` est absent dans un ancien fichier : Riskr reste alors utilisable comme
+registre projet. Un programme contient ses **projets** (`components`, de type
+`project`, ou `work` pour un chantier transverse qui n'est pas un projet, comme
+la coordination des fournisseurs), des `benefits`, `dependencies`, `scenarios`,
+`escalations`, `stages` et `decisions`. Les groupes de risques restent des
+**catégories thématiques**.
+
+Un bandeau au-dessus des onglets affiche le programme puis ses projets. Cliquer
+un projet limite les matrices, le registre, le plan d'actions, les revues et la
+vue comité aux risques que ce projet porte ou qui le touchent ; cliquer le
+programme rétablit la vue d'ensemble. Ce choix d'affichage est mémorisé dans le
+navigateur et n'est pas enregistré dans l'analyse.
+
+Chaque risque garde un seul `uid` et une seule fiche. `scopeLevel` et
+`componentId` désignent son registre propriétaire ; `affectedComponentIds`
+indique les autres projets touchés. Il peut donc apparaître dans plusieurs
+vues sans être compté plusieurs fois dans la provision globale. `programOrigin`
+et `programOriginNote` indiquent s'il a été identifié dans ce registre, décliné
+de l'organisation ou remonté d'un projet. Les liens utilisent toujours les
+identifiants stables, jamais les numéros affichés qui changent avec l'ordre.
+
+Un bénéfice a une référence, une cible, une valeur constatée, un responsable,
+une échéance et des risques liés. Une valeur constatée vide signifie **à mesurer**.
+Les tolérances déléguées signalent les risques au-dessus du niveau autorisé ;
+l'escalade et les décisions restent des actes humains datés. Les réserves des
+projets et du programme sont affichées séparément.
+Une décision de suivi mémorise le score observé : une nouvelle alerte apparaît
+si ce risque s'aggrave ou change de registre propriétaire.
+Une escalade acceptée par l'organisation garde sa fiche dans Riskr jusqu'au
+transfert explicite : ce produit ne contient pas de registre d'entreprise.
+Les revues de risques déjà présentes dans Riskr couvrent aussi les risques du
+programme ; leurs dernières dates et notes sont visibles depuis cet onglet.
+
+Les dépendances relient deux projets. Les scénarios combinés ajoutent un
+**surcoût incrémental** et une probabilité explicitement saisis ; au moins deux
+menaces actives doivent être liées pour qu'un scénario soit chiffré. Cette
+simulation P80 ne modélise pas la corrélation entre événements. Les P80 par
+projet ne s'additionnent pas. Les estimations utilisent 1 000 tirages au
+niveau global et 250 par projet pour garder l'onglet réactif. Avant
+clôture, les risques actifs ou survenus
+doivent être transférés avec responsable, date et motif ; les transferts
+s'exportent en CSV. Le format canonique conserve toutes les données programme.
+
 ## 🔌 100 % hors-ligne
 
 Toutes les bibliothèques (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,

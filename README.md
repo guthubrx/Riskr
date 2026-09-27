@@ -188,6 +188,48 @@ Each group can also have two summary fields for decision-makers:
 Riskr limits these two texts to 30 words. The engine stays compatible with older
 data files that do not contain them.
 
+### Program risk management
+
+The **Program** tab organizes an analysis around a strategic objective.
+Legacy files without `program` remain project registers. A program contains
+its **projects** (`components`, of type `project`, or `work` for cross-cutting
+work that is not a project, such as supplier coordination), `benefits`,
+`dependencies`, `scenarios`, `escalations`, `stages` and `decisions`. Risk
+groups remain **thematic categories**.
+
+A bar above the tabs shows the program followed by its projects. Clicking a
+project limits the matrices, register, action plan, reviews and committee view
+to the risks that project owns or is affected by; clicking the program restores
+the overall view. This display choice is remembered by the browser and is not
+saved in the analysis.
+
+Each risk retains one stable `uid` and one record. `scopeLevel` and
+`componentId` identify its owning register; `affectedComponentIds` lists other
+affected projects. A shared risk appears in several views but is sampled
+only once in the global contingency. `programOrigin` and `programOriginNote`
+record whether it was identified here, cascaded from the organization or
+escalated from a project. Links use stable IDs, never display numbers.
+
+Benefits have a baseline, target, actual value, owner, due date and linked
+risks. A blank actual value means **to measure**, not zero. Delegated tolerance
+flags risks for review; escalation and decisions remain dated human actions.
+Project and program reserves are shown separately.
+A monitoring decision records the observed score; another alert appears if
+the risk worsens or moves to a different owning register.
+An escalation accepted by the organization stays linked to its Riskr record
+until explicit transfer; this product has no enterprise risk register.
+Existing Riskr risk reviews also cover program risks; recent review dates and
+notes are visible from the Program tab.
+
+Dependencies connect two projects. Combined scenarios add an explicitly
+entered **incremental cost** and probability; at least two active threats must
+be linked before a scenario is costed. The P80 simulation does not model event
+correlation. Project P80 values must not be added. Program estimates use
+1,000 global draws and 250 draws per project to keep the tab responsive.
+Before closure, active or
+occurred risks must be transferred with an owner, date and reason; transfers
+can be exported as CSV. The canonical data format retains all program data.
+
 ## 🔌 100% offline
 
 All libraries (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,

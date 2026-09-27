@@ -96,14 +96,17 @@ contenido: para un nuevo análisis, solo cambia `riskr-data.js`.
 - Al abrirse localmente, `riskr-data.local.js` puede sustituir los datos genéricos. Lo
   ignora Git y solo debe contener datos privados que no deban publicarse.
 
-Cada riesgo tiene **una calificación** antes y después de la remediación:
-`assessmentBefore` y `assessmentAfter`, como `[probability, impact]`
+Cada riesgo tiene cuatro calificaciones: `assessmentBefore` (inherente), `assessmentCurrent`
+(observada), `assessmentAfter` (previsión tras las acciones abiertas) y
+`assessmentTarget` (objetivo), como `[probability, impact]`
 (1 a 5; `[0, 0]` = no evaluado). La criticidad es probabilidad × impacto (sobre 25);
 se muestra escalada a 5 (puntuación ÷ 5) en las tablas y matrices.
+En los archivos antiguos con medidas sin terminar, la calificación actual parte por
+prudencia de la calificación inherente y queda señalada para revisión.
 
 Los nombres de los campos de datos están en francés (idioma original de la aplicación):
 
-- `mesures`: lista de medidas `{ texte, porteur, echeance, etat }` (texto, responsable,
+- `mesures`: lista de medidas `{ texte, porteur, echeance, etat, verification }` (texto, responsable,
   fecha límite, estado; responsable y fecha límite son opcionales; `etat` es `todo`, `doing` o
   `done`; también se acepta una cadena de texto simple). Una fecha límite en formato `YYYY-MM-DD`
   o `DD/MM/YYYY` que ya haya pasado en una medida no terminada la marca como retrasada.
@@ -112,8 +115,17 @@ Los nombres de los campos de datos están en francés (idioma original de la apl
   (`prevention` o `protection`), su lado del bow-tie, y `efficacite`
   (eficacia, de 0 a 5). `rang` (opcional) conserva la posición elegida por arrastrar y
   soltar en el plan de acción; sin rango, las medidas se ordenan por retraso y luego por fecha límite.
-- `velocite`: velocidad de aparición del riesgo (1 a 5, 0 = no evaluada), utilizada por la
-  opción «Tamaño = velocidad» de las matrices.
+- `velocite`: velocidad entre el evento y su impacto (1 a 5, 0 = no evaluada), utilizada por la
+  opción «Tamaño = velocidad» de las matrices. `proximityDate` indica por separado
+  cuándo podría producirse el evento; `milestone` nombra el hito relacionado.
+- `kind` distingue amenazas y oportunidades; `impactAxes` califica los efectos en
+  coste, plazo, calidad, servicio y beneficio. `event`, `objective`, `raisedAt` y
+  `raisedBy` registran el evento incierto, el objetivo afectado y el origen.
+- `lifecycle` es `active`, `materialized`, `closed` o `transferred`;
+  `lifeDate`, `lifeReason`, `transferOwner` e `issue` conservan los datos de salida
+  y del problema.
+- `decisions` registra decisiones fechadas, quién decide, el motivo, la fecha de
+  reexamen y la puntuación aceptada. Una aceptación vencida o agravada exige una nueva decisión.
 - `notes`: notas de revisión `{ date, auteur, texte }` (fecha, autor, texto); `liens`:
   documentos y enlaces `{ libelle, url }` (etiqueta, URL).
 - `settings.templates`: «Mis modelos» de la biblioteca `{ titre, description,
@@ -140,7 +152,9 @@ Los nombres de los campos de datos están en francés (idioma original de la apl
   title, before, after, motif }] }`, instantáneas fechadas de las calificaciones utilizadas para comparaciones; `note` resume la revisión y `motif` explica una calificación.
 - `statut` es `statusNotTreated`, `statusInProgress`, `statusTreated` o
   `statusAccepted`.
-- `traitement` (estrategia) es `reduce`, `accept`, `transfer`, `avoid` o `''`
+- `traitement` (estrategia) es `reduce`, `accept`, `transfer`, `avoid`, `escalate`
+  para las amenazas, o `exploit`, `enhance`, `share`, `accept`, `escalate` para las
+  oportunidades, o `''`
   (no definido); `assessmentTarget` es la calificación objetivo `[probability, impact]`
   (`[0, 0]` = no definida).
 - `settings.riskAppetite`: puntuación máxima aceptable (P × I, sobre 25; `0` = ninguna).
@@ -165,6 +179,49 @@ Cada grupo puede tener también dos campos resumen para los responsables de deci
 
 Riskr limita estos dos textos a 30 palabras. El motor sigue siendo compatible con archivos de
 datos antiguos que no los contienen.
+
+### Gestión de riesgos del programa
+
+La pestaña **Programa** organiza un análisis en torno a un objetivo estratégico.
+Los archivos antiguos sin `program` siguen siendo registros de proyecto. Un programa
+contiene sus **proyectos** (`components`, de tipo `project`, o `work` para un trabajo
+transversal que no es un proyecto, como la coordinación de proveedores), `benefits`,
+`dependencies`, `scenarios`, `escalations`, `stages` y `decisions`. Los grupos de
+riesgos siguen siendo **categorías temáticas**.
+
+Una barra encima de las pestañas muestra el programa seguido de sus proyectos. Al hacer
+clic en un proyecto, las matrices, el registro, el plan de acción, las revisiones y la
+vista comité se limitan a los riesgos que ese proyecto gestiona o que le afectan; al
+hacer clic en el programa se recupera la vista global. El navegador recuerda esta
+elección de visualización, que no se guarda en el análisis.
+
+Cada riesgo conserva un único `uid` estable y una única ficha. `scopeLevel` y
+`componentId` identifican su registro propietario; `affectedComponentIds` enumera los
+demás proyectos afectados. Un riesgo compartido aparece en varias vistas, pero solo se
+muestrea una vez en la provisión global. `programOrigin` y `programOriginNote`
+indican si se identificó aquí, si se derivó de la organización o si se escaló desde un
+proyecto. Los vínculos usan identificadores estables, nunca los números mostrados.
+
+Los beneficios tienen un valor de referencia, un objetivo, un valor real, un responsable,
+una fecha límite y riesgos vinculados. Un valor real vacío significa **por medir**, no
+cero. La tolerancia delegada señala los riesgos para revisión; la escalada y las
+decisiones siguen siendo acciones humanas fechadas. Las reservas de los proyectos y del
+programa se muestran por separado.
+Una decisión de seguimiento registra la puntuación observada; aparece otra alerta si el
+riesgo empeora o pasa a otro registro propietario.
+Una escalada aceptada por la organización sigue vinculada a su ficha en Riskr hasta su
+transferencia explícita; este producto no incluye un registro de riesgos corporativo.
+Las revisiones de riesgos ya existentes en Riskr también cubren los riesgos del programa;
+las fechas y notas de las revisiones recientes se ven desde la pestaña Programa.
+
+Las dependencias conectan dos proyectos. Los escenarios combinados añaden un **coste
+incremental** y una probabilidad introducidos explícitamente; deben vincularse al menos
+dos amenazas activas para que un escenario se cuantifique. La simulación P80 no modela
+la correlación entre eventos. Los valores P80 de los proyectos no deben sumarse. Las
+estimaciones del programa usan 1.000 tiradas globales y 250 tiradas por proyecto para
+que la pestaña siga siendo fluida. Antes del cierre, los riesgos activos u ocurridos
+deben transferirse con un responsable, una fecha y un motivo; las transferencias pueden
+exportarse en CSV. El formato canónico de datos conserva todos los datos del programa.
 
 ## 🔌 100% sin conexión
 
@@ -213,15 +270,16 @@ totalmente sin red (un único archivo de unos 2 MB).
   riesgo con umbrales de alerta y crítico, lecturas fechadas y firmadas, minigráfico;
   contador «KRI en alerta» en el registro, KRI críticos en las decisiones esperadas
   de la vista comité
-- **Costeo y provisión de riesgo**: rango de coste por riesgo en la ficha (y un
-  coste ponderado para compararlos), y en la vista comité (y el PDF) el
-  **importe a provisionar**, con y sin las medidas: la diferencia es lo que
-  ahorra el plan de acción, siempre que se lleven a cabo las medidas restantes. El
+- **Costeo y provisión de riesgo**: rango de coste por amenaza activa en la ficha,
+  y en la vista comité (y el PDF) la **provisión P80 actual** y su previsión tras
+  las acciones. Las oportunidades y los riesgos cerrados se excluyen; las amenazas
+  activas sin coste se cuentan aparte. El
   texto se genera automáticamente a partir de las calificaciones, costes y medidas, sin
   jerga estadística: caso normal (no ocurre ningún gran riesgo), luego para cada gran riesgo su
   coste si ocurre, el efecto de sus medidas (probabilidad «1 posibilidad entre 3 →
   1 posibilidad entre 7» para la prevención, coste reducido para la protección) y su progreso.
-  Calculado a partir de 10.000 simulaciones Monte Carlo (distribución triangular, resultados estables)
+  Calculado a partir de 10.000 simulaciones Monte Carlo (distribución triangular, resultados estables).
+  El modelo supone riesgos independientes; no cuantifica correlaciones ni escenarios combinados.
 - **Detector de incoherencias**: alertas «por verificar» (nada se bloquea) cuando una
   probabilidad introducida queda fuera de la banda de la calificación P, cuando un coste no
   coincide con la calificación de impacto según la escala en euros del análisis
