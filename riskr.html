@@ -15007,7 +15007,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const mesures = threats.flatMap(risk => risk.mesures).filter(mesure => mesure.texte);
             const treatments = { reduce: 0, transfer: 0, accept: 0, avoid: 0, '': 0 };
             threats.forEach(risk => { treatments[risk.traitement] = (treatments[risk.traitement] || 0) + 1; });
-            const last = reviews[reviews.length - 1];
+            // Dernière revue du périmètre affiché (en portefeuille, chaque revue appartient à un programme)
+            const last = [...reviews].reverse().find(review => !uids || review.risks.some(entry => uids.has(entry.uid)));
             return {
                 subtitle: [viewScope ? programComponent(viewScope)?.name || portfolioCopy(viewScope)?.program.title : '', last ? `${last.label} · ${formatReviewDate(last.date)}` : new Date().toLocaleDateString(currentLanguage)].filter(Boolean).join(' · '),
                 threatCount: threats.length,
@@ -15024,7 +15025,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     .sort((a, b) => currentScore(b) - currentScore(a) || scoreOf(b.assessmentBefore) - scoreOf(a.assessmentBefore))
                     .slice(0, 5),
                 treatments,
-                exposures: [...reviews.map(review => ({ label: review.label, value: meanExposure(review.risks.filter(r => !uids || uids.has(r.uid)).map(r => r.after)) })),
+                exposures: [...reviews.map(review => ({ label: review.label, value: meanExposure(review.risks.filter(r => !uids || uids.has(r.uid)).map(r => r.after)) }))
+                    .filter(entry => !uids || entry.value !== null),
                     { label: t('reviewCurrent'), value: exposureAfter }]
             };
         }
@@ -15961,6 +15963,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ["improved", "Le panneau de gauche perd son titre au profit du champ de recherche ; flèches haut et bas pour parcourir résultats et niveaux, Entrée pour ouvrir.", "The left panel's title gives way to the search field; up and down arrows move through results and levels, Enter opens."],
                 ["new", "Recherche de l'onglet ouvert, à droite des onglets : registre, plan d'actions, revues et nouveautés (loupe compacte quand la place manque).", "Search for the open tab, right of the tabs: register, action plan, reviews and changelog (compact magnifier when space is short)."],
                 ["improved", "Filtre texte du registre sans accents ni casse, par mots.", "Register text filter ignores accents and case, word by word."],
+                ["fixed", "Vue comité d'un programme du portefeuille : sa propre dernière revue en sous-titre, sans lignes vides dans l'exposition par revue.", "Committee view of a portfolio programme: its own latest review in the subtitle, no empty rows in exposure by review."],
                 ["fixed", "Portefeuille : le coût d'un risque se compare à l'échelle d'impact de son propre programme.", "Portfolio: a risk's cost is compared with its own programme's impact scale."],
                 ["fixed", "Plus d'alerte « cotation après plus grave qu'avant » sur une opportunité, qu'on cote à la hausse quand on la renforce.", "No more \"rating after is worse than before\" warning on an opportunity, which is rated higher when it is enhanced."],
                 ["fixed", "Page Programme sans débordement quand le panneau de gauche est ouvert ; démonstration avec une cotation actuelle pour chaque risque.", "Programme page no longer overflows with the left panel open; demo gives every risk a current rating."],
