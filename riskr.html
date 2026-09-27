@@ -14121,11 +14121,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         // Identifiants stables du périmètre (entrées des revues figées) ; null = pas de restriction. O(n)
         const viewScopeUids = () => viewScope && program ? new Set(risks.filter(inViewScope).map(risk => risk.uid)) : null;
 
+        // Vue mémorisée par niveau (programme, projet…) : en y revenant, on retrouve son onglet et les filtres du registre.
+        // Un niveau jamais ouvert reprend la vue en cours. Mémorisé dans le navigateur, pas dans l'analyse.
+        const scopeViews = JSON.parse(riskrStorage.getItem('scope-views') || '{}');
+
         function setViewScope(uid) {
+            scopeViews[viewScope] = { tab: activeTab, filter: { ...riskFilter } };
+            riskrStorage.setItem('scope-views', JSON.stringify(scopeViews));
             viewScope = uid;
             riskrStorage.setItem('view-scope', uid);
+            const saved = scopeViews[uid];
+            if (saved) {
+                Object.assign(riskFilter, saved.filter);
+                document.getElementById('filter-text').value = riskFilter.text;
+                fillFilterOptions();
+            }
             const sheetRisk = openRiskUid && risks.find(risk => risk.uid === openRiskUid);
             if (sheetRisk && !inViewScope(sheetRisk)) closeRiskSheet({ hash: false });
+            if (saved && VIEW_TABS.includes(saved.tab) && saved.tab !== activeTab) showTab(saved.tab);
             updateCharts();
             renderActionPlan();
         }
@@ -15674,7 +15687,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         const CHANGELOG = [
             { date: "2026-09-27", commits: [], title: ["Arborescence de navigation", "Navigation tree"], items: [
                 ["new", "Arborescence à gauche : programme ou portefeuille, programmes et projets, avec le nombre de risques actifs et un repère pour ceux au-delà de la tolérance ; le panneau se replie.", "Tree on the left: programme or portfolio, programmes and projects, with the number of active risks and a marker for those above tolerance; the panel can be collapsed."],
-                ["improved", "Changer de niveau garde l'onglet ouvert et les filtres ; une fiche hors du nouveau niveau se referme.", "Changing level keeps the open tab and the filters; a risk sheet outside the new level closes."]] },
+                ["improved", "Chaque programme ou projet retrouve son onglet et ses filtres quand on y revient ; un niveau jamais ouvert reprend la vue en cours ; une fiche hors du nouveau niveau se referme.", "Each programme or project gets its own tab and filters back when you return to it; a level never opened keeps the current view; a risk sheet outside the new level closes."]] },
             { date: "2026-09-27", commits: [], title: ["Portefeuille de programmes", "Programme portfolio"], items: [
                 ["new", "Portefeuille : un fichier qui réunit la copie de plusieurs programmes, chacun restant tenu dans son propre fichier ; « Importer un programme » ajoute ou met à jour une copie.", "Portfolio: a file that brings together copies of several programmes, each still kept in its own file; \"Import a programme\" adds or updates a copy."],
                 ["new", "Bandeau à trois niveaux (portefeuille › programme › projet) : matrices, registre, plan d'actions, revues et vue comité consolident ou se limitent au niveau choisi.", "Three-level bar (portfolio › programme › project): matrices, register, action plan, reviews and committee view consolidate or narrow to the chosen level."],

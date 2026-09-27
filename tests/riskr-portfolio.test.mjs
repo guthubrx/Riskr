@@ -106,8 +106,17 @@ try {
         showTab('registre'); setFilter('level', 'high');
         const outside = risks.find(risk => risk.portfolioCopy !== 'prog-south');
         openRiskSheet(outside.uid);
+        delete scopeViews['prog-south']; // niveau jamais ouvert : il reprend la vue en cours
         document.querySelector('#scope-tree [data-scope="prog-south"]').click();
         const treeKeeps = activeTab === 'registre' && riskFilter.level === 'high' && viewScope === 'prog-south' && openRiskUid === null;
+        // Chaque niveau retrouve son onglet et ses filtres
+        const northUid = portfolio.programs.find(copy => copy.uid !== 'prog-south').uid;
+        showTab('revues'); setFilter('level', 'high');
+        setViewScope(northUid); showTab('matrices'); setFilter('level', '');
+        setViewScope('prog-south');
+        const southBack = activeTab === 'revues' && riskFilter.level === 'high';
+        setViewScope(northUid);
+        const northBack = activeTab === 'matrices' && riskFilter.level === '';
         setFilter('level', ''); setViewScope(''); showTab('programme');
         const riskCount = risks.length;
         const saved = serializeModel();
@@ -116,7 +125,7 @@ try {
         return { empty, codes, uniqueIds, uniqueUids, refused: Boolean(refused),
             copies: saved.portfolio.programs.length, journal: saved.portfolio.journal.map(entry => entry.kind),
             southThreats, componentThreats, backToProgram, programPage, projectPage, treeNodes, treeKeeps,
-            expectedNodes, allThreats, readOnly, escalations,
+            expectedNodes, southBack, northBack, allThreats, readOnly, escalations,
             decisions: roundTrip.portfolio.decisions.length, roundTripRisks: roundTrip.risks.length, riskCount, savedRisks: saved.risks.length,
             sourceUntouched: JSON.stringify(south) === fileBefore, afterRemove: portfolio.programs.length,
             tab: document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() };
@@ -136,6 +145,8 @@ try {
     assert.equal(result.projectPage, true, 'ouvrir un projet affiche sa page');
     assert.equal(result.readOnly, true, 'les risques importés sont en lecture seule');
     assert.equal(result.treeNodes, result.expectedNodes, 'arborescence : portefeuille, programmes et projets des branches ouvertes');
+    assert.equal(result.southBack, true, 'revenir sur un programme rend son onglet et ses filtres');
+    assert.equal(result.northBack, true, 'chaque programme garde sa propre vue');
     assert.equal(result.treeKeeps, true, 'l\'arborescence garde l\'onglet et les filtres, et referme une fiche hors périmètre');
     assert.equal(result.escalations, 1, 'escalade de niveau organisation consolidée');
     assert.equal(result.decisions, 1, 'arbitrage du portefeuille conservé');
