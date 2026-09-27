@@ -234,7 +234,7 @@ Before closure, active or
 occurred risks must be transferred with an owner, date and reason; transfers
 can be exported as CSV. The canonical data format retains all program data.
 
-On a wide screen, a tree on the left shows the program (or portfolio), its programs and their projects, with the number of active risks and an orange dot when some are above tolerance. A click selects the level; each program or project gets back the tab and filters left there (a level never opened keeps the current view); an open risk sheet outside the new level closes. The panel spans the full page height; it can be collapsed and resized by dragging its edge (double-click: original width), and the browser remembers these choices.
+On a wide screen, a tree on the left shows the program (or portfolio), its programs and their projects, with the number of active risks and an orange dot when some are above tolerance. A click selects the level; each program or project gets back the tab and filters left there (a level never opened keeps the current view); an open risk sheet outside the new level closes. At the top of the panel, a full-text search covers the level shown (portfolio, program or project): risk sheets, measures, causes, consequences, notes, indicators, links, decisions, review reasons and program items, ignoring accents and case, with every typed word required in the same text; a result opens the matching sheet, page or review. The panel spans the full page height; it can be collapsed and resized by dragging its edge (double-click: original width), and the browser remembers these choices.
 
 ### Portfolio management
 

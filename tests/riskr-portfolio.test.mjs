@@ -118,6 +118,16 @@ try {
         setViewScope(northUid);
         const northBack = activeTab === 'matrices' && riskFilter.level === '';
         setFilter('level', ''); setViewScope(''); showTab('programme');
+        // Recherche plein texte limitée au niveau affiché, sans accents ni casse, par mots
+        setViewScope('');
+        const rootHits = searchHits('fournisseur').length;
+        const upperHits = searchHits('FOURNÌSSEUR').length;
+        setViewScope('prog-south');
+        const southHits = searchHits('fournisseur').length;
+        treeQuery = 'fournisseur'; renderScopeTree();
+        document.querySelector('#scope-tree .tree-hit[data-risk]').click();
+        const hitOpens = activeTab === 'registre' && Boolean(openRiskUid) && openRiskUid.startsWith('prog-south/');
+        treeQuery = ''; closeRiskSheet({ hash: false }); setViewScope('');
         const riskCount = risks.length;
         const saved = serializeModel();
         const roundTrip = buildModel(saved);
@@ -125,7 +135,7 @@ try {
         return { empty, codes, uniqueIds, uniqueUids, refused: Boolean(refused),
             copies: saved.portfolio.programs.length, journal: saved.portfolio.journal.map(entry => entry.kind),
             southThreats, componentThreats, backToProgram, programPage, projectPage, treeNodes, treeKeeps,
-            expectedNodes, southBack, northBack, allThreats, readOnly, escalations,
+            expectedNodes, southBack, northBack, rootHits, upperHits, southHits, hitOpens, allThreats, readOnly, escalations,
             decisions: roundTrip.portfolio.decisions.length, roundTripRisks: roundTrip.risks.length, riskCount, savedRisks: saved.risks.length,
             sourceUntouched: JSON.stringify(south) === fileBefore, afterRemove: portfolio.programs.length,
             tab: document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() };
@@ -145,6 +155,9 @@ try {
     assert.equal(result.projectPage, true, 'ouvrir un projet affiche sa page');
     assert.equal(result.readOnly, true, 'les risques importés sont en lecture seule');
     assert.equal(result.treeNodes, result.expectedNodes, 'arborescence : portefeuille, programmes et projets des branches ouvertes');
+    assert.ok(result.rootHits > result.southHits && result.southHits > 0, 'la recherche porte sur le niveau affiché');
+    assert.equal(result.upperHits, result.rootHits, 'recherche sans accents ni casse');
+    assert.equal(result.hitOpens, true, 'un résultat ouvre la fiche du risque');
     assert.equal(result.southBack, true, 'revenir sur un programme rend son onglet et ses filtres');
     assert.equal(result.northBack, true, 'chaque programme garde sa propre vue');
     assert.equal(result.treeKeeps, true, 'l\'arborescence garde l\'onglet et les filtres, et referme une fiche hors périmètre');
