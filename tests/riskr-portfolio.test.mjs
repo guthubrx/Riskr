@@ -77,12 +77,17 @@ try {
         let refused = '';
         try { addPortfolioProgram({ risks: [], riskGroups: [] }, 'projet.js'); } catch (error) { refused = error.message; }
         addPortfolioProgram(south, 'riskr-data-sud-v2.js');
-        document.querySelector('#scope-bar [data-scope="prog-south"]').click();
+        const pick = uid => { const select = document.querySelector('#scope-bar .scope-select'); select.value = uid; select.dispatchEvent(new Event('change', { bubbles: true })); };
+        showTab('programme');
+        pick('prog-south');
         const southThreats = committeeStats().threatCount;
+        const programPage = document.querySelector('#program-panel h2').textContent === 'Sud — programme régional'
+            && document.querySelectorAll('#program-panel [data-scope-to]').length > 0;
         const component = program.components.find(item => item.portfolioCopy === 'prog-south');
-        document.querySelector('#scope-bar [data-scope="' + component.uid + '"]').click();
+        document.querySelector('#program-panel [data-scope-to="' + component.uid + '"]').click();
         const componentThreats = committeeStats().threatCount;
-        document.querySelector('#scope-bar [data-scope="' + component.uid + '"]').click();
+        const projectPage = document.querySelector('#program-panel h2').textContent === component.name;
+        document.querySelector('#scope-bar [data-scope="prog-south"]').click();
         const backToProgram = viewScope;
         document.querySelector('#scope-bar [data-scope=""]').click();
         const allThreats = committeeStats().threatCount;
@@ -101,7 +106,7 @@ try {
         document.querySelector('[data-portfolio-action="remove"][data-portfolio-uid="prog-south"]').click();
         return { empty, codes, uniqueIds, uniqueUids, refused: Boolean(refused),
             copies: saved.portfolio.programs.length, journal: saved.portfolio.journal.map(entry => entry.kind),
-            southThreats, componentThreats, backToProgram, allThreats, readOnly, escalations,
+            southThreats, componentThreats, backToProgram, programPage, projectPage, allThreats, readOnly, escalations,
             decisions: roundTrip.portfolio.decisions.length, roundTripRisks: roundTrip.risks.length, riskCount, savedRisks: saved.risks.length,
             sourceUntouched: JSON.stringify(south) === fileBefore, afterRemove: portfolio.programs.length,
             tab: document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() };
@@ -116,7 +121,9 @@ try {
     assert.deepEqual(result.journal, ['import', 'import', 'update']);
     assert.ok(result.southThreats > 0 && result.southThreats < result.allThreats, 'le bandeau limite les vues à un programme');
     assert.ok(result.componentThreats > 0 && result.componentThreats <= result.southThreats, 'puis à un projet de ce programme');
-    assert.equal(result.backToProgram, 'prog-south', 'recliquer le projet remonte au programme');
+    assert.equal(result.backToProgram, 'prog-south', 'le fil d\'Ariane remonte au programme');
+    assert.equal(result.programPage, true, 'choisir un programme ouvre sa page avec ses projets');
+    assert.equal(result.projectPage, true, 'ouvrir un projet affiche sa page');
     assert.equal(result.readOnly, true, 'les risques importés sont en lecture seule');
     assert.equal(result.escalations, 1, 'escalade de niveau organisation consolidée');
     assert.equal(result.decisions, 1, 'arbitrage du portefeuille conservé');

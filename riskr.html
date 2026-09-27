@@ -5699,12 +5699,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .scope-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
         .scope-bar[hidden] { display: none; }
         .scope-label { margin-inline-end: 2px; font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--text-3); }
-        .scope-projects { display: inline-flex; flex-wrap: wrap; gap: 6px; }
-        .scope-chip { padding: 4px 12px; border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--text-2); font: inherit; font-size: 13px; line-height: 1.4; cursor: pointer; transition: color .15s ease, border-color .15s ease, background-color .15s ease; }
-        .scope-chip:hover { color: var(--text); border-color: var(--border-strong); }
-        .scope-chip.active { color: var(--text); border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); background: color-mix(in srgb, var(--accent) 12%, transparent); }
-        .scope-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-        .scope-program { font-weight: 600; color: var(--text); }
+        .scope-crumb { padding: 4px 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--text-2); font: inherit; font-size: 13px; line-height: 1.4; cursor: pointer; }
+        .scope-crumb:hover { color: var(--text); background: var(--surface-2); }
+        .scope-crumb.active { color: var(--text); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+        .scope-crumb:focus-visible, .scope-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .scope-select { width: auto; max-width: min(24rem, 100%); text-overflow: ellipsis; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; }
         .scope-sep { display: inline-block; color: var(--text-3); font-size: 15px; }
         [dir="rtl"] .scope-sep { transform: scaleX(-1); }
         .scope-note { margin-inline-start: 4px; font-size: 12px; color: var(--text-3); }
@@ -5753,7 +5752,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .program-transfers { margin: 8px 0; }
         .program-transfers > summary { font-size: 13px; color: var(--text-2); cursor: pointer; }
         .program-transfers[open] > summary { margin-bottom: 8px; }
-        .scope-chip.scope-parent { color: var(--text); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+        .program-row-actions { white-space: nowrap; }
+        .program-row-actions .sheet-btn + .sheet-btn { margin-inline-start: 6px; }
         /* ===== Portefeuille : les copies de programmes sont en lecture seule ===== */
         .portfolio-mode [onclick="freezeReview()"], .portfolio-mode .review-delete, .portfolio-mode .register-modes [data-mode="edit"],
         .portfolio-mode [onclick="openLibrary()"], .portfolio-mode [onclick*="merge-file"],
@@ -10115,6 +10115,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             riskObjectiveExample: 'مثال: بدء الخدمة قبل سبتمبر', programRiskScores: 'الحالي ← المتوقع', programDependencyDescription: 'وصف الاعتماد'
         });
         Object.assign(translations.fr, {
+            tabProject: 'Projet', scopePrograms: 'Programmes ({count})', scopeProjects: 'Projets ({count})', scopeOpen: 'Ouvrir', portfolioCopyOf: 'copie du {date} ({source})', portfolioReadOnlyHint: 'Lecture seule : ce programme se modifie dans son propre fichier, puis se réimporte dans le portefeuille.', programLevelRisks: '{count} risques actifs portés directement par le programme (hors projets).', projectRisks: 'Risques du projet', projectOwned: 'Porté par ce projet', projectTouched: 'Touche ce projet',
             tabPortfolio: 'Portefeuille', portfolioFrame: 'Cadre du portefeuille', portfolioOwner: 'Responsable du portefeuille', portfolioStaleAfter: 'Copie ancienne après (jours)', portfolioCreate: 'Créer un portefeuille', portfolioCreateHint: 'Un portefeuille réunit plusieurs programmes tenus chacun dans leur propre fichier : il en importe une copie et les consulte ensemble.', portfolioCreateConfirm: 'Les {count} risques de cette analyse seront remplacés par un portefeuille vide. Continuer ?', portfolioImport: 'Importer un programme', portfolioImported: 'Programme importé', portfolioReplace: 'Remplacer la copie de « {name} » importée le {date} ?', portfolioNotProgram: 'Ce fichier ne contient pas de programme Riskr.', portfolioInvalid: 'Les données du portefeuille sont invalides.', portfolioReadOnly: 'Portefeuille : un risque se modifie dans le fichier de son programme, puis se réimporte.', portfolioPrograms: 'Programmes', portfolioCode: 'Code', portfolioImportedAt: 'Importé le', portfolioActiveRisks: 'Risques actifs', portfolioStale: 'Copie ancienne', portfolioGlobalP80: 'Provision globale P80', portfolioRemove: 'Retirer', portfolioRemoveConfirm: 'Retirer « {name} » du portefeuille ? Son fichier n’est pas touché.', portfolioEmpty: 'Aucun programme : « Importer un programme » ajoute la copie du fichier riskr-data.js (ou d’un export JSON) de chaque programme.', portfolioSimulationLimit: 'Chaque copie est figée à sa date d’import : réimportez le fichier d’un programme pour la mettre à jour. Les provisions P80 ne s’additionnent pas ; aucune corrélation entre programmes n’est simulée.', portfolioEscalations: 'Escalades vers le portefeuille', portfolioEscalationsHint: 'Risques escaladés au niveau organisation par les programmes. La décision se consigne dans le fichier du programme.', portfolioDecisions: 'Arbitrages du portefeuille', portfolioJournal: 'Imports', portfolioJournal_import: 'Import', portfolioJournal_update: 'Mise à jour', portfolioJournal_remove: 'Retrait', scopeNoteProgram: 'Vues limitées à ce programme',
             programDate: 'Date', scopeNote: 'Vues limitées à ce projet',
             tabProgram: 'Programme', programIndividualCommittee: 'Comité — risques individuels',
@@ -10187,6 +10188,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Rouvrez le programme avant de créer ou réactiver un risque.'
         });
         Object.assign(translations.en, {
+            tabProject: 'Project', scopePrograms: 'Programs ({count})', scopeProjects: 'Projects ({count})', scopeOpen: 'Open', portfolioCopyOf: 'copy of {date} ({source})', portfolioReadOnlyHint: 'Read-only: this program is edited in its own file, then imported into the portfolio again.', programLevelRisks: '{count} active risks owned directly by the program (outside projects).', projectRisks: 'Project risks', projectOwned: 'Owned by this project', projectTouched: 'Affects this project',
             tabPortfolio: 'Portfolio', portfolioFrame: 'Portfolio framework', portfolioOwner: 'Portfolio owner', portfolioStaleAfter: 'Copy outdated after (days)', portfolioCreate: 'Create a portfolio', portfolioCreateHint: 'A portfolio brings together several programs, each kept in its own file: it imports a copy of each and reviews them together.', portfolioCreateConfirm: 'The {count} risks of this analysis will be replaced by an empty portfolio. Continue?', portfolioImport: 'Import a program', portfolioImported: 'Program imported', portfolioReplace: 'Replace the copy of “{name}” imported on {date}?', portfolioNotProgram: 'This file does not contain a Riskr program.', portfolioInvalid: 'The portfolio data is invalid.', portfolioReadOnly: 'Portfolio: a risk is edited in its program’s file, then imported again.', portfolioPrograms: 'Programs', portfolioCode: 'Code', portfolioImportedAt: 'Imported on', portfolioActiveRisks: 'Active risks', portfolioStale: 'Outdated copy', portfolioGlobalP80: 'Global P80 contingency', portfolioRemove: 'Remove', portfolioRemoveConfirm: 'Remove “{name}” from the portfolio? Its file is not affected.', portfolioEmpty: 'No program yet: “Import a program” adds a copy of each program’s riskr-data.js file (or JSON export).', portfolioSimulationLimit: 'Each copy is frozen at its import date: import a program’s file again to update it. P80 contingencies cannot be added up; no correlation between programs is simulated.', portfolioEscalations: 'Escalations to the portfolio', portfolioEscalationsHint: 'Risks escalated to the organization level by the programs. The decision is recorded in the program’s file.', portfolioDecisions: 'Portfolio rulings', portfolioJournal: 'Imports', portfolioJournal_import: 'Import', portfolioJournal_update: 'Update', portfolioJournal_remove: 'Removal', scopeNoteProgram: 'Views limited to this program',
             programDate: 'Date', scopeNote: 'Views limited to this project',
             tabProgram: 'Program', programIndividualCommittee: 'Committee — individual risks',
@@ -10259,6 +10261,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Reopen the program before creating or reactivating a risk.'
         });
         Object.assign(translations.es, {
+            tabProject: 'Proyecto', scopePrograms: 'Programas ({count})', scopeProjects: 'Proyectos ({count})', scopeOpen: 'Abrir', portfolioCopyOf: 'copia del {date} ({source})', portfolioReadOnlyHint: 'Solo lectura: este programa se modifica en su propio archivo y luego se vuelve a importar en la cartera.', programLevelRisks: '{count} riesgos activos asumidos directamente por el programa (fuera de los proyectos).', projectRisks: 'Riesgos del proyecto', projectOwned: 'Asumido por este proyecto', projectTouched: 'Afecta a este proyecto',
             tabPortfolio: 'Cartera', portfolioFrame: 'Marco de la cartera', portfolioOwner: 'Responsable de la cartera', portfolioStaleAfter: 'Copia antigua tras (días)', portfolioCreate: 'Crear una cartera', portfolioCreateHint: 'Una cartera reúne varios programas, cada uno en su propio archivo: importa una copia de cada uno y los consulta juntos.', portfolioCreateConfirm: 'Los {count} riesgos de este análisis se sustituirán por una cartera vacía. ¿Continuar?', portfolioImport: 'Importar un programa', portfolioImported: 'Programa importado', portfolioReplace: '¿Sustituir la copia de «{name}» importada el {date}?', portfolioNotProgram: 'Este archivo no contiene un programa Riskr.', portfolioInvalid: 'Los datos de la cartera no son válidos.', portfolioReadOnly: 'Cartera: un riesgo se modifica en el archivo de su programa y luego se vuelve a importar.', portfolioPrograms: 'Programas', portfolioCode: 'Código', portfolioImportedAt: 'Importado el', portfolioActiveRisks: 'Riesgos activos', portfolioStale: 'Copia antigua', portfolioGlobalP80: 'Provisión global P80', portfolioRemove: 'Retirar', portfolioRemoveConfirm: '¿Retirar «{name}» de la cartera? Su archivo no se modifica.', portfolioEmpty: 'Ningún programa: «Importar un programa» añade la copia del archivo riskr-data.js (o de una exportación JSON) de cada programa.', portfolioSimulationLimit: 'Cada copia queda fijada en su fecha de importación: vuelva a importar el archivo de un programa para actualizarla. Las provisiones P80 no se suman; no se simula ninguna correlación entre programas.', portfolioEscalations: 'Escaladas hacia la cartera', portfolioEscalationsHint: 'Riesgos escalados al nivel de organización por los programas. La decisión se registra en el archivo del programa.', portfolioDecisions: 'Arbitrajes de la cartera', portfolioJournal: 'Importaciones', portfolioJournal_import: 'Importación', portfolioJournal_update: 'Actualización', portfolioJournal_remove: 'Retirada', scopeNoteProgram: 'Vistas limitadas a este programa',
             programDate: 'Fecha', scopeNote: 'Vistas limitadas a este proyecto',
             tabProgram: 'Programa', programIndividualCommittee: 'Comité — riesgos individuales',
@@ -10331,6 +10334,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: 'Reabra el programa antes de crear o reactivar un riesgo.'
         });
         Object.assign(translations.zh, {
+            tabProject: '项目', scopePrograms: '项目群（{count}）', scopeProjects: '项目（{count}）', scopeOpen: '打开', portfolioCopyOf: '{date} 的副本（{source}）', portfolioReadOnlyHint: '只读：请在该项目群自己的文件中修改，然后重新导入项目组合。', programLevelRisks: '{count} 项活跃风险直接由项目群负责（不属于任何项目）。', projectRisks: '项目风险', projectOwned: '由本项目负责', projectTouched: '影响本项目',
             tabPortfolio: '项目组合', portfolioFrame: '项目组合框架', portfolioOwner: '项目组合负责人', portfolioStaleAfter: '副本过期天数', portfolioCreate: '创建项目组合', portfolioCreateHint: '项目组合汇集多个项目群，每个项目群保存在各自的文件中：导入各自的副本并统一查看。', portfolioCreateConfirm: '本分析的 {count} 项风险将被一个空的项目组合取代。是否继续？', portfolioImport: '导入项目群', portfolioImported: '项目群已导入', portfolioReplace: '是否替换于 {date} 导入的“{name}”副本？', portfolioNotProgram: '此文件不包含 Riskr 项目群。', portfolioInvalid: '项目组合数据无效。', portfolioReadOnly: '项目组合：风险需在其项目群文件中修改，然后重新导入。', portfolioPrograms: '项目群', portfolioCode: '代码', portfolioImportedAt: '导入日期', portfolioActiveRisks: '活跃风险', portfolioStale: '副本已过期', portfolioGlobalP80: '整体 P80 储备', portfolioRemove: '移除', portfolioRemoveConfirm: '是否从项目组合中移除“{name}”？其文件不受影响。', portfolioEmpty: '尚无项目群：“导入项目群”会添加每个项目群的 riskr-data.js 文件（或 JSON 导出）副本。', portfolioSimulationLimit: '每个副本固定于导入日期：重新导入项目群文件即可更新。各 P80 储备不可相加；模拟未体现项目群之间的相关性。', portfolioEscalations: '上报至项目组合的风险', portfolioEscalationsHint: '各项目群上报至组织层级的风险。决定需在项目群文件中记录。', portfolioDecisions: '项目组合决策', portfolioJournal: '导入记录', portfolioJournal_import: '导入', portfolioJournal_update: '更新', portfolioJournal_remove: '移除', scopeNoteProgram: '所有视图仅显示该项目群',
             programDate: '日期', scopeNote: '所有视图仅显示该项目',
             tabProgram: '项目群', programIndividualCommittee: '委员会 — 单项风险',
@@ -10403,6 +10407,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             programReopenFirst: '创建或重新启用风险前，请先重新开放项目群。'
         });
         Object.assign(translations.ar, {
+            tabProject: 'المشروع', scopePrograms: 'البرامج ({count})', scopeProjects: 'المشاريع ({count})', scopeOpen: 'فتح', portfolioCopyOf: 'نسخة {date} ({source})', portfolioReadOnlyHint: 'للقراءة فقط: يُعدَّل هذا البرنامج في ملفه الخاص ثم يُعاد استيراده إلى المحفظة.', programLevelRisks: '{count} مخاطر نشطة يتحملها البرنامج مباشرة (خارج المشاريع).', projectRisks: 'مخاطر المشروع', projectOwned: 'يتحمله هذا المشروع', projectTouched: 'يمس هذا المشروع',
             tabPortfolio: 'المحفظة', portfolioFrame: 'إطار المحفظة', portfolioOwner: 'مسؤول المحفظة', portfolioStaleAfter: 'تصبح النسخة قديمة بعد (أيام)', portfolioCreate: 'إنشاء محفظة', portfolioCreateHint: 'تجمع المحفظة عدة برامج يُحفظ كل منها في ملفه الخاص: تستورد نسخة من كل برنامج وتعرضها معًا.', portfolioCreateConfirm: 'ستُستبدل مخاطر هذا التحليل وعددها {count} بمحفظة فارغة. هل تريد المتابعة؟', portfolioImport: 'استيراد برنامج', portfolioImported: 'تم استيراد البرنامج', portfolioReplace: 'هل تريد استبدال نسخة «{name}» المستوردة في {date}؟', portfolioNotProgram: 'لا يحتوي هذا الملف على برنامج Riskr.', portfolioInvalid: 'بيانات المحفظة غير صالحة.', portfolioReadOnly: 'المحفظة: يُعدَّل الخطر في ملف برنامجه ثم يُعاد استيراده.', portfolioPrograms: 'البرامج', portfolioCode: 'الرمز', portfolioImportedAt: 'تاريخ الاستيراد', portfolioActiveRisks: 'المخاطر النشطة', portfolioStale: 'نسخة قديمة', portfolioGlobalP80: 'الاحتياطي الإجمالي P80', portfolioRemove: 'إزالة', portfolioRemoveConfirm: 'هل تريد إزالة «{name}» من المحفظة؟ لن يتأثر ملفه.', portfolioEmpty: 'لا توجد برامج: يضيف «استيراد برنامج» نسخة من ملف riskr-data.js (أو تصدير JSON) لكل برنامج.', portfolioSimulationLimit: 'كل نسخة مثبتة عند تاريخ استيرادها: أعد استيراد ملف البرنامج لتحديثها. لا تُجمع احتياطيات P80، ولا تحاكي المحاكاة أي ترابط بين البرامج.', portfolioEscalations: 'التصعيدات إلى المحفظة', portfolioEscalationsHint: 'مخاطر صعّدتها البرامج إلى مستوى المنظمة. يُسجَّل القرار في ملف البرنامج.', portfolioDecisions: 'تحكيمات المحفظة', portfolioJournal: 'عمليات الاستيراد', portfolioJournal_import: 'استيراد', portfolioJournal_update: 'تحديث', portfolioJournal_remove: 'إزالة', scopeNoteProgram: 'العروض مقتصرة على هذا البرنامج',
             programDate: 'التاريخ', scopeNote: 'العروض مقتصرة على هذا المشروع',
             tabProgram: 'البرنامج', programIndividualCommittee: 'اللجنة — المخاطر الفردية',
@@ -14075,33 +14080,37 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             renderActionPlan();
         }
 
-        // Bandeau : le programme puis ses projets ; cliquer un projet restreint toutes les vues, cliquer le programme les rétablit.
-        // Portefeuille : portefeuille › programmes › projets du programme choisi ; recliquer un niveau remonte d'un cran.
+        // Fil d'Ariane du niveau affiché : (portefeuille ›) programme › projet. Chaque niveau du chemin se clique pour
+        // remonter ; la liste déroulante du dernier niveau descend d'un cran. Toutes les vues et le premier onglet suivent ce niveau.
+        const scopeLevelKey = () => programComponent(viewScope) ? 'tabProject' : portfolio && !viewScope ? 'tabPortfolio' : 'tabProgram';
         function renderScopeBar() {
             const bar = document.getElementById('scope-bar');
-            const tab = document.querySelector('.view-tab[data-tab="programme"] [data-i18n]');
-            tab.dataset.i18n = portfolio ? 'tabPortfolio' : 'tabProgram';
-            tab.textContent = t(tab.dataset.i18n);
             document.body.classList.toggle('portfolio-mode', Boolean(portfolio));
-            const copy = portfolio && (portfolioCopy(viewScope) || portfolioCopy(programComponent(viewScope)?.portfolioCopy));
-            if (!program || (portfolio ? viewScope && !copy : !programComponent(viewScope))) viewScope = '';
+            const component = programComponent(viewScope);
+            const copy = portfolio && (portfolioCopy(viewScope) || portfolioCopy(component?.portfolioCopy));
+            if (!program || (portfolio ? viewScope && !copy : !component)) viewScope = '';
+            const tab = document.querySelector('.view-tab[data-tab="programme"] [data-i18n]');
+            tab.dataset.i18n = scopeLevelKey();
+            tab.textContent = t(tab.dataset.i18n);
             bar.hidden = !program;
             if (!program) return;
-            const chip = (uid, label, extra = '') => `<button type="button" class="scope-chip${extra}${viewScope === uid ? ' active' : ''}" data-scope="${escapeHtml(uid)}" aria-pressed="${viewScope === uid}">${escapeHtml(label)}</button>`;
-            const chips = (items, parent) => items.length ? `<span class="scope-sep" aria-hidden="true">›</span><span class="scope-projects">${items.map(item =>
-                chip(item.uid, item.name ?? item.program.title, item.uid === parent ? ' scope-parent' : '')).join('')}</span>` : '';
+            const sep = '<span class="scope-sep" aria-hidden="true">›</span>';
+            const crumb = (uid, label) => `<button type="button" class="scope-crumb${viewScope === uid ? ' active' : ''}" data-scope="${escapeHtml(uid)}"${viewScope === uid ? ' aria-current="page"' : ''}>${escapeHtml(label)}</button>`;
+            // Niveaux inférieurs ; la première option ramène au niveau parent
+            const picker = (parent, items, key) => items.length ? `${sep}<select class="scope-select" aria-label="${escapeHtml(t(key, { count: items.length }))}">
+                <option value="${escapeHtml(parent)}">${escapeHtml(t(key, { count: items.length }))}</option>${items.map(item =>
+                `<option value="${escapeHtml(item.uid)}"${viewScope === item.uid ? ' selected' : ''}>${escapeHtml(item.name ?? item.program.title)}</option>`).join('')}</select>` : '';
+            const projects = parent => program.components.filter(item => !portfolio || item.portfolioCopy === parent);
             const top = portfolio ? 'tabPortfolio' : 'tabProgram';
-            bar.innerHTML = `<span class="scope-label">${t(top)}</span>${chip('', program.title || t(top), ' scope-program')}
-                ${portfolio ? chips(portfolio.programs, copy && viewScope !== copy.uid ? copy.uid : '') +
-                    (copy ? chips(program.components.filter(component => component.portfolioCopy === copy.uid)) : '') : chips(program.components)}
-                ${viewScope ? `<span class="scope-note">${t(portfolioCopy(viewScope) ? 'scopeNoteProgram' : 'scopeNote')}</span>` : ''}`;
+            bar.innerHTML = `<span class="scope-label">${t(top)}</span>${crumb('', program.title || t(top))}${portfolio
+                ? copy ? `${sep}${crumb(copy.uid, copy.program.title)}${picker(copy.uid, projects(copy.uid), 'scopeProjects')}` : picker('', portfolio.programs, 'scopePrograms')
+                : picker('', projects(), 'scopeProjects')}
+                ${viewScope ? `<span class="scope-note">${t(component ? 'scopeNote' : 'scopeNoteProgram')}</span>` : ''}`;
             bar.onclick = event => {
                 const button = event.target.closest('[data-scope]');
-                if (!button) return;
-                const uid = button.dataset.scope;
-                // Recliquer le niveau choisi remonte au niveau au-dessus (projet → programme → ensemble)
-                setViewScope(uid !== viewScope ? uid : portfolio && programComponent(uid) ? programComponent(uid).portfolioCopy : '');
+                if (button && button.dataset.scope !== viewScope) setViewScope(button.dataset.scope);
             };
+            bar.onchange = event => { if (event.target.matches('.scope-select')) setViewScope(event.target.value); };
         }
 
         const isFilterActive = () => Boolean(riskFilter.text || riskFilter.group || riskFilter.level ||
@@ -15553,6 +15562,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ["new", "Portefeuille : un fichier qui réunit la copie de plusieurs programmes, chacun restant tenu dans son propre fichier ; « Importer un programme » ajoute ou met à jour une copie.", "Portfolio: a file that brings together copies of several programmes, each still kept in its own file; \"Import a programme\" adds or updates a copy."],
                 ["new", "Bandeau à trois niveaux (portefeuille › programme › projet) : matrices, registre, plan d'actions, revues et vue comité consolident ou se limitent au niveau choisi.", "Three-level bar (portfolio › programme › project): matrices, register, action plan, reviews and committee view consolidate or narrow to the chosen level."],
                 ["new", "Onglet Portefeuille : synthèse par programme (risques, tolérance, provision, fraîcheur de la copie), escalades remontées et arbitrages du portefeuille.", "Portfolio tab: summary per programme (risks, tolerance, contingency, copy freshness), escalations raised and portfolio rulings."],
+                ["improved", "Navigation par niveaux : le bandeau devient un fil d'Ariane avec une liste pour descendre, et le premier onglet affiche la page du portefeuille, du programme (avec ses projets) ou du projet choisi.", "Level navigation: the bar becomes a breadcrumb with a list to go down, and the first tab shows the page of the chosen portfolio, programme (with its projects) or project."],
                 ["improved", "Numéros préfixés par le code du programme (« NORD 1.1 ») pour distinguer les risques de programmes différents ; les copies importées restent en lecture seule.", "Numbers prefixed with the programme code (\"NORTH 1.1\") to tell risks from different programmes apart; imported copies stay read-only."]] },
             { date: "2026-09-27", commits: ["5a56745"], title: ["Niveau programme", "Programme level"], items: [
                 ["new", "Onglet Programme, en premier : les projets qui le composent, les bénéfices attendus, les dépendances entre projets, les seuils de tolérance, les escalades, les scénarios, la réserve et les jalons.", "Programme tab, placed first: its projects, expected benefits, dependencies between projects, tolerance thresholds, escalations, scenarios, reserve and milestones."],
@@ -16414,7 +16424,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         function renderProgramTab() {
             const panel = document.getElementById('program-panel');
             if (!panel) return;
-            if (portfolio) { renderPortfolioTab(panel); return; }
+            if (programComponent(viewScope)) { renderProjectPage(panel, programComponent(viewScope)); return; }
+            if (portfolio) { if (viewScope) renderCopyProgramPage(panel, portfolioCopy(viewScope)); else renderPortfolioTab(panel); return; }
             if (!program) {
                 panel.innerHTML = programCard('programCreateTitle', `<p class="program-muted">${t('programCreateHint')}</p>
                     <div class="program-fields program-create"><label>${helpLabel('programName')}<input aria-label="${escapeHtml(t('programName'))}" id="program-new-title"></label>
@@ -16444,7 +16455,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <td>${programField('components', component, 'reserve', 'programReserve', 'number')}</td>
                 <td>${amount(metrics.components[index].current)}<small class="program-muted"> · ${t('programForecast')} ${amount(metrics.components[index].forecast)}</small></td>
                 <td>${programSelect('components', component, 'status', 'programStatus', [['active', t('lifecycle_active')], ['closed', t('lifecycle_closed')]])}</td>
-                <td>${programButton('delete-component', 'deleteItem', component.uid)}</td></tr>`).join('');
+                <td class="program-row-actions"><button type="button" class="sheet-btn" data-scope-to="${escapeHtml(component.uid)}">${t('scopeOpen')}</button>${programButton('delete-component', 'deleteItem', component.uid)}</td></tr>`).join('');
             const benefitRows = program.benefits.map(item => `<tr><td>${programField('benefits', item, 'name', 'programBenefit')}</td>
                 <td>${programField('benefits', item, 'owner', 'programOwner')}</td><td>${programField('benefits', item, 'unit', 'programUnit')}</td>
                 <td>${programField('benefits', item, 'baseline', 'programBaseline', 'number')}</td>
@@ -16622,6 +16633,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 }
                 const open = event.target.closest('[data-program-open-risk]');
                 if (open) { openRiskSheet(open.dataset.programOpenRisk); return; }
+                const scopeTo = event.target.closest('[data-scope-to]');
+                if (scopeTo) { setViewScope(scopeTo.dataset.scopeTo); return; }
                 const button = event.target.closest('[data-program-action]');
                 if (!button) return;
                 const action = button.dataset.programAction;
@@ -16822,7 +16835,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     <td>${own.length}</td><td>${aboveOf(own) ? `<span class="appetite-pill">${aboveOf(own)}</span>` : 0}</td>
                     <td>${amount(simulateProvision(PROGRAM_GLOBAL_TRIALS, { included: risk => risk.portfolioCopy === copy.uid }))}</td>
                     <td>${waiting ? `<span class="appetite-pill">${waiting}</span>` : 0}</td>
-                    <td><button type="button" class="sheet-btn" data-portfolio-action="remove" data-portfolio-uid="${escapeHtml(copy.uid)}">${t('portfolioRemove')}</button></td></tr>`;
+                    <td class="program-row-actions"><button type="button" class="sheet-btn primary" data-scope-to="${escapeHtml(copy.uid)}">${t('scopeOpen')}</button><button type="button" class="sheet-btn" data-portfolio-action="remove" data-portfolio-uid="${escapeHtml(copy.uid)}">${t('portfolioRemove')}</button></td></tr>`;
             }).join('');
             const decisionField = (item, key, label, type = 'text') => {
                 const attributes = `data-portfolio-decision="${escapeHtml(item.uid)}" data-field="${key}"`;
@@ -16858,6 +16871,79 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ${portfolio.journal.length ? programCard('portfolioJournal', `<div class="program-list">${[...portfolio.journal].reverse().slice(0, 10).map(entry =>
                     `<div class="program-item">${escapeHtml(formatJournalDate(entry.date))} · <b>${t(`portfolioJournal_${entry.kind}`)}</b> · ${escapeHtml(entry.title)}${entry.source ? ` · <span class="program-muted">${escapeHtml(entry.source)}</span>` : ''}</div>`).join('')}</div>`) : ''}`;
             mountPortfolioTab(panel);
+        }
+
+        // Cartes chiffrées d'une page de niveau : [clé, valeur, alerte]
+        const levelKpis = items => `<div class="program-grid">${items.map(([label, value, alert]) =>
+            `<div class="committee-card program-kpi" data-tone="${alert ? 'alert' : 'neutral'}"><small>${helpLabel(label)}</small><strong>${value}</strong></div>`).join('')}</div>`;
+        const aboveTolerance = list => list.filter(risk => programLimit(risk) && currentScore(risk) > programLimit(risk)).length;
+        const ownedProvision = uid => simulateProvision(PROGRAM_GLOBAL_TRIALS, { included: risk => risk.scopeLevel === 'component' && risk.componentId === uid });
+        const provisionText = result => result ? approxMoney(result.p80) : '—';
+        // Navigation commune aux pages de niveau : descendre, ouvrir une fiche
+        const mountLevelPage = panel => {
+            panel.onchange = null;
+            panel.onclick = event => {
+                const scope = event.target.closest('[data-scope-to]');
+                if (scope) { setViewScope(scope.dataset.scopeTo); return; }
+                const open = event.target.closest('[data-program-open-risk]');
+                if (open) openRiskSheet(open.dataset.programOpenRisk);
+            };
+        };
+
+        // Page d'un programme du portefeuille, en lecture seule : chiffres, projets, escalades et arbitrages.
+        // Complexité : O(k · T · r) — une simulation par projet (k projets, T tirages)
+        function renderCopyProgramPage(panel, copy) {
+            const own = risks.filter(risk => risk.portfolioCopy === copy.uid);
+            const threats = own.filter(isActiveThreat);
+            const byUid = new Map(own.map(risk => [risk.uid, risk]));
+            const projects = program.components.filter(item => item.portfolioCopy === copy.uid);
+            const projectRows = projects.map(component => {
+                const touched = threats.filter(risk => programRiskInComponent(risk, component.uid));
+                return `<tr><td><button type="button" class="program-risk-link" data-scope-to="${escapeHtml(component.uid)}">${escapeHtml(component.name)}</button></td>
+                    <td>${t(component.type === 'work' ? 'programWork' : 'programProject')}</td><td>${escapeHtml(component.owner) || '—'}</td>
+                    <td>${touched.length}</td><td>${aboveTolerance(touched) ? `<span class="appetite-pill">${aboveTolerance(touched)}</span>` : 0}</td>
+                    <td>${provisionText(ownedProvision(component.uid))}</td>
+                    <td class="program-row-actions"><button type="button" class="sheet-btn" data-scope-to="${escapeHtml(component.uid)}">${t('scopeOpen')}</button></td></tr>`;
+            }).join('');
+            const programOnly = threats.filter(risk => risk.scopeLevel === 'program').length;
+            const escalations = copy.program.escalations.filter(item => item.status === 'pending');
+            panel.innerHTML = `<div class="sheet-head"><h2>${escapeHtml(copy.program.title)}</h2></div>
+                <p class="committee-sub">${[copy.program.objective, t('portfolioCopyOf', { date: formatJournalDate(copy.importedAt), source: copy.source })].filter(Boolean).map(escapeHtml).join(' · ')}</p>
+                <p class="program-alert">${t('portfolioReadOnlyHint')}</p>
+                ${levelKpis([['programComponents', projects.length], ['portfolioActiveRisks', threats.length], ['programAboveTolerance', aboveTolerance(threats), aboveTolerance(threats)],
+                    ['programPendingEscalations', escalations.length, escalations.length],
+                    ['programP80Current', provisionText(simulateProvision(PROGRAM_GLOBAL_TRIALS, { included: risk => risk.portfolioCopy === copy.uid }))]])}
+                ${programCard('programComponents', `<div class="program-table-wrap"><table class="program-table"><thead><tr>${['programName', 'programType', 'programOwner', 'portfolioActiveRisks',
+                    'programAboveTolerance', 'programProvision'].map(key => `<th>${helpLabel(key)}</th>`).join('')}<th></th></tr></thead><tbody>${projectRows}</tbody></table></div>
+                    <p class="program-muted">${t('programLevelRisks', { count: programOnly })}</p>`)}
+                ${programCard('programEscalations', `<div class="program-list">${escalations.map(item => {
+                    const risk = byUid.get(`${copy.uid}/${item.riskUid}`);
+                    return `<div class="program-item"><div class="program-item-head"><b>${escapeHtml(risk ? `${risk.id} · ${risk.title}` : '')}</b><span>${t(`programLevel_${item.fromLevel}`)} → ${t(`programLevel_${item.toLevel}`)}</span></div>
+                        <p>${escapeHtml(formatReviewDate(item.raisedAt))} · ${escapeHtml(item.author)} · ${escapeHtml(item.reason)}</p></div>`;
+                }).join('') || `<p class="program-muted">${t('programNone')}</p>`}</div>`)}
+                ${copy.program.decisions.length ? programCard('programDecisions', `<div class="program-list">${copy.program.decisions.map(item =>
+                    `<div class="program-item"><b>${escapeHtml(formatReviewDate(item.date))} · ${escapeHtml(item.subject)}</b> · ${escapeHtml(item.decision)}<p>${[item.author, item.reason].filter(Boolean).map(escapeHtml).join(' · ')}</p></div>`).join('')}</div>`) : ''}`;
+            mountLevelPage(panel);
+        }
+
+        // Page d'un projet : ses chiffres et les risques qu'il porte ou qui le touchent. O(r + T · r)
+        function renderProjectPage(panel, component) {
+            const shown = risks.filter(risk => programRiskInComponent(risk, component.uid));
+            const threats = shown.filter(isActiveThreat);
+            const parent = portfolio ? portfolioCopy(component.portfolioCopy).program : program;
+            const riskRows = shown.map(risk => `<tr><td><button type="button" class="program-risk-link" data-program-open-risk="${escapeHtml(risk.uid)}">${escapeHtml(risk.id)} · ${escapeHtml(risk.title)}</button></td>
+                <td>${t(risk.componentId === component.uid ? 'projectOwned' : 'projectTouched')}</td>
+                <td>${scoreChip(currentAssessment(risk))} → ${scoreChip(risk.assessmentAfter)}</td>
+                <td>${escapeHtml(risk.responsable) || '—'}</td>
+                <td>${programLimit(risk) && currentScore(risk) > programLimit(risk) ? `<span class="appetite-pill">${t('programAboveTolerance')}</span>` : ''}</td></tr>`).join('');
+            panel.innerHTML = `<div class="sheet-head"><h2>${escapeHtml(component.name)}</h2></div>
+                <p class="committee-sub">${[parent.title, t(component.type === 'work' ? 'programWork' : 'programProject'), component.owner].filter(Boolean).map(escapeHtml).join(' · ')}</p>
+                ${levelKpis([['portfolioActiveRisks', threats.length], ['programAboveTolerance', aboveTolerance(threats), aboveTolerance(threats)],
+                    ['programProvision', provisionText(ownedProvision(component.uid))], ['programTolerance', component.tolerance || '—'],
+                    ['programReserve', component.reserve === null ? '—' : formatMoney(component.reserve)]])}
+                ${programCard('projectRisks', shown.length ? `<div class="program-table-wrap"><table class="program-table"><thead><tr>${['colRisk', 'programRegister', 'programRiskScores', 'colResp', 'programTolerance']
+                    .map(key => `<th>${helpLabel(key)}</th>`).join('')}</tr></thead><tbody>${riskRows}</tbody></table></div>` : `<p class="program-muted">${t('programNone')}</p>`)}`;
+            mountLevelPage(panel);
         }
 
         function mountPortfolioTab(panel) {

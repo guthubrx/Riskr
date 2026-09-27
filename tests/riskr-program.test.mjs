@@ -94,8 +94,17 @@ try {
         document.querySelector('[data-program-link-details="benefits"] input[value="demo-1-2"]').click();
         document.querySelector('[data-program-affected-details="demo-1-1"] summary').click();
         const lazyAffected = document.querySelectorAll('[data-program-affected-details="demo-1-1"] input[data-program-affected]').length;
-        document.querySelector('#scope-bar [data-scope="' + a.uid + '"]').click();
+        const pick = uid => { const select = document.querySelector('#scope-bar .scope-select'); select.value = uid; select.dispatchEvent(new Event('change', { bubbles: true })); };
+        pick(a.uid);
+        const projectPage = document.querySelector('#program-panel h2').textContent === a.name &&
+            document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() === t('tabProject');
+        document.querySelector('#scope-bar [data-scope=""]').click();
+        showTab('programme');
+        document.querySelector('[data-scope-to="' + a.uid + '"]').click();
+        const openedFromTable = viewScope === a.uid;
+        viewScope = '';
         renderProgramTab();
+        pick(a.uid); viewScope = a.uid;
         const componentRows = document.querySelectorAll('#program-panel [data-program-open-risk]').length;
         const scopedThreats = committeeStats().threatCount;
         const scopedActions = document.querySelectorAll('#action-board .action-card').length ===
@@ -110,7 +119,7 @@ try {
             benefit: program.benefits[0].riskUids[0], dependency: program.dependencies[0].sourceId,
             baseline: base.p80, combined: all.p80, uniqueCost: base.items.filter(item => item.risk?.uid === priced.uid).length,
             actual: program.benefits[0].actual, lazyLinks, lazyAffected, linkStayedOpen, componentRows, riskCount: risks.length, inactive,
-            scopedThreats, scopedActions, scopeReset,
+            scopedThreats, scopedActions, scopeReset, projectPage, openedFromTable,
             roundTrip: buildModel(serializeModel()).program.scenarios.length };
     })()`);
     assert.equal(links.visibleA, true);
@@ -125,6 +134,8 @@ try {
     assert.ok(links.scopedThreats > 0 && links.scopedThreats <= links.componentRows, 'la vue comité suit le projet choisi dans le bandeau');
     assert.equal(links.scopedActions, true, 'le plan d\'actions suit le projet choisi dans le bandeau');
     assert.equal(links.scopeReset, true, 'cliquer le programme rétablit toutes les vues');
+    assert.equal(links.projectPage, true, 'choisir un projet ouvre sa page dans le premier onglet');
+    assert.equal(links.openedFromTable, true, 'le bouton Ouvrir d\'un projet descend à son niveau');
     assert.equal(links.inactive, links.baseline);
     assert.equal(links.roundTrip, 1);
     assert.ok(Math.abs(links.combined - links.baseline - 10000) < 0.001);
