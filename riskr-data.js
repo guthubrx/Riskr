@@ -162,6 +162,10 @@ window.RISKR_DATA = {
         3,
         3
       ],
+      "assessmentCurrent": [
+        3,
+        3
+      ],
       "assessmentAfter": [
         2,
         3
@@ -223,6 +227,10 @@ window.RISKR_DATA = {
       "assessmentBefore": [
         3,
         4
+      ],
+      "assessmentCurrent": [
+        3,
+        3
       ],
       "assessmentAfter": [
         2,
@@ -335,6 +343,10 @@ window.RISKR_DATA = {
         3,
         3
       ],
+      "assessmentCurrent": [
+        3,
+        3
+      ],
       "assessmentAfter": [
         3,
         3
@@ -388,6 +400,10 @@ window.RISKR_DATA = {
       "id": "3.1",
       "title": "Obsolescence ou vulnérabilité des systèmes",
       "assessmentBefore": [
+        4,
+        4
+      ],
+      "assessmentCurrent": [
         4,
         4
       ],
@@ -519,6 +535,10 @@ window.RISKR_DATA = {
         3,
         3
       ],
+      "assessmentCurrent": [
+        2,
+        2
+      ],
       "assessmentAfter": [
         2,
         2
@@ -568,6 +588,10 @@ window.RISKR_DATA = {
       "id": "4.1",
       "title": "Engagement fournisseur non maîtrisé",
       "assessmentBefore": [
+        3,
+        4
+      ],
+      "assessmentCurrent": [
         3,
         4
       ],
@@ -673,6 +697,10 @@ window.RISKR_DATA = {
         3,
         3
       ],
+      "assessmentCurrent": [
+        2,
+        2
+      ],
       "assessmentAfter": [
         2,
         2
@@ -723,6 +751,10 @@ window.RISKR_DATA = {
         3,
         3
       ],
+      "assessmentCurrent": [
+        2,
+        2
+      ],
       "assessmentAfter": [
         2,
         2
@@ -764,6 +796,10 @@ window.RISKR_DATA = {
       "assessmentBefore": [
         2,
         4
+      ],
+      "assessmentCurrent": [
+        2,
+        3
       ],
       "assessmentAfter": [
         1,
