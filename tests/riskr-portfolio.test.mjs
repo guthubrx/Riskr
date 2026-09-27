@@ -1,0 +1,142 @@
+import assert from 'node:assert/strict';
+import { spawn, spawnSync } from 'node:child_process';
+import { createServer } from 'node:http';
+import { readFile, mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join, dirname, extname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = dirname(dirname(fileURLToPath(import.meta.url)));
+let legacyFixture = false;
+const server = createServer(async (request, response) => {
+    const path = new URL(request.url, 'http://localhost').pathname;
+    if (!['/riskr.html', '/riskr-data.js', '/riskr.svg', '/riskr.png', '/icon.svg'].includes(path)) return response.writeHead(404).end();
+    response.writeHead(200, { 'Content-Type': extname(path) === '.js' ? 'text/javascript' : 'text/html' });
+    if (path === '/riskr-data.js' && legacyFixture) {
+        const source = await readFile(join(root, path), 'utf8');
+        const data = JSON.parse(source.slice(source.indexOf('{'), source.lastIndexOf('}') + 1));
+        delete data.program;
+        data.risks.forEach(risk => { delete risk.scopeLevel; delete risk.componentId; delete risk.affectedComponentIds; });
+        response.end(`window.RISKR_DATA = ${JSON.stringify(data)};`);
+    } else response.end(await readFile(join(root, path)));
+});
+await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+const profile = await mkdtemp(join(tmpdir(), 'riskr-portfolio-test-'));
+const port = 10000 + Math.floor(Math.random() * 40000);
+const chrome = spawn(process.env.CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', [
+    '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
+    '--no-first-run', '--no-default-browser-check', 'about:blank'
+], { stdio: 'ignore' });
+let socket, send;
+try {
+    let target;
+    for (let attempt = 0; attempt < 80 && !target; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 150));
+        try { target = (await (await fetch(`http://127.0.0.1:${port}/json/list`)).json()).find(item => item.type === 'page'); } catch {}
+    }
+    assert.ok(target, 'Chrome démarre');
+    socket = new WebSocket(target.webSocketDebuggerUrl);
+    await new Promise((resolve, reject) => { socket.addEventListener('open', resolve, { once: true }); socket.addEventListener('error', reject, { once: true }); });
+    let serial = 0;
+    const pending = new Map();
+    socket.addEventListener('message', event => {
+        const message = JSON.parse(event.data);
+        if (pending.has(message.id)) { pending.get(message.id)(message); pending.delete(message.id); }
+    });
+    send = (method, params = {}) => new Promise(resolve => {
+        const id = ++serial;
+        pending.set(id, resolve);
+        socket.send(JSON.stringify({ id, method, params }));
+    });
+    const evaluate = async expression => {
+        const reply = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+        if (reply.result.exceptionDetails) throw new Error(JSON.stringify(reply.result.exceptionDetails));
+        return reply.result.result.value;
+    };
+    await send('Page.navigate', { url: `http://127.0.0.1:${server.address().port}/riskr.html` });
+    for (let attempt = 0; attempt < 80; attempt++) {
+        if (await evaluate('document.readyState === "complete" && typeof renderProgramTab === "function"')) break;
+        await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    const result = await evaluate(`(() => {
+        window.confirm = () => true;
+        const demo = JSON.parse(JSON.stringify(window.RISKR_DATA));
+        const south = JSON.parse(JSON.stringify(demo));
+        south.program.uid = 'prog-south'; south.program.title = 'Sud — programme régional';
+        south.program.escalations[0].toLevel = 'organization';
+        const fileBefore = JSON.stringify(south);
+        program = null; showTab('programme');
+        document.querySelector('#program-new-title').value = 'Portefeuille national';
+        document.querySelector('[data-program-action="create-portfolio"]').click();
+        const empty = { mode: Boolean(portfolio), risks: risks.length, emptyText: Boolean(document.querySelector('#program-panel .program-muted')) };
+        addPortfolioProgram(demo, 'riskr-data.js');
+        addPortfolioProgram(south, 'riskr-data-sud.js');
+        const codes = portfolio.programs.map(copy => copy.code);
+        const uniqueIds = new Set(risks.map(risk => risk.id)).size === risks.length;
+        const uniqueUids = new Set(risks.map(risk => risk.uid)).size === risks.length;
+        let refused = '';
+        try { addPortfolioProgram({ risks: [], riskGroups: [] }, 'projet.js'); } catch (error) { refused = error.message; }
+        addPortfolioProgram(south, 'riskr-data-sud-v2.js');
+        document.querySelector('#scope-bar [data-scope="prog-south"]').click();
+        const southThreats = committeeStats().threatCount;
+        const component = program.components.find(item => item.portfolioCopy === 'prog-south');
+        document.querySelector('#scope-bar [data-scope="' + component.uid + '"]').click();
+        const componentThreats = committeeStats().threatCount;
+        document.querySelector('#scope-bar [data-scope="' + component.uid + '"]').click();
+        const backToProgram = viewScope;
+        document.querySelector('#scope-bar [data-scope=""]').click();
+        const allThreats = committeeStats().threatCount;
+        const title = risks[0].title; risks[0].title = 'modifié'; commitChange();
+        const readOnly = risks[0].title === title;
+        showTab('programme');
+        document.querySelector('#portfolio-decision-subject').value = 'Priorité';
+        document.querySelector('#portfolio-decision-text').value = 'Sud d’abord';
+        document.querySelector('#portfolio-decision-author').value = 'Comité national';
+        document.querySelector('#portfolio-decision-reason').value = 'Échéance plus proche';
+        document.querySelector('[data-portfolio-action="add-decision"]').click();
+        const escalations = document.querySelectorAll('[data-program-section="portfolioEscalations"] .program-item').length;
+        const riskCount = risks.length;
+        const saved = serializeModel();
+        const roundTrip = buildModel(saved);
+        document.querySelector('[data-portfolio-action="remove"][data-portfolio-uid="prog-south"]').click();
+        return { empty, codes, uniqueIds, uniqueUids, refused: Boolean(refused),
+            copies: saved.portfolio.programs.length, journal: saved.portfolio.journal.map(entry => entry.kind),
+            southThreats, componentThreats, backToProgram, allThreats, readOnly, escalations,
+            decisions: roundTrip.portfolio.decisions.length, roundTripRisks: roundTrip.risks.length, riskCount, savedRisks: saved.risks.length,
+            sourceUntouched: JSON.stringify(south) === fileBefore, afterRemove: portfolio.programs.length,
+            tab: document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() };
+    })()`);
+    assert.deepEqual(result.empty, { mode: true, risks: 0, emptyText: true });
+    assert.equal(result.codes.length, 2);
+    assert.notEqual(result.codes[0], result.codes[1], 'un code distinct par programme');
+    assert.equal(result.uniqueIds, true, 'numéros affichés distincts (préfixe du programme)');
+    assert.equal(result.uniqueUids, true, 'identifiants stables distincts entre programmes');
+    assert.equal(result.refused, true, 'un fichier sans programme est refusé');
+    assert.equal(result.copies, 2, 'le réimport remplace la copie du même programme');
+    assert.deepEqual(result.journal, ['import', 'import', 'update']);
+    assert.ok(result.southThreats > 0 && result.southThreats < result.allThreats, 'le bandeau limite les vues à un programme');
+    assert.ok(result.componentThreats > 0 && result.componentThreats <= result.southThreats, 'puis à un projet de ce programme');
+    assert.equal(result.backToProgram, 'prog-south', 'recliquer le projet remonte au programme');
+    assert.equal(result.readOnly, true, 'les risques importés sont en lecture seule');
+    assert.equal(result.escalations, 1, 'escalade de niveau organisation consolidée');
+    assert.equal(result.decisions, 1, 'arbitrage du portefeuille conservé');
+    assert.equal(result.roundTripRisks, result.riskCount, 'aller-retour du fichier portefeuille');
+    assert.equal(result.savedRisks, 0, 'le fichier portefeuille ne porte pas de risque propre');
+    assert.equal(result.sourceUntouched, true, 'le fichier du programme importé n’est pas modifié');
+    assert.equal(result.afterRemove, 1);
+    assert.equal(result.tab, 'Portefeuille');
+    console.log('Portefeuille : création, import, remplacement, refus, bandeau à trois niveaux, lecture seule, escalades, arbitrages et aller-retour validés.');
+} finally {
+    if (socket?.readyState === WebSocket.OPEN) await send('Browser.close');
+    socket?.close();
+    server.close();
+    if (chrome.exitCode === null) {
+        await Promise.race([new Promise(resolve => chrome.once('exit', resolve)), new Promise(resolve => setTimeout(resolve, 5000))]);
+    }
+    if (chrome.exitCode === null) {
+        const processName = spawnSync('ps', ['-p', String(chrome.pid), '-o', 'comm='], { encoding: 'utf8' }).stdout.trim();
+        if (processName.includes('Google Chrome') && !processName.includes('Firefox')) chrome.kill();
+        await new Promise(resolve => chrome.once('exit', resolve));
+    }
+    await rm(profile, { recursive: true, force: true });
+}
