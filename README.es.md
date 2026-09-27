@@ -189,11 +189,16 @@ transversal que no es un proyecto, como la coordinación de proveedores), `benef
 `dependencies`, `scenarios`, `escalations`, `stages` y `decisions`. Los grupos de
 riesgos siguen siendo **categorías temáticas**.
 
-Una barra encima de las pestañas muestra el programa seguido de sus proyectos. Al hacer
-clic en un proyecto, las matrices, el registro, el plan de acción, las revisiones y la
-vista comité se limitan a los riesgos que ese proyecto gestiona o que le afectan; al
-hacer clic en el programa se recupera la vista global. El navegador recuerda esta
-elección de visualización, que no se guarda en el análisis.
+Una ruta de navegación encima de las pestañas muestra el camino programa › proyecto;
+cada nivel del camino se puede pulsar para subir. La lista desplegable
+«Proyectos (n)» al final del camino baja a un proyecto; su primera opción vuelve al
+programa. Al elegir un proyecto, las matrices, el registro, el plan de acción, las
+revisiones y la vista comité se limitan a los riesgos que ese proyecto gestiona o que
+le afectan. La primera pestaña sigue el nivel y cambia de nombre: **Programa** (página
+del programa con la lista de sus proyectos) o **Proyecto** (cifras del proyecto y
+riesgos que gestiona o que le afectan); el botón «Abrir» de una fila de proyecto baja
+a su nivel. El navegador recuerda esta elección de visualización, que no se guarda en
+el análisis.
 
 Cada riesgo conserva un único `uid` estable y una única ficha. `scopeLevel` y
 `componentId` identifican su registro propietario; `affectedComponentIds` enumera los
@@ -244,9 +249,14 @@ mensaje); se corrige en el archivo del programa y después se vuelve a importar.
 
 Solo en la vista consolidada, los números mostrados llevan como prefijo el
 código del programa (por ejemplo `NORD 1.1`) y los identificadores estables, el
-`uid` del programa. La barra «Cartera › programa › proyecto» limita las
-matrices, el registro, el plan de acción, las revisiones y la vista comité;
-volver a hacer clic en el nivel elegido sube un nivel.
+`uid` del programa. La ruta de navegación «Cartera › programa › proyecto» limita
+las matrices, el registro, el plan de acción, las revisiones y la vista comité;
+cada nivel del camino se puede pulsar para subir, y la lista «Programas (n)» o
+«Proyectos (n)» al final del camino baja un nivel (su primera opción vuelve al
+nivel superior). La primera pestaña pasa a ser **Cartera** (lista de programas),
+**Programa** (página de solo lectura del programa importado: sus proyectos,
+escaladas y decisiones) o **Proyecto**; el botón «Abrir» de una fila de
+programa o de proyecto baja a su nivel.
 
 La pestaña Programa, renombrada **Cartera**, presenta un resumen por programa
 (código, fecha de importación, riesgos activos, por encima de la tolerancia,

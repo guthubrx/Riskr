@@ -203,10 +203,15 @@ la coordination des fournisseurs), des `benefits`, `dependencies`, `scenarios`,
 `escalations`, `stages` et `decisions`. Les groupes de risques restent des
 **catégories thématiques**.
 
-Un bandeau au-dessus des onglets affiche le programme puis ses projets. Cliquer
-un projet limite les matrices, le registre, le plan d'actions, les revues et la
-vue comité aux risques que ce projet porte ou qui le touchent ; cliquer le
-programme rétablit la vue d'ensemble. Ce choix d'affichage est mémorisé dans le
+Un fil d'Ariane au-dessus des onglets affiche le chemin programme › projet ;
+chaque niveau du chemin se clique pour remonter. La liste déroulante
+« Projets (n) » au bout du chemin descend vers un projet ; sa première option
+ramène au programme. Choisir un projet limite les matrices, le registre, le plan
+d'actions, les revues et la vue comité aux risques que ce projet porte ou qui le
+touchent. Le premier onglet suit le niveau et change de nom : **Programme** (page
+du programme avec la liste de ses projets) ou **Projet** (chiffres du projet et
+risques qu'il porte ou qui le touchent) ; le bouton « Ouvrir » d'une ligne de
+projet descend à son niveau. Ce choix d'affichage est mémorisé dans le
 navigateur et n'est pas enregistré dans l'analyse.
 
 Chaque risque garde un seul `uid` et une seule fiche. `scopeLevel` et
@@ -261,9 +266,14 @@ fichier du programme, puis on réimporte.
 
 Dans la vue consolidée seulement, les numéros affichés sont préfixés par le
 code du programme (par exemple `NORD 1.1`) et les identifiants stables par son
-`uid`. Le bandeau « Portefeuille › programme › projet » restreint les matrices,
-le registre, le plan d'actions, les revues et la vue comité ; recliquer le
-niveau choisi remonte d'un cran.
+`uid`. Le fil d'Ariane « Portefeuille › programme › projet » restreint les
+matrices, le registre, le plan d'actions, les revues et la vue comité ; chaque
+niveau du chemin se clique pour remonter, et la liste « Programmes (n) » ou
+« Projets (n) » au bout du chemin descend d'un niveau (sa première option ramène
+au niveau parent). Le premier onglet devient **Portefeuille** (liste des
+programmes), **Programme** (page en lecture seule du programme importé : ses
+projets, escalades et arbitrages) ou **Projet** ; le bouton « Ouvrir » d'une
+ligne de programme ou de projet descend à son niveau.
 
 L'onglet Programme, renommé **Portefeuille**, présente une synthèse par
 programme (code, date d'import, risques actifs, au-delà de la tolérance, P80,

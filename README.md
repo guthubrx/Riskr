@@ -197,11 +197,15 @@ work that is not a project, such as supplier coordination), `benefits`,
 `dependencies`, `scenarios`, `escalations`, `stages` and `decisions`. Risk
 groups remain **thematic categories**.
 
-A bar above the tabs shows the program followed by its projects. Clicking a
-project limits the matrices, register, action plan, reviews and committee view
-to the risks that project owns or is affected by; clicking the program restores
-the overall view. This display choice is remembered by the browser and is not
-saved in the analysis.
+A breadcrumb above the tabs shows the path program › project; each level of the
+path can be clicked to move up. The "Projects (n)" drop-down list at the end of
+the path moves down to a project; its first option returns to the program.
+Selecting a project limits the matrices, register, action plan, reviews and
+committee view to the risks that project owns or is affected by. The first tab
+follows the level and changes name: **Program** (program page with the list of
+its projects) or **Project** (project figures and the risks it owns or is
+affected by); the "Open" button on a project row moves down to its level. This
+display choice is remembered by the browser and is not saved in the analysis.
 
 Each risk retains one stable `uid` and one record. `scopeLevel` and
 `componentId` identify its owning register; `affectedComponentIds` lists other
@@ -250,9 +254,13 @@ are made in the program's file, then re-imported.
 
 In the consolidated view only, display numbers are prefixed with the program
 code (for example `NORD 1.1`) and stable IDs with the program `uid`. The
-"Portfolio › program › project" bar restricts the matrices, register, action
-plan, reviews and committee view; clicking the selected level again moves up
-one level.
+"Portfolio › program › project" breadcrumb restricts the matrices, register,
+action plan, reviews and committee view; each level of the path can be clicked
+to move up, and the "Programs (n)" or "Projects (n)" list at the end of the path
+moves down one level (its first option returns to the parent level). The first
+tab becomes **Portfolio** (list of programs), **Program** (read-only page of the
+imported program: its projects, escalations and decisions) or **Project**; the
+"Open" button on a program or project row moves down to its level.
 
 The Program tab, renamed **Portfolio**, shows a summary per program (code,
 import date, active risks, risks above tolerance, P80, pending escalations) and
