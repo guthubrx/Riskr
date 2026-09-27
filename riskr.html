@@ -5696,9 +5696,14 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         .decision-table { margin-top: 4px; }
 
         /* ===== Bandeau du programme (au-dessus des onglets) : le programme, puis ses projets ; choix du périmètre affiché ===== */
-        .scope-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 14px; }
+        .scope-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
         .scope-bar[hidden] { display: none; }
-        .scope-label { margin-inline-end: 2px; font-size: 12px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--text-3); }
+        .scope-title { margin: 0; }
+        .scope-root { padding: 0; border: none; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: start; cursor: pointer; }
+        .scope-root:hover, .scope-root:focus-visible { color: var(--accent); }
+        .app-title-section .scope-bar { margin: 6px 0 0; }
+        .app-title-section .scope-bar > .scope-crumb:first-child { margin-inline-start: -10px; }
+        .sheet-intro { flex: 1; margin: 0; font-size: 14px; color: var(--text-2); }
         .scope-crumb { padding: 4px 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--text-2); font: inherit; font-size: 13px; line-height: 1.4; cursor: pointer; }
         .scope-crumb:hover { color: var(--text); background: var(--surface-2); }
         .scope-crumb.active { color: var(--text); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 60%, var(--border)); background: color-mix(in srgb, var(--accent) 12%, transparent); }
@@ -5779,6 +5784,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <div class="app-title-section">
                     <h1 id="main-title" class="editable-title"><span data-i18n="pageTitle">Riskr - Analyse de Risques Interactive</span></h1>
                     <p id="main-subtitle" class="editable-subtitle">Évaluation des risques avant et après remédiation</p>
+                    <h1 id="scope-title" class="scope-title" hidden></h1>
+                    <div id="scope-bar" class="scope-bar" role="navigation" hidden></div>
                 </div>
             </div>
 
@@ -5835,7 +5842,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         </header>
 
         <!-- Onglets de vues -->
-        <div id="scope-bar" class="scope-bar" role="group" hidden></div>
         <nav class="view-tabs" role="tablist" data-i18n-title="tabsLabel">
             <button type="button" class="view-tab" role="tab" data-tab="programme" onclick="showTab('programme')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="8" height="7" rx="1"/><rect x="14" y="3" width="8" height="7" rx="1"/><rect x="8" y="15" width="8" height="7" rx="1"/><path d="M6 10v3h12v-3M12 13v2"/></svg><span data-i18n="tabProgram">Programme</span></button>
             <button type="button" class="view-tab" role="tab" data-tab="matrices" onclick="showTab('matrices')"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span data-i18n="tabMatrices">Matrices</span></button>
@@ -14092,20 +14098,25 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const tab = document.querySelector('.view-tab[data-tab="programme"] [data-i18n]');
             tab.dataset.i18n = scopeLevelKey();
             tab.textContent = t(tab.dataset.i18n);
-            bar.hidden = !program;
-            if (!program) return;
-            const sep = '<span class="scope-sep" aria-hidden="true">›</span>';
+            // En-tête : le nom du programme ou du portefeuille remplace le titre libre ; un clic ramène au niveau le plus haut
+            const heading = document.getElementById('scope-title');
+            document.getElementById('main-title').hidden = document.getElementById('main-subtitle').hidden = Boolean(program);
+            heading.hidden = !program;
+            if (!program) { bar.hidden = true; return; }
+            heading.innerHTML = `<button type="button" class="scope-root" data-scope=""${viewScope ? '' : ' aria-current="page"'}>${escapeHtml(program.title || t(portfolio ? 'tabPortfolio' : 'tabProgram'))}</button>`;
+            heading.onclick = event => { if (event.target.closest('[data-scope]') && viewScope) setViewScope(''); };
+            // Chemin sous ce titre : programme choisi (portefeuille), puis liste pour descendre d'un niveau
             const crumb = (uid, label) => `<button type="button" class="scope-crumb${viewScope === uid ? ' active' : ''}" data-scope="${escapeHtml(uid)}"${viewScope === uid ? ' aria-current="page"' : ''}>${escapeHtml(label)}</button>`;
-            // Niveaux inférieurs ; la première option ramène au niveau parent
-            const picker = (parent, items, key) => items.length ? `${sep}<select class="scope-select" aria-label="${escapeHtml(t(key, { count: items.length }))}">
+            // La première option ramène au niveau parent
+            const picker = (parent, items, key) => items.length ? `<select class="scope-select" aria-label="${escapeHtml(t(key, { count: items.length }))}">
                 <option value="${escapeHtml(parent)}">${escapeHtml(t(key, { count: items.length }))}</option>${items.map(item =>
                 `<option value="${escapeHtml(item.uid)}"${viewScope === item.uid ? ' selected' : ''}>${escapeHtml(item.name ?? item.program.title)}</option>`).join('')}</select>` : '';
             const projects = parent => program.components.filter(item => !portfolio || item.portfolioCopy === parent);
-            const top = portfolio ? 'tabPortfolio' : 'tabProgram';
-            bar.innerHTML = `<span class="scope-label">${t(top)}</span>${crumb('', program.title || t(top))}${portfolio
-                ? copy ? `${sep}${crumb(copy.uid, copy.program.title)}${picker(copy.uid, projects(copy.uid), 'scopeProjects')}` : picker('', portfolio.programs, 'scopePrograms')
-                : picker('', projects(), 'scopeProjects')}
+            const path = portfolio ? (copy ? [crumb(copy.uid, copy.program.title), picker(copy.uid, projects(copy.uid), 'scopeProjects')] : [picker('', portfolio.programs, 'scopePrograms')])
+                : [picker('', projects(), 'scopeProjects')];
+            bar.innerHTML = `${path.filter(Boolean).join('<span class="scope-sep" aria-hidden="true">›</span>')}
                 ${viewScope ? `<span class="scope-note">${t(component ? 'scopeNote' : 'scopeNoteProgram')}</span>` : ''}`;
+            bar.hidden = !bar.textContent.trim() && !bar.querySelector('select');
             bar.onclick = event => {
                 const button = event.target.closest('[data-scope]');
                 if (button && button.dataset.scope !== viewScope) setViewScope(button.dataset.scope);
@@ -15562,7 +15573,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 ["new", "Portefeuille : un fichier qui réunit la copie de plusieurs programmes, chacun restant tenu dans son propre fichier ; « Importer un programme » ajoute ou met à jour une copie.", "Portfolio: a file that brings together copies of several programmes, each still kept in its own file; \"Import a programme\" adds or updates a copy."],
                 ["new", "Bandeau à trois niveaux (portefeuille › programme › projet) : matrices, registre, plan d'actions, revues et vue comité consolident ou se limitent au niveau choisi.", "Three-level bar (portfolio › programme › project): matrices, register, action plan, reviews and committee view consolidate or narrow to the chosen level."],
                 ["new", "Onglet Portefeuille : synthèse par programme (risques, tolérance, provision, fraîcheur de la copie), escalades remontées et arbitrages du portefeuille.", "Portfolio tab: summary per programme (risks, tolerance, contingency, copy freshness), escalations raised and portfolio rulings."],
-                ["improved", "Navigation par niveaux : le bandeau devient un fil d'Ariane avec une liste pour descendre, et le premier onglet affiche la page du portefeuille, du programme (avec ses projets) ou du projet choisi.", "Level navigation: the bar becomes a breadcrumb with a list to go down, and the first tab shows the page of the chosen portfolio, programme (with its projects) or project."],
+                ["improved", "Navigation par niveaux : le nom du portefeuille ou du programme devient le titre de la page, suivi d'un fil d'Ariane avec une liste pour descendre ; le premier onglet affiche la page du portefeuille, du programme (avec ses projets) ou du projet choisi.", "Level navigation: the portfolio or programme name becomes the page title, followed by a breadcrumb with a list to go down; the first tab shows the page of the chosen portfolio, programme (with its projects) or project."],
                 ["improved", "Numéros préfixés par le code du programme (« NORD 1.1 ») pour distinguer les risques de programmes différents ; les copies importées restent en lecture seule.", "Numbers prefixed with the programme code (\"NORTH 1.1\") to tell risks from different programmes apart; imported copies stay read-only."]] },
             { date: "2026-09-27", commits: ["5a56745"], title: ["Niveau programme", "Programme level"], items: [
                 ["new", "Onglet Programme, en premier : les projets qui le composent, les bénéfices attendus, les dépendances entre projets, les seuils de tolérance, les escalades, les scénarios, la réserve et les jalons.", "Programme tab, placed first: its projects, expected benefits, dependencies between projects, tolerance thresholds, escalations, scenarios, reserve and milestones."],
@@ -16492,9 +16503,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 <td>${programLimit(risk) && currentScore(risk) > programLimit(risk) ? `<span class="appetite-pill">${t('programAboveTolerance')}</span>` : ''}</td>
                 <td>${programButton('escalate-risk', 'programEscalate', risk.uid)}</td></tr>`).join('');
             panel.innerHTML = `
-                <div class="sheet-head"><h2>${escapeHtml(program.title || t('tabProgram'))}</h2>
+                <div class="sheet-head"><p class="sheet-intro">${escapeHtml(program.objective)}</p>
                     <div class="sheet-actions">${programButton('export-transfers', 'programExportTransfers')}${programButton(program.status === 'closed' ? 'reopen' : 'close', program.status === 'closed' ? 'programReopen' : 'programClose')}</div></div>
-                ${program.objective ? `<p class="committee-sub">${escapeHtml(program.objective)}</p>` : ''}
                 ${programCard('programGovernance', `<div class="program-fields">${programField('program', program, 'title', 'programName')}${programField('program', program, 'objective', 'programObjective')}
                     ${programField('program', program, 'sponsor', 'programSponsor')}${programField('program', program, 'manager', 'programManager')}
                     ${programField('program', program, 'appetite', 'programAppetite', 'number')}${programField('program', program, 'reserve', 'programReserve', 'number')}</div>`)}
@@ -16844,9 +16854,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                     : `<input aria-label="${escapeHtml(t(label))}" ${attributes} value="${escapeHtml(item[key])}">`;
             };
             panel.innerHTML = `
-                <div class="sheet-head"><h2>${escapeHtml(portfolio.title || t('tabPortfolio'))}</h2>
+                <div class="sheet-head"><p class="sheet-intro">${escapeHtml(portfolio.objective)}</p>
                     <div class="sheet-actions"><button type="button" class="sheet-btn primary" data-portfolio-action="import">${t('portfolioImport')}</button></div></div>
-                ${portfolio.objective ? `<p class="committee-sub">${escapeHtml(portfolio.objective)}</p>` : ''}
                 <input type="file" id="portfolio-file" hidden accept=".json,.js">
                 ${programCard('portfolioFrame', `<div class="program-fields">${field('title', 'programName')}${field('objective', 'programObjective')}
                     ${field('owner', 'portfolioOwner')}${field('staleAfterDays', 'portfolioStaleAfter', 'number')}</div>`)}

@@ -89,7 +89,7 @@ try {
         const projectPage = document.querySelector('#program-panel h2').textContent === component.name;
         document.querySelector('#scope-bar [data-scope="prog-south"]').click();
         const backToProgram = viewScope;
-        document.querySelector('#scope-bar [data-scope=""]').click();
+        document.querySelector('#scope-title [data-scope=""]').click();
         const allThreats = committeeStats().threatCount;
         const title = risks[0].title; risks[0].title = 'modifié'; commitChange();
         const readOnly = risks[0].title === title;

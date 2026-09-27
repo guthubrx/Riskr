@@ -98,7 +98,7 @@ try {
         pick(a.uid);
         const projectPage = document.querySelector('#program-panel h2').textContent === a.name &&
             document.querySelector('.view-tab[data-tab="programme"]').textContent.trim() === t('tabProject');
-        document.querySelector('#scope-bar [data-scope=""]').click();
+        document.querySelector('#scope-title [data-scope=""]').click();
         showTab('programme');
         document.querySelector('[data-scope-to="' + a.uid + '"]').click();
         const openedFromTable = viewScope === a.uid;
@@ -109,7 +109,7 @@ try {
         const scopedThreats = committeeStats().threatCount;
         const scopedActions = document.querySelectorAll('#action-board .action-card').length ===
             risks.filter(inViewScope).flatMap(item => item.mesures).filter(mesure => mesure.texte).length;
-        document.querySelector('#scope-bar [data-scope=""]').click();
+        document.querySelector('#scope-title [data-scope=""]').click();
         const scopeReset = viewScope === '' && committeeStats().threatCount > scopedThreats;
         program.scenarios[0].status = 'inactive';
         const inactive = programMetrics().global.p80;
@@ -338,7 +338,7 @@ try {
             setLanguage(language); showTab('programme');
             return { language: document.documentElement.lang, direction: document.documentElement.dir,
                 title: document.querySelector('[data-tab="programme"] span').textContent,
-                panel: document.querySelector('#program-panel').textContent.includes(program.title) };
+                panel: document.querySelector('#program-panel').textContent.length > 0 && document.querySelector('#scope-title').textContent.includes(program.title) };
         });
         setLanguage('fr'); return views;
     })()`);
