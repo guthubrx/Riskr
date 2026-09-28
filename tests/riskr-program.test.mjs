@@ -71,6 +71,28 @@ try {
             model: buildModel(serializeModel()).program.title };
     })()`);
     assert.deepEqual(created, { title: 'Transformation SI', components: 2, tab: false, model: 'Transformation SI' });
+    const tableLayout = await evaluate(`(() => {
+        const table = () => document.querySelector('[data-component-table]');
+        const compactInitially = table().querySelector('th[data-component-column="type"]').dataset.compact;
+        table().querySelector('[data-component-toggle="type"]').click();
+        const typeExpanded = table().querySelector('th[data-component-column="type"]').dataset.compact;
+        const handle = table().querySelector('[data-component-resize="name"]');
+        const widthBefore = componentLayout.widths.name;
+        handle.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, bubbles: true }));
+        window.dispatchEvent(new PointerEvent('pointermove', { clientX: 140 }));
+        window.dispatchEvent(new PointerEvent('pointerup', { clientX: 140 }));
+        const widthDragged = componentLayout.widths.name;
+        handle.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+        const widthAfter = componentLayout.widths.name;
+        const persisted = JSON.parse(localStorage.getItem(COMPONENT_LAYOUT_KEY));
+        const editable = !!table().querySelector('input[data-program-field="name"]') &&
+            !!table().querySelector('input[data-program-field="owner"]');
+        document.querySelector('[data-component-reset]').click();
+        return { compactInitially, typeExpanded, widthBefore, widthDragged, widthAfter,
+            persistedWidth: persisted.widths.name, editable, reset: componentLayout.widths.name };
+    })()`);
+    assert.deepEqual(tableLayout, { compactInitially: 'true', typeExpanded: 'false', widthBefore: 300,
+        widthDragged: 340, widthAfter: 350, persistedWidth: 350, editable: true, reset: 300 });
     const links = await evaluate(`(() => {
         const [a, b] = program.components;
         a.name = 'Projet A'; b.name = 'Projet B';
