@@ -1,5 +1,5 @@
 // Régénère les captures des README (5 langues, thèmes clair et sombre) : node docs/captures/generer-captures.mjs [en fr …]
-// Données : riskr-data.js (démonstration fictive), servi en http, donc riskr-data.local.js n'est jamais chargé.
+// Données : fixture fictive historique des captures, distincte du portefeuille Valmeris publié par défaut.
 // Hors français, les textes de la démonstration sont traduits à la volée (traductions/<langue>.json : texte français → traduction).
 // Chrome headless avec un profil jetable : aucune donnée du navigateur personnel n'est utilisée.
 // Chemin de Chrome modifiable par la variable d'environnement CHROME. Sortie : <langue>/<light|dark>/<vue>.webp
@@ -22,7 +22,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Données de démonstration dans la langue des captures : chaque texte présent dans la table est remplacé
 let language = 'fr';
 async function demoData() {
-    const source = await readFile(join(ROOT, 'riskr-data.js'), 'utf8');
+    const source = await readFile(join(ROOT, 'tests/fixtures/riskr-legacy-program.js'), 'utf8');
     if (language === 'fr') return source;
     const table = JSON.parse(await readFile(join(HERE, 'traductions', `${language}.json`), 'utf8'));
     const translate = value => typeof value === 'string' ? table[value] ?? value

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="riskr.png" alt="Riskr Logo" width="128" height="128">
+  <img src="favicon.svg" alt="Riskr icon" width="128" height="128">
   <h1>Riskr</h1>
   <p>Application web d'analyse et de cartographie des risques avec matrices Before/After et gestion collaborative.</p>
 </div>
@@ -18,15 +18,11 @@
 
 ## 🖼️ Captures d'écran
 
-Captures réalisées avec les données de démonstration de `riskr-data.js`,
-entièrement fictives (programme imaginaire de modernisation d'un système d'information),
-affichées en thème clair ou sombre selon celui de GitHub. Chaque version de ce
-README a ses captures dans sa langue (interface et données de démonstration
-traduites pour l'occasion, `docs/captures/traductions/`). Pour les régénérer après
-une évolution de l'interface : `node docs/captures/generer-captures.mjs` (Chrome requis).
-La démonstration est un programme (projets, arborescence à gauche, fil d'Ariane
-et recherche) ; la capture du portefeuille est fabriquée à la volée à partir de
-cette même démonstration (deux programmes fictifs), sans être enregistrée.
+**Exemple public actuel — Valmeris.** `riskr-data.js` ouvre un portefeuille entièrement fictif de trois programmes et 47 risques. Ses quatre fichiers de données (le portefeuille et les trois programmes autonomes) sont aussi disponibles en [anglais](examples/valmeris/en/) et en [français](examples/valmeris/fr/). Pour ouvrir un autre exemple, placer son `riskr-data.js` à côté de `riskr.html`. La version anglaise de la vidéo traduit la source française ; leur structure et leur horodatage sont identiques.
+
+![Portefeuille Valmeris et ses trois programmes](docs/captures/valmeris-en/portefeuille.webp)
+
+Les captures détaillées ci-dessous utilisent un programme fictif plus petit, conservé pour produire des captures reproductibles dans cinq langues. Elles illustrent l'interface actuelle ; les régénérer avec `node docs/captures/generer-captures.mjs` (Chrome requis).
 
 **Matrices** : trajectoire avant → après, cible (pastille en losange bleu = cible
 atteinte, losange blanc = cible visée), appétence, état à la date d'une revue.
@@ -314,6 +310,10 @@ Toutes les bibliothèques (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,
 xlsx 0.18.5) sont vendorisées inline dans le HTML : aucune dépendance CDN,
 la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 
+## 🔒 Confidentialité
+
+Riskr n'a ni télémétrie, ni compte, ni requête réseau automatique. Ses bibliothèques et son icône sont intégrées au HTML. Les analyses restent dans ce profil de navigateur (localStorage et IndexedDB) ; l'enregistrement dans un fichier ne vise que le fichier choisi par l'utilisateur, et les imports et exports sont déclenchés à sa demande. Les liens GitHub et les liens documentaires ajoutés par l'utilisateur contactent leur site seulement à l'ouverture, sans transmettre de référent. Une personne ayant accès au même appareil ou aux fichiers exportés peut lire ces données : garder les analyses réelles hors des dépôts publics et utiliser `riskr-data.local.js`, ignoré par Git, pour le travail privé. L'exemple Valmeris emploie des noms fictifs et des adresses réservées en `.example`.
+
 ## ✨ Fonctionnalités
 
 ### Organisation en onglets
@@ -467,11 +467,11 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 
 ## 🚀 Utilisation
 
-**Riskr est une application one-page** - un seul fichier HTML autonome.
+**Riskr est une application sur une page.** Son moteur tient dans un fichier HTML autonome ; les données de démonstration sont séparées.
 
-1. Télécharger `riskr.html`
-2. Ouvrir le fichier dans votre navigateur
-3. C'est tout ! Aucune installation requise
+1. Télécharger `riskr.html` et `riskr-data.js` dans le même dossier.
+2. Ouvrir `riskr.html` dans le navigateur pour explorer le portefeuille Valmeris.
+3. Pour utiliser un autre exemple, remplacer le fichier de données par celui de `examples/valmeris/`. Aucune installation requise.
 
 
 ## 🛠️ Stack Technique
@@ -483,7 +483,7 @@ la page fonctionne intégralement sans réseau (fichier unique ~1,9 Mo).
 
 ### Bibliothèques
 - **Chart.js** - Visualisation des matrices de risques
-- Aucune autre dépendance externe
+- jsPDF, jspdf-autotable et SheetJS sont aussi intégrés au HTML ; aucun CDN n’est utilisé à l’exécution.
 
 ### Persistance
 - **localStorage** - Stockage navigateur natif isolé par analyse

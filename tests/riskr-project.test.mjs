@@ -12,7 +12,8 @@ const server = createServer(async (request, response) => {
     if (!['/riskr.html', '/riskr-data.js', '/riskr.svg', '/riskr.png', '/icon.svg'].includes(name)) return response.writeHead(404).end();
     try {
         response.writeHead(200, { 'Content-Type': extname(name) === '.js' ? 'text/javascript' : extname(name) === '.html' ? 'text/html' : 'image/svg+xml' });
-        response.end(await readFile(join(root, name)));
+        response.end(await readFile(name === '/riskr-data.js'
+            ? join(root, 'tests/fixtures/riskr-legacy-program.js') : join(root, name)));
     } catch (error) { response.writeHead(404).end(error.message); }
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 361 361" role="img" aria-label="Icône bleue de grille avec coche">
+  <defs>
+    <linearGradient id="fond" x1="0" y1="0" x2="0.85" y2="1">
+      <stop stop-color="#6db6df"/>
+      <stop offset="0.52" stop-color="#579dd1"/>
+      <stop offset="1" stop-color="#3978bf"/>
+    </linearGradient>
+    <linearGradient id="tuile" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fff"/>
+      <stop offset="1" stop-color="#edf8ff"/>
+    </linearGradient>
+    <linearGradient id="tuileBleue" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#83c4e8"/>
+      <stop offset="1" stop-color="#62a9d8"/>
+    </linearGradient>
+    <linearGradient id="coche" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#5ba0d9"/>
+      <stop offset="1" stop-color="#3779c5"/>
+    </linearGradient>
+  </defs>
+  <rect x="20" y="14" width="321" height="323" rx="68" fill="url(#fond)" stroke="#e9f6ff" stroke-width="1"/>
+  <g stroke="#508fc5" stroke-width="0.6">
+    <rect x="64" y="59" width="74.5" height="72" rx="5" fill="url(#tuile)"/>
+    <rect x="144" y="59" width="73" height="72" rx="5" fill="url(#tuileBleue)"/>
+    <rect x="222" y="59" width="73.5" height="72" rx="5" fill="url(#tuileBleue)"/>
+    <rect x="64" y="136" width="74.5" height="72.5" rx="5" fill="url(#tuile)"/>
+    <path d="M149 136h63a5 5 0 0 1 5 5v20c-20 8-34 25-39 47h-29a5 5 0 0 1-5-5v-62a5 5 0 0 1 5-5Z" fill="url(#tuile)"/>
+    <path d="M227 136h63a5 5 0 0 1 5 5v35c-18-18-44-27-73-20v-15a5 5 0 0 1 5-5Z" fill="url(#tuileBleue)"/>
+    <rect x="64" y="213" width="74.5" height="71" rx="5" fill="url(#tuile)"/>
+    <path d="M149 213h28c-3 29 10 55 31 71h-59a5 5 0 0 1-5-5v-61a5 5 0 0 1 5-5Z" fill="url(#tuile)"/>
+  </g>
+  <circle cx="244" cy="223" r="65.5" fill="url(#tuile)" stroke="#4385c4" stroke-width="6"/>
+  <path d="m217.5 224.5 20.5 22 35-44" fill="none" stroke="#3679c1" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m217.5 224.5 20.5 22 35-44" fill="none" stroke="url(#coche)" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

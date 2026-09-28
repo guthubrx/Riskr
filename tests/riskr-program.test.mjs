@@ -13,12 +13,13 @@ const server = createServer(async (request, response) => {
     if (!['/riskr.html', '/riskr-data.js', '/riskr.svg', '/riskr.png', '/icon.svg'].includes(path)) return response.writeHead(404).end();
     response.writeHead(200, { 'Content-Type': extname(path) === '.js' ? 'text/javascript' : 'text/html' });
     if (path === '/riskr-data.js' && legacyFixture) {
-        const source = await readFile(join(root, path), 'utf8');
+        const source = await readFile(join(root, 'tests/fixtures/riskr-legacy-program.js'), 'utf8');
         const data = JSON.parse(source.slice(source.indexOf('{'), source.lastIndexOf('}') + 1));
         delete data.program;
         data.risks.forEach(risk => { delete risk.scopeLevel; delete risk.componentId; delete risk.affectedComponentIds; });
         response.end(`window.RISKR_DATA = ${JSON.stringify(data)};`);
-    } else response.end(await readFile(join(root, path)));
+    } else response.end(await readFile(path === '/riskr-data.js'
+        ? join(root, 'tests/fixtures/riskr-legacy-program.js') : join(root, path)));
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const profile = await mkdtemp(join(tmpdir(), 'riskr-program-test-'));

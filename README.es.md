@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="riskr.png" alt="Riskr Logo" width="128" height="128">
+  <img src="favicon.svg" alt="Riskr icon" width="128" height="128">
   <h1>Riskr</h1>
   <p>Aplicación web de análisis y cartografía de riesgos, con matrices antes/después y gestión colaborativa.</p>
 </div>
@@ -18,15 +18,11 @@
 
 ## 🖼️ Capturas de pantalla
 
-Capturas realizadas con los datos de demostración de `riskr-data.js`, totalmente
-ficticios (un programa imaginario de modernización de un sistema de información),
-mostrados en tema claro. Cada versión de este README
-tiene sus propias capturas en su idioma (interfaz y datos de demostración traducidos
-para la ocasión, `docs/captures/traductions/`). Para regenerarlas tras un cambio de
-interfaz: `node docs/captures/generer-captures.mjs` (requiere Chrome).
-La demostración es un programa (proyectos, árbol a la izquierda, ruta de navegación
-y búsqueda); la captura de la cartera se genera sobre la marcha a partir de esa misma
-demostración (dos programas ficticios), sin guardarse.
+**Ejemplo público actual: Valmeris.** `riskr-data.js` abre una cartera completamente ficticia con tres programas y 47 riesgos. Sus cuatro archivos de datos (la cartera y los tres programas independientes) están disponibles en [inglés](examples/valmeris/en/) y [francés](examples/valmeris/fr/). Para abrir otro ejemplo, coloque su `riskr-data.js` junto a `riskr.html`. La versión inglesa del vídeo traduce la fuente francesa; ambas tienen la misma estructura y fecha de datos.
+
+![Cartera Valmeris con tres programas](docs/captures/valmeris-en/portefeuille.webp)
+
+Las capturas detalladas siguientes usan un programa ficticio más pequeño, conservado para obtener capturas reproducibles en cinco idiomas. Muestran la interfaz actual; se regeneran con `node docs/captures/generer-captures.mjs` (requiere Chrome).
 
 **Matrices**: trayectoria antes → después, objetivo (insignia de rombo azul = objetivo
 alcanzado, rombo blanco = objetivo buscado), apetito de riesgo, estado a la fecha de una revisión.
@@ -295,6 +291,10 @@ Todas las bibliotecas (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,
 xlsx 0.18.5) están incluidas en línea en el HTML: sin dependencia de CDN, la página funciona
 totalmente sin red (un único archivo de unos 2 MB).
 
+## 🔒 Privacidad
+
+Riskr no tiene telemetría, cuentas ni solicitudes de red automáticas. Las bibliotecas y el icono están integrados en el HTML. Los análisis se guardan en este perfil del navegador (localStorage e IndexedDB); guardar en un archivo solo escribe en el archivo elegido por el usuario, y las importaciones y exportaciones se realizan a petición suya. Los enlaces a GitHub y a documentos añadidos por el usuario contactan sus sitios solo al abrirlos, sin enviar la página de origen. Cualquiera con acceso al mismo dispositivo o a los archivos exportados puede leer estos datos: mantenga los análisis reales fuera de repositorios públicos y use `riskr-data.local.js`, ignorado por Git, para el trabajo privado. Valmeris usa nombres ficticios y direcciones reservadas `.example`.
+
 ## ✨ Funcionalidades
 
 ### Diseño por pestañas
@@ -439,11 +439,11 @@ totalmente sin red (un único archivo de unos 2 MB).
 
 ## 🚀 Uso
 
-**Riskr es una aplicación de una sola página**: un único archivo HTML autónomo.
+**Riskr es una aplicación de una sola página.** El motor está en un archivo HTML autónomo; los datos de ejemplo están separados.
 
-1. Descargue `riskr.html`
-2. Abra el archivo en su navegador
-3. ¡Eso es todo! No requiere instalación
+1. Descargue `riskr.html` y `riskr-data.js` en la misma carpeta.
+2. Abra `riskr.html` en el navegador para explorar la cartera Valmeris.
+3. Para usar otro ejemplo, sustituya el archivo de datos por uno de `examples/valmeris/`. No requiere instalación.
 
 ## 🛠️ Stack técnico
 
@@ -454,7 +454,7 @@ totalmente sin red (un único archivo de unos 2 MB).
 
 ### Bibliotecas
 - **Chart.js** - Visualización de la matriz de riesgos
-- Ninguna otra dependencia externa
+- jsPDF, jspdf-autotable y SheetJS también están integrados en el HTML; no se usa ningún CDN en ejecución.
 
 ### Persistencia
 - **localStorage** - Almacenamiento nativo del navegador, aislado por análisis

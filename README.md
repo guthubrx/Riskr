@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="riskr.png" alt="Riskr Logo" width="128" height="128">
+  <img src="favicon.svg" alt="Riskr icon" width="128" height="128">
   <h1>Riskr</h1>
   <p>Web application for risk analysis and risk mapping, with before/after matrices and collaborative management.</p>
 </div>
@@ -18,15 +18,11 @@
 
 ## 🖼️ Screenshots
 
-Screenshots taken with the demo data from `riskr-data.js`, which is entirely
-fictitious (an imaginary program to modernise an information system), shown in
-the light or dark theme to match GitHub's. Each version of this README has
-screenshots in its own language (interface and demo data translated for the
-occasion, `docs/captures/traductions/`). To regenerate them after an interface
-change: `node docs/captures/generer-captures.mjs` (requires Chrome).
-The demo is a program (projects, tree on the left, breadcrumb and search); the
-portfolio screenshot is built on the fly from that same demo (two fictitious
-programs), without being saved.
+**Current public example — Valmeris.** `riskr-data.js` opens an entirely fictional portfolio with three programs and 47 risks. The four data files (the portfolio and its three standalone programs) are also available in [English](examples/valmeris/en/) and [French](examples/valmeris/fr/). To open another example, place its `riskr-data.js` beside `riskr.html`. The English video version translates the French source; both have the same data structure and timestamp.
+
+![Valmeris portfolio with three programs](docs/captures/valmeris-en/portefeuille.webp)
+
+The detailed screenshots below use a smaller, fictional program fixture kept for reproducible captures in five languages. They illustrate the current interface; regenerate them with `node docs/captures/generer-captures.mjs` (Chrome required).
 
 **Matrices**: before → after trajectory, target (blue diamond badge = target
 reached, white diamond = target aimed for), risk appetite, state as of a review date.
@@ -298,6 +294,10 @@ All libraries (chart.js 4.4.0, jsPDF 2.5.1, jspdf-autotable 3.8.2,
 xlsx 0.18.5) are vendored inline in the HTML: no CDN dependency, the page works
 entirely without a network (single file of about 2 MB).
 
+## 🔒 Privacy
+
+Riskr has no telemetry, account or automatic network request. Its libraries and icon are embedded in the HTML. Analyses are stored in this browser profile (localStorage and IndexedDB); saving to a file writes only to the file chosen by the user, and imports/exports happen on request. The optional GitHub and user-added document links contact their sites only when opened, without sending a referrer. Browser storage and exported files are readable by anyone with access to the same device or files: keep real analyses out of public repositories and use the ignored `riskr-data.local.js` for private work. The Valmeris example uses fictional names and reserved `.example` URLs.
+
 ## ✨ Features
 
 ### Tabbed layout
@@ -442,11 +442,11 @@ entirely without a network (single file of about 2 MB).
 
 ## 🚀 Usage
 
-**Riskr is a one-page application** - a single self-contained HTML file.
+**Riskr is a one-page application.** Its engine is a self-contained HTML file; the sample data is separate.
 
-1. Download `riskr.html`
-2. Open the file in your browser
-3. That's it! No installation required
+1. Download `riskr.html` and `riskr-data.js` into the same folder.
+2. Open `riskr.html` in your browser to explore the Valmeris portfolio.
+3. To use another example, replace the data file with one from `examples/valmeris/`. No installation is required.
 
 ## 🛠️ Tech stack
 
@@ -457,7 +457,7 @@ entirely without a network (single file of about 2 MB).
 
 ### Libraries
 - **Chart.js** - Risk matrix visualisation
-- No other external dependency
+- jsPDF, jspdf-autotable and SheetJS are also embedded in the HTML; no runtime CDN is used.
 
 ### Persistence
 - **localStorage** - Native browser storage, isolated per analysis

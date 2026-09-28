@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="riskr.png" alt="Riskr Logo" width="128" height="128">
+  <img src="favicon.svg" alt="Riskr icon" width="128" height="128">
   <h1>Riskr</h1>
   <p>用于风险分析与风险地图绘制的网页应用，提供处理前/处理后矩阵和协同管理。</p>
 </div>
@@ -18,7 +18,11 @@
 
 ## 🖼️ 截图
 
-截图使用 `riskr-data.js` 中的演示数据，该数据完全是虚构的（一个信息系统现代化改造的假想项目群），以浅色主题展示。本 README 的每个语言版本都配有其自身语言的截图（界面和演示数据均为该场合专门翻译，见 `docs/captures/traductions/`）。界面变更后如需重新生成截图：`node docs/captures/generer-captures.mjs`（需要 Chrome）。演示数据是一个项目群（包含项目、左侧树状导航、导航路径和搜索）；项目组合截图则基于同一演示数据即时生成（两个虚构的项目群），不会被保存。
+**当前公开示例：Valmeris。** `riskr-data.js` 打开一个完全虚构的投资组合，包含三个项目群和 47 项风险。四个数据文件（投资组合及三个可独立打开的项目群）提供[英文](examples/valmeris/en/)和[法文](examples/valmeris/fr/)版本。要打开另一个示例，将其 `riskr-data.js` 放在 `riskr.html` 旁边。视频使用的英文版由法文源数据翻译而来，两者的数据结构和时间戳相同。
+
+![包含三个项目群的 Valmeris 投资组合](docs/captures/valmeris-en/portefeuille.webp)
+
+下面的详细截图使用较小的虚构项目群测试数据，以便在五种语言中重复生成截图；它们展示当前界面。可运行 `node docs/captures/generer-captures.mjs` 重新生成（需要 Chrome）。
 
 **矩阵**：处理前 → 处理后轨迹、目标（蓝色菱形徽章 = 已达成目标，白色菱形 = 目标方向），风险偏好，某评审日期时的状态。
 
@@ -249,6 +253,10 @@ P80 准备金：各项目群的 P80 不能相加，也不对项目群之间的�
 xlsx 0.18.5）都以内联方式打包进 HTML：不依赖任何 CDN，
 页面在完全无网络的情况下也能正常运行（单个文件约 2 MB）。
 
+## 🔒 隐私
+
+Riskr 没有遥测、账户或自动网络请求。所用库和图标都嵌入 HTML。分析数据保存在当前浏览器配置中（localStorage 和 IndexedDB）；保存到文件时只写入用户选择的文件，导入和导出也仅在用户操作时发生。GitHub 链接和用户添加的文档链接仅在打开时访问对应网站，且不发送来源页面。能访问同一设备或导出文件的人也能读取这些数据：不要把真实分析提交到公开仓库；私人工作请使用被 Git 忽略的 `riskr-data.local.js`。Valmeris 示例仅使用虚构姓名和保留的 `.example` 网址。
+
 ## ✨ 功能
 
 ### 标签式布局
@@ -390,11 +398,11 @@ xlsx 0.18.5）都以内联方式打包进 HTML：不依赖任何 CDN，
 
 ## 🚀 使用方法
 
-**Riskr 是一个单页应用**——单个自包含的 HTML 文件。
+**Riskr 是一个单页应用。**引擎是自包含的 HTML 文件；示例数据单独存放。
 
-1. 下载 `riskr.html`
-2. 在浏览器中打开该文件
-3. 就是这样！无需安装
+1. 将 `riskr.html` 和 `riskr-data.js` 下载到同一文件夹。
+2. 在浏览器中打开 `riskr.html`，查看 Valmeris 项目组合。
+3. 如需使用其他示例，用 `examples/valmeris/` 中的数据文件替换即可。无需安装。
 
 ## 🛠️ 技术栈
 
@@ -405,7 +413,7 @@ xlsx 0.18.5）都以内联方式打包进 HTML：不依赖任何 CDN，
 
 ### 库
 - **Chart.js** - 风险矩阵可视化
-- 无其他外部依赖
+- jsPDF、jspdf-autotable 和 SheetJS 也嵌入 HTML；运行时不使用 CDN。
 
 ### 持久化
 - **localStorage** - 原生浏览器存储，按分析隔离
