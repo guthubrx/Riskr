@@ -16,6 +16,12 @@
 
 **Riskr** 是一个完整的单页网页应用，用于风险分析与风险管理。它通过交互式矩阵和详细表格，展示风险在整改措施实施前后的演变情况。
 
+## 🎬 文档与视频教程
+
+**[riskr.cartae.app](https://riskr.cartae.app)** 循序渐进地介绍 Riskr：九段以虚构企业为例、每段约四分钟的视频教程；用通俗的语言讲解风险管理的核心概念，并与 PMI、ISO 31000、MoR、PRINCE2、Orange Book 和 COSO 相对照；还有一个可直接打开的在线演示。网站目前仅提供法语版。
+
+- [在线演示](https://riskr.cartae.app/demarrer/) · [视频教程](https://riskr.cartae.app/cas-pratiques/) · [核心概念](https://riskr.cartae.app/notions/)
+
 ## 🖼️ 截图
 
 **当前公开示例：Valmeris。** `riskr-data.js` 打开一个完全虚构的投资组合，包含三个项目群和 47 项风险。四个数据文件（投资组合及三个可独立打开的项目群）提供[英文](examples/valmeris/en/)和[法文](examples/valmeris/fr/)版本。要打开另一个示例，将其 `riskr-data.js` 放在 `riskr.html` 旁边。视频使用的英文版由法文源数据翻译而来，两者的数据结构和时间戳相同。

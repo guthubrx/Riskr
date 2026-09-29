@@ -16,6 +16,12 @@
 
 **Riskr** est une application web one-page complète pour l'analyse et la gestion des risques. Elle permet de visualiser l'évolution des risques avant et après la mise en place de mesures de remédiation, à travers des matrices interactives et des tableaux détaillés.
 
+## 🎬 Documentation et tutoriels vidéo
+
+**[riskr.cartae.app](https://riskr.cartae.app)** fait découvrir Riskr pas à pas : neuf tutoriels vidéo de quatre minutes sur une entreprise fictive, les notions de la gestion des risques expliquées simplement et rapprochées du PMI, de l'ISO 31000, de MoR, de PRINCE2, de l'Orange Book et de COSO, et une démo en ligne qui s'ouvre tout de suite.
+
+- [Démo en ligne](https://riskr.cartae.app/demarrer/) · [Tutoriels vidéo](https://riskr.cartae.app/cas-pratiques/) · [Les notions clés](https://riskr.cartae.app/notions/)
+
 ## 🖼️ Captures d'écran
 
 **Exemple public actuel — Valmeris.** `riskr-data.js` ouvre un portefeuille entièrement fictif de trois programmes et 47 risques. Ses quatre fichiers de données (le portefeuille et les trois programmes autonomes) sont aussi disponibles en [anglais](examples/valmeris/en/) et en [français](examples/valmeris/fr/). Pour ouvrir un autre exemple, placer son `riskr-data.js` à côté de `riskr.html`. La version anglaise de la vidéo traduit la source française ; leur structure et leur horodatage sont identiques.

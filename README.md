@@ -16,6 +16,12 @@
 
 **Riskr** is a complete one-page web application for risk analysis and risk management. It shows how risks evolve before and after remediation measures are put in place, through interactive matrices and detailed tables.
 
+## 🎬 Documentation and video tutorials
+
+**[riskr.cartae.app](https://riskr.cartae.app)** walks you through Riskr step by step: nine four-minute video tutorials set in a fictional company, the key notions of risk management explained simply and matched with PMI, ISO 31000, MoR, PRINCE2, the Orange Book and COSO, and an online demo that opens straight away. The site is in French for now.
+
+- [Online demo](https://riskr.cartae.app/demarrer/) · [Video tutorials](https://riskr.cartae.app/cas-pratiques/) · [Key notions](https://riskr.cartae.app/notions/)
+
 ## 🖼️ Screenshots
 
 **Current public example — Valmeris.** `riskr-data.js` opens an entirely fictional portfolio with three programs and 47 risks. The four data files (the portfolio and its three standalone programs) are also available in [English](examples/valmeris/en/) and [French](examples/valmeris/fr/). To open another example, place its `riskr-data.js` beside `riskr.html`. The English video version translates the French source; both have the same data structure and timestamp.
